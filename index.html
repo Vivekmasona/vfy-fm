@@ -364,6 +364,13 @@ img:hover {
   position: relative;
 box-shadow: 0 0 20px #000; /* Add dark black shadow */
 }
+#Fimg {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  position: relative;
+box-shadow: 0 0 20px #000; /* Add dark black shadow */
+}		
 
 .layer {
   position: absolute;
@@ -3750,16 +3757,16 @@ body{
 
 
 <div id="mybutton">
-<b class="feedback"><img id="SThumb" src="" alt="Thumbnail" onclick="clickButton()">
+<b class="feedback"><img id="Fimg" src="" alt="Thumbnail" onclick="clickButton()">
 </b>
 </div>
 <style>
 .feedback {
   z-imdex:99;
-  background-color : #31B0D5;
-  color: white;
+  background-color : transparent;
+  color: transparent;
   padding: 10px 20px;
-  border-radius: 4px;
+  border-radius: 50px;
   border-color: #46b8da;
 }
 
