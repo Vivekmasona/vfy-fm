@@ -1279,6 +1279,7 @@ function play(id,Sid){
      //data = "https://myserver-dev-atmq.2.ie-1.fl0.io/audio?url=https://youtu.be/"+id;
      //data = "https://audioserver-dev-cgen.2.sg-1.fl0.io/"+id;
     document.getElementById("SThumb").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
+    document.getElementById("Fimg").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
     document.getElementById("pahilagana").onclick = ()=>{
         //location.href= "https://myserver-dev-akkd.2.sg-1.fl0.io/mp3?url=https://youtu.be/"+id;
         location.href= "https://vivekfy-api.vercel.app/download/audio?url=https://youtu.be/"+id;
@@ -3755,3 +3756,43 @@ body{
 
 </!doctype>
 
+
+<!doctype html>
+
+
+  
+  
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .fixed-div {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 65px;
+      background-color: #f0f0f0; /* Set your desired background color */
+      text-align: center;
+    }
+
+    .fixed-div img {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+
+
+  <!-- Your content goes here -->
+
+  <div class="fixed-div">
+    <img id="SThumb" src="" alt="vivekfy" />
+  </div>
+
+</!doctype>
+
+	
