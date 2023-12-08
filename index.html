@@ -989,6 +989,7 @@ width: 50%;
             display: flex;
             align-items: center;
             position: relative;
+	   z-index: 2;
             overflow: hidden;
         }
 
@@ -1026,14 +1027,15 @@ width: 50%;
     <!-- Your webpage content goes here -->
 
     <footer class="fixed-footer">
+	 <img id="Fimg" src="/img/newdp.png" alt="vfy">
+   
         <div class="play-button">
             <b id="play"> <i class="fa fa-play" aria-hidden="true"></i></b>
         </div>
         <div class="song-title">
             <span onclick="openModal()" id="vfytitle" style="width: auto; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
         </div>
-        <img id="Fimg" src="/img/newdp.png" alt="vfy">
-    </footer>
+            </footer>
 
 </body>
 
