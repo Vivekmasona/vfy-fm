@@ -364,6 +364,16 @@ img:hover {
   position: relative;
 box-shadow: 0 0 20px #000; /* Add dark black shadow */
 }
+#Fimg {
+  width: 60px;
+  height: 60px;
+ buttom:0;
+right:0;
+position: fixed;	
+  border-radius: 50%;
+  position: relative;
+box-shadow: 0 0 20px #000; /* Add dark black shadow */
+}		
 
 .layer {
   position: absolute;
@@ -1041,7 +1051,8 @@ display: flex;
 </i></div>
 <div class="song-title">
 <span onclick="openModal()" id="vfytitle" style="width: auto; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
-</div>    
+</div> 
+<img id="Fimg" src="/img/newdp.png">	
 </div>
 </footer>
 </!doctype>	
@@ -1271,6 +1282,7 @@ function play(id,Sid){
      //data = "https://myserver-dev-atmq.2.ie-1.fl0.io/audio?url=https://youtu.be/"+id;
      //data = "https://audioserver-dev-cgen.2.sg-1.fl0.io/"+id;
     document.getElementById("SThumb").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
+    document.getElementById("Fimg").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
     document.getElementById("pahilagana").onclick = ()=>{
         //location.href= "https://myserver-dev-akkd.2.sg-1.fl0.io/mp3?url=https://youtu.be/"+id;
         location.href= "https://vivekfy-api.vercel.app/download/audio?url=https://youtu.be/"+id;
@@ -3745,49 +3757,7 @@ body{
 
 
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-        }
 
-        .container {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-        }
+        
 
-        .image {
-            position: fixed;
-            bottom: 0;
-            right: 0;
-            width: 60px;
-            height: 60px;
-            z-index: 1;
-        }
-
-        /* Add styles for other content if needed */
-        .content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 0;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- Add your other content here -->
-        <div class="content">
-            <!-- Your other content goes here -->
-        </div>
-    </div>
-    <img src="your_image_path.jpg" alt="Your Image" class="image">
-</body>
-</html>
+        
