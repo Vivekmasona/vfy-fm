@@ -1048,7 +1048,11 @@ display: flex;
 </i></div>
 <div class="song-title">
 <span onclick="openModal()" id="vfytitle" style="width: auto; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
-</div>    
+</div> 
+<div id="mybutton">
+<b class="feedback"><img id="Fimg" src="" alt="Thumbnail" onclick="clickButton()">
+</b>
+</div>	
 </div>
 </footer>
 </!doctype>	
@@ -3756,10 +3760,7 @@ body{
 </!doctype>
 
 
-<div id="mybutton">
-<b class="feedback"><img id="Fimg" src="" alt="Thumbnail" onclick="clickButton()">
-</b>
-</div>
+
 <style>
 .feedback {
   z-imdex:999999;
@@ -3773,7 +3774,7 @@ body{
 #mybutton {
 z-imdex:999999;	
   position: fixed;
-  bottom: 20%;
+  bottom: 0%;
   right: 10px;
 }
 </style>	
