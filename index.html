@@ -3744,9 +3744,6 @@ body{
     </script>
 
 
-
-</!doctype>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -3758,7 +3755,7 @@ body{
             padding: 0;
         }
 
-        .container1 {
+        .container {
             position: relative;
             width: 100%;
             height: 100vh;
@@ -3767,10 +3764,10 @@ body{
         .image {
             position: absolute;
             bottom: 0;
-            left: 0;
+            right: 0; /* Adjusted to place the image at the bottom-right */
             width: 60px;
             height: 60px;
-            z-index: 1; /* Set a higher z-index to overlay on top */
+            z-index: 1;
         }
 
         /* Add styles for other content if needed */
@@ -3784,15 +3781,13 @@ body{
     </style>
 </head>
 <body>
-    <div class="container1">
-        <img id="Fimg" src="/img/newdp.png" alt="simage" class="image">
+    <div class="container">
         <!-- Add your other content here -->
         <div class="content">
             <!-- Your other content goes here -->
         </div>
+        <img src="/img/newdp.png" alt="Your Image" class="image">
     </div>
 </body>
 </html>
 
-
-	
