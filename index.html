@@ -933,126 +933,108 @@ width: 50%;
 <a href="#" id="pahilagana" class="float1"></a>
 <a href="#" id="vivekmasona" class="float1"></a>
 </vfy>
-
-
-	  
-<style>
+ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
         body {
             margin: 0;
             padding: 0;
         }
 
         .fixed-footer {
+            position: fixed;
+            box-shadow: 0 0 15px #000;
+            bottom: 0;
+            width: 100%;
+            border-radius: 20px 20px 0px 0px;
+            height: 59.5px;
+            background: rgb(231, 76, 60);
+            background-color: transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+        }
 
-	
-    border-radius: 5px, 20px, 0px, 40px; /* Adjust the pixel value as needed */
-    	
-    position: fixed;
-box-shadow: 0 0 15px #000;	
-    bottom: 0;
-    width: 100%;
-    border-radius: 20px 20px 0px 0px;
-    height: 59.5px;
-    background: rgb(231,76,60);
-background-color: transparent;
-display: flex;	
-    justify-content: space-between;
-    align-items: center; /* Center vertically */
-    padding: 10px;
-}
+        .song-title {
+            width: auto;
+            text-align: center;
+        }
 
-.song-title {
-    width: 90%;
-    text-align: center;
-}
+        .play-button {
+            color: #fff;
+            width: 15%;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            order: 2; /* This places the play button on the right */
+        }
 
-@keyframes gradientAnimation {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
-}
+        .play-button i {
+            color: #fff;
+            font-size: 24px;
+            padding: 15px;
+            position: relative;
+            z-index: 2;
+        }
 
-.play-button {
-	color:#fff;
-    width: 15%;
-    display: flex;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
-}
+        .play-button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+            background: linear-gradient(45deg, #ff8a00, #E74C3C, #00bfff, #E74C3C, #32CD32, #FFD700, #8A2BE2, #FF1493, #00FFFF, #800000);
+            background-size: 600% 600%;
+            animation: gradientAnimation 10s ease infinite;
+            border: 0px solid #E74C3C;
+            border-radius: 100px;
+            box-sizing: border-box;
+        }
 
-.play-button i {
-	color:#fff;
-    font-size: 24px;
-    padding: 15px;
-    position: relative;
-    z-index: 2;
-}
+        img {
+            order: 1; /* This places the image on the left */
+            /* Additional styles for the image size if needed */
+            width: 50px;
+            height: 50px;
+        }
 
-.play-button::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1;
-    background: linear-gradient(45deg, #ff8a00, #E74C3C, #00bfff, #E74C3C, #32CD32, #FFD700, #8A2BE2, #FF1493, #00FFFF, #800000);
-    background-size: 600% 600%; /* Adjust the background-size for more colors */
-    animation: gradientAnimation 10s ease infinite; /* Adjust the animation duration */
-    border: 0px solid #E74C3C;
-    border-radius: 100px;
-    box-sizing: border-box;
-}
-
-	
-
-@keyframes gradientAnimation {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
-
-
-
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
     </style>
-    
-
-
+</head>
+<body>
 
 <!-- Your webpage content goes here -->
 
-<footer class="fixed-footer" >
- <div class="play-button">
- <b  id="play"> <i class="fa fa-play" aria-hidden="true"></i></b>
-</i></div>
-<div class="song-title">
-<span onclick="openModal()" id="vfytitle" style="width: auto; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
-</div>    
-</div>
+<footer class="fixed-footer">
+    <div class="song-title">
+        <img id="Fimg"src="/img/newdp.png" alt="Image">
+        <span onclick="openModal()" id="vfytitle" style="width: auto; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
+    </div>
+    <div class="play-button">
+        <b id="play"><i class="fa fa-play" aria-hidden="true"></i></b>
+    </div>
 </footer>
-</!doctype>	
-      
 
-
-
- 
-      
-   
- 
+</body>
+</html>
    
  
 <script>
@@ -3763,23 +3745,7 @@ body{
   
   
   <style>
-    
 
-    .fixed-div {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 30%;
-      height: 60px;
-      background-color: #f0f0f0; /* Set your desired background color */
-      text-align: right;
-    }
-
-    .fixed-div img {
-	    z-index: 99999;
-      height: 100%;
-      width: auto;
-    }
 #SThumb {
   width: 80px;
   height: 80px;
@@ -3791,12 +3757,5 @@ box-shadow: 0 0 20px #000; /* Add dark black shadow */
   </style>
 
 
-  <!-- Your content goes here -->
-
-  <div class="fixed-div">
-    <img id="Fimg" src="" alt="vivekfy" />
-  </div>
-
-</!doctype>
-
+  
 	
