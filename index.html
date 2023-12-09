@@ -25,6 +25,27 @@
 <title>VIVEKFY-AI</title>
 
 
+  <style>
+    #myDiv {
+      display: none;
+      padding: 0px;
+Width:100%
+      background-color: #f1f1f1;
+    }
+  </style>
+
+<script>
+  function toggleDiv() {
+    var div = document.getElementById('myDiv');
+    if (div.style.display === 'none') {
+      div.style.display = 'block';
+    } else {
+      div.style.display = 'none';
+    }
+  }
+</script>
+
+
 
 
 <audio id="myAudio" src="/sound/fw.mp3"></audio>
@@ -738,7 +759,8 @@ width: 50%;
      <input type="search"  name="search" onclick="startDictation()"  id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">SEARCH..</button></sr>
 	    
-	    
+	 <button onclick="toggleDiv()">Toggle Div</button>
+   
 	    
    <div id="autocomplete-results"></div>
 
@@ -751,9 +773,12 @@ width: 50%;
 	
     <div id="spacer"></div>
 
-
+<div id="myDiv">
+      <div id="homepage-content">
+	      
+      </div>
 	
-    <div id="homepage-content">
+
 
 
 <span id="heading1"></span>
