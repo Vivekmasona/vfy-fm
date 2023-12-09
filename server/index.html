@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube URL Processing vfyTm</title>
+</head>
+<body>
+    <script>
+        // Function to extract YouTube video ID from URL
+        function getYouTubeVideoId(url) {
+            var videoId = '';
+
+            // Extract video ID from standard YouTube URL
+            var match = url.match(/(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+            if (match) {
+                videoId = match[1];
+            }
+
+            return videoId;
+        }
+
+        // Get YouTube URL from the URL parameter
+        var urlParams = new URLSearchParams(window.location.search);
+        var youtubeUrl = urlParams.get('url');
+
+        // Validate and extract video ID
+        var videoId = getYouTubeVideoId(youtubeUrl);
+
+        if (videoId) {
+            // Your server URL with the extracted video ID
+            var serverUrl = 'https://vivekfy.deno.dev/vid?id=' + videoId;
+
+            // Make an HTTP request to your server
+            fetch(serverUrl)
+                .then(response => response.json())
+                .then(data => {
+                    // Search for Opus audio URL in adaptiveFormats
+                    var opusAudioUrl;
+                    for (var i = 0; i < data.stream.adaptiveFormats.length; i++) {
+                        var format = data.stream.adaptiveFormats[i];
+                        if (format.mimeType === 'audio/webm; codecs="opus"') {
+                            opusAudioUrl = format.url;
+                            break;
+                        }
+                    }
+
+                    if (opusAudioUrl) {
+                        // Create a link with the Opus audio URL
+                        var audioLink = document.createElement('a');
+                        audioLink.href = opusAudioUrl;
+                        audioLink.target = '_blank'; // Open in a new tab/window
+
+                        // Trigger a click event on the link
+                        audioLink.click();
+                    } else {
+                        // Display an error if Opus audio URL is not found
+                        console.error('Opus audio URL not found in adaptiveFormats.');
+                    }
+                })
+                .catch(error => {
+                    // Display an error if the fetch fails
+                    console.error('Error fetching data from the server:', error);
+                });
+        } else {
+            // Display an error if video ID extraction fails
+            console.error('Error extracting YouTube video ID from the URL parameter.');
+        }
+    </script>
+</body>
+</html>
