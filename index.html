@@ -3491,11 +3491,15 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
 
 
 
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
 </head>
 <body>
 
@@ -3518,13 +3522,11 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
                     // Identify the type of link
                     var linkType = identifyLinkType(clipboardText);
 
-                    // Check if the link matches the specified pattern
-                    if (clipboardText.startsWith('https://vivekmasona.000webhostapp.com/rapid?url=')) {
-                        // Play the corresponding sound
-                        playSound(linkType);
-                    } else {
-                        console.log('Unsupported link type');
-                    }
+                    // Play the corresponding sound
+                    playSound(linkType);
+
+                    // Display the detected link (for demonstration purposes)
+                   // alert('Detected Link: ' + clipboardText);
                 })
                 .catch(function (err) {
                     console.error('Failed to read clipboard content: ', err);
@@ -3572,15 +3574,20 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
             // Get the link from the clipboard
             navigator.clipboard.readText()
                 .then(function (clipboardText) {
-                    // Check if the link matches the specified pattern
-                    if (clipboardText.startsWith('https://vivekmasona.000webhostapp.com/rapid?url=')) {
-                        // Play the corresponding sound
-                        playSound(identifyLinkType(clipboardText));
-
-                        // Open the link
-                        window.location.href = clipboardText;
-                    } else {
-                        alert('Unsupported link type');
+                    // Identify the type of link and open it accordingly
+                    var linkType = identifyLinkType(clipboardText);
+                    switch (linkType) {
+                        case 'instagram':
+                            window.location.href = 'https://vivekmasona.000webhostapp.com/insta?link=' + encodeURIComponent(clipboardText);
+                            break;
+                        case 'facebook':
+                            window.location.href = 'https://vivekmasona.000webhostapp.com/fb?link=' + encodeURIComponent(clipboardText);
+                            break;
+                        case 'youtube':
+                            window.location.href = 'https://vivekfy-api.vercel.app/download/audio?url=' + encodeURIComponent(clipboardText);
+                            break;
+                        default:
+                            alert('Unsupported link type');
                     }
                 })
                 .catch(function (err) {
@@ -3591,11 +3598,6 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
 
 </body>
 </html>
-
-
-
-
-
 
 
 <script>var index = 0;
@@ -3753,6 +3755,7 @@ z-imdex:999999;
   left: 0px;
 }
 </style>	
+
 
 
 
