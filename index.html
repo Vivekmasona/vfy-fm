@@ -738,7 +738,8 @@ width: 50%;
      <input type="search"  name="search" onclick="startDictation()"  id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">SEARCH..</button></sr>
 	    
-	    
+	<button id="toggleButton" onclick="toggleContent()">Hide/Show Content</button>
+    
 	    
    <div id="autocomplete-results"></div>
 
@@ -752,8 +753,11 @@ width: 50%;
     <div id="spacer"></div>
 
 
+<div id="homepage-content">
+    <!-- Your content goes here -->
+    </div>
 	
-    <div id="homepage-content">
+    
 
 
 <span id="heading1"></span>
@@ -3755,5 +3759,42 @@ z-imdex:999999;
 }
 </style>	
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automatic Show Content</title>
+    <style>
+        #homecontent {
+            display: none;
+        }
+    </style>
+</head>
+<body>
 
+
+<script>
+    window.onload = function () {
+        // Automatically show content on page load
+        toggleContent();
+    };
+
+    function toggleContent() {
+        var content = document.getElementById("homepage-content");
+        if (content.style.display === "none") {
+            content.style.display = "block";
+        } else {
+            content.style.display = "none";
+        }
+    }
+</script>
+
+</body>
+</html>
+
+
+
+
+	
 
