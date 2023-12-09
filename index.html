@@ -547,8 +547,14 @@ Color:#E74C3C;
 }
 
 #home-content{
- margin-top: 20px;	
+
+  margin-top: 20px;
 }
+
+
+
+
+
 
 #progressBarContainer {
   position: fixed;
@@ -570,6 +576,13 @@ overflow: hidden;
   background: linear-gradient(90deg, rgba(43, 42, 42, 1) 0%, rgba(102, 83, 77, 1) 56%, rgba(237, 97, 53, 1) 100%);
 }
 
+
+
+
+
+
+
+		
 #search-basic{
 	
 border-radius: 1 px;
@@ -586,7 +599,9 @@ border-radius: 1 px;
   
 }
 
-#SAudio {
+
+
+	#SAudio {
 
     display:flex;
     justify-content: center;
@@ -723,7 +738,7 @@ width: 50%;
      <input type="search"  name="search" onclick="startDictation()"  id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">SEARCH..</button></sr>
 	    
-	<a href="#" class="ui-btn ui-corner-all ui-shadow" onclick="openNav()"><i class='fa fa-sliders' style='font-size:18px;color:#16E2F5'></i></i></a>    
+	    
 	    
    <div id="autocomplete-results"></div>
 
@@ -733,12 +748,13 @@ width: 50%;
    </div>
 
 
-    <div id="spacer"></div>	
-
+	
+    <div id="spacer"></div>
 
 
 	
-    
+    <div id="homepage-content">
+
 
 <span id="heading1"></span>
 <div id="slider">  
@@ -826,10 +842,10 @@ width: 50%;
 
 
 	    
-<div class="container-fluid" id="home-content">    
+    <div class="container-fluid" id="home-content">
 
-<div class="row">	    
-      
+	    
+      <div class="row">
 <div id="videos">
 
 
@@ -895,7 +911,7 @@ width: 50%;
 </div>	
 </div>
 <div class="row">
-</div>
+              </div>
       
 
 
@@ -903,7 +919,7 @@ width: 50%;
 
 
 
-
+    </div>
     </div>
   <div data-role="footer" data-position="fixed" data-id="main-footer" id="foot">
 <center>
@@ -3738,111 +3754,6 @@ z-imdex:999999;
   left: 0px;
 }
 </style>	
-
-<!doctype html>
-
-
-
-<style>
-body {
-  font-family: 'Lato', sans-serif;
-}
-
-.overlay {
-  height: 100%;
-  width: 0;
-  position: fixed;
-  z-index: 999999;
-  top: 0;
-  left: 0;
-  background: rgb(0,0,0);
-background: linear-gradient(180deg, rgba(0,0,0,1) 20%, rgba(12,5,5,0) 39%, rgba(0,0,0,1) 71%, rgba(0,0,0,1) 97%);	
-	overflow-x: hidden;
-  transition: 0.5s;
-}
-
-.overlay-content {
-  position: relative;
-  top: -0%;
-  width: 100%;
-  text-align: center;
-  margin-top: 0px;
-}
-
-.overlay a {
-  padding: 8px;
-  text-decoration: none;
-  font-size: 36px;
-  color: #818181;
-  display: block;
-  transition: 0.3s;
-}
-
-.overlay a:hover, .overlay a:focus {
-  color: #f1f1f1;
-}
-
-.overlay .closebtn {
-  position: absolute;
-z-index:999;
-border-top-left-radius: 2px;
-    border-bottom-left-radius: 2px;	
-  top: 0%;
-Color:#fff;
-background-color:#566D7E;
-  right: 92%;
-  font-size: 30px;
-
-}
-
-@media screen and (max-height: 450px) {
-  .overlay a {font-size: 20px}
-  .overlay .closebtn {
-  font-size: 40px;
-  top: 205px;
-  right: 35px;
-  }
-}
-</style>
-
-
-
-<div id="myNav" class="overlay">
-  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()"><i class="fa fa-close" style="font-size:20px;color:#15E2F5"></i></a>
-  <div class="overlay-content">
-    <center>
-    
-<div id="homepage-content">
-</div>
-
-</center>
-
-
-</div>
-
-  </div>
-
-
-
-
-
-
-
-
-<script>
-function openNav() {
-  document.getElementById("myNav").style.width = "100%";
-}
-
-function closeNav() {
-  document.getElementById("myNav").style.width = "0%";
-}
-</script>
-     
-
-</!doctype>
-
-	
 
 
 
