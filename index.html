@@ -1249,7 +1249,14 @@ function loadSong(song, ind) {
 
 
 function play(id,Sid){
-     data = "https://vivekmasona.000webhostapp.com/stream?api1=https://youtu.b/"+id;
+     data = "https://vivekfy-api-v1.vercel.app/low-audio?url=https://youtu.be/"+id;
+      //data = "https://vivekfy-api.vercel.app/audio/"+id;
+      //data = "https://vivekmasona.000webhostapp.com/play?vfy=https://youtu.be/"+id;
+     //data = "https://vivekmasona.000webhostapp.com/deno?url=https://youtu.be/"+id;
+     // data = "https://vivekfy.1.ie-1.fl0.io/audio?url=https://youtu.be/"+id;
+     //data = "https://myserver-dev-atmq.2.ie-1.fl0.io/low-audio?url=https://youtu.be/"+id;
+     //data = "https://myserver-dev-atmq.2.ie-1.fl0.io/audio?url=https://youtu.be/"+id;
+     //data = "https://audioserver-dev-cgen.2.sg-1.fl0.io/"+id;
     document.getElementById("SThumb").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
     document.getElementById("Fimg").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
      document.getElementById("pahilagana").onclick = ()=>{
@@ -1317,9 +1324,11 @@ audio.addEventListener("ended", function() {
 
 // Listen for the 'error' event
 var alternativeAudioSources = [
-"https://vivekmasona.000webhostapp.com/stream?api2=https://youtu.b/"+ id,
-"https://vivekmasona.000webhostapp.com/stream?api3=https://youtu.b/" + id,   
-"https://vivekmasona.000webhostapp.com/stream?api4=https://youtu.b/" + id, 
+"https://vivekmasona.000webhostapp.com/deno?url=https://youtu.be/"+ id,
+"https://vivekfy-api.vercel.app/audio/" + id,   
+"https://vivekmasona.000webhostapp.com/play?vfy=https://youtu.be/" + id,
+"https://vivekfy-api-v1.vercel.app/audio?url=https://youtu.be/" + id,
+    
 ];
 
 var currentAlternativeIndex = 0;
