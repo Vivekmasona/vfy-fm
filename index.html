@@ -1789,11 +1789,11 @@ recognition.onresult = function(event) {
             commandMatched = true;
         } 
 	if (lastResult.toLowerCase() === 'i have a question' ||
-	    lastResult.toLowerCase() === 'ak bat batao' ||
-	    lastResult.toLowerCase() === 'questions' ||
-            lastResult.toLowerCase() === 'jwab do' ||
-            lastResult.toLowerCase() === 'batao') {
-            // Handle volume down commands
+	    lastResult.toLowerCase() === 'i have a questions' ||
+	    lastResult.toLowerCase() === 'i have questions' ||
+            lastResult.toLowerCase() === 'i need help' ||
+            lastResult.toLowerCase() === 'kuchh puchhna tha tumse') {
+            // Handle help commands
             const butto1 = document.getElementById('voiceBtn');
             butto1.click();
             playAudio('/sound/ask.mp3'); // Replace with the appropriate audio URL
