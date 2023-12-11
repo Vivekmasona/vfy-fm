@@ -1638,75 +1638,66 @@ document.getElementById("stop").onclick = function() {
     
 <script>
     let isVoiceRecognitionOn = false;
-    let recognitionTimeout;
+let recognitionTimeout;
 
-    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
+const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+recognition.lang = 'en-US';
+recognition.interimResults = false;
 
-    const togglebutto = document.getElementById('togglebutto');
-    const searchBox = document.getElementById('search-basic');
-    const searchButton = document.getElementById('search-btn');
+const togglebutto = document.getElementById('togglebutto');
+const searchBox = document.getElementById('search-basic');
+const searchButton = document.getElementById('search-btn');
 
-    // Add random sound file paths
-    const randomSounds = [
-        "/sound/aass.mp3",
-        "/sound/help5.mp3",
-        "/sound/help.mp3",
-        "/sound/help1.mp3"
-    ];
+// Add random sound file paths
+const randomSounds = [
+  "/sound/aass.mp3",
+  "/sound/help5.mp3",
+  "/sound/help.mp3",
+  "/sound/help1.mp3"
+];
 
-    togglebutto.addEventListener('click', function () {
-        playRandomSound();
+togglebutto.addEventListener('click', function () {
+    playRandomSound();
 
-        setTimeout(function () {
-            startVoiceRecognition();
-        }, 2700);
-    });
+    setTimeout(function () {
+        startVoiceRecognition();
+    }, 2700);
+});
 
-    function playRandomSound() {
-        const randomIndex = Math.floor(Math.random() * randomSounds.length);
-        playAudio(randomSounds[randomIndex]);
-    }
+function playRandomSound() {
+    const randomIndex = Math.floor(Math.random() * randomSounds.length);
+    playAudio(randomSounds[randomIndex]);
+}
 
-    function startVoiceRecognition() {
-        recognition.start();
-        recognitionTimeout = setTimeout(function () {
-            recognition.stop();
-            //playAudio("/sound/always.mp3");
-        }, 150000);
-    }
+function startVoiceRecognition() {
+    recognition.start();
+    recognitionTimeout = setTimeout(function () {
+        recognition.stop();
+        //playAudio("/sound/always.mp3");
+    }, 150000);
+}
 
-    recognition.onresult = function(event) {
-        const lastResult = event.results[event.results.length - 1][0].transcript;
-        let commandMatched = false;
+recognition.onresult = function(event) {
+    const lastResult = event.results[event.results.length - 1][0].transcript;
 
-        // Check if the voice command contains the word "play"
-        if (lastResult.toLowerCase().includes('play')) {
-            const searchBox = document.getElementById('search-basic');
-            searchBox.value = lastResult;
+    let commandMatched = false;
+    
 
-            const searchButton = document.getElementById('search-btn');
-            searchButton.click(); // Trigger search button click
+    // Check if the voice command matches any predefined commands
+        if (lastResult.toLowerCase() === 'mp3' ||
+            lastResult.toLowerCase() === 'download mp3' ||
+	    lastResult.toLowerCase() === 'download song' ||
+            lastResult.toLowerCase() === 'save MP3' ||
+            lastResult.toLowerCase() === 'mp3 download' ||
+            lastResult.toLowerCase() === 'download this song' ||
+            lastResult.toLowerCase() === 'audio' ||
+            lastResult.toLowerCase() === 'audio download' ||
+            lastResult.toLowerCase() === 'save audio') {
+            // Handle audio-related commands
+            const butto1 = document.getElementById('pahilagana');
+            butto1.click();
+            playAudio('/sound/saveaudio.mp3'); // Replace with the appropriate audio URL
             commandMatched = true;
-        }
-
-        // Check if the voice command matches any predefined commands
-        if (!commandMatched) {
-            if (lastResult.toLowerCase() === 'mp3' ||
-                lastResult.toLowerCase() === 'download mp3' ||
-                lastResult.toLowerCase() === 'download song' ||
-                lastResult.toLowerCase() === 'save MP3' ||
-                lastResult.toLowerCase() === 'mp3 download' ||
-                lastResult.toLowerCase() === 'download this song' ||
-                lastResult.toLowerCase() === 'audio' ||
-                lastResult.toLowerCase() === 'audio download' ||
-                lastResult.toLowerCase() === 'save audio') {
-                // Handle audio-related commands
-                const butto1 = document.getElementById('pahilagana');
-                butto1.click();
-                playAudio('/sound/saveaudio.mp3'); // Replace with the appropriate audio URL
-                commandMatched = true;
         }
         if (lastResult.toLowerCase() === 'video download' ||
             lastResult.toLowerCase() === 'download video' ||
@@ -1970,7 +1961,15 @@ document.getElementById("stop").onclick = function() {
             butto1.click();
             playAudio('/sound/sorrybabu.mp3'); // Replace with the appropriate audio URL
             commandMatched = true;
-        }
+        } 
+
+        // If no command matched, type the spoken word in the search box and trigger search button click
+        if (!commandMatched) {
+            const searchBox = document.getElementById('search-basic');
+            searchBox.value = lastResult;
+
+            const searchButton = document.getElementById('search-btn');
+            searchButton.click(); // Trigger search button click
         }
     };
 
@@ -1980,7 +1979,6 @@ document.getElementById("stop").onclick = function() {
         audio.play();
     }
 </script>
-
 
             
 <div id="AdVideo"></div>            
@@ -3845,6 +3843,7 @@ z-imdex:999999;
             }
         });
     </script>
+
 
 
 
