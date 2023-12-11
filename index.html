@@ -1776,6 +1776,7 @@ recognition.onresult = function(event) {
             playAudio('/sound/Nobabu.mp3'); // Replace with the appropriate audio URL
             commandMatched = true;
         }
+	
 	if (lastResult.toLowerCase() === 'volume down' ||
 	    lastResult.toLowerCase() === 'silent' ||
 	    lastResult.toLowerCase() === 'mute' ||
@@ -1785,6 +1786,17 @@ recognition.onresult = function(event) {
             const butto1 = document.getElementById('volume10');
             butto1.click();
             playAudio('/sound/downvolume.mp3'); // Replace with the appropriate audio URL
+            commandMatched = true;
+        } 
+	if (lastResult.toLowerCase() === 'i have a question' ||
+	    lastResult.toLowerCase() === 'ak bat batao' ||
+	    lastResult.toLowerCase() === 'questions' ||
+            lastResult.toLowerCase() === 'jwab do' ||
+            lastResult.toLowerCase() === 'batao') {
+            // Handle volume down commands
+            const butto1 = document.getElementById('voiceBtn');
+            butto1.click();
+            playAudio('/sound/yse.mp3'); // Replace with the appropriate audio URL
             commandMatched = true;
         } 
 	if (lastResult.toLowerCase() === 'hello' ||
@@ -3755,6 +3767,82 @@ z-imdex:999999;
   left: 0px;
 }
 </style>	
+
+
+	
+	
+	
+	
+	<main>
+        <div class="topper">
+            
+        <div class="msgs_cont">
+            <!-- Remove the initial chat message -->
+        </div>
+        <div class="bottom">
+            <div id="input">
+                <button id="voiceBtn" class="uil uil-microphone">voice</button>
+            </div>
+        </div>
+    </div></main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let voiceBtn = document.querySelector("#voiceBtn");
+
+            // Add voice recognition button click event
+            voiceBtn.addEventListener("click", function() {
+                // Delay voice recognition start by 2 seconds
+                setTimeout(startVoiceRecognition, 2000);
+            });
+
+            function startVoiceRecognition() {
+                const recognition = new webkitSpeechRecognition();
+                recognition.lang = "en-US";
+
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    ChatGPT(transcript);
+                };
+
+                recognition.onerror = function(event) {
+                    console.error(event.error);
+                };
+
+                recognition.start();
+            }
+
+            function ChatGPT(transcript) {
+                if (
+                    transcript !== "" &&
+                    transcript !== null &&
+                    transcript.trim() !== ""
+                ) {
+                    fetch(
+                        `https://WellinformedHeavyBootstrapping.yasirmecom.repl.co/ask?question=users new question :, ${transcript}`
+                    )
+                        .then((res) => res.text())
+                        .then((data) => {
+                            speakText(data); // Add text-to-speech for the bot response
+                        })
+                        .catch((error) => {
+                            speakText("Not working");
+                        });
+                }
+            }
+
+            // Add this function for text-to-speech
+            function speakText(text) {
+                const synth = window.speechSynthesis;
+                const utterance = new SpeechSynthesisUtterance(text);
+                
+                // Set language to Hindi (India)
+                utterance.lang = "hi-IN";
+
+                synth.speak(utterance);
+            }
+        });
+    </script>
 
 
 
