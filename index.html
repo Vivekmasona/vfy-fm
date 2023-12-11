@@ -1636,349 +1636,84 @@ document.getElementById("stop").onclick = function() {
 <div id="togglebutto"></div>
    
     
-<script>
-    let isVoiceRecognitionOn = false;
-let recognitionTimeout;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Recognition and Search</title>
+</head>
+<body>
+    <!-- Your HTML content, including the necessary elements like search-basic, search-btn, togglebutto, and pahilagana -->
 
-const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-recognition.lang = 'en-US';
-recognition.interimResults = false;
+    <script>
+        let isVoiceRecognitionOn = false;
+        let recognitionTimeout;
 
-const togglebutto = document.getElementById('togglebutto');
-const searchBox = document.getElementById('search-basic');
-const searchButton = document.getElementById('search-btn');
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
 
-// Add random sound file paths
-const randomSounds = [
-  "/sound/aass.mp3",
-  "/sound/help5.mp3",
-  "/sound/help.mp3",
-  "/sound/help1.mp3"
-];
+        const togglebutto = document.getElementById('togglebutto');
+        const searchBox = document.getElementById('search-basic');
+        const searchButton = document.getElementById('search-btn');
 
-togglebutto.addEventListener('click', function () {
-    playRandomSound();
+        // Add random sound file paths
+        const randomSounds = [
+            "/sound/aass.mp3",
+            "/sound/help5.mp3",
+            "/sound/help.mp3",
+            "/sound/help1.mp3"
+        ];
 
-    setTimeout(function () {
-        startVoiceRecognition();
-    }, 2700);
-});
+        togglebutto.addEventListener('click', function () {
+            playRandomSound();
 
-function playRandomSound() {
-    const randomIndex = Math.floor(Math.random() * randomSounds.length);
-    playAudio(randomSounds[randomIndex]);
-}
+            setTimeout(function () {
+                startVoiceRecognition();
+            }, 2700);
+        });
 
-function startVoiceRecognition() {
-    recognition.start();
-    recognitionTimeout = setTimeout(function () {
-        recognition.stop();
-        //playAudio("/sound/always.mp3");
-    }, 150000);
-}
+        function playRandomSound() {
+            const randomIndex = Math.floor(Math.random() * randomSounds.length);
+            playAudio(randomSounds[randomIndex]);
+        }
 
-recognition.onresult = function(event) {
-    const lastResult = event.results[event.results.length - 1][0].transcript;
+        function startVoiceRecognition() {
+            recognition.start();
+            recognitionTimeout = setTimeout(function () {
+                recognition.stop();
+                //playAudio("/sound/always.mp3");
+            }, 150000);
+        }
 
-    let commandMatched = false;
-    
+        recognition.onresult = function(event) {
+            const lastResult = event.results[event.results.length - 1][0].transcript;
 
-    // Check if the voice command matches any predefined commands
-        if (lastResult.toLowerCase() === 'mp3' ||
-            lastResult.toLowerCase() === 'download mp3' ||
-	    lastResult.toLowerCase() === 'download song' ||
-            lastResult.toLowerCase() === 'save MP3' ||
-            lastResult.toLowerCase() === 'mp3 download' ||
-            lastResult.toLowerCase() === 'download this song' ||
-            lastResult.toLowerCase() === 'audio' ||
-            lastResult.toLowerCase() === 'audio download' ||
-            lastResult.toLowerCase() === 'save audio') {
-            // Handle audio-related commands
-            const butto1 = document.getElementById('pahilagana');
-            butto1.click();
-            playAudio('/sound/saveaudio.mp3'); // Replace with the appropriate audio URL
-            commandMatched = true;
-        }
-        if (lastResult.toLowerCase() === 'video download' ||
-            lastResult.toLowerCase() === 'download video' ||
-            lastResult.toLowerCase() === 'mp4' ||
-            lastResult.toLowerCase() === 'mp4 download' ||
-            lastResult.toLowerCase() === 'download mp4') {
-            // Handle video-related commands
-            const butto1 = document.getElementById('vivekmasona');
-            butto1.click();
-            playAudio('/sound/savevideo.mp3'); // Replace with the appropriate audio URL
-            commandMatched = true;
-        }
-        if (lastResult.toLowerCase() === 'play video' ||
-            lastResult.toLowerCase() === 'video play' ||
-            lastResult.toLowerCase() === 'video') {
-            // Handle video playback commands
-            const butto1 = document.getElementById('playVideobutto');
-            butto1.click();
-            playAudio('/sound/video.mp3'); // Replace with the appropriate audio URL
-            commandMatched = true;
-        }
-        if (lastResult.toLowerCase() === 'song' ||
-            lastResult.toLowerCase() === 'play song' ||
-            lastResult.toLowerCase() === 'song play' ||
-            lastResult.toLowerCase() === 'audio start' ||
-            lastResult.toLowerCase() === 'start audio' ||
-            lastResult.toLowerCase() === 'Gana' ||
-            lastResult.toLowerCase() === 'audio play') {
-            // Handle playing songs or audio
-            const butto1 = document.getElementById('AdAudio');
-            butto1.click();
-            playAudio('/sound/song.mp3'); // Replace with the appropriate audio URL
-            commandMatched = true;
-        }
-	if (lastResult.toLowerCase() === 'download' ||
-            lastResult.toLowerCase() === 'download my link' ||
-	    lastResult.toLowerCase() === 'copy url download' ||
-	    lastResult.toLowerCase() === 'save my link' ||
-	    lastResult.toLowerCase() === 'copy download' ||
-	    lastResult.toLowerCase() === 'copy link save' ||
-	    lastResult.toLowerCase() === 'url save' ||
-	    lastResult.toLowerCase() === 'download url' ||
-	    lastResult.toLowerCase() === 'link download' ||
-            lastResult.toLowerCase() === 'copy link download') {
-            // Handle volume down commands
-            const butto1 = document.getElementById('openButton');
-            butto1.click();
-            playAudio('/sound/curldl.mp3'); // Replace with the appropriate audio URL
-            commandMatched = true;
-        }  
-        if (lastResult.toLowerCase() === 'vivek masona' ||
-            lastResult.toLowerCase() === 'developer vivek' ||
-            lastResult.toLowerCase() === 'who is vivek' ||
-            lastResult.toLowerCase() === 'vivek maurya' ||
-            lastResult.toLowerCase() === 'vivek') {
-            // Handle news-related or download commands
-            const butto1 = document.getElementById('AdVideo');
-            butto1.click();
-            playAudio('/sound/vivekmasona.mp3'); // Replace with the appropriate audio URL
-            commandMatched = true;
-        }
-        if (lastResult.toLowerCase() === 'jaan kis do' ||
-            lastResult.toLowerCase() === 'chumma do' ||
-	    lastResult.toLowerCase() === 'kis do' ||
-	    lastResult.toLowerCase() === 'kis do na' ||
-	    lastResult.toLowerCase() === 'land logi' ||
-	    lastResult.toLowerCase() === 'munh Mein logi' ||
-	    lastResult.toLowerCase() === 'land legi' ||
-	    lastResult.toLowerCase() === 'munh Mein legi' ||
-            lastResult.toLowerCase() === 'jaan chumma do' ||
-            lastResult.toLowerCase() === 'kareza chumma do na' ||
-            lastResult.toLowerCase() === 'jaan chumma do na') {
-            // Handle news-related or download commands
-            const butto1 = document.getElementById('AdAudio');
-            butto1.click();
-            playAudio('/sound/Nobabu.mp3'); // Replace with the appropriate audio URL
-            commandMatched = true;
-        }
-	
-	if (lastResult.toLowerCase() === 'volume down' ||
-	    lastResult.toLowerCase() === 'silent' ||
-	    lastResult.toLowerCase() === 'mute' ||
-            lastResult.toLowerCase() === 'volume decrease' ||
-            lastResult.toLowerCase() === 'decrease sound') {
-            // Handle volume down commands
-            const butto1 = document.getElementById('volume10');
-            butto1.click();
-            playAudio('/sound/downvolume.mp3'); // Replace with the appropriate audio URL
-            commandMatched = true;
-        } 
-	if (lastResult.toLowerCase() === 'i have a question' ||
-	    lastResult.toLowerCase() === 'i have a questions' ||
-	    lastResult.toLowerCase() === 'i have questions' ||
-            lastResult.toLowerCase() === 'i need help' ||
-            lastResult.toLowerCase() === 'kuchh puchhna tha tumse') {
-            // Handle help commands
-            const butto1 = document.getElementById('voiceBtn');
-            butto1.click();
-            playAudio('/sound/ask.mp3'); // Replace with the appropriate audio URL
-            commandMatched = true;
-        } 
-	if (lastResult.toLowerCase() === 'hello' ||
-	    lastResult.toLowerCase() === 'hey' ||
-            lastResult.toLowerCase() === 'suno' ||
-	    lastResult.toLowerCase() === 'hello babu' ||
-	    lastResult.toLowerCase() === 'babu' ||
-            lastResult.toLowerCase() === 'hey you') {
-            // Handle volume down commands
-            const butto1 = document.getElementById('hello');
-            butto1.click();
-            playAudio('/sound/yes.mp3'); // Replace with the appropriate audio URL
-            commandMatched = true;
-        } 
-        if (lastResult.toLowerCase() === 'volume increase' ||
-            lastResult.toLowerCase() === 'volume full' ||
-	    lastResult.toLowerCase() === 'volume up' ||
-            lastResult.toLowerCase() === 'sound full' ||
-            lastResult.toLowerCase() === 'full sound') {
-            // Handle volume increase commands
-            const butto1 = document.getElementById('volume100');
-            butto1.click();
-            playAudio('/sound/fullvolume.mp3'); // Replace with the appropriate audio URL
-            commandMatched = true;
-        }
-        if (lastResult.toLowerCase() === 'next' ||
-            lastResult.toLowerCase() === 'song change' ||
-	    lastResult.toLowerCase() === 'next song' ||
-	    lastResult.toLowerCase() === 'song next' ||
-            lastResult.toLowerCase() === 'change song') {
-            // Handle commands for changing to the next song
-            const butto1 = document.getElementById('nextbutto');
-            butto1.click();
-            playAudio('/sound/nextsong.mp3'); // Replace with the appropriate audio URL
-            commandMatched = true;
-        }
-        if (lastResult.toLowerCase() === 'forward' ||
-            lastResult.toLowerCase() === 'song forward' ||
-            lastResult.toLowerCase() === 'forward song') {
-            // Handle commands for forwarding the song
-            const butto1 = document.getElementById('fastForwardbutto');
-            butto1.click();
-            playAudio('/sound/forward1.mp3');            
-            commandMatched = true;
-        }
-        if (lastResult.toLowerCase() === 'backward' ||
-            lastResult.toLowerCase() === 'rewind' ||
-            lastResult.toLowerCase() === 'song rewind' ||
-            lastResult.toLowerCase() === 'rewind song' ||
-            lastResult.toLowerCase() === 'backward song') {
-            // Handle commands for rewinding the song
-            const butto1 = document.getElementById('rewindbutto');
-            butto1.click();
-            playAudio('/sound/rewind1.mp3'); // Replace with the appropriate audio URL
-            commandMatched = true;
-        }
-	if (lastResult.toLowerCase() === 'developer name' ||
-            lastResult.toLowerCase() === 'your developer' ||
-            lastResult.toLowerCase() === 'developer' ||
-            lastResult.toLowerCase() === 'your developer name' ||
-            lastResult.toLowerCase() === 'vfy developer') {
-            // Handle commands for rewinding the song
-            const butto1 = document.getElementById('developer');
-            butto1.click();
-            playAudio('/sound/vivekbabu1.mp3'); // Replace with the appropriate audio URL
-            commandMatched = true;
-        } 
-	  if (lastResult.toLowerCase() === 'i love you' ||
-            lastResult.toLowerCase() === 'you are my love' ||
-            lastResult.toLowerCase() === 'pagal') {
-            // Handle volume down commands
-            const butto1 = document.getElementById('iloveyou');
-            butto1.click();
-            playAudio('/sound/love.mp3'); // Replace with the appropriate audio URL
-            commandMatched = true;
-        }  
-        if (lastResult.toLowerCase() === 'stop' ||
-            lastResult.toLowerCase() === 'song stop' ||
-            lastResult.toLowerCase() === 'stop song' ||
-            lastResult.toLowerCase() === 'music stop' ||
-            lastResult.toLowerCase() === 'stop music' ||
-            lastResult.toLowerCase() === 'audio stop' ||
-            lastResult.toLowerCase() === 'stop audio' ||
-	    lastResult.toLowerCase() === 'band' ||
-	    lastResult.toLowerCase() === 'gana band karo' ||
-	    lastResult.toLowerCase() === 'band karo' ||
-            lastResult.toLowerCase() === 'stop mp3' ||
-            lastResult.toLowerCase() === 'mp3 stop') {
-            // Handle commands for stopping audio
-            const butto1 = document.getElementById('play');
-            butto1.click();
-            playAudio('/sound/songstop.mp3'); // Replace with the appropriate audio URL
-            commandMatched = true;
-        }
-        if (lastResult.toLowerCase() === 'play' || 
-	lastResult.toLowerCase() === 'chalu' ||
-	lastResult.toLowerCase() === 'start' ||	
-	lastResult.toLowerCase() === 'suru karo' ||
-	lastResult.toLowerCase() === 'start karo' ||
-	lastResult.toLowerCase() === 'chalu karo' ||
-	 lastResult.toLowerCase() === 'gana chalu karo' ||  
-	  lastResult.toLowerCase() === 'gana start karo' ||
-	    lastResult.toLowerCase() === 'gana bajao' ||
-	    lastResult.toLowerCase() === 'song chalao' ||
-	lastResult.toLowerCase() === 'song start' ||
-	lastResult.toLowerCase() === 'bajao') {
-            // Handle the 'play' command
-            const butto1 = document.getElementById('play');
-            butto1.click();
-            playAudio('/sound/songplay.mp3'); // Replace with the appropriate audio URL
-            commandMatched = true;
-        }
-	  if (lastResult.toLowerCase() === 'bhenchod' ||
-            lastResult.toLowerCase() === 'madarchod' ||
-	      lastResult.toLowerCase() === 'bhosdi' ||
-	      lastResult.toLowerCase() === 'madrachod' ||
-	    lastResult.toLowerCase() === 'madharchod' ||
-            lastResult.toLowerCase() === 'chutiya' ||
-            lastResult.toLowerCase() === 'bhosdi ke' ||
-	      lastResult.toLowerCase() === 'bhosdike' ||
-            lastResult.toLowerCase() === 'bhosdi wala' ||
-	    lastResult.toLowerCase() === 'bahan chod' ||
-            lastResult.toLowerCase() === 'madharchod' ||
-            lastResult.toLowerCase() === 'bhosdiwala' ||
-            lastResult.toLowerCase() === 'gandu' ||
-	      lastResult.toLowerCase() === 'bahanchod' ||
-	      lastResult.toLowerCase() === 'nikal madarchod' ||
-	      lastResult.toLowerCase() === 'salagandu' ||
-	      lastResult.toLowerCase() === 'hrami' ||
-	      lastResult.toLowerCase() === 'harami' ||
-	      lastResult.toLowerCase() === 'bhosdi wali' ||
-	      lastResult.toLowerCase() === 'bhosdiwali' ||
-	      lastResult.toLowerCase() === 'sali harami' ||
-	      lastResult.toLowerCase() === 'sali hrami' ||
-	      lastResult.toLowerCase() === 'sali kutti' ||
-	      lastResult.toLowerCase() === 'kutti sali' ||
-	      lastResult.toLowerCase() === 'kutti' ||
-	       lastResult.toLowerCase() === 'madhar chod' ||
-            lastResult.toLowerCase() === 'randi' ||
-            lastResult.toLowerCase() === 'haraami' ||
-            lastResult.toLowerCase() === 'sala chutiya') {
-            // Handle commands for stopping audio
-            const butto1 = document.getElementById('hate');
-            butto1.click();
-            playAudio('/sound/ihate.mp3'); // Replace with the appropriate audio URL
-            commandMatched = true;
-        } 
-	   if (lastResult.toLowerCase() === 'chup' ||
-            lastResult.toLowerCase() === 'bilkul chup' ||
-	      lastResult.toLowerCase() === 'munh band kar' ||
-	      lastResult.toLowerCase() === 'muh band kar' ||
-	      lastResult.toLowerCase() === 'chup ho ja bhosdi ke' ||
-	      lastResult.toLowerCase() === 'chup ho ja bhosdike' ||
-	      lastResult.toLowerCase() === 'chup hoja bhosdi ke' ||
-	       lastResult.toLowerCase() === 'chup gandu' ||
-	       lastResult.toLowerCase() === 'randi sali munh band kar' ||
-	       lastResult.toLowerCase() === 'sali munh band kar' ||
-	       lastResult.toLowerCase() === 'ek dam chup' ||
-            lastResult.toLowerCase() === 'chup bilkul chup') {
-            // Handle volume down commands
-            const butto1 = document.getElementById('chup');
-            butto1.click();
-            playAudio('/sound/sorrybabu.mp3'); // Replace with the appropriate audio URL
-            commandMatched = true;
-        } 
+            // Check if the voice command contains words related to playing songs or music
+            const hasMusicKeyword = ['mp3', 'download mp3', 'download song', 'save MP3', 'mp3 download', 'download this song', 'audio', 'audio download', 'save audio'].some(keyword => lastResult.toLowerCase().includes(keyword));
 
-        // If no command matched, type the spoken word in the search box and trigger search button click
-        if (!commandMatched) {
-            const searchBox = document.getElementById('search-basic');
-            searchBox.value = lastResult;
+            if (hasMusicKeyword) {
+                // Handle audio-related commands
+                const butto1 = document.getElementById('pahilagana');
+                butto1.click();
+                playAudio('/sound/saveaudio.mp3'); // Replace with the appropriate audio URL
+            } else {
+                // Type the spoken word in the search box and trigger search button click
+                searchBox.value = lastResult;
+                searchButton.click(); // Trigger search button click
+            }
+        };
 
-            const searchButton = document.getElementById('search-btn');
-            searchButton.click(); // Trigger search button click
+        // Function to play audio from a given URL
+        function playAudio(audioURL) {
+            const audio = new Audio(audioURL);
+            audio.play();
         }
-    };
+    </script>
+</body>
+</html>
 
-    // Function to play audio from a given URL
-    function playAudio(audioURL) {
-        const audio = new Audio(audioURL);
-        audio.play();
-    }
-</script>
 
             
 <div id="AdVideo"></div>            
