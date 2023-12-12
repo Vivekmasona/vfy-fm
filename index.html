@@ -3786,6 +3786,7 @@ z-imdex:999999;
         </div>
     </div></main>
 
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             let voiceBtn = document.querySelector("#voiceBtn");
@@ -3793,7 +3794,7 @@ z-imdex:999999;
             // Add voice recognition button click event
             voiceBtn.addEventListener("click", function() {
                 // Delay voice recognition start by 2 seconds
-                setTimeout(startVoiceRecognition, 3000);
+                setTimeout(startVoiceRecognition, 2000);
             });
 
             function startVoiceRecognition() {
@@ -3839,13 +3840,14 @@ z-imdex:999999;
                 // Set language to Hindi (India)
                 utterance.lang = "hi-IN";
 
+                utterance.onend = function() {
+                    // Automatically start voice recognition after speech synthesis ends
+                    startVoiceRecognition();
+                };
+
                 synth.speak(utterance);
             }
         });
     </script>
 
-
-
-
-
-
+</!doctype>
