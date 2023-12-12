@@ -3823,9 +3823,11 @@ z-imdex:999999;
                     )
                         .then((res) => res.text())
                         .then((data) => {
-                            // Replace "Herc.ai" with "v fy.ai" in the response
-                            const modifiedText = data.replace(/Herc\.ai/g, "vivek masona.ai");
-                            speakText(modifiedText); // Add text-to-speech for the bot response
+                            // Replace specific occurrences in the response text
+                            const modifiedText = data.replace(/Herc\.ai/g, 'Vivek masona ai')
+                                                    .replace(/Microsoft/g, 'vivek masona')
+                                                    .replace(/OpenAI/g, 'vivek masona');
+                            speakText(modifiedText); // Add text-to-speech for the modified text
                         })
                         .catch((error) => {
                             speakText("Not working");
@@ -3841,15 +3843,7 @@ z-imdex:999999;
                 // Set language to Hindi (India)
                 utterance.lang = "hi-IN";
 
-                utterance.onend = function() {
-                    // Automatically start voice recognition after speech synthesis ends
-                    startVoiceRecognition();
-                };
-
                 synth.speak(utterance);
             }
         });
     </script>
-
-
- 
