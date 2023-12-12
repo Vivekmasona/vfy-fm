@@ -3786,8 +3786,7 @@ z-imdex:999999;
         </div>
     </div></main>
 
-
-    <script>
+<script>
         document.addEventListener("DOMContentLoaded", function () {
             let voiceBtn = document.querySelector("#voiceBtn");
 
@@ -3824,7 +3823,9 @@ z-imdex:999999;
                     )
                         .then((res) => res.text())
                         .then((data) => {
-                            speakText(data); // Add text-to-speech for the bot response
+                            // Replace "Herc.ai" with "v fy.ai" in the response
+                            const modifiedText = data.replace(/Herc\.ai/g, "vivek masona.ai");
+                            speakText(modifiedText); // Add text-to-speech for the bot response
                         })
                         .catch((error) => {
                             speakText("Not working");
@@ -3850,4 +3851,5 @@ z-imdex:999999;
         });
     </script>
 
-</!doctype>
+
+ 
