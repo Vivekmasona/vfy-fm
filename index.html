@@ -3824,9 +3824,9 @@ z-imdex:999999;
                         .then((res) => res.text())
                         .then((data) => {
                             // Replace specific occurrences in the response text
-                            const modifiedText = data.replace(/Herc\.ai/g, 'vivek.ai')
+                            const modifiedText = data.replace(/Herc\.ai/g, 'vivek masona.ai')
                                                     .replace(/Microsoft/g, 'vivek masona')
-                                                    .replace(/OpenAI/g, 'vivek masona');
+                                                    .replace(/OpenAI/g, 'vivek');
                             speakText(modifiedText); // Add text-to-speech for the modified text
                         })
                         .catch((error) => {
