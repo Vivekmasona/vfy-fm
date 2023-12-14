@@ -2019,7 +2019,7 @@ function startDictation() {
         var recognition = new webkitSpeechRecognition();
         recognition.continuous = false;
         recognition.interimResults = false;
-        recognition.lang = "en-US";
+        recognition.lang = "hi-IN";
 
         recognition.onresult = function(e) {
             var spokenText = e.results[0][0].transcript;
@@ -3798,7 +3798,7 @@ z-imdex:999999;
 
             function startVoiceRecognition() {
                 const recognition = new webkitSpeechRecognition();
-                recognition.lang = "en-US";
+                recognition.lang = "hi-IN";
 
                 recognition.onresult = function(event) {
                     const transcript = event.results[0][0].transcript;
