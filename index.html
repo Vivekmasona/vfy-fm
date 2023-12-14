@@ -1229,7 +1229,7 @@ function loadSong(song, ind) {
     $("#channelNameDiv").text("Channel ID: " + id);
 
     // Add the download button dynamically to the "downloadButtonDiv" within an iframe without border
-    var downloadButton = $('<iframe id="downloadIframe" src="save?url=https://youtu.be/' + id + '" width="80%" height="50px" frameborder="0" border-radius="50px 10px 50px 10px"></iframe>');
+    var downloadButton = $('<iframe id="downloadIframe" src="//vfy-api.blogspot.com?url=https://youtu.be/' + id + '" width="80%" height="50px" frameborder="0" border-radius="50px 10px 50px 10px"></iframe>');
     $("#downloadButtonDiv").html(downloadButton);
 
     // Add a click event listener to the iframe button
@@ -2019,7 +2019,7 @@ function startDictation() {
         var recognition = new webkitSpeechRecognition();
         recognition.continuous = false;
         recognition.interimResults = false;
-        recognition.lang = "hi-IN";
+        recognition.lang = "en-US";
 
         recognition.onresult = function(e) {
             var spokenText = e.results[0][0].transcript;
@@ -3798,7 +3798,7 @@ z-imdex:999999;
 
             function startVoiceRecognition() {
                 const recognition = new webkitSpeechRecognition();
-                recognition.lang = "hi-IN";
+                recognition.lang = "en-US";
 
                 recognition.onresult = function(event) {
                     const transcript = event.results[0][0].transcript;
