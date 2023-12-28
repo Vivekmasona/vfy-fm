@@ -785,6 +785,16 @@ width: 50%;
 <div class="link-bar">
     <div class="grid-container">
       <div class="grid">
+	  <div class="tab" onclick="searchshilpiSongs()">
+          <img  src="/profile/shilpi.jpg" alt="Profile 1" class="profile-image" />
+          <div class="overlay"></div>
+          <div class="watermark"></div>
+        </div>
+	  <div class="tab" onclick="searchkalluSongs()">
+          <img  src="/profile/kallu.jpg" alt="Profile 1" class="profile-image" />
+          <div class="overlay"></div>
+          <div class="watermark"></div>
+        </div>    
         <div class="tab" onclick="searchneelkamalsinghSongs()">
           <img  src="/profile/neelkamal.jpg" alt="Profile 1" class="profile-image" />
           <div class="overlay"></div>
@@ -2119,6 +2129,16 @@ function searcharjitsinghSongs() {
     $(".search-bar").val(query); // Query input field mein set karen
     search(); // Search function ko call karen
 }
+function searchshilpiSongs() {
+    var query = "shilpi raj new songs"; // Hindi songs ke liye query
+    $(".search-bar").val(query); // Query input field mein set karen
+    search(); // Search function ko call karen
+	}
+function searchkalluSongs() {
+    var query = "kallu arvind akela new songs"; // Hindi songs ke liye query
+    $(".search-bar").val(query); // Query input field mein set karen
+    search(); // Search function ko call karen
+}	
 function searchbadshahSongs() {
     var query = "badshah new songs"; // Hindi songs ke liye query
     $(".search-bar").val(query); // Query input field mein set karen
