@@ -790,6 +790,11 @@ width: 50%;
           <div class="overlay"></div>
           <div class="watermark"></div>
         </div>
+	   <div class="tab" onclick="searchshivaniSongs()">
+          <img  src="/profile/shivani.jpg" alt="Profile 1" class="profile-image" />
+          <div class="overlay"></div>
+          <div class="watermark"></div>
+        </div> 
 	  <div class="tab" onclick="searchkalluSongs()">
           <img  src="/profile/kallu.jpg" alt="Profile 1" class="profile-image" />
           <div class="overlay"></div>
@@ -2065,7 +2070,12 @@ function searchBhojpuriSongs() {
     var query = "new bhojpuri songs"; // Hindi songs ke liye query
     $(".search-bar").val(query); // Query input field mein set karen
     search(); // Search function ko call karen
-}	
+}
+function searchshivaniSongs() {
+    var query = "shivani singh new bhojpuri songs"; // Hindi songs ke liye query
+    $(".search-bar").val(query); // Query input field mein set karen
+    search(); // Search function ko call karen
+}		
 function searchBhaktiSongs() {
     var query = "hindi bhakti songs"; // Hindi songs ke liye query
     $(".search-bar").val(query); // Query input field mein set karen
