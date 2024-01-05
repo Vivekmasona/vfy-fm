@@ -1275,14 +1275,14 @@ function play(id,Sid){
     document.getElementById("SThumb").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
     document.getElementById("Fimg").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
      document.getElementById("pahilagana").onclick = ()=>{
-        location.href= "https://vivekmasona.000webhostapp.com/mp3?url=https://youtu.be/"+id;
+        location.href= "https://vivekdl.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
         //location.href= "https://vivekfy-api.vercel.app/download/audio?url=https://youtu.be/"+id;
         //location.href= "https://vivekfy-dl-api.onrender.com/audio/"+id;
     };
 	document.getElementById("VFYmp3").onclick = ()=>{
         //location.href= "https://vivekfy-dl.vivekmasona.repl.co/mp3?URL=https://youtu.be/"+id;
         //location.href= "https://vivekfy-api.vercel.app/download/audio?url=https://youtu.be/"+id;
-        location.href= "https://vivekmasona.000webhostapp.com/mp3?url=https://youtu.be/"+id;
+        location.href= "https://vivekdl.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
     };
 document.getElementById("vivekmasona").onclick = ()=>{
         location.href= "https://vivekfy-dl.vivekmasona.repl.co/4k?URL=https://youtu.be/"+id;
@@ -1339,9 +1339,9 @@ audio.addEventListener("ended", function() {
 
 // Listen for the 'error' event
 var alternativeAudioSources = [
-"https://vivekmasona.000webhostapp.com/deno?url=https://youtu.be/"+ id,
-"https://vivekfy-api.vercel.app/audio/" + id,   
-"https://vivekmasona.000webhostapp.com/play?vfy=https://youtu.be/" + id,
+"https://vivekdl.000webhostapp.com/play/deno?url=https://youtu.be/"+ id,
+"https://vivekfy.vercel.app/audio/" + id,   
+"https://vivekdl.000webhostapp.com/play/vercel?url=https://youtu.be/" + id,
 "https://vivekfy-api-v1.vercel.app/audio?url=https://youtu.be/" + id,
     
 ];
@@ -3620,13 +3620,13 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
                     var linkType = identifyLinkType(clipboardText);
                     switch (linkType) {
                         case 'instagram':
-                            window.location.href = 'https://vivekmasona.000webhostapp.com/api?url=' + encodeURIComponent(clipboardText);
+                            window.location.href = 'https://vivekdl.000webhostapp.com/api?url=' + encodeURIComponent(clipboardText);
                             break;
                         case 'facebook':
-                            window.location.href = 'https://vivekmasona.000webhostapp.com/smvid?url=' + encodeURIComponent(clipboardText);
+                            window.location.href = 'https://vivekdl.000webhostapp.com/api?url=' + encodeURIComponent(clipboardText);
                             break;
                         case 'youtube':
-                            window.location.href = 'https://vivekmasona.000webhostapp.com/api?url=' + encodeURIComponent(clipboardText);
+                            window.location.href = 'https://vivekdl.000webhostapp.com/api?url=' + encodeURIComponent(clipboardText);
                             break;
                         default:
                             alert('Unsupported link type');
