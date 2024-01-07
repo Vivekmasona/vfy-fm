@@ -2326,7 +2326,12 @@ var offlineMsg = document.getElementById("offline-message");
 
     
 
+
+
 <script>
+    // Global variable to store shared items
+    let sharedItems = [];
+
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
         var url = new URL(window.location.toString());
@@ -2358,7 +2363,7 @@ var offlineMsg = document.getElementById("offline-message");
             songContainer.innerHTML = `
                 <b onclick="loadSong(this)" class="list" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}" id="song-element">
                     <div class="video">
-                        <img src="https://i.ytimg.com/vi/${extractYouTubeVideoId(url.searchParams.get('text'))}/mqdefault.jpg" alt="Your Video Title" class="video-thumbnail" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}">
+                        <img src="https://i.ytimg.com/vi/${extractYouTubeVideoId(url.searchParams.get('text'))}/maxresdefault.jpg" alt="Your Video Title" class="video-thumbnail" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}">
                         <section>
                             <section>
                                 <div>
@@ -2369,24 +2374,17 @@ var offlineMsg = document.getElementById("offline-message");
                     </div>
                 </b>`;
 
-            // Session Storage mein save karo
-            saveToSessionStorage(url.searchParams.get('text'), url.searchParams.get('title'), extractYouTubeVideoId(url.searchParams.get('text')));
+            // Save shared item to global variable
+            saveToGlobalStorage(url.searchParams.get('text'), url.searchParams.get('title'), extractYouTubeVideoId(url.searchParams.get('text')));
         }
 
         function chhupa() {
             document.querySelector('#loadingvkm1m').style = "display:none";
         }
 
-        // Session Storage mein save karne ka function
-        function saveToSessionStorage(url, title, videoId) {
-            // Check karo ki session storage mein kya pahle se hai
-            let savedItems = JSON.parse(sessionStorage.getItem('savedItems')) || [];
-            
-            // Naya item add karo
-            savedItems.push({ url: url, title: title, videoId: videoId });
-            
-            // Session storage mein save karo
-            sessionStorage.setItem('savedItems', JSON.stringify(savedItems));
+        // Function to save shared item to global variable
+        function saveToGlobalStorage(url, title, videoId) {
+            sharedItems.push({ url: url, title: title, videoId: videoId });
         }
     });
 
