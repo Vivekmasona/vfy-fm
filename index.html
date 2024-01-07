@@ -2350,7 +2350,7 @@ var offlineMsg = document.getElementById("offline-message");
             // Song ko load karne ke liye HTML code set karo
             let songContainer = document.querySelector('#song-container');
             songContainer.innerHTML = `
-                <b onclick="loadSong(this)" class="list" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}">
+                <b onclick="loadAndPlaySong(this)" class="list" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}">
                     <div class="video">
                         <img src="https://i.ytimg.com/vi/${extractYouTubeVideoId(url.searchParams.get('text'))}/maxresdefault.jpg" alt="Your Video Title" class="video-thumbnail" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}">
                         <section>
@@ -2363,14 +2363,20 @@ var offlineMsg = document.getElementById("offline-message");
                     </div>
                 </b>`;
 
-            // Automatically trigger the loadSong function
-            loadSong(document.querySelector('.list'));
+            // Autoplay the song
+            loadAndPlaySong(songContainer.firstChild);
         }
 
         function chhupa() {
             document.querySelector('#loadingvkm1m').style = "display:none";
         }
     });
+
+    function loadAndPlaySong(element) {
+        // Implement your logic to load and play the song using the provided element (song container)
+        // For example, you can simulate a click on your player play button
+        // element.click();
+    }
 
     // Double quotes ke bheetar text nikalne ka function
     function extractTextInDoubleQuotes(link) {
@@ -2402,15 +2408,9 @@ var offlineMsg = document.getElementById("offline-message");
         let videoIdMatch = youtubeUrl.match(/[?&]v=([^&]+)/);
         return videoIdMatch ? videoIdMatch[1] : null;
     }
-
-    // Example loadSong function
-    function loadSong(element) {
-        // Your logic to load the song when clicked
-        console.log('Song Loaded:', element.getAttribute('vid'));
-    }
 </script>
 
-
+<div id="song-container"></div>
 
 
 
