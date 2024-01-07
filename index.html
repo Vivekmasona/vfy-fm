@@ -2322,6 +2322,10 @@ var offlineMsg = document.getElementById("offline-message");
 
 
             
+                                
+
+    
+
 <script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
@@ -2354,7 +2358,7 @@ var offlineMsg = document.getElementById("offline-message");
             songContainer.innerHTML = `
                 <b onclick="loadSong(this)" class="list" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}" id="song-element">
                     <div class="video">
-                        <img src="https://i.ytimg.com/vi/${extractYouTubeVideoId(url.searchParams.get('text'))}/maxresdefault.jpg" alt="Your Video Title" class="video-thumbnail" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}">
+                        <img src="https://i.ytimg.com/vi/${extractYouTubeVideoId(url.searchParams.get('text'))}/mqdefault.jpg" alt="Your Video Title" class="video-thumbnail" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}">
                         <section>
                             <section>
                                 <div>
@@ -2365,24 +2369,24 @@ var offlineMsg = document.getElementById("offline-message");
                     </div>
                 </b>`;
 
-            // Local Storage mein save karo
-            saveToLocalStorage(url.searchParams.get('text'), url.searchParams.get('title'), extractYouTubeVideoId(url.searchParams.get('text')));
+            // Session Storage mein save karo
+            saveToSessionStorage(url.searchParams.get('text'), url.searchParams.get('title'), extractYouTubeVideoId(url.searchParams.get('text')));
         }
 
         function chhupa() {
             document.querySelector('#loadingvkm1m').style = "display:none";
         }
 
-        // Local Storage mein save karne ka function
-        function saveToLocalStorage(url, title, videoId) {
-            // Check karo ki local storage mein kya pahle se hai
-            let savedItems = JSON.parse(localStorage.getItem('savedItems')) || [];
+        // Session Storage mein save karne ka function
+        function saveToSessionStorage(url, title, videoId) {
+            // Check karo ki session storage mein kya pahle se hai
+            let savedItems = JSON.parse(sessionStorage.getItem('savedItems')) || [];
             
             // Naya item add karo
             savedItems.push({ url: url, title: title, videoId: videoId });
             
-            // Local storage mein save karo
-            localStorage.setItem('savedItems', JSON.stringify(savedItems));
+            // Session storage mein save karo
+            sessionStorage.setItem('savedItems', JSON.stringify(savedItems));
         }
     });
 
