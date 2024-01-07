@@ -2362,6 +2362,9 @@ var offlineMsg = document.getElementById("offline-message");
                         </section>
                     </div>
                 </b>`;
+
+            // Automatically trigger the loadSong function
+            loadSong(document.querySelector('.list'));
         }
 
         function chhupa() {
@@ -2399,7 +2402,16 @@ var offlineMsg = document.getElementById("offline-message");
         let videoIdMatch = youtubeUrl.match(/[?&]v=([^&]+)/);
         return videoIdMatch ? videoIdMatch[1] : null;
     }
+
+    // Example loadSong function
+    function loadSong(element) {
+        // Your logic to load the song when clicked
+        console.log('Song Loaded:', element.getAttribute('vid'));
+    }
 </script>
+
+
+
 
 
 
