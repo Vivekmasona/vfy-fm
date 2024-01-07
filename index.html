@@ -2327,98 +2327,68 @@ var offlineMsg = document.getElementById("offline-message");
     
 
 
-
 <script>
-    // Global variable to store shared items
-    let sharedItems = [];
-
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
         var url = new URL(window.location.toString());
 
-        // Agar shared link mein 'preventSearch' attribute hai
+        // Agar shared link mein 'preventSearch' attribute nahi hai
         if (!url.searchParams.has('preventSearch')) {
-            // Double quotes ke bheetar text nikalo
-            let searchText = extractTextInDoubleQuotes(url.searchParams.get('text'));
+            // Video details extract karo
+            let videoId = extractYouTubeVideoId(url.searchParams.get('text'));
+            let thumbnailLink = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
+            let title = url.searchParams.get('title');
 
-            // Agar yeh ek YouTube link hai
-            if (isYouTubeLink(url.searchParams.get('text'))) {
-                searchText = extractYouTubeVideoId(url.searchParams.get('text')) || searchText;
-            }
-
-            // Agar koi text ya YouTube link nahi hai, toh search box mein original text set karo
-            if (!searchText && isUrlLink(url.searchParams.get('text'))) {
-                searchText = extractTitleFromUrl(url.searchParams.get('text')) || '';
-            }
-
-            let vUrl = document.querySelector('#share_textvkm1m');
-            vUrl.innerText = 'URL - ' + url.searchParams.get('text');
-
-            // Use 'title' parameter directly for the title
-            let vTitle = document.querySelector('#share_titlevkm1m');
-            vTitle.innerText = 'Title - ' + url.searchParams.get('title');
-
-            // Song ko load karne ke liye HTML code set karo
-            let songContainer = document.querySelector('#song-container');
-            songContainer.innerHTML = `
-                <b onclick="loadSong(this)" class="list" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}" id="song-element">
-                    <div class="video">
-                        <img src="https://i.ytimg.com/vi/${extractYouTubeVideoId(url.searchParams.get('text'))}/maxresdefault.jpg" alt="Your Video Title" class="video-thumbnail" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}">
-                        <section>
-                            <section>
-                                <div>
-                                    <p>${url.searchParams.get('title')}</p>
-                                </div>
-                            </section>
-                        </section>
-                    </div>
-                </b>`;
-
-            // Save shared item to global variable
-            saveToGlobalStorage(url.searchParams.get('text'), url.searchParams.get('title'), extractYouTubeVideoId(url.searchParams.get('text')));
+            // Save details local storage mein
+            saveToLocalStorage(videoId, thumbnailLink, title);
         }
+
+        // Saved details ko display karo
+        displaySavedDetails();
 
         function chhupa() {
             document.querySelector('#loadingvkm1m').style = "display:none";
         }
 
-        // Function to save shared item to global variable
-        function saveToGlobalStorage(url, title, videoId) {
-            sharedItems.push({ url: url, title: title, videoId: videoId });
+        // Function to save details to local storage
+        function saveToLocalStorage(videoId, thumbnailLink, title) {
+            let savedItems = JSON.parse(localStorage.getItem('savedItems')) || [];
+            savedItems.push({ videoId: videoId, thumbnailLink: thumbnailLink, title: title });
+            localStorage.setItem('savedItems', JSON.stringify(savedItems));
+        }
+
+        // Function to display saved details on the webpage
+        function displaySavedDetails() {
+            let savedItems = JSON.parse(localStorage.getItem('savedItems')) || [];
+
+            for (let i = 0; i < savedItems.length; i++) {
+                let songContainer = document.querySelector('#song-container');
+                songContainer.innerHTML += `
+                    <b class="list" vid="${savedItems[i].videoId}">
+                        <div class="video">
+                            <img src="${savedItems[i].thumbnailLink}" alt="Video Thumbnail" class="video-thumbnail" vid="${savedItems[i].videoId}">
+                            <section>
+                                <section>
+                                    <div>
+                                        <p>${savedItems[i].title}</p>
+                                    </div>
+                                </section>
+                            </section>
+                        </div>
+                    </b>`;
+            }
+        }
+
+        // Function to extract video ID from YouTube link
+        function extractYouTubeVideoId(youtubeUrl) {
+            let videoIdMatch = youtubeUrl.match(/[?&]v=([^&]+)/);
+            return videoIdMatch ? videoIdMatch[1] : null;
         }
     });
-
-    // Double quotes ke bheetar text nikalne ka function
-    function extractTextInDoubleQuotes(link) {
-        let match = link.match(/"([^"]+)"/);
-        return match ? match[1].trim() : '';
-    }
-
-    // Yeh check kare ki link YouTube link hai ya nahi
-    function isYouTubeLink(link) {
-        return link.includes('youtube.com') || link.includes('youtu.be');
-    }
-
-    // Yeh check kare ki link URL link hai ya nahi
-    function isUrlLink(link) {
-        // Link ko URL link hone ka check karne ke liye apni logic add kare
-        // Yahan, yeh bas 'http' ya 'www' se shuru hota hai, yeh check kar raha hai
-        return link.startsWith('http') || link.includes('www');
-    }
-
-    // URL link se title ya ID nikalne ka function
-    function extractTitleFromUrl(link) {
-        // Link se title ya ID nikalne ke liye apni logic add kare
-        // Yahan, yeh bas link ko return kar raha hai
-        return link;
-    }
-
-    // YouTube link se video ID nikalne ka function
-    function extractYouTubeVideoId(youtubeUrl) {
-        let videoIdMatch = youtubeUrl.match(/[?&]v=([^&]+)/);
-        return videoIdMatch ? videoIdMatch[1] : null;
-    }
 </script>
+
+
+
 
 
 
