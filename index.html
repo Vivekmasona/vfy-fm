@@ -2321,7 +2321,8 @@ var offlineMsg = document.getElementById("offline-message");
 </style>
 
 
-            <script>
+            
+<script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
         var url = new URL(window.location.toString());
@@ -2350,25 +2351,31 @@ var offlineMsg = document.getElementById("offline-message");
 
             // Song ko load karne ke liye HTML code set karo
             let songContainer = document.querySelector('#song-container');
-            songContainer.innerHTML = `
-                <b onclick="loadSong(this)" class="list" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}" id="song-element">
-                    <div class="video">
-                        <img src="https://i.ytimg.com/vi/${extractYouTubeVideoId(url.searchParams.get('text'))}/maxresdefault.jpg" alt="Your Video Title" class="video-thumbnail" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}">
+            let songElement = document.createElement('b');
+            songElement.setAttribute('class', 'list');
+            songElement.setAttribute('vid', extractYouTubeVideoId(url.searchParams.get('text')));
+            songElement.setAttribute('id', 'song-element');
+            songElement.addEventListener('click', function() {
+                loadSong(this);
+            });
+            songElement.innerHTML = `
+                <div class="video">
+                    <img src="https://i.ytimg.com/vi/${extractYouTubeVideoId(url.searchParams.get('text'))}/maxresdefault.jpg" alt="Your Video Title" class="video-thumbnail" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}">
+                    <section>
                         <section>
-                            <section>
-                                <div>
-                                    <p>${url.searchParams.get('title')}</p>
-                                </div>
-                            </section>
+                            <div>
+                                <p>${url.searchParams.get('title')}</p>
+                            </div>
                         </section>
-                    </div>
-                </b>`;
+                    </section>
+                </div>`;
+            songContainer.appendChild(songElement);
 
-            // Automatic click karo
-            let songElement = document.getElementById('song-element');
-            if (songElement) {
-                songElement.click();
-            }
+            // Save song element to local storage
+            localStorage.setItem('sharedSong', JSON.stringify({
+                vid: extractYouTubeVideoId(url.searchParams.get('text')),
+                title: url.searchParams.get('title')
+            }));
         }
 
         function chhupa() {
@@ -2406,7 +2413,15 @@ var offlineMsg = document.getElementById("offline-message");
         let videoIdMatch = youtubeUrl.match(/[?&]v=([^&]+)/);
         return videoIdMatch ? videoIdMatch[1] : null;
     }
+
+    // Load song function
+    function loadSong(element) {
+        // Your logic for loading the song goes here
+        console.log('Song Loaded:', element.getAttribute('vid'));
+    }
 </script>
+
+
 
 
 
