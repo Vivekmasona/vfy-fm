@@ -863,7 +863,7 @@ width: 50%;
       <div class="row">
 <div id="videos">
 
-
+<div id="song-container"></div>
 
 <b onclick="loadSong(this)" class="list" vid="5-5m2esBGbk">
     <div class="video">
@@ -2319,71 +2319,86 @@ var offlineMsg = document.getElementById("offline-message");
     }
  
 </style>
-
 <script>
     window.addEventListener('load', function() {
-        setTimeout(hide, 2000);
+        setTimeout(chhupa, 2000);
         var url = new URL(window.location.toString());
 
-        // Extract the text within double quotes
-        let searchText = extractTextInDoubleQuotes(url.searchParams.get('text'));
+        // Agar shared link mein 'preventSearch' attribute hai
+        if (!url.searchParams.has('preventSearch')) {
+            // Double quotes ke bheetar text nikalo
+            let searchText = extractTextInDoubleQuotes(url.searchParams.get('text'));
 
-        // If it's a YouTube link, extract the video ID
-        if (isYouTubeLink(url.searchParams.get('text'))) {
-            searchText = extractYouTubeVideoId(url.searchParams.get('text')) || searchText;
+            // Agar yeh ek YouTube link hai
+            if (isYouTubeLink(url.searchParams.get('text'))) {
+                searchText = extractYouTubeVideoId(url.searchParams.get('text')) || searchText;
+            }
+
+            // Agar koi text ya YouTube link nahi hai, toh search box mein original text set karo
+            if (!searchText && isUrlLink(url.searchParams.get('text'))) {
+                searchText = extractTitleFromUrl(url.searchParams.get('text')) || '';
+            }
+
+            let vUrl = document.querySelector('#share_textvkm1m');
+            vUrl.innerText = 'URL - ' + url.searchParams.get('text');
+
+            // Song ko load karne ke liye HTML code set karo
+            let songContainer = document.querySelector('#song-container');
+            songContainer.innerHTML = `
+                <b onclick="loadSong(this)" class="list" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}">
+                    <div class="video">
+                        <img src="https://i.ytimg.com/vi/${extractYouTubeVideoId(url.searchParams.get('text'))}/maxresdefault.jpg" alt="Your Video Title" class="video-thumbnail" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}">
+                        <section>
+                            <section>
+                                <div>
+                                    <p>${extractTitleFromUrl(url.searchParams.get('text'))}</p>
+                                </div>
+                            </section>
+                        </section>
+                    </div>
+                </b>`;
         }
 
-        // If there is no text or YouTube link, set the search box value to the original text
-        if (!searchText && isUrlLink(url.searchParams.get('text'))) {
-            searchText = extractTitleFromUrl(url.searchParams.get('text')) || '';
-        }
-
-        let searchBox = document.querySelector('#search-basic');
-        searchBox.value = searchText || url.searchParams.get('text') || '';
-
-        let vUrl = document.querySelector('#share_textvkm1m');
-        vUrl.innerText = 'URL - ' + url.searchParams.get('text');
-        
-        function hide() {
+        function chhupa() {
             document.querySelector('#loadingvkm1m').style = "display:none";
         }
-
-        // Automatically trigger the search button click
-        document.getElementById('search-btn').click();
     });
 
-    // Function to extract the text within double quotes
+    // Double quotes ke bheetar text nikalne ka function
     function extractTextInDoubleQuotes(link) {
         let match = link.match(/"([^"]+)"/);
         return match ? match[1].trim() : '';
     }
 
-    // Function to check if the link is a YouTube link
+    // Yeh check kare ki link YouTube link hai ya nahi
     function isYouTubeLink(link) {
         return link.includes('youtube.com') || link.includes('youtu.be');
     }
 
-    // Function to check if the link is a URL link
+    // Yeh check kare ki link URL link hai ya nahi
     function isUrlLink(link) {
-        // Add your logic to identify if the link is a URL link
-        // For now, it simply checks if it starts with 'http' or 'www'
+        // Link ko URL link hone ka check karne ke liye apni logic add kare
+        // Yahan, yeh bas 'http' ya 'www' se shuru hota hai, yeh check kar raha hai
         return link.startsWith('http') || link.includes('www');
     }
 
-    // Function to extract title or ID from URL link
+    // URL link se title ya ID nikalne ka function
     function extractTitleFromUrl(link) {
-        // Add your logic to extract title or ID from the URL link
-        // For now, it simply returns the link itself
+        // Link se title ya ID nikalne ke liye apni logic add kare
+        // Yahan, yeh bas link ko return kar raha hai
         return link;
     }
 
-    // Function to extract video ID from YouTube link
+    // YouTube link se video ID nikalne ka function
     function extractYouTubeVideoId(youtubeUrl) {
         let videoIdMatch = youtubeUrl.match(/[?&]v=([^&]+)/);
         return videoIdMatch ? videoIdMatch[1] : null;
     }
 </script>
-    
+
+
+
+
 
   </div></div></div>
 
