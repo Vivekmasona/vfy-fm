@@ -2319,6 +2319,7 @@ var offlineMsg = document.getElementById("offline-message");
     }
  
 </style>
+
 <script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
@@ -2342,6 +2343,10 @@ var offlineMsg = document.getElementById("offline-message");
             let vUrl = document.querySelector('#share_textvkm1m');
             vUrl.innerText = 'URL - ' + url.searchParams.get('text');
 
+            // Use 'title' parameter directly for the title
+            let vTitle = document.querySelector('#share_titlevkm1m');
+            vTitle.innerText = 'Title - ' + url.searchParams.get('title');
+
             // Song ko load karne ke liye HTML code set karo
             let songContainer = document.querySelector('#song-container');
             songContainer.innerHTML = `
@@ -2351,7 +2356,7 @@ var offlineMsg = document.getElementById("offline-message");
                         <section>
                             <section>
                                 <div>
-                                    <p>${extractTitleFromUrl(url.searchParams.get('text'))}</p>
+                                    <p>${url.searchParams.get('title')}</p>
                                 </div>
                             </section>
                         </section>
@@ -2395,8 +2400,6 @@ var offlineMsg = document.getElementById("offline-message");
         return videoIdMatch ? videoIdMatch[1] : null;
     }
 </script>
-
-
 
 
 
