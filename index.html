@@ -2328,46 +2328,45 @@ var offlineMsg = document.getElementById("offline-message");
 
         // Agar shared link mein 'preventSearch' attribute hai
         if (!url.searchParams.has('preventSearch')) {
-            // Double quotes ke bheetar text nikalo
-            let searchText = extractTextInDoubleQuotes(url.searchParams.get('text'));
-
             // Agar yeh ek YouTube link hai
             if (isYouTubeLink(url.searchParams.get('text'))) {
-                searchText = extractYouTubeVideoId(url.searchParams.get('text')) || searchText;
-            }
+                let vUrl = document.querySelector('#share_textvkm1m');
+                vUrl.innerText = 'URL - ' + url.searchParams.get('text');
 
-            // Agar koi text ya YouTube link nahi hai, toh search box mein original text set karo
-            if (!searchText && isUrlLink(url.searchParams.get('text'))) {
-                searchText = extractTitleFromUrl(url.searchParams.get('text')) || '';
-            }
+                // Use 'title' parameter directly for the title
+                let vTitle = document.querySelector('#share_titlevkm1m');
+                vTitle.innerText = 'Title - ' + url.searchParams.get('title');
 
-            let vUrl = document.querySelector('#share_textvkm1m');
-            vUrl.innerText = 'URL - ' + url.searchParams.get('text');
-
-            // Use 'title' parameter directly for the title
-            let vTitle = document.querySelector('#share_titlevkm1m');
-            vTitle.innerText = 'Title - ' + url.searchParams.get('title');
-
-            // Song ko load karne ke liye HTML code set karo
-            let songContainer = document.querySelector('#song-container');
-            songContainer.innerHTML = `
-                <b onclick="loadSong(this)" class="list" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}" id="song-element">
-                    <div class="video">
-                        <img src="https://i.ytimg.com/vi/${extractYouTubeVideoId(url.searchParams.get('text'))}/mqdefault.jpg" alt="Your Video Title" class="video-thumbnail" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}">
-                        <section>
+                // Song ko load karne ke liye HTML code set karo
+                let songContainer = document.querySelector('#song-container');
+                songContainer.innerHTML = `
+                    <b onclick="loadSong(this)" class="list" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}" id="song-element">
+                        <div class="video">
+                            <img src="https://i.ytimg.com/vi/${extractYouTubeVideoId(url.searchParams.get('text'))}/maxresdefault.jpg" alt="Your Video Title" class="video-thumbnail" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}">
                             <section>
-                                <div>
-                                    <p>${url.searchParams.get('title')}</p>
-                                </div>
+                                <section>
+                                    <div>
+                                        <p>${url.searchParams.get('title')}</p>
+                                    </div>
+                                </section>
                             </section>
-                        </section>
-                    </div>
-                </b>`;
+                        </div>
+                    </b>`;
 
-            // Automatic click karo
-            let songElement = document.getElementById('song-element');
-            if (songElement) {
-                songElement.click();
+                // Automatic click karo
+                let songElement = document.getElementById('song-element');
+                if (songElement) {
+                    songElement.click();
+                }
+            } else {
+                // Agar koi text ya YouTube link nahi hai, toh search box mein original text set karo
+                let searchText = extractTextInDoubleQuotes(url.searchParams.get('text')) || url.searchParams.get('text');
+
+                let searchBox = document.querySelector('#search-basic');
+                searchBox.value = searchText;
+
+                // Search button click ko khud se trigger karo
+                document.getElementById('search-btn').click();
             }
         }
 
@@ -2407,6 +2406,9 @@ var offlineMsg = document.getElementById("offline-message");
         return videoIdMatch ? videoIdMatch[1] : null;
     }
 </script>
+
+
+
 
 
 
