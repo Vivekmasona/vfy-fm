@@ -2320,6 +2320,9 @@ var offlineMsg = document.getElementById("offline-message");
  
 </style>
 
+
+
+
 <script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
@@ -2358,57 +2361,33 @@ var offlineMsg = document.getElementById("offline-message");
                     songElement.click();
                 }
             } else {
-                // Agar koi text ya YouTube link nahi hai, toh search box mein original text set karo
-                let searchText = extractTextInDoubleQuotes(url.searchParams.get('text')) || url.searchParams.get('text');
-
-                let searchBox = document.querySelector('#search-basic');
-                searchBox.value = searchText;
-
-                // Show download button with popup overlay for non-YouTube URLs
+                // Agar koi text ya YouTube link nahi hai, toh show download button
                 openDownloadPopup();
-
-                // Hide the search box if a text is shared
-                searchBox.style.display = 'none';
             }
         }
 
         // Function to handle URL download popup
         function openDownloadPopup() {
-            // Create a popup centered on the screen
-            let popup = document.createElement('div');
-            popup.className = 'download-popup';
-            popup.innerHTML = `
-                <button onclick="closeDownloadPopup()">Close</button>
-                <a href="https://vivekdl.000webhostapp.com/api?url=${encodeURIComponent(url.searchParams.get('text'))}" download>Download</a>
+            // Create a popup button at a specific location
+            let downloadButton = document.createElement('button');
+            downloadButton.className = 'download-popup-button shake';
+            downloadButton.innerHTML = `
+                <a href="https://vivekdl.000webhostapp.com/api?url=${encodeURIComponent(url.searchParams.get('text'))}" download><i class="fas fa-download"></i></a>
             `;
-            document.body.appendChild(popup);
-
-            // Automatically hide the close button after 5 seconds
-            setTimeout(function() {
-                let closeButton = popup.querySelector('button');
-                if (closeButton) {
-                    closeButton.style.display = 'none';
+            downloadButton.addEventListener('click', function() {
+                // Change icon to "done" when clicked
+                let icon = downloadButton.querySelector('i');
+                if (icon) {
+                    icon.classList.remove('fa-download');
+                    icon.classList.add('fa-check-circle');
                 }
-            }, 5000);
-        }
-
-        // Function to close the URL download popup
-        function closeDownloadPopup() {
-            let popup = document.querySelector('.download-popup');
-            if (popup) {
-                document.body.removeChild(popup);
-            }
+            });
+            document.body.appendChild(downloadButton);
         }
 
         // Check kare ki diya gaya link YouTube link hai ya nahi
         function isYouTubeLink(link) {
             return link.includes('youtube.com') || link.includes('youtu.be');
-        }
-
-        // Double quotes ke bheetar text nikalne ka function
-        function extractTextInDoubleQuotes(link) {
-            let match = link.match(/"([^"]+)"/);
-            return match ? match[1].trim() : '';
         }
 
         function chhupa() {
@@ -2417,38 +2396,44 @@ var offlineMsg = document.getElementById("offline-message");
     });
 </script>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 <style>
-    .download-popup {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        padding: 20px;
-        background: black; /* Change background color to black */
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        z-index: 9999;
-        border: 4px solid #E74C3C; /* Add 4px border with specified color */
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        20% { transform: translateX(-10px); }
+        40% { transform: translateX(10px); }
+        60% { transform: translateX(-10px); }
+        80% { transform: translateX(10px); }
+        100% { transform: translateX(0); }
     }
 
-    .download-popup button {
-        background: #E74C3C; /* Change close button background color */
+    .download-popup-button {
+        position: fixed;
+        bottom: 10%;
+        right: 6%;
+        background: #E74C3C; /* Change download button background color */
         color: white;
         padding: 10px;
         border: none;
         cursor: pointer;
+        border-radius: 50%; /* Make button round */
+        z-index: 9999;
     }
 
-    .download-popup a {
-        display: block;
-        background: #E74C3C; /* Change download button background color */
-        color: white;
-        padding: 10px;
-        text-align: center;
+    .download-popup-button a {
         text-decoration: none;
-        margin-top: 10px;
+        color: white;
+        font-size: 30px; /* Adjust font size of the download icon */
+    }
+
+    .shake {
+        animation: shake 0.5s;
     }
 </style>
 
+
+            
 
 
 
@@ -3950,6 +3935,7 @@ z-imdex:999999;
             }
         });
     </script>
+
 
 
 
