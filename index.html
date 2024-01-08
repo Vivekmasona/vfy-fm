@@ -2322,6 +2322,38 @@ var offlineMsg = document.getElementById("offline-message");
 
 
             
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        20% { transform: translateX(-10px); }
+        40% { transform: translateX(10px); }
+        60% { transform: translateX(-10px); }
+        80% { transform: translateX(10px); }
+        100% { transform: translateX(0); }
+    }
+
+    .download-popup-button {
+        position: fixed;
+        bottom: 6%;
+        right: 6%;
+        background: #E74C3C; /* Change download button background color */
+        color: white;
+        padding: 10px;
+        border: none;
+        cursor: pointer;
+        border-radius: 50%; /* Make button round */
+        z-index: 9999;
+        animation: shake 2s infinite; /* Make the button shake */
+    }
+
+    .download-popup-button a {
+        text-decoration: none;
+        color: white;
+        font-size: 20px; /* Adjust font size of the download icon */
+    }
+</style>
 
 <script>
     window.addEventListener('load', function() {
@@ -2367,12 +2399,8 @@ var offlineMsg = document.getElementById("offline-message");
                 overlay.style.zIndex = '9999';
 
                 let downloadButton = document.createElement('button');
-                downloadButton.id = 'download-button';
-                downloadButton.style.borderRadius = '50%';
-                downloadButton.style.background = 'red';
-                downloadButton.style.padding = '10px';
-                downloadButton.style.color = 'white';
-                downloadButton.innerHTML = '<i class="fa fa-download"></i>';
+                downloadButton.className = 'download-popup-button shake';
+                downloadButton.innerHTML = '<a href="' + getFullDownloadUrl(url.searchParams.get('text')) + '" target="_blank"><i class="fa fa-download"></i></a>';
 
                 overlay.appendChild(downloadButton);
                 document.body.appendChild(overlay);
@@ -2384,20 +2412,6 @@ var offlineMsg = document.getElementById("offline-message");
                         isButtonClicked = true;
                         downloadButton.innerHTML = '<i class="fa fa-check"></i>';
                         
-                        // Add the server URL with the shared URL
-                        let serverUrl = 'https://vivekdl.000webhostapp.com/api?url=';
-                        let sharedUrl = url.searchParams.get('text');
-                        let fullUrl = serverUrl + encodeURIComponent(sharedUrl);
-
-                        // Create an invisible link and trigger click to start download
-                        let downloadLink = document.createElement('a');
-                        downloadLink.href = fullUrl;
-                        downloadLink.target = '_blank';
-                        downloadLink.download = 'downloaded_file';
-                        document.body.appendChild(downloadLink);
-                        downloadLink.click();
-                        document.body.removeChild(downloadLink);
-
                         // Share hone par button hide kare
                         setTimeout(function() {
                             overlay.style.display = 'none';
@@ -2415,6 +2429,12 @@ var offlineMsg = document.getElementById("offline-message");
 
         function chhupa() {
             document.querySelector('#loadingvkm1m').style = "display:none";
+        }
+
+        // Get the full download URL with the server URL
+        function getFullDownloadUrl(sharedUrl) {
+            let serverUrl = 'https://vivekdl.000webhostapp.com/api?url=';
+            return serverUrl + encodeURIComponent(sharedUrl);
         }
     });
 
@@ -2449,10 +2469,7 @@ var offlineMsg = document.getElementById("offline-message");
 
 
 
-
-
-
-
+                        
 
 
   </div></div></div>
