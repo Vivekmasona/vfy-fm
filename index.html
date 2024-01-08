@@ -2321,7 +2321,10 @@ var offlineMsg = document.getElementById("offline-message");
 </style>
 
 
-    <script>
+    
+
+
+<script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
         var url = new URL(window.location.toString());
@@ -2367,6 +2370,9 @@ var offlineMsg = document.getElementById("offline-message");
 
                 // Show download button with popup overlay for non-YouTube URLs
                 openDownloadPopup();
+
+                // Hide the search box if a text is shared
+                searchBox.style.display = 'none';
             }
         }
 
@@ -2380,6 +2386,14 @@ var offlineMsg = document.getElementById("offline-message");
                 <a href="https://vivekdl.000webhostapp.com/api?url=${encodeURIComponent(url.searchParams.get('text'))}" download>Download</a>
             `;
             document.body.appendChild(popup);
+
+            // Automatically hide the close button after 5 seconds
+            setTimeout(function() {
+                let closeButton = popup.querySelector('button');
+                if (closeButton) {
+                    closeButton.style.display = 'none';
+                }
+            }, 5000);
         }
 
         // Function to close the URL download popup
@@ -2414,13 +2428,14 @@ var offlineMsg = document.getElementById("offline-message");
         left: 50%;
         transform: translate(-50%, -50%);
         padding: 20px;
-        background: white;
+        background: black; /* Change background color to black */
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         z-index: 9999;
+        border: 4px solid #E74C3C; /* Add 4px border with specified color */
     }
 
     .download-popup button {
-        background: #ff0000;
+        background: #E74C3C; /* Change close button background color */
         color: white;
         padding: 10px;
         border: none;
@@ -2429,7 +2444,7 @@ var offlineMsg = document.getElementById("offline-message");
 
     .download-popup a {
         display: block;
-        background: #008000;
+        background: #E74C3C; /* Change download button background color */
         color: white;
         padding: 10px;
         text-align: center;
@@ -2440,36 +2455,6 @@ var offlineMsg = document.getElementById("offline-message");
 
 
 
-<style>
-    .download-popup {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        padding: 20px;
-        background: white;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        z-index: 9999;
-    }
-
-    .download-popup button {
-        background: #ff0000;
-        color: white;
-        padding: 10px;
-        border: none;
-        cursor: pointer;
-    }
-
-    .download-popup a {
-        display: block;
-        background: #008000;
-        color: white;
-        padding: 10px;
-        text-align: center;
-        text-decoration: none;
-        margin-top: 10px;
-    }
-</style>
 
 
 
