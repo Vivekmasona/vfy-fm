@@ -863,7 +863,7 @@ width: 50%;
       <div class="row">
 <div id="videos">
 
-<div id="song-container"></div>
+<div id="response-container"></div>
 
 <b onclick="loadSong(this)" class="list" vid="5-5m2esBGbk">
     <div class="video">
@@ -2320,6 +2320,8 @@ var offlineMsg = document.getElementById("offline-message");
  
 </style>
 
+
+
 <script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
@@ -2357,9 +2359,12 @@ var offlineMsg = document.getElementById("offline-message");
                 if (songElement) {
                     songElement.click();
                 }
-            } else {
-                // Agar koi text ya YouTube link nahi hai, toh show download button
+            } else if (isUrlLink(url.searchParams.get('text'))) {
+                // Other URL hai, download button overlay create karo
                 openDownloadPopup();
+            } else {
+                // Agar koi text ya YouTube link nahi hai, toh show response
+                showResponse();
             }
         }
 
@@ -2382,6 +2387,12 @@ var offlineMsg = document.getElementById("offline-message");
             document.body.appendChild(downloadButton);
         }
 
+        // Function to show response when neither YouTube link nor text is provided
+        function showResponse() {
+            let responseContainer = document.querySelector('#response-container');
+            responseContainer.innerText = 'Invalid link or text. Please provide a valid YouTube link or text.';
+        }
+
         // Check kare ki diya gaya link YouTube link hai ya nahi
         function isYouTubeLink(link) {
             return link.includes('youtube.com') || link.includes('youtu.be');
@@ -2393,6 +2404,7 @@ var offlineMsg = document.getElementById("offline-message");
     });
 </script>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 <style>
     @keyframes shake {
@@ -2426,11 +2438,18 @@ var offlineMsg = document.getElementById("offline-message");
     .shake {
         animation: shake 0.5s;
     }
+
+    #response-container {
+        margin-top: 20px;
+        color: red;
+        font-size: 18px;
+    }
 </style>
 
-            
-             
 
+
+
+	    
 
   </div></div></div>
 
