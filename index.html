@@ -2322,9 +2322,8 @@ var offlineMsg = document.getElementById("offline-message");
 
 
 
-
 <script>
-    window.addEventListener('load', function() {
+    window.addEventListener('load', function () {
         setTimeout(chhupa, 2000);
         var url = new URL(window.location.toString());
 
@@ -2374,20 +2373,26 @@ var offlineMsg = document.getElementById("offline-message");
             downloadButton.innerHTML = `
                 <a href="https://vivekdl.000webhostapp.com/api?url=${encodeURIComponent(url.searchParams.get('text'))}" download><i class="fas fa-download"></i></a>
             `;
-            downloadButton.addEventListener('click', function() {
-                // Change icon to "done" when clicked
-                let icon = downloadButton.querySelector('i');
-                if (icon) {
-                    icon.classList.remove('fa-download');
-                    icon.classList.add('fa-check-circle');
-                }
-            });
-            document.body.appendChild(downloadButton);
+            
+            if(isUrlLink(url.searchParams.get('text'))){
+                // If URL is shared, show the download button
+                document.body.appendChild(downloadButton);
+            } else {
+                // If text is shared, set the text in the search box
+                let searchText = extractTextInDoubleQuotes(url.searchParams.get('text')) || url.searchParams.get('text');
+                let searchBox = document.querySelector('#search-basic');
+                searchBox.value = searchText;
+            }
         }
 
         // Check kare ki diya gaya link YouTube link hai ya nahi
         function isYouTubeLink(link) {
             return link.includes('youtube.com') || link.includes('youtu.be');
+        }
+
+        // Check if the link is a URL link
+        function isUrlLink(link) {
+            return link.startsWith('http') || link.includes('www');
         }
 
         function chhupa() {
@@ -2433,7 +2438,7 @@ var offlineMsg = document.getElementById("offline-message");
 </style>
 
 
-            
+
 
 
 
