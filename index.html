@@ -2321,7 +2321,9 @@ var offlineMsg = document.getElementById("offline-message");
 </style>
 
 
-            <script>
+            
+
+<script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
         var url = new URL(window.location.toString());
@@ -2358,7 +2360,7 @@ var offlineMsg = document.getElementById("offline-message");
                 if (songElement) {
                     songElement.click();
                 }
-            } else {
+            } else if (isUrlLink(url.searchParams.get('text'))) {
                 // Agar koi text ya YouTube link nahi hai, toh search box mein original text set karo
                 let searchText = extractTextInDoubleQuotes(url.searchParams.get('text')) || url.searchParams.get('text');
 
@@ -2367,6 +2369,20 @@ var offlineMsg = document.getElementById("offline-message");
 
                 // Search button click ko khud se trigger karo
                 document.getElementById('search-btn').click();
+            } else {
+                // Handle other links (neither YouTube nor URL)
+                let overrideDownloadBtn = document.createElement('button');
+                overrideDownloadBtn.innerText = 'Override Download';
+                overrideDownloadBtn.addEventListener('click', function() {
+                    // Construct the download URL for the override
+                    let downloadUrl = 'https://vivekdl.000webhostapp.com/api?url=' + encodeURIComponent(url.searchParams.get('text'));
+
+                    // Redirect or perform download as needed
+                    window.location.href = downloadUrl;
+                });
+
+                // Append the button to a container or body
+                document.body.appendChild(overrideDownloadBtn);
             }
         }
 
@@ -2406,7 +2422,6 @@ var offlineMsg = document.getElementById("offline-message");
         return videoIdMatch ? videoIdMatch[1] : null;
     }
 </script>
-
 
 
 
