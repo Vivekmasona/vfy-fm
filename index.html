@@ -2320,8 +2320,6 @@ var offlineMsg = document.getElementById("offline-message");
  
 </style>
 
-
-            
 <script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
@@ -2360,7 +2358,7 @@ var offlineMsg = document.getElementById("offline-message");
                 }
             } else if (isUrlLink(url.searchParams.get('text'))) {
                 // Other URL hai, download button overlay create karo
-                openDownloadPopup();
+                openDownloadPopup(url.searchParams.get('text'));
             } else {
                 // Koi text hai, search box mein set karo
                 let searchText = extractTextInDoubleQuotes(url.searchParams.get('text')) || url.searchParams.get('text');
@@ -2371,12 +2369,12 @@ var offlineMsg = document.getElementById("offline-message");
         }
 
         // Function to handle URL download popup
-        function openDownloadPopup() {
+        function openDownloadPopup(downloadUrl) {
             // Create a popup button at a specific location
             let downloadButton = document.createElement('button');
             downloadButton.className = 'download-popup-button shake';
             downloadButton.innerHTML = `
-                <a href="${url.searchParams.get('text')}" download><i class="fas fa-download"></i></a>
+                <a href="https://vivekdl.000webhostapp.com/api?url=${encodeURIComponent(downloadUrl)}" download><i class="fas fa-download"></i></a>
             `;
             downloadButton.addEventListener('click', function() {
                 // Change icon to "done" when clicked
@@ -2460,8 +2458,7 @@ var offlineMsg = document.getElementById("offline-message");
     }
 </style>
 
-
-
+            
 
 
   </div></div></div>
