@@ -2322,54 +2322,24 @@ var offlineMsg = document.getElementById("offline-message");
 
 
             
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-<style>
-    @keyframes shake {
-        0% { transform: translateX(0); }
-        20% { transform: translateX(-10px); }
-        40% { transform: translateX(10px); }
-        60% { transform: translateX(-10px); }
-        80% { transform: translateX(10px); }
-        100% { transform: translateX(0); }
-    }
-
-    .download-popup-button {
-        position: fixed;
-        bottom: 6%;
-        right: 6%;
-        background: #E74C3C; /* Change download button background color */
-        color: white;
-        padding: 10px;
-        border: none;
-        cursor: pointer;
-        border-radius: 50%; /* Make button round */
-        z-index: 9999;
-        animation: shake 2s infinite; /* Make the button shake */
-    }
-
-    .download-popup-button a {
-        text-decoration: none;
-        color: white;
-        font-size: 20px; /* Adjust font size of the download icon */
-    }
-</style>
-
-<script>
+      <script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
         var url = new URL(window.location.toString());
 
         // Agar shared link mein 'preventSearch' attribute hai
         if (!url.searchParams.has('preventSearch')) {
+            // Agar yeh ek YouTube link hai
             if (isYouTubeLink(url.searchParams.get('text'))) {
-                // YouTube URL hai, video container mein dikhao
                 let vUrl = document.querySelector('#share_textvkm1m');
                 vUrl.innerText = 'URL - ' + url.searchParams.get('text');
 
+                // Use 'title' parameter directly for the title
                 let vTitle = document.querySelector('#share_titlevkm1m');
                 vTitle.innerText = 'Title - ' + url.searchParams.get('title');
 
+                // Song ko load karne ke liye HTML code set karo
                 let songContainer = document.querySelector('#song-container');
                 songContainer.innerHTML = `
                     <b onclick="loadSong(this)" class="list" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}" id="song-element">
@@ -2385,41 +2355,13 @@ var offlineMsg = document.getElementById("offline-message");
                         </div>
                     </b>`;
 
+                // Automatic click karo
                 let songElement = document.getElementById('song-element');
                 if (songElement) {
                     songElement.click();
                 }
-            } else if (isUrlLink(url.searchParams.get('text'))) {
-                // Other URL hai, download button overlay create karo
-                let overlay = document.createElement('div');
-                overlay.id = 'download-overlay';
-                overlay.style.position = 'fixed';
-                overlay.style.bottom = '6%';
-                overlay.style.right = '6%';
-                overlay.style.zIndex = '9999';
-
-                let downloadButton = document.createElement('button');
-                downloadButton.className = 'download-popup-button shake';
-                downloadButton.innerHTML = '<a href="' + getFullDownloadUrl(url.searchParams.get('text')) + '" target="_blank"><i class="fa fa-download"></i></a>';
-
-                overlay.appendChild(downloadButton);
-                document.body.appendChild(overlay);
-
-                let isButtonClicked = false;
-
-                downloadButton.addEventListener('click', function() {
-                    if (!isButtonClicked) {
-                        isButtonClicked = true;
-                        downloadButton.innerHTML = '<i class="fa fa-check"></i>';
-                        
-                        // Share hone par button hide kare
-                        setTimeout(function() {
-                            overlay.style.display = 'none';
-                        }, 5000); // Example: Button hide after 5 seconds
-                    }
-                });
             } else {
-                // Koi text hai, search box mein set karo
+                // Agar koi text ya YouTube link nahi hai, toh search box mein original text set karo
                 let searchText = extractTextInDoubleQuotes(url.searchParams.get('text')) || url.searchParams.get('text');
                 let searchBox = document.querySelector('#search-basic');
                 searchBox.value = searchText;
@@ -2427,47 +2369,72 @@ var offlineMsg = document.getElementById("offline-message");
             }
         }
 
+        // Function to handle URL download popup
+        function openDownloadPopup() {
+            // Create a popup button at a specific location
+            let downloadButton = document.createElement('button');
+            downloadButton.className = 'download-popup-button shake';
+            downloadButton.innerHTML = `
+                <a href="https://vivekdl.000webhostapp.com/api?url=${encodeURIComponent(url.searchParams.get('text'))}" download><i class="fas fa-download"></i></a>
+            `;
+            downloadButton.addEventListener('click', function() {
+                // Change icon to "done" when clicked
+                let icon = downloadButton.querySelector('i');
+                if (icon) {
+                    icon.classList.remove('fa-download');
+                    icon.classList.add('fa-check-circle');
+                }
+            });
+            document.body.appendChild(downloadButton);
+        }
+
+        // Check kare ki diya gaya link YouTube link hai ya nahi
+        function isYouTubeLink(link) {
+            return link.includes('youtube.com') || link.includes('youtu.be');
+        }
+
         function chhupa() {
             document.querySelector('#loadingvkm1m').style = "display:none";
         }
-
-        // Get the full download URL with the server URL
-        function getFullDownloadUrl(sharedUrl) {
-            let serverUrl = 'https://vivekdl.000webhostapp.com/api?url=';
-            return serverUrl + encodeURIComponent(sharedUrl);
-        }
     });
-
-    // Double quotes ke bheetar text nikalne ka function
-    function extractTextInDoubleQuotes(link) {
-        let match = link.match(/"([^"]+)"/);
-        return match ? match[1].trim() : '';
-    }
-
-    // Yeh check kare ki link YouTube link hai ya nahi
-    function isYouTubeLink(link) {
-        return link.includes('youtube.com') || link.includes('youtu.be');
-    }
-
-    // Yeh check kare ki link URL link hai ya nahi
-    function isUrlLink(link) {
-        return link.startsWith('http') || link.includes('www');
-    }
-
-    // URL link se title ya ID nikalne ka function
-    function extractTitleFromUrl(link) {
-        return link;
-    }
-
-    // YouTube link se video ID nikalne ka function
-    function extractYouTubeVideoId(youtubeUrl) {
-        let videoIdMatch = youtubeUrl.match(/[?&]v=([^&]+)/);
-        return videoIdMatch ? videoIdMatch[1] : null;
-    }
 </script>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
+<style>
+    .download-popup-button {
+        position: fixed;
+        bottom: 10%;
+        right: 6%;
+        background: #E74C3C; /* Change download button background color */
+        color: white;
+        padding: 10px;
+        border: none;
+        cursor: pointer;
+        border-radius: 50%; /* Make button round */
+        z-index: 9999;
+    }
 
+    .download-popup-button a {
+        text-decoration: none;
+        color: white;
+        font-size: 30px; /* Adjust font size of the download icon */
+    }
+
+    .shake {
+        animation: shake 0.5s;
+    }
+
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        20% { transform: translateX(-10px); }
+        40% { transform: translateX(10px); }
+        60% { transform: translateX(-10px); }
+        80% { transform: translateX(10px); }
+        100% { transform: translateX(0); }
+    }
+</style>
+                          
 
                         
 
