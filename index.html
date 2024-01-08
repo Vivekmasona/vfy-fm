@@ -2323,8 +2323,6 @@ var offlineMsg = document.getElementById("offline-message");
 
     
 
-                
-
 <script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
@@ -2363,13 +2361,7 @@ var offlineMsg = document.getElementById("offline-message");
                     songElement.click();
                 }
             } else {
-                // Agar koi text ya YouTube link nahi hai, toh search box mein original text set karo
-                let searchText = extractTextInDoubleQuotes(url.searchParams.get('text')) || url.searchParams.get('text');
-
-                let searchBox = document.querySelector('#search-basic');
-                searchBox.value = searchText;
-
-                // Show download button with popup overlay for non-YouTube URLs
+                // Agar koi text ya YouTube link nahi hai, toh show download button
                 openDownloadPopup();
             }
         }
@@ -2390,12 +2382,6 @@ var offlineMsg = document.getElementById("offline-message");
             return link.includes('youtube.com') || link.includes('youtu.be');
         }
 
-        // Double quotes ke bheetar text nikalne ka function
-        function extractTextInDoubleQuotes(link) {
-            let match = link.match(/"([^"]+)"/);
-            return match ? match[1].trim() : '';
-        }
-
         function chhupa() {
             document.querySelector('#loadingvkm1m').style = "display:none";
         }
@@ -2405,7 +2391,7 @@ var offlineMsg = document.getElementById("offline-message");
 <style>
     .download-popup-button {
         position: fixed;
-        top: 20%;
+        bottom: 20%;
         right: 20%;
         background: #E74C3C; /* Change download button background color */
         color: white;
@@ -2421,6 +2407,8 @@ var offlineMsg = document.getElementById("offline-message");
     }
 </style>
 
+
+                
 
 
 
