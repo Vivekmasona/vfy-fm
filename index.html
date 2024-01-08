@@ -2323,7 +2323,8 @@ var offlineMsg = document.getElementById("offline-message");
 
 
 
-<script>
+
+   <script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
         var url = new URL(window.location.toString());
@@ -2332,13 +2333,6 @@ var offlineMsg = document.getElementById("offline-message");
         if (!url.searchParams.has('preventSearch')) {
             // Agar yeh ek YouTube link hai
             if (isYouTubeLink(url.searchParams.get('text'))) {
-                let vUrl = document.querySelector('#share_textvkm1m');
-                vUrl.innerText = 'URL - ' + url.searchParams.get('text');
-
-                // Use 'title' parameter directly for the title
-                let vTitle = document.querySelector('#share_titlevkm1m');
-                vTitle.innerText = 'Title - ' + url.searchParams.get('title');
-
                 // Song ko load karne ke liye HTML code set karo
                 let songContainer = document.querySelector('#song-container');
                 songContainer.innerHTML = `
@@ -2354,7 +2348,7 @@ var offlineMsg = document.getElementById("offline-message");
                             </section>
                         </div>
                     </b>`;
-
+                
                 // Automatic click karo
                 let songElement = document.getElementById('song-element');
                 if (songElement) {
@@ -2411,7 +2405,7 @@ var offlineMsg = document.getElementById("offline-message");
     .download-popup-button {
         position: fixed;
         bottom: 10%;
-        right: 6%;
+        right: 20%;
         background: #E74C3C; /* Change download button background color */
         color: white;
         padding: 10px;
@@ -2424,13 +2418,16 @@ var offlineMsg = document.getElementById("offline-message");
     .download-popup-button a {
         text-decoration: none;
         color: white;
-        font-size: 30px; /* Adjust font size of the download icon */
+        font-size: 20px; /* Adjust font size of the download icon */
     }
 
     .shake {
         animation: shake 0.5s;
     }
 </style>
+
+
+             
 
 
             
