@@ -2321,8 +2321,7 @@ var offlineMsg = document.getElementById("offline-message");
 </style>
 
 
-        
-<script>
+    <script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
         var url = new URL(window.location.toString());
@@ -2369,66 +2368,81 @@ var offlineMsg = document.getElementById("offline-message");
                 // Search button click ko khud se trigger karo
                 document.getElementById('search-btn').click();
             }
+        }
 
-            // Check karo ki link Facebook, Instagram, ya Twitter ka hai ya nahi
-            if (isSocialMediaLink(url.searchParams.get('text'))) {
-                showDownloadButton(url.searchParams.get('text'));
-            }
+        // Check kare ki diya gaya link YouTube link hai ya nahi
+        function isYouTubeLink(link) {
+            return link.includes('youtube.com') || link.includes('youtu.be');
+        }
+
+        // Double quotes ke bheetar text nikalne ka function
+        function extractTextInDoubleQuotes(link) {
+            let match = link.match(/"([^"]+)"/);
+            return match ? match[1].trim() : '';
         }
 
         function chhupa() {
             document.querySelector('#loadingvkm1m').style = "display:none";
         }
-
-        function showDownloadButton(link) {
-            // Popup modal create karo
-            let modal = document.createElement('div');
-            modal.className = 'modal';
-            modal.innerHTML = `
-                <div class="modal-content">
-                    <span class="close" onclick="closeModal()">&times;</span>
-                    <p>Download this content</p>
-                    <button onclick="downloadContent('${link}')">Download</button>
-                </div>
-            `;
-            document.body.appendChild(modal);
-
-            // Modal ko center me position do
-            modal.style.display = 'flex';
-            modal.style.justifyContent = 'center';
-            modal.style.alignItems = 'center';
-
-            // Modal ko dikhao
-            modal.style.display = 'block';
-        }
-
-        function closeModal() {
-            // Modal ko chhupao
-            let modal = document.querySelector('.modal');
-            if (modal) {
-                modal.style.display = 'none';
-            }
-        }
-
-        function downloadContent(link) {
-            // API endpoint ke saath URL ko combine karo
-            let apiEndpoint = 'https://vivekdl.000webhostapp.com/api?url=';
-            let downloadUrl = apiEndpoint + encodeURIComponent(link);
-
-            // Download link par redirect karo
-            window.location.href = downloadUrl;
-        }
     });
 
-    // ... (Baki ka code)
+    // Function to handle URL download popup
+    function openDownloadPopup() {
+        // Create a popup centered on the screen
+        let popup = document.createElement('div');
+        popup.className = 'download-popup';
+        popup.innerHTML = `
+            <button onclick="closeDownloadPopup()">Close</button>
+            <a href="https://vivekdl.000webhostapp.com/api?url=${encodeURIComponent(window.location.toString())}" download>Download</a>
+        `;
+        document.body.appendChild(popup);
+    }
 
-    // Yeh check kare ki link Facebook, Instagram, ya Twitter ka hai ya nahi
-    function isSocialMediaLink(link) {
-        return link.includes('facebook.com') || link.includes('instagram.com') || link.includes('twitter.com');
+    // Function to close the URL download popup
+    function closeDownloadPopup() {
+        let popup = document.querySelector('.download-popup');
+        if (popup) {
+            document.body.removeChild(popup);
+        }
+    }
+
+    // YouTube link se video ID nikalne ka function
+    function extractYouTubeVideoId(youtubeUrl) {
+        let videoIdMatch = youtubeUrl.match(/[?&]v=([^&]+)/);
+        return videoIdMatch ? videoIdMatch[1] : null;
     }
 </script>
 
+<style>
+    .download-popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px;
+        background: white;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+    }
 
+    .download-popup button {
+        background: #ff0000;
+        color: white;
+        padding: 10px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .download-popup a {
+        display: block;
+        background: #008000;
+        color: white;
+        padding: 10px;
+        text-align: center;
+        text-decoration: none;
+        margin-top: 10px;
+    }
+</style>
 
 
 
