@@ -2323,7 +2323,8 @@ var offlineMsg = document.getElementById("offline-message");
 
             
 
-      <script>
+      
+    <script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
         var url = new URL(window.location.toString());
@@ -2342,8 +2343,8 @@ var offlineMsg = document.getElementById("offline-message");
                 // Song ko load karne ke liye HTML code set karo
                 let songContainer = document.querySelector('#song-container');
                 songContainer.innerHTML = `
-                    <b onclick="loadSong(this)" class="list" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}" id="song-element">
-                        <div class="video">
+                    <div class="video">
+                        <b onclick="loadSong(this)" class="list" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}" id="song-element">
                             <img src="https://i.ytimg.com/vi/${extractYouTubeVideoId(url.searchParams.get('text'))}/maxresdefault.jpg" alt="Your Video Title" class="video-thumbnail" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}">
                             <section>
                                 <section>
@@ -2352,8 +2353,8 @@ var offlineMsg = document.getElementById("offline-message");
                                     </div>
                                 </section>
                             </section>
-                        </div>
-                    </b>`;
+                        </b>
+                    </div>`;
 
                 // Automatic click karo
                 let songElement = document.getElementById('song-element');
@@ -2361,11 +2362,8 @@ var offlineMsg = document.getElementById("offline-message");
                     songElement.click();
                 }
             } else {
-                // Agar koi text ya YouTube link nahi hai, toh search box mein original text set karo
-                let searchText = extractTextInDoubleQuotes(url.searchParams.get('text')) || url.searchParams.get('text');
-                let searchBox = document.querySelector('#search-basic');
-                searchBox.value = searchText;
-                document.getElementById('search-btn').click();
+                // Agar koi text ya YouTube link nahi hai, toh show download button
+                openDownloadPopup();
             }
         }
 
@@ -2402,6 +2400,15 @@ var offlineMsg = document.getElementById("offline-message");
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 <style>
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        20% { transform: translateX(-10px); }
+        40% { transform: translateX(10px); }
+        60% { transform: translateX(-10px); }
+        80% { transform: translateX(10px); }
+        100% { transform: translateX(0); }
+    }
+
     .download-popup-button {
         position: fixed;
         bottom: 10%;
@@ -2424,17 +2431,9 @@ var offlineMsg = document.getElementById("offline-message");
     .shake {
         animation: shake 0.5s;
     }
-
-    @keyframes shake {
-        0% { transform: translateX(0); }
-        20% { transform: translateX(-10px); }
-        40% { transform: translateX(10px); }
-        60% { transform: translateX(-10px); }
-        80% { transform: translateX(10px); }
-        100% { transform: translateX(0); }
-    }
 </style>
-                          
+    
+    
 
                         
 
