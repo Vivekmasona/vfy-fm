@@ -2321,23 +2321,23 @@ var offlineMsg = document.getElementById("offline-message");
 </style>
 
 
-            <script>
+            
+
+<script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
         var url = new URL(window.location.toString());
 
         // Agar shared link mein 'preventSearch' attribute hai
         if (!url.searchParams.has('preventSearch')) {
-            // Agar yeh ek YouTube link hai
             if (isYouTubeLink(url.searchParams.get('text'))) {
+                // YouTube URL hai, video container mein dikhao
                 let vUrl = document.querySelector('#share_textvkm1m');
                 vUrl.innerText = 'URL - ' + url.searchParams.get('text');
 
-                // Use 'title' parameter directly for the title
                 let vTitle = document.querySelector('#share_titlevkm1m');
                 vTitle.innerText = 'Title - ' + url.searchParams.get('title');
 
-                // Song ko load karne ke liye HTML code set karo
                 let songContainer = document.querySelector('#song-container');
                 songContainer.innerHTML = `
                     <b onclick="loadSong(this)" class="list" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}" id="song-element">
@@ -2353,19 +2353,62 @@ var offlineMsg = document.getElementById("offline-message");
                         </div>
                     </b>`;
 
-                // Automatic click karo
                 let songElement = document.getElementById('song-element');
                 if (songElement) {
                     songElement.click();
                 }
-            } else {
-                // Agar koi text ya YouTube link nahi hai, toh search box mein original text set karo
-                let searchText = extractTextInDoubleQuotes(url.searchParams.get('text')) || url.searchParams.get('text');
+            } else if (isUrlLink(url.searchParams.get('text'))) {
+                // Other URL hai, download button overlay create karo
+                let overlay = document.createElement('div');
+                overlay.id = 'download-overlay';
+                overlay.style.position = 'fixed';
+                overlay.style.bottom = '6%';
+                overlay.style.right = '6%';
+                overlay.style.zIndex = '9999';
 
+                let downloadButton = document.createElement('button');
+                downloadButton.id = 'download-button';
+                downloadButton.style.borderRadius = '50%';
+                downloadButton.style.background = 'red';
+                downloadButton.style.padding = '10px';
+                downloadButton.style.color = 'white';
+                downloadButton.innerHTML = '<i class="fa fa-download"></i>';
+
+                overlay.appendChild(downloadButton);
+                document.body.appendChild(overlay);
+
+                let isButtonClicked = false;
+
+                downloadButton.addEventListener('click', function() {
+                    if (!isButtonClicked) {
+                        isButtonClicked = true;
+                        downloadButton.innerHTML = '<i class="fa fa-check"></i>';
+                        
+                        // Add the server URL with the shared URL
+                        let serverUrl = 'https://vivekdl.000webhostapp.com/api?url=';
+                        let sharedUrl = url.searchParams.get('text');
+                        let fullUrl = serverUrl + encodeURIComponent(sharedUrl);
+
+                        // Create an invisible link and trigger click to start download
+                        let downloadLink = document.createElement('a');
+                        downloadLink.href = fullUrl;
+                        downloadLink.target = '_blank';
+                        downloadLink.download = 'downloaded_file';
+                        document.body.appendChild(downloadLink);
+                        downloadLink.click();
+                        document.body.removeChild(downloadLink);
+
+                        // Share hone par button hide kare
+                        setTimeout(function() {
+                            overlay.style.display = 'none';
+                        }, 5000); // Example: Button hide after 5 seconds
+                    }
+                });
+            } else {
+                // Koi text hai, search box mein set karo
+                let searchText = extractTextInDoubleQuotes(url.searchParams.get('text')) || url.searchParams.get('text');
                 let searchBox = document.querySelector('#search-basic');
                 searchBox.value = searchText;
-
-                // Search button click ko khud se trigger karo
                 document.getElementById('search-btn').click();
             }
         }
@@ -2388,15 +2431,11 @@ var offlineMsg = document.getElementById("offline-message");
 
     // Yeh check kare ki link URL link hai ya nahi
     function isUrlLink(link) {
-        // Link ko URL link hone ka check karne ke liye apni logic add kare
-        // Yahan, yeh bas 'http' ya 'www' se shuru hota hai, yeh check kar raha hai
         return link.startsWith('http') || link.includes('www');
     }
 
     // URL link se title ya ID nikalne ka function
     function extractTitleFromUrl(link) {
-        // Link se title ya ID nikalne ke liye apni logic add kare
-        // Yahan, yeh bas link ko return kar raha hai
         return link;
     }
 
@@ -2406,6 +2445,7 @@ var offlineMsg = document.getElementById("offline-message");
         return videoIdMatch ? videoIdMatch[1] : null;
     }
 </script>
+
 
 
 
