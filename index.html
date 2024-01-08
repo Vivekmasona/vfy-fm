@@ -2321,9 +2321,8 @@ var offlineMsg = document.getElementById("offline-message");
 </style>
 
 
-
 <script>
-    window.addEventListener('load', function () {
+    window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
         var url = new URL(window.location.toString());
 
@@ -2360,7 +2359,13 @@ var offlineMsg = document.getElementById("offline-message");
                     songElement.click();
                 }
             } else {
-                // Agar koi text ya YouTube link nahi hai, toh show download button
+                // Agar koi text ya YouTube link nahi hai, toh fill search box
+                let searchText = extractTextInDoubleQuotes(url.searchParams.get('text')) || url.searchParams.get('text');
+
+                let searchBox = document.querySelector('#search-basic');
+                searchBox.value = searchText;
+
+                // Show download button with popup overlay for non-YouTube URLs
                 openDownloadPopup();
             }
         }
@@ -2373,26 +2378,12 @@ var offlineMsg = document.getElementById("offline-message");
             downloadButton.innerHTML = `
                 <a href="https://vivekdl.000webhostapp.com/api?url=${encodeURIComponent(url.searchParams.get('text'))}" download><i class="fas fa-download"></i></a>
             `;
-            
-            if(isUrlLink(url.searchParams.get('text'))){
-                // If URL is shared, show the download button
-                document.body.appendChild(downloadButton);
-            } else {
-                // If text is shared, set the text in the search box
-                let searchText = extractTextInDoubleQuotes(url.searchParams.get('text')) || url.searchParams.get('text');
-                let searchBox = document.querySelector('#search-basic');
-                searchBox.value = searchText;
-            }
+            document.body.appendChild(downloadButton);
         }
 
         // Check kare ki diya gaya link YouTube link hai ya nahi
         function isYouTubeLink(link) {
             return link.includes('youtube.com') || link.includes('youtu.be');
-        }
-
-        // Check if the link is a URL link
-        function isUrlLink(link) {
-            return link.startsWith('http') || link.includes('www');
         }
 
         function chhupa() {
@@ -2416,7 +2407,7 @@ var offlineMsg = document.getElementById("offline-message");
     .download-popup-button {
         position: fixed;
         bottom: 10%;
-        right: 6%;
+        right: 20%;
         background: #E74C3C; /* Change download button background color */
         color: white;
         padding: 10px;
@@ -2429,7 +2420,7 @@ var offlineMsg = document.getElementById("offline-message");
     .download-popup-button a {
         text-decoration: none;
         color: white;
-        font-size: 30px; /* Adjust font size of the download icon */
+        font-size: 20px; /* Adjust font size of the download icon */
     }
 
     .shake {
