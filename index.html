@@ -2322,8 +2322,6 @@ var offlineMsg = document.getElementById("offline-message");
 
 
     
-
-
 <script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
@@ -2401,6 +2399,10 @@ var offlineMsg = document.getElementById("offline-message");
             let popup = document.querySelector('.download-popup');
             if (popup) {
                 document.body.removeChild(popup);
+
+                // Show the search box after closing the popup
+                let searchBox = document.querySelector('#search-basic');
+                searchBox.style.display = 'block';
             }
         }
 
@@ -2455,8 +2457,7 @@ var offlineMsg = document.getElementById("offline-message");
 
 
 
-
-
+            
 
 
 
