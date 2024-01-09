@@ -2784,6 +2784,9 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
     if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(textToSpeak);
 
+      // Set language to Hindi
+      utterance.lang = 'hi-IN';
+
       // Select a male voice, if available
       const voices = window.speechSynthesis.getVoices();
       let maleVoice = voices.find(voice => voice.name === 'vivek');
