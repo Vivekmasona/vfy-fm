@@ -683,6 +683,27 @@ width: 50%;
 </style>
 
 
+  <style>
+    #homepage-content.hidden {
+      display: none;
+    }
+
+    #homepage-content.visible {
+      display: block;
+    }
+  </style>
+  <script defer>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('hidevk').addEventListener('click', function() {
+        var content = document.getElementById('homepage-content');
+        content.classList.toggle('hidden');
+        content.classList.toggle('visible');
+      });
+    });
+  </script>
+  
+  <!-- Your music player content goes here -->
+
 	
 
 
@@ -738,6 +759,9 @@ width: 50%;
      <input type="search"  name="search" onclick="startDictation()"  id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">SEARCH..</button></sr>
 	    
+<button id="hidevk">Toggle Content</button>
+
+
 	    
 	    
    <div id="autocomplete-results"></div>
@@ -753,7 +777,8 @@ width: 50%;
 
 
 	
-    <div id="homepage-content">
+    <div id="homepage-content" class="hidden">
+
 
 
 <span id="heading1"></span>
