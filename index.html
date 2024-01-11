@@ -3879,91 +3879,63 @@ z-imdex:999999;
 
 
 	
-	
-	
-	
-	<main>
-        <div class="topper">
-            
-        <div class="msgs_cont">
-            <!-- Remove the initial chat message -->
-        </div>
-        <div class="bottom">
-            <div id="input">
-                <button id="voiceBtn" class="uil uil-microphone">voice</button>
-            </div>
-        </div>
-    </div></main>
+<!doctype html>
+
+
+  
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden; /* To prevent scrolling */
+    }
+
+    #draggableBtn {
+      position: fixed;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background-color: #3498db;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: grab;
+      z-index: 9999; /* Ensure the button stays above other elements */
+    }
+
+    #content {
+      /* Add your content styling here */
+      padding: 20px;
+      margin-top: 100px; /* Adjust as needed */
+    }
+  </style>
+  <script src="https://unpkg.com/draggabilly@2.2.0/dist/draggabilly.pkgd.min.js"></script>
+
+
+
+<butt id="draggableBtn"><i class="fas fa-magic" style="font-size: 24px;"></i></butt>
+
+<div id="content">
+  <!-- Your page content goes here -->
+  <p>This is your page content. The button will overlay on top of this.</p>
+</div>
 
 <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            let voiceBtn = document.querySelector("#voiceBtn");
+  // Dragabilly library ka instance banaye
+  var draggie = new Draggabilly('#draggableBtn');
 
-            // Add voice recognition button click event
-            voiceBtn.addEventListener("click", function() {
-                // Delay voice recognition start by 2 seconds
-                setTimeout(startVoiceRecognition, 2000);
-            });
-
-            function startVoiceRecognition() {
-                const recognition = new webkitSpeechRecognition();
-                recognition.lang = "en-US";
-
-                recognition.onresult = function(event) {
-                    const transcript = event.results[0][0].transcript;
-                    ChatGPT(transcript);
-                };
-
-                recognition.onerror = function(event) {
-                    console.error(event.error);
-                };
-
-                recognition.start();
-            }
-
-            function ChatGPT(transcript) {
-                if (
-                    transcript !== "" &&
-                    transcript !== null &&
-                    transcript.trim() !== ""
-                ) {
-                    fetch(
-                        `https://vivekfy.vivekmasona.repl.co/ask?question=users new question :, ${transcript}`
-                    )
-                        .then((res) => res.text())
-                        .then((data) => {
-                            // Replace specific occurrences in the response text
-                            const modifiedText = data.replace(/Herc\.ai/g, 'vivek.ai')
-                                                    .replace(/Microsoft/g, 'vivek masona')
-                                                    .replace(/How can I assist you today?/g, 'kuchh sawal hai to puchhiye mujhse')
-                                                    .replace(/OpenAI/g, 'vivek masona');
-                            speakText(modifiedText); // Add text-to-speech for the modified text
-                        })
-                        .catch((error) => {
-                            speakText("Not working");
-                        });
-                }
-            }
-
-            // Add this function for text-to-speech
-            function speakText(text) {
-                const synth = window.speechSynthesis;
-                const utterance = new SpeechSynthesisUtterance(text);
-                
-                // Set language to Hindi (India)
-                utterance.lang = "hi-IN";
-
-                utterance.onend = function() {
-                    // Automatically start voice recognition after speech synthesis ends
-                    startVoiceRecognition();
-                };
-
-                synth.speak(utterance);
-            }
-        });
-    </script>
+  // Drag hone par callback function
+  draggie.on('dragMove', function() {
+    console.log('Button dragged!');
+  });
+</script>
 
 
-
-
-
+</!doctype>	
+	
+	
+	
