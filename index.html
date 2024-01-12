@@ -4034,3 +4034,39 @@ z-imdex:999999;
 		
 	</style>
 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voice-Activated Song Player</title>
+  <script src="https://unpkg.com/draggabilly@2.2.0/dist/draggabilly.pkgd.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body style="background-color: black;">
+
+<div style="position: relative; margin: 50px;">
+  <!-- Draggable Button for Song Player -->
+  <button id="draggableBtn" style="border: 0; border-radius: 10px; background-color: #333; color: white; width: 100px; height: 50px; position: relative; margin-top: 50px;">
+    <i id="prevIcon" class="fas fa-step-backward" style="font-size: 20px; position: absolute; top: 50%; left: 10%; transform: translateY(-50%);"></i>
+    <i id="playPauseIcon" class="fas fa-play" style="font-size: 24px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></i>
+    <i id="nextIcon" class="fas fa-step-forward" style="font-size: 20px; position: absolute; top: 50%; right: 10%; transform: translateY(-50%);"></i>
+    <audio id="audioPlayer" controls style="display: none;"></audio>
+  </button>
+
+  <!-- Draggable Button with Microphone Icon Overlay -->
+  <button id="draggableBtnOverlay" style="position: fixed; top: 0; left: 0; border: 0; border-radius: 10px; background-color: #333; color: white; width: 50px; height: 50px;">
+    <i class="fas fa-microphone" style="font-size: 20px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></i>
+  </button>
+</div>
+
+<script>
+  var draggie = new Draggabilly('#draggableBtn');
+  var draggieOverlay = new Draggabilly('#draggableBtnOverlay');
+</script>
+
+</body>
+</html>
+	
+
