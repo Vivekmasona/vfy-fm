@@ -3878,18 +3878,71 @@ z-imdex:999999;
 </style>	
 
 
-<!doctype html>
-  <script src="https://unpkg.com/draggabilly@2.2.0/dist/draggabilly.pkgd.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/draggabilly@2.2.0/dist/draggabilly.pkgd.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
 
+    #draggableBtnContainer {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+    }
 
+    #draggableBtn {
+      border: 0;
+      border-radius: 10px;
+      background-color: #333;
+      color: white;
+      width: 100px;
+      height: 50px;
+      position: relative;
+      margin-top: 50px;
+    }
 
-<div style="position: relative; margin: 50px;">
-  <button id="draggableBtn" style="border: 0; border-radius: 10px; background-color: #333; color: white; width: 100px; height: 50px; position: relative; margin-top: 50px;">
-    <i id="prevIcon" class="fas fa-step-backward" style="font-size: 20px; position: absolute; top: 50%; left: 10%; transform: translateY(-50%);"></i>
-    <i id="playPauseIcon" class="fas fa-play" style="font-size: 24px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></i>
-    <i id="nextIcon" class="fas fa-step-forward" style="font-size: 20px; position: absolute; top: 50%; right: 10%; transform: translateY(-50%);"></i>
-    <audio id="audioPlayer" controls style="display: none;"></audio>
+    #prevIcon, #playPauseIcon, #nextIcon {
+      font-size: 20px;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    #prevIcon {
+      left: 10%;
+    }
+
+    #playPauseIcon {
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    #nextIcon {
+      right: 10%;
+    }
+
+    #audioPlayer {
+      display: none;
+    }
+  </style>
+</head>
+<body style="background-color: black;">
+
+<div id="draggableBtnContainer">
+  <button id="draggableBtn">
+    <i id="prevIcon" class="fas fa-step-backward"></i>
+    <i id="playPauseIcon" class="fas fa-play"></i>
+    <i id="nextIcon" class="fas fa-step-forward"></i>
+    <audio id="audioPlayer" controls></audio>
   </button>
 </div>
 
@@ -4030,9 +4083,8 @@ z-imdex:999999;
   }
 </script>
 
+</body>
+</html>
 
-</!doctype>	
 
-	
-	
 	
