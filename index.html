@@ -3878,4 +3878,207 @@ z-imdex:999999;
 </style>	
 
 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://unpkg.com/draggabilly@2.2.0/dist/draggabilly.pkgd.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    #songPlayer {
+      position: relative;
+      margin: 50px;
+      width: 100px;
+      height: 50px;
+      background-color: #333;
+      border: 0;
+      border-radius: 10px;
+      color: white;
+    }
+
+    #prevIcon,
+    #playPauseIcon,
+    #nextIcon {
+      font-size: 20px;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    #prevIcon {
+      left: 10%;
+    }
+
+    #playPauseIcon {
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    #nextIcon {
+      right: 10%;
+    }
+
+    #audioPlayer {
+      display: none;
+    }
+
+    #currentSongTitle {
+      display: none;
+    }
+  </style>
+</head>
+<body style="background-color: black;">
+
+<button id="songPlayer">
+  <i id="prevIcon" class="fas fa-step-backward"></i>
+  <i id="playPauseIcon" class="fas fa-play"></i>
+  <i id="nextIcon" class="fas fa-step-forward"></i>
+  <audio id="audioPlayer" controls></audio>
+</button>
+
+<script>
+  var recognition = new webkitSpeechRecognition();
+  var audioPlayer = document.getElementById('audioPlayer');
+  var playPauseIcon = document.getElementById('playPauseIcon');
+  var currentSongTitle = document.getElementById('currentSongTitle');
+  var isPlaying = false;
+  var playlist = [];
+  var currentSongIndex = 0;
+
+  // Add click event listener to the button
+  document.getElementById('songPlayer').addEventListener('click', function(event) {
+    // Toggle the voice recognition mic
+    if (recognition.isStarted) {
+      recognition.stop();
+    } else {
+      recognition.start();
+    }
+
+    // Check which part of the button was clicked
+    var clickedX = event.clientX - document.getElementById('songPlayer').getBoundingClientRect().left;
+
+    if (clickedX < 0.25 * event.currentTarget.offsetWidth) {
+      // Clicked on the left quarter, trigger previous song
+      playPreviousSong();
+    } else if (clickedX > 0.75 * event.currentTarget.offsetWidth) {
+      // Clicked on the right quarter, trigger next song
+      playNextSong();
+    } else {
+      // Clicked in the middle, toggle play/pause
+      togglePlayPause();
+    }
+  });
+
+  // Function to play the next song in the playlist
+  function playNextSong() {
+    if (playlist.length > 0 && currentSongIndex < playlist.length - 1) {
+      currentSongIndex++;
+      playSongAtIndex(currentSongIndex);
+    } else {
+      console.log('No next song in the playlist.');
+    }
+  }
+
+  // Function to play the previous song in the playlist
+  function playPreviousSong() {
+    if (currentSongIndex > 0) {
+      currentSongIndex--;
+      playSongAtIndex(currentSongIndex);
+    } else {
+      console.log('No previous song in the playlist.');
+    }
+  }
+
+  // Function to play a song at a specific index in the playlist
+  function playSongAtIndex(index) {
+    const song = playlist[index];
+    const songUrl = song.downloadUrl[1]?.link;
+
+    if (songUrl) {
+      audioPlayer.src = songUrl;
+      audioPlayer.play();
+      playPauseIcon.className = 'fas fa-pause';
+      isPlaying = true;
+
+      // Display real-time playing song title
+      currentSongTitle.textContent = song.name;
+      currentSongTitle.style.display = 'block';
+
+      // Show Chrome notification
+      showNotification(song.name);
+    } else {
+      console.log('Song URL not found.');
+    }
+  }
+
+  // Function to toggle play/pause
+  function togglePlayPause() {
+    if (isPlaying) {
+      audioPlayer.pause();
+      playPauseIcon.className = 'fas fa-play';
+      isPlaying = false;
+    } else {
+      playSongAtIndex(currentSongIndex);
+    }
+  }
+
+  // Event listener for speech recognition results
+  recognition.onresult = function(event) {
+    var spokenText = event.results[0][0].transcript.trim();
+    console.log('Spoken Text:', spokenText);
+
+    // Make API request to your server with the spoken text as the search query
+    fetch(`https://svn-vivekfy.vercel.app/search/songs?query=${encodeURIComponent(spokenText)}`)
+      .then(response => response.json())
+      .then(data => {
+        // Update the playlist with the new songs
+        playlist = data?.data?.results || [];
+        currentSongIndex = 0;
+
+        // Play the first song in the playlist
+        playSongAtIndex(currentSongIndex);
+      })
+      .catch(error => {
+        console.error('Error fetching song data:', error);
+      });
+  };
+
+  // Event listener for speech recognition error
+  recognition.onerror = function(event) {
+    console.error('Speech recognition error:', event.error);
+  };
+
+  // Event listener to play the next song when the current one ends
+  audioPlayer.addEventListener('ended', function() {
+    playNextSong();
+  });
+
+  // Function to show a Chrome notification with song title
+  function showNotification(title) {
+    if ("Notification" in window) {
+      Notification.requestPermission().then(function (permission) {
+        if (permission === "granted") {
+          var notification = new Notification(title, {
+            body: "Now playing",
+            icon: "icon.png",  // Provide the path to your notification icon
+          });
+
+          // Close the notification after a few seconds
+          setTimeout(function() {
+            notification.close();
+          }, 3000);
+        }
+      });
+    }
+  }
+</script>
+
+</body>
+</html>
+
+
+	
+
 	
