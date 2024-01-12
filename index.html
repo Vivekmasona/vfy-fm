@@ -3878,13 +3878,12 @@ z-imdex:999999;
 </style>	
 
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://unpkg.com/draggabilly@2.2.0/dist/draggabilly.pkgd.min.js"></script>
+    <script src="https://unpkg.com/draggabilly@2.2.0/dist/draggabilly.pkgd.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
     #songPlayer {
@@ -3931,12 +3930,13 @@ z-imdex:999999;
 </head>
 <body style="background-color: black;">
 
-<button id="songPlayer">
-  <i id="prevIcon" class="fas fa-step-backward"></i>
-  <i id="playPauseIcon" class="fas fa-play"></i>
-  <i id="nextIcon" class="fas fa-step-forward"></i>
-  <audio id="audioPlayer" controls></audio>
-</button>
+
+
+<!-- ID for real-time playing song title -->
+<p id="currentSongTitle"></p>
+
+<!-- ID for voice recognition button -->
+<button id="voiceS">Voice Recognition</button>
 
 <script>
   var recognition = new webkitSpeechRecognition();
@@ -3968,6 +3968,16 @@ z-imdex:999999;
     } else {
       // Clicked in the middle, toggle play/pause
       togglePlayPause();
+    }
+  });
+
+  // Add click event listener to the voice recognition button
+  document.getElementById('voiceS').addEventListener('click', function() {
+    // Toggle the voice recognition mic
+    if (recognition.isStarted) {
+      recognition.stop();
+    } else {
+      recognition.start();
     }
   });
 
@@ -4079,6 +4089,3 @@ z-imdex:999999;
 </html>
 
 
-	
-
-	
