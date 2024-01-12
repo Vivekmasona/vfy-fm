@@ -3878,195 +3878,65 @@ z-imdex:999999;
 </style>	
 
 
- <script src="https://unpkg.com/draggabilly@2.2.0/dist/draggabilly.pkgd.min.js"></script>
-<body style="background-color: black;">
+	
+<!doctype html>
 
-<div style="position: relative; margin: 50px;">
-  <button id="draggableBtn" style="border: 0; border-radius: 10px; background-color: #333; color: white; width: 100px; height: 50px; position: relative; margin-top: 50px;">
-    <i id="prevIcon" class="fas fa-step-backward" style="font-size: 20px; position: absolute; top: 50%; left: 10%; transform: translateY(-50%);"></i>
-    <i id="playPauseIcon" class="fas fa-play" style="font-size: 24px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></i>
-    <i id="nextIcon" class="fas fa-step-forward" style="font-size: 20px; position: absolute; top: 50%; right: 10%; transform: translateY(-50%);"></i>
-    <audio id="audioPlayer" controls style="display: none;"></audio>
-  </button>
-</div>
 
-<script>
-  var draggie = new Draggabilly('#draggableBtn');
-  var recognition = new webkitSpeechRecognition();
-  var audioPlayer = document.getElementById('audioPlayer');
-  var playPauseIcon = document.getElementById('playPauseIcon');
-  var prevIcon = document.getElementById('prevIcon');
-  var nextIcon = document.getElementById('nextIcon');
-  var isPlaying = false;
-  var playlist = [];
-  var currentSongIndex = 0;
-
-  // Add click event listener to the button
-  document.getElementById('draggableBtn').addEventListener('click', function(event) {
-    // Toggle the voice recognition mic
-    if (recognition.isStarted) {
-      recognition.stop();
-    } else {
-      recognition.start();
+  
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden; /* To prevent scrolling */
     }
 
-    // Check which part of the button was clicked
-    var clickedX = event.clientX - document.getElementById('draggableBtn').getBoundingClientRect().left;
-
-    if (clickedX < 0.25 * event.currentTarget.offsetWidth) {
-      // Clicked on the left quarter, trigger previous song
-      playPreviousSong();
-    } else if (clickedX > 0.75 * event.currentTarget.offsetWidth) {
-      // Clicked on the right quarter, trigger next song
-      playNextSong();
-    } else {
-      // Clicked in the middle, toggle play/pause
-      togglePlayPause();
+    #draggableBtn {
+      position: fixed;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background-color: #3498db;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: grab;
+      z-index: 9999; /* Ensure the button stays above other elements */
     }
-  });
 
-  // Function to play the next song in the playlist
-  function playNextSong() {
-    if (playlist.length > 0 && currentSongIndex < playlist.length - 1) {
-      currentSongIndex++;
-      playSongAtIndex(currentSongIndex);
-    } else {
-      console.log('No next song in the playlist.');
+    #content {
+      /* Add your content styling here */
+      padding: 20px;
+      margin-top: 100px; /* Adjust as needed */
     }
-  }
-
-  // Function to play the previous song in the playlist
-  function playPreviousSong() {
-    if (currentSongIndex > 0) {
-      currentSongIndex--;
-      playSongAtIndex(currentSongIndex);
-    } else {
-      console.log('No previous song in the playlist.');
-    }
-  }
-
-  // Function to play a song at a specific index in the playlist
-  function playSongAtIndex(index) {
-    const song = playlist[index];
-    const songUrl = song.downloadUrl[1]?.link;
-
-    if (songUrl) {
-      audioPlayer.src = songUrl;
-      audioPlayer.play();
-      playPauseIcon.className = 'fas fa-pause';
-      isPlaying = true;
-      showNotification(song.name, song.image[0]?.link);
-    } else {
-      console.log('Song URL not found.');
-    }
-  }
-
-  // Function to toggle play/pause
-  function togglePlayPause() {
-    if (isPlaying) {
-      audioPlayer.pause();
-      playPauseIcon.className = 'fas fa-play';
-      isPlaying = false;
-    } else {
-      playSongAtIndex(currentSongIndex);
-    }
-  }
-
-  // Event listener for speech recognition results
-  recognition.onresult = function(event) {
-    var spokenText = event.results[0][0].transcript.trim();
-    console.log('Spoken Text:', spokenText);
-
-    // Make API request to your server with the spoken text as the search query
-    fetch(`https://svn-vivekfy.vercel.app/search/songs?query=${encodeURIComponent(spokenText)}`)
-      .then(response => response.json())
-      .then(data => {
-        // Update the playlist with the new songs
-        playlist = data?.data?.results || [];
-        currentSongIndex = 0;
-
-        // Play the first song in the playlist
-        playSongAtIndex(currentSongIndex);
-      })
-      .catch(error => {
-        console.error('Error fetching song data:', error);
-      });
-  };
-
-  // Event listener for speech recognition error
-  recognition.onerror = function(event) {
-    console.error('Speech recognition error:', event.error);
-  };
-
-  // Event listener to play the next song when the current one ends
-  audioPlayer.addEventListener('ended', function() {
-    playNextSong();
-  });
-
-  // Function to show a notification with song title and poster
-  function showNotification(title, posterUrl) {
-    if (!("Notification" in window)) {
-      console.log("This browser does not support system notifications");
-    } else if (Notification.permission === "granted") {
-      var notification = new Notification(title, {
-        body: "Now playing",
-        icon: posterUrl,
-      });
-
-      // Close the notification after a few seconds
-      setTimeout(function() {
-        notification.close();
-      }, 3000);
-    } else if (Notification.permission !== 'denied') {
-      Notification.requestPermission().then(function (permission) {
-        if (permission === "granted") {
-          showNotification(title, posterUrl);
-        }
-      });
-    }
-  }
-</script>
-
-	<style>
-#draggableBtn {
-	z-imdex:999999;
-}
-		
-	</style>
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Voice-Activated Song Player</title>
+  </style>
   <script src="https://unpkg.com/draggabilly@2.2.0/dist/draggabilly.pkgd.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body style="background-color: black;">
 
-<div style="position: relative; margin: 50px;">
-  <!-- Draggable Button for Song Player -->
-  <button id="draggableBtn" style="border: 0; border-radius: 10px; background-color: #333; color: white; width: 100px; height: 50px; position: relative; margin-top: 50px;">
-    <i id="prevIcon" class="fas fa-step-backward" style="font-size: 20px; position: absolute; top: 50%; left: 10%; transform: translateY(-50%);"></i>
-    <i id="playPauseIcon" class="fas fa-play" style="font-size: 24px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></i>
-    <i id="nextIcon" class="fas fa-step-forward" style="font-size: 20px; position: absolute; top: 50%; right: 10%; transform: translateY(-50%);"></i>
-    <audio id="audioPlayer" controls style="display: none;"></audio>
-  </button>
 
-  <!-- Draggable Button with Microphone Icon Overlay -->
-  <button id="draggableBtnOverlay" style="position: fixed; top: 0; left: 0; border: 0; border-radius: 10px; background-color: #333; color: white; width: 50px; height: 50px;">
-    <i class="fas fa-microphone" style="font-size: 20px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></i>
-  </button>
+
+<butt id="draggableBtn"><i class="fas fa-magic" style="font-size: 24px;"></i></butt>
+
+<div id="content">
+  <!-- Your page content goes here -->
+  <p>This is your page content. The button will overlay on top of this.</p>
 </div>
 
 <script>
+  // Dragabilly library ka instance banaye
   var draggie = new Draggabilly('#draggableBtn');
-  var draggieOverlay = new Draggabilly('#draggableBtnOverlay');
+
+  // Drag hone par callback function
+  draggie.on('dragMove', function() {
+    console.log('Button dragged!');
+  });
 </script>
 
-</body>
-</html>
+
+</!doctype>	
+	
+	
 	
 
