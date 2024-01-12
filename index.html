@@ -3877,29 +3877,17 @@ z-imdex:999999;
 }
 </style>	
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://unpkg.com/draggabilly@2.2.0/dist/draggabilly.pkgd.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <title>Draggable Audio Player</title>
+  <script src="https://unpkg.com/draggabilly@2.2.0/dist/draggabilly.pkgd.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-    }
-
-    #draggableBtnContainer {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 9999;
-    }
-
     #draggableBtn {
+      z-index: 9999;
       border: 0;
       border-radius: 10px;
       background-color: #333;
@@ -3910,7 +3898,7 @@ z-imdex:999999;
       margin-top: 50px;
     }
 
-    #prevIcon, #playPauseIcon, #nextIcon {
+    #draggableBtn i {
       font-size: 20px;
       position: absolute;
       top: 50%;
@@ -3923,7 +3911,8 @@ z-imdex:999999;
 
     #playPauseIcon {
       left: 50%;
-      transform: translate(-50%, -50%);
+      font-size: 24px;
+      transform: translateX(-50%) translateY(-50%);
     }
 
     #nextIcon {
@@ -3935,9 +3924,9 @@ z-imdex:999999;
     }
   </style>
 </head>
-<body style="background-color: black;">
+<body>
 
-<div id="draggableBtnContainer">
+<div style="position: relative; margin: 50px;">
   <button id="draggableBtn">
     <i id="prevIcon" class="fas fa-step-backward"></i>
     <i id="playPauseIcon" class="fas fa-play"></i>
@@ -4028,63 +4017,10 @@ z-imdex:999999;
     }
   }
 
-  // Event listener for speech recognition results
-  recognition.onresult = function(event) {
-    var spokenText = event.results[0][0].transcript.trim();
-    console.log('Spoken Text:', spokenText);
+  // Rest of your JavaScript code...
 
-    // Make API request to your server with the spoken text as the search query
-    fetch(`https://svn-vivekfy.vercel.app/search/songs?query=${encodeURIComponent(spokenText)}`)
-      .then(response => response.json())
-      .then(data => {
-        // Update the playlist with the new songs
-        playlist = data?.data?.results || [];
-        currentSongIndex = 0;
-
-        // Play the first song in the playlist
-        playSongAtIndex(currentSongIndex);
-      })
-      .catch(error => {
-        console.error('Error fetching song data:', error);
-      });
-  };
-
-  // Event listener for speech recognition error
-  recognition.onerror = function(event) {
-    console.error('Speech recognition error:', event.error);
-  };
-
-  // Event listener to play the next song when the current one ends
-  audioPlayer.addEventListener('ended', function() {
-    playNextSong();
-  });
-
-  // Function to show a notification with song title and poster
-  function showNotification(title, posterUrl) {
-    if (!("Notification" in window)) {
-      console.log("This browser does not support system notifications");
-    } else if (Notification.permission === "granted") {
-      var notification = new Notification(title, {
-        body: "Now playing",
-        icon: posterUrl,
-      });
-
-      // Close the notification after a few seconds
-      setTimeout(function() {
-        notification.close();
-      }, 3000);
-    } else if (Notification.permission !== 'denied') {
-      Notification.requestPermission().then(function (permission) {
-        if (permission === "granted") {
-          showNotification(title, posterUrl);
-        }
-      });
-    }
-  }
 </script>
 
 </body>
 </html>
 
-
-	
