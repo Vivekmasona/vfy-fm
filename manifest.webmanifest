@@ -48,7 +48,7 @@
 
     {
       "name": "Downloader",
-      "url": "/copy",
+      "url": "/copy/svn",
       "icons": [
         {
           "src": "/img/viveklogo.png",
