@@ -2763,53 +2763,112 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 
 
 
-<script>
-  function speakSearchText() {
-    const searchInput = document.getElementById('search-basic');
-    let searchText = searchInput.value.toLowerCase();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <audio id="audioPlayer" controls style="display: none;"></audio>
+    <b id="micBtn"></b>
+    <input type="text" id="search-basic" placeholder="Search...">
+    
+    <script>
+        const micBtn = document.getElementById('micBtn');
+        const audioPlayer = document.getElementById('audioPlayer');
+        let currentIndex = 0;
 
-    // List of words to remove from the input
-    const wordsToRemove = ['start', 'start karo', 'play karo', 'bajao', 'play', 'chalu karo', 'sunao', 'chalao', 'lagao'];
+        micBtn.addEventListener('click', () => {
+            const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+            recognition.lang = 'en-US';
 
-    // Remove specified words from the input
-    wordsToRemove.forEach(word => {
-      searchText = searchText.replace(word, '').trim();
-    });
+            recognition.onresult = (event) => {
+                const speechToText = event.results[0][0].transcript;
+                speakSearchText(speechToText);
+            };
 
-    // Proceed with speech synthesis for the remaining text
-    speakWithAudio(searchText);
-  }
+            recognition.start();
+        });
 
-  function speakWithAudio(textToSpeak) {
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(textToSpeak);
+        function speakSearchText(textToSpeak) {
+            const searchInput = document.getElementById('search-basic');
+            const searchBoxText = searchInput.value.toLowerCase();
 
-      // Set language to Hindi
-      utterance.lang = 'hi-IN';
+            // Words to remove from the input
+            const wordsToRemove = ['start', 'start karo', 'play karo', 'bajao', 'play', 'chalu karo', 'sunao', 'chalao', 'lagao'];
 
-      // Select a male voice, if available
-      const voices = window.speechSynthesis.getVoices();
-      let maleVoice = voices.find(voice => voice.name === 'vivek');
-      if (maleVoice) {
-        utterance.voice = maleVoice;
-      } else {
-        console.log('Male voice not found; using the default voice.');
-      }
+            // Remove specified words from the input
+            wordsToRemove.forEach(word => {
+                textToSpeak = textToSpeak.replace(word, '').trim();
+            });
 
-      utterance.volume = 1; // Set volume to 100%
+            if (textToSpeak !== '') {
+                // Add the search box text to the modified text
+                const finalText = `${searchBoxText}, ${textToSpeak}`;
 
-      utterance.onend = function () {
-        // Once the text is spoken, initiate the audio link for "Search results from bhi faai music"
-        const audio = new Audio('/sound/result.mp3');
-        audio.play();
-      };
+                // Call a function to search and play music based on the combined text
+                searchAndPlayMusic(finalText);
+            } else {
+                // Combine search box text and provide feedback when no valid command is found
+                const feedbackText = searchBoxText !== '' ? `No valid command found. Searching for ${searchBoxText}.` : 'No valid command found.';
+                
+                // Proceed with speech synthesis for the combined text
+                speakWithAudio(feedbackText);
+            }
+        }
 
-      window.speechSynthesis.speak(utterance);
-    } else {
-      console.log('Text-to-speech not supported in this browser');
-    }
-  }
-</script>
+        function speakWithAudio(textToSpeak) {
+            // Your existing speech synthesis logic goes here
+            console.log('Text to speak:', textToSpeak);
+        }
+
+        function searchAndPlayMusic(query) {
+            const searchUrl = `https://svn-vivekfy.vercel.app/search/songs?query=${encodeURIComponent(query)}`;
+
+            fetch(searchUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const downloadLinks = data.data.results.map(result => result.downloadUrl.find(item => item.quality === '48kbps').link);
+                    playAudioSequentially(downloadLinks);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function playAudioSequentially(links) {
+            if (links.length === 0) {
+                console.log('No 48kbps links found.');
+                return;
+            }
+
+            currentIndex = 0;
+
+            // Play the first audio
+            playNextAudio(links);
+        }
+
+        function playNextAudio(links) {
+            const currentLink = links[currentIndex];
+
+            if (currentLink) {
+                audioPlayer.src = currentLink;
+                audioPlayer.style.display = 'none';
+                audioPlayer.play();
+
+                audioPlayer.addEventListener('ended', () => {
+                    // Move to the next audio when the current one ends
+                    currentIndex++;
+                    playNextAudio(links);
+                });
+            } else {
+                // All audios have been played
+                console.log('All 48kbps audios have been played.');
+            }
+        }
+    </script>
+</body>
+</html>
+
 
 
 
@@ -3878,77 +3937,4 @@ z-imdex:999999;
 </style>	
 
 
-	<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-<body>
-    
-    <audio id="audioPlayer" controls style="display: none;"></audio>
-<b id="micBtn"></b>
-    <script>
-        const micBtn = document.getElementById('micBtn');
-        const audioPlayer = document.getElementById('audioPlayer');
-        let currentIndex = 0;
-
-        micBtn.addEventListener('click', () => {
-            const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
-            recognition.lang = 'en-US';
-
-            recognition.onresult = (event) => {
-                const speechToText = event.results[0][0].transcript;
-                searchAndPlay(speechToText);
-            };
-
-            recognition.start();
-        });
-
-        function searchAndPlay(query) {
-            const searchUrl = `https://svn-vivekfy.vercel.app/search/songs?query=${encodeURIComponent(query)}`;
-
-            fetch(searchUrl)
-                .then(response => response.json())
-                .then(data => {
-                    const downloadLinks = data.data.results.map(result => result.downloadUrl.find(item => item.quality === '48kbps').link);
-                    playAudioSequentially(downloadLinks);
-                })
-                .catch(error => console.error('Error:', error));
-        }
-
-        function playAudioSequentially(links) {
-            if (links.length === 0) {
-                console.log('No 48kbps links found.');
-                return;
-            }
-
-            currentIndex = 0;
-
-            // Play the first audio
-            playNextAudio(links);
-        }
-
-        function playNextAudio(links) {
-            const currentLink = links[currentIndex];
-            
-            if (currentLink) {
-                audioPlayer.src = currentLink;
-                audioPlayer.style.display = 'none';
-                audioPlayer.play();
-
-                audioPlayer.addEventListener('ended', () => {
-                    // Move to the next audio when the current one ends
-                    currentIndex++;
-                    playNextAudio(links);
-                });
-            } else {
-                // All audios have been played
-                console.log('All 48kbps audios have been played.');
-            }
-        }
-    </script>
-</body>
-</html>
-
-
+	
