@@ -705,8 +705,8 @@ width: 50%;
 	   
 	    
 	<button id="toggleButton">
-	<i class="fa fa-compress" id="exitFullscreenIcon" style="display: none;font-size:18px;color:red"></i>	
-    <i class="fa fa-expand" id="fullscreenIcon" style="font-size:18px;color:red"></i>	
+	<i class="fa fa-microphone" id="micBtn" style="display: none;font-size:18px;color:red"></i>	
+    <i class="fa fa-expand" id="micBtn" style="font-size:18px;color:red"></i>	
     
     
   </button>    
@@ -3878,5 +3878,77 @@ z-imdex:999999;
 </style>	
 
 
-	
+	<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+<body>
+    
+    <audio id="audioPlayer" controls style="display: none;"></audio>
+
+    <script>
+        const micBtn = document.getElementById('micBtn');
+        const audioPlayer = document.getElementById('audioPlayer');
+        let currentIndex = 0;
+
+        micBtn.addEventListener('click', () => {
+            const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+            recognition.lang = 'en-US';
+
+            recognition.onresult = (event) => {
+                const speechToText = event.results[0][0].transcript;
+                searchAndPlay(speechToText);
+            };
+
+            recognition.start();
+        });
+
+        function searchAndPlay(query) {
+            const searchUrl = `https://svn-vivekfy.vercel.app/search/songs?query=${encodeURIComponent(query)}`;
+
+            fetch(searchUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const downloadLinks = data.data.results.map(result => result.downloadUrl.find(item => item.quality === '48kbps').link);
+                    playAudioSequentially(downloadLinks);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function playAudioSequentially(links) {
+            if (links.length === 0) {
+                console.log('No 48kbps links found.');
+                return;
+            }
+
+            currentIndex = 0;
+
+            // Play the first audio
+            playNextAudio(links);
+        }
+
+        function playNextAudio(links) {
+            const currentLink = links[currentIndex];
+            
+            if (currentLink) {
+                audioPlayer.src = currentLink;
+                audioPlayer.style.display = 'none';
+                audioPlayer.play();
+
+                audioPlayer.addEventListener('ended', () => {
+                    // Move to the next audio when the current one ends
+                    currentIndex++;
+                    playNextAudio(links);
+                });
+            } else {
+                // All audios have been played
+                console.log('All 48kbps audios have been played.');
+            }
+        }
+    </script>
+</body>
+</html>
+
 
