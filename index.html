@@ -1809,7 +1809,7 @@ recognition.onresult = function(event) {
             lastResult.toLowerCase() === 'i need help' ||
             lastResult.toLowerCase() === 'kuchh puchhna tha tumse') {
             // Handle help commands
-            const butto1 = document.getElementById('voiceBtn');
+            const butto1 = document.getElementById('micBtn');
             butto1.click();
             playAudio('/sound/ask.mp3'); // Replace with the appropriate audio URL
             commandMatched = true;
@@ -3887,7 +3887,7 @@ z-imdex:999999;
 <body>
     
     <audio id="audioPlayer" controls style="display: none;"></audio>
-
+<b id="micBtn"></b>
     <script>
         const micBtn = document.getElementById('micBtn');
         const audioPlayer = document.getElementById('audioPlayer');
