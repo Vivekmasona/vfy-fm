@@ -47,8 +47,8 @@
   "shortcuts": [
 
     {
-      "name": "Downloader",
-      "url": "/copy/svn",
+      "name": "VFY-SAWAN",
+      "url": "/sawan/index.html",
       "icons": [
         {
           "src": "/img/viveklogo.png",
