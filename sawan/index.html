@@ -1,10 +1,9 @@
 <body>
-<div class="loader"></div>
+<div class="loader" style="display: none;"></div>
 <div class="main section" id="main"><div class="widget HTML" data-version="1" id="HTML1">
 <div class="widget-content">
 
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   
   
@@ -21,8 +20,56 @@
       background-attachment: fixed;
       font-family: Arial, sans-serif;
       color: white;
-      backdrop-filter: blur(5px); /* Add blur effect */
+      backdrop-filter: blur(10px); /* Add blur effect */
       transition: background-image 0.5s ease-in-out; /* Add smooth transition */
+    }
+
+    #searchBox {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
+
+    #searchInput {
+      width: calc(100% - 60px);
+      height: 40px;
+      padding: 10px;
+      border: none;
+      border-radius: 20px;
+      background-color: rgba(255, 255, 255, 0.2);
+      color: #E74C3C;
+      font-size: 16px;
+      outline: none;
+      transition: background-color 0.3s ease-in-out;
+    }
+
+    #searchInput:focus {
+      background-color: rgba(255, 255, 255, 0.4);
+    }
+
+    #searchButton {
+      width: 60px;
+      height: 40px;
+      border: none;
+      border-radius: 20px;
+      background-color: rgba(255, 255, 255, 0.2);
+      color:#E74C3C;
+      font-size: 16px;
+      cursor: pointer;
+      margin-left: 10px;
+      outline: none;
+      transition: background-color 0.3s ease-in-out;
+    }
+
+    #searchButton:hover {
+      background-color: rgba(255, 255, 255, 0.4);
     }
 
     #footer {
@@ -31,7 +78,7 @@
       left: 0;
       width: 100%;
       height: 60px;
-      background-color: #E74C3C;
+      background-color: #333;
       display: flex;
       align-items: center;
       padding: 0 10px;
@@ -50,47 +97,69 @@
     #nextIcon,
     #micIcon {
       font-size: 24px;
-      color: white;
+      color: #E74C3C; /* Set icon color to E74C3C */
       cursor: pointer;
       margin: 0 10px;
     }
 
-    #audioPlayer {
-      width: calc(100% - 190px);
+    #audioPlayer,
+    #watermarkAudio {
+      display: none; /* Initially hide watermark audio */
     }
 
     #currentSongTitle {
-      color: #333;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 44px;
-  text-align: center;
-  width: 100%;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Black shadow */
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8); /* Glowing effect */
-}
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 24px;
+      text-align: center;
+      width: 100%;
+    }
 
-
+    #watermark {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 30px;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      pointer-events: none;
+      display: none; /* Initially hide watermark */
+    }
   </style>
 
 
 
+<div id="searchBox">
+  <input type="text" id="searchInput" placeholder="Vivekfy Song Store">
+  <button id="searchButton" onclick="searchSongs()"><i class="fas fa-search"></i></button>
+</div>
+
 <div id="footer">
-  <img id="poster" src="/img/newdp.png" alt="vivekmasona.jpg">
+  <img id="poster" src="https://via.placeholder.com/150x150" alt="Poster">
   <i id="prevIcon" class="fas fa-step-backward" onclick="playPreviousSong()"></i>
   <i id="playPauseIcon" class="fas fa-play" onclick="togglePlayPause()"></i>
   <i id="nextIcon" class="fas fa-step-forward" onclick="playNextSong()"></i>
-  <input type="range" id="seekBar" value="0" step="1" style="flex-grow: 1;">
+  <input type="range" id="seekBar" value="0" step="1" style="flex-grow: 1; background-color: #E74C3C;"> <!-- Set seek bar color -->
   <i id="micIcon" class="fas fa-microphone"></i>
 </div>
 
 <p id="currentSongTitle"></p>
 
+<div id="watermark">Watermark</div>
+
+<audio id="audioPlayer" controls=""></audio>
+<audio id="watermarkAudio" src="path/to/watermark.mp3" preload="auto"></audio>
+
 <script>
   var recognition = new webkitSpeechRecognition();
-  var audioPlayer = document.createElement('audio');
+  var audioPlayer = document.getElementById('audioPlayer');
+  var watermarkAudio = document.getElementById('watermarkAudio');
   var playPauseIcon = document.getElementById('playPauseIcon');
   var prevIcon = document.getElementById('prevIcon');
   var nextIcon = document.getElementById('nextIcon');
@@ -98,12 +167,11 @@
   var currentSongTitle = document.getElementById('currentSongTitle');
   var posterImage = document.getElementById('poster');
   var seekBar = document.getElementById('seekBar');
+  var watermarkDiv = document.getElementById('watermark');
+  var searchInput = document.getElementById('searchInput');
   var isPlaying = false;
   var playlist = [];
   var currentSongIndex = 0;
-
-  // Append the audio element to the body
-  document.body.appendChild(audioPlayer);
 
   // Function to play the next song in the playlist
   function playNextSong() {
@@ -141,12 +209,18 @@
 
       // Display poster image and update background
       posterImage.src = song.image[2]?.link; // Use "150x150" quality
-      document.body.style.backgroundImage = `url('${song.image[2]?.link}')`; // Use "500x500" quality
+      document.body.style.backgroundImage = `url('${song.image[0]?.link}')`; // Use "500x500" quality
 
       // Update seek bar duration
       audioPlayer.addEventListener('loadedmetadata', function() {
         seekBar.max = audioPlayer.duration;
       });
+
+      // Set a timeout to display watermark after 1 minute (60000 milliseconds)
+      setTimeout(() => {
+        watermarkDiv.style.display = 'flex';
+        watermarkAudio.play(); // Play watermark sound
+      }, 60000);
     } else {
       console.log('Song URL not found.');
     }
@@ -212,19 +286,40 @@
       recognition.start();
     }
   });
+
+  // Function to search for songs based on input
+  function searchSongs() {
+    const searchTerm = searchInput.value.trim();
+    if (searchTerm !== '') {
+      // Make API request to your server with the search term as the query
+      fetch(`https://svn-vivekfy.vercel.app/search/songs?query=${encodeURIComponent(searchTerm)}`)
+        .then(response => response.json())
+        .then(data => {
+          // Update the playlist with the new songs
+          playlist = data?.data?.results || [];
+          currentSongIndex = 0;
+
+          // Play the first song in the playlist
+          playSongAtIndex(currentSongIndex);
+        })
+        .catch(error => {
+          console.error('Error fetching song data:', error);
+        });
+    }
+  }
 </script>
 
 
 <!--!doctype-->
 </div>
 <div class="clear"></div>
-</div></div><audio></audio>
+</div></div>
 <!-- Please Keep The Credits -->
 
-<script type="text/javascript" src="https://www.blogger.com/static/v1/widgets/577263412-widgets.js"></script>
+<script type="text/javascript" src="https://www.blogger.com/static/v1/widgets/679989195-widgets.js"></script>
 <script type="text/javascript">
-window['__wavt'] = 'AOuZoY7gtILIhhaTY5ZXyKe_Si9vhbxtBg:1705160129036';_WidgetManager._Init('//www.blogger.com/rearrange?blogID\x3d6805661424583227907','//vfy-api.blogspot.com/','6805661424583227907');
-_WidgetManager._SetDataContext([{'name': 'blog', 'data': {'blogId': '6805661424583227907', 'title': 'vfy', 'url': 'https://vfy-api.blogspot.com/', 'canonicalUrl': 'https://vfy-api.blogspot.com/', 'homepageUrl': 'https://vfy-api.blogspot.com/', 'searchUrl': 'https://vfy-api.blogspot.com/search', 'canonicalHomepageUrl': 'https://vfy-api.blogspot.com/', 'blogspotFaviconUrl': 'https://vfy-api.blogspot.com/favicon.ico', 'bloggerUrl': 'https://www.blogger.com', 'hasCustomDomain': false, 'httpsEnabled': true, 'enabledCommentProfileImages': true, 'gPlusViewType': 'FILTERED_POSTMOD', 'adultContent': false, 'analyticsAccountNumber': '', 'encoding': 'UTF-8', 'locale': 'en', 'localeUnderscoreDelimited': 'en', 'languageDirection': 'ltr', 'isPrivate': false, 'isMobile': false, 'isMobileRequest': true, 'mobileClass': '', 'isPrivateBlog': false, 'isDynamicViewsAvailable': true, 'feedLinks': '\x3clink rel\x3d\x22alternate\x22 type\x3d\x22application/atom+xml\x22 title\x3d\x22vfy - Atom\x22 href\x3d\x22https://vfy-api.blogspot.com/feeds/posts/default\x22 /\x3e\n\x3clink rel\x3d\x22alternate\x22 type\x3d\x22application/rss+xml\x22 title\x3d\x22vfy - RSS\x22 href\x3d\x22https://vfy-api.blogspot.com/feeds/posts/default?alt\x3drss\x22 /\x3e\n\x3clink rel\x3d\x22service.post\x22 type\x3d\x22application/atom+xml\x22 title\x3d\x22vfy - Atom\x22 href\x3d\x22https://www.blogger.com/feeds/6805661424583227907/posts/default\x22 /\x3e\n', 'meTag': '', 'adsenseHostId': 'ca-host-pub-1556223355139109', 'adsenseHasAds': false, 'adsenseAutoAds': false, 'boqCommentIframeForm': true, 'loginRedirectParam': '', 'view': '', 'dynamicViewsCommentsSrc': '//www.blogblog.com/dynamicviews/4224c15c4e7c9321/js/comments.js', 'dynamicViewsScriptSrc': '//www.blogblog.com/dynamicviews/46691d540313b8d7', 'plusOneApiSrc': 'https://apis.google.com/js/platform.js', 'disableGComments': true, 'interstitialAccepted': false, 'sharing': {'platforms': [{'name': 'Get link', 'key': 'link', 'shareMessage': 'Get link', 'target': ''}, {'name': 'Facebook', 'key': 'facebook', 'shareMessage': 'Share to Facebook', 'target': 'facebook'}, {'name': 'BlogThis!', 'key': 'blogThis', 'shareMessage': 'BlogThis!', 'target': 'blog'}, {'name': 'Twitter', 'key': 'twitter', 'shareMessage': 'Share to Twitter', 'target': 'twitter'}, {'name': 'Pinterest', 'key': 'pinterest', 'shareMessage': 'Share to Pinterest', 'target': 'pinterest'}, {'name': 'Email', 'key': 'email', 'shareMessage': 'Email', 'target': 'email'}], 'disableGooglePlus': true, 'googlePlusShareButtonWidth': 0, 'googlePlusBootstrap': '\x3cscript type\x3d\x22text/javascript\x22\x3ewindow.___gcfg \x3d {\x27lang\x27: \x27en\x27};\x3c/script\x3e'}, 'hasCustomJumpLinkMessage': false, 'jumpLinkMessage': 'Read more', 'pageType': 'index', 'pageName': '', 'pageTitle': 'vfy'}}, {'name': 'features', 'data': {}}, {'name': 'messages', 'data': {'edit': 'Edit', 'linkCopiedToClipboard': 'Link copied to clipboard!', 'ok': 'Ok', 'postLink': 'Post Link'}}, {'name': 'template', 'data': {'name': 'custom', 'localizedName': 'Custom', 'isResponsive': false, 'isAlternateRendering': false, 'isCustom': true}}, {'name': 'view', 'data': {'classic': {'name': 'classic', 'url': '?view\x3dclassic'}, 'flipcard': {'name': 'flipcard', 'url': '?view\x3dflipcard'}, 'magazine': {'name': 'magazine', 'url': '?view\x3dmagazine'}, 'mosaic': {'name': 'mosaic', 'url': '?view\x3dmosaic'}, 'sidebar': {'name': 'sidebar', 'url': '?view\x3dsidebar'}, 'snapshot': {'name': 'snapshot', 'url': '?view\x3dsnapshot'}, 'timeslide': {'name': 'timeslide', 'url': '?view\x3dtimeslide'}, 'isMobile': false, 'title': 'vfy', 'description': '', 'url': 'https://vfy-api.blogspot.com/', 'type': 'feed', 'isSingleItem': false, 'isMultipleItems': true, 'isError': false, 'isPage': false, 'isPost': false, 'isHomepage': true, 'isArchive': false, 'isLabelSearch': false}}]);
+window['__wavt'] = 'AOuZoY5YNVbTwPl0n1b9mybOUBE8BFz6Dg:1705198075421';_WidgetManager._Init('//draft.blogger.com/rearrange?blogID\x3d6805661424583227907','//vfy-api.blogspot.com/','6805661424583227907');
+_WidgetManager._SetDataContext([{'name': 'blog', 'data': {'blogId': '6805661424583227907', 'title': 'vfy', 'url': 'https://vfy-api.blogspot.com/', 'canonicalUrl': 'https://vfy-api.blogspot.com/', 'homepageUrl': 'https://vfy-api.blogspot.com/', 'searchUrl': 'https://vfy-api.blogspot.com/search', 'canonicalHomepageUrl': 'https://vfy-api.blogspot.com/', 'blogspotFaviconUrl': 'https://vfy-api.blogspot.com/favicon.ico', 'bloggerUrl': 'https://draft.blogger.com', 'hasCustomDomain': false, 'httpsEnabled': true, 'enabledCommentProfileImages': true, 'gPlusViewType': 'FILTERED_POSTMOD', 'adultContent': false, 'analyticsAccountNumber': '', 'encoding': 'UTF-8', 'locale': 'en', 'localeUnderscoreDelimited': 'en', 'languageDirection': 'ltr', 'isPrivate': false, 'isMobile': false, 'isMobileRequest': true, 'mobileClass': '', 'isPrivateBlog': false, 'isDynamicViewsAvailable': true, 'feedLinks': '\x3clink rel\x3d\x22alternate\x22 type\x3d\x22application/atom+xml\x22 title\x3d\x22vfy - Atom\x22 href\x3d\x22https://vfy-api.blogspot.com/feeds/posts/default\x22 /\x3e\n\x3clink rel\x3d\x22alternate\x22 type\x3d\x22application/rss+xml\x22 title\x3d\x22vfy - RSS\x22 href\x3d\x22https://vfy-api.blogspot.com/feeds/posts/default?alt\x3drss\x22 /\x3e\n\x3clink rel\x3d\x22service.post\x22 type\x3d\x22application/atom+xml\x22 title\x3d\x22vfy - Atom\x22 href\x3d\x22https://draft.blogger.com/feeds/6805661424583227907/posts/default\x22 /\x3e\n', 'meTag': '', 'adsenseHostId': 'ca-host-pub-1556223355139109', 'adsenseHasAds': false, 'adsenseAutoAds': false, 'boqCommentIframeForm': true, 'loginRedirectParam': '', 'view': '', 'dynamicViewsCommentsSrc': '//www.blogblog.com/dynamicviews/4224c15c4e7c9321/js/comments.js', 'dynamicViewsScriptSrc': '//www.blogblog.com/dynamicviews/46691d540313b8d7', 'plusOneApiSrc': 'https://apis.google.com/js/platform.js', 'disableGComments': true, 'interstitialAccepted': false, 'sharing': {'platforms': [{'name': 'Get link', 'key': 'link', 'shareMessage': 'Get link', 'target': ''}, {'name': 'Facebook', 'key': 'facebook', 'shareMessage': 'Share to Facebook', 'target': 'facebook'}, {'name': 'BlogThis!', 'key': 'blogThis', 'shareMessage': 'BlogThis!', 'target': 'blog'}, {'name': 'Twitter', 'key': 'twitter', 'shareMessage': 'Share to Twitter', 'target': 'twitter'}, {'name': 'Pinterest', 'key': 'pinterest', 'shareMessage': 'Share to Pinterest', 'target': 'pinterest'}, {'name': 'Email', 'key': 'email', 'shareMessage': 'Email', 'target': 'email'}], 'disableGooglePlus': true, 'googlePlusShareButtonWidth': 0, 'googlePlusBootstrap': '\x3cscript type\x3d\x22text/javascript\x22\x3ewindow.___gcfg \x3d {\x27lang\x27: \x27en\x27};\x3c/script\x3e'}, 'hasCustomJumpLinkMessage': false, 'jumpLinkMessage': 'Read more', 'pageType': 'index', 'pageName': '', 'pageTitle': 'vfy'}}, {'name': 'features', 'data': {}}, {'name': 'messages', 'data': {'edit': 'Edit', 'linkCopiedToClipboard': 'Link copied to clipboard!', 'ok': 'Ok', 'postLink': 'Post Link'}}, {'name': 'template', 'data': {'name': 'custom', 'localizedName': 'Custom', 'isResponsive': false, 'isAlternateRendering': false, 'isCustom': true}}, {'name': 'view', 'data': {'classic': {'name': 'classic', 'url': '?view\x3dclassic'}, 'flipcard': {'name': 'flipcard', 'url': '?view\x3dflipcard'}, 'magazine': {'name': 'magazine', 'url': '?view\x3dmagazine'}, 'mosaic': {'name': 'mosaic', 'url': '?view\x3dmosaic'}, 'sidebar': {'name': 'sidebar', 'url': '?view\x3dsidebar'}, 'snapshot': {'name': 'snapshot', 'url': '?view\x3dsnapshot'}, 'timeslide': {'name': 'timeslide', 'url': '?view\x3dtimeslide'}, 'isMobile': false, 'title': 'vfy', 'description': '', 'url': 'https://vfy-api.blogspot.com/', 'type': 'feed', 'isSingleItem': false, 'isMultipleItems': true, 'isError': false, 'isPage': false, 'isPost': false, 'isHomepage': true, 'isArchive': false, 'isLabelSearch': false}}]);
 _WidgetManager._RegisterWidget('_HTMLView', new _WidgetInfo('HTML1', 'main', document.getElementById('HTML1'), {}, 'displayModeFull'));
 </script>
 
