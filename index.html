@@ -1481,19 +1481,15 @@ function convertTimeToSeconds(time) {
   return (minutes * 60) + seconds;
 }
 
-// Add an event listener to the "Play Video" butto
 var playVideobutto = document.getElementById("playVideobutto");
-playVideobutto.addEventListener("click", function() {
-// Pause audio elements with the ID "SAudio"
+playVideobutto.addEventListener("click", function () {
     var audioElements = document.querySelectorAll("#SAudio");
     for (var i = 0; i < audioElements.length; i++) {
         audioElements[i].pause();
     }
 
-    // Construct the video URL with the video ID and time
     var videoUrl = "https://vivekmasona.000webhostapp.com/video?id=" + id;
 
-    // Create and display the video in a popup
     var modal = document.createElement("div");
     modal.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
     modal.style.position = "fixed";
@@ -1506,33 +1502,59 @@ playVideobutto.addEventListener("click", function() {
     modal.style.justifyContent = "center";
 
     var iframe = document.createElement("iframe");
-iframe.style.width = "100%"; // Set iframe width to 100%
-iframe.style.height = "100%"; // Set iframe height to 100%
-iframe.setAttribute("src", videoUrl);
-iframe.setAttribute("frameborder", "0");
-iframe.style.border = "0px solid #15e2f5"; // Add a 4px border around the iframe
-iframe.setAttribute("allowfullscreen", false);
-iframe.setAttribute("autoplay", "true");
+    iframe.style.width = "100%";
+    iframe.style.height = "100%";
+    iframe.setAttribute("src", videoUrl);
+    iframe.setAttribute("frameborder", "0");
+    iframe.style.border = "0px solid #15e2f5";
+    iframe.setAttribute("allowfullscreen", false);
+    iframe.setAttribute("autoplay", "true");
 
-    var closebutto = document.createElement("butto");
-closebutto.innerHTML = "&#10006;";
-closebutto.className = "close-butto";
-closebutto.style.color = "#ffffff"; // Text color
-closebutto.style.backgroundColor = "red"; // Background color
-closebutto.style.border = "0px"; // Remove the butto's border
-closebutto.addEventListener("click", function() {
-    document.body.removeChild(modal); // Close the modal when the butto is clicked
-});
-    // Style the close butto to overlay the video in the center
+    var closebutto = document.createElement("button");
+    closebutto.innerHTML = "&#10006;";
+    closebutto.className = "close-butto";
+    closebutto.style.color = "#ffffff";
+    closebutto.style.backgroundColor = "red";
+    closebutto.style.border = "0px";
     closebutto.style.position = "absolute";
-    closebutto.style.top = "38%";
-    closebutto.style.left = "95%";
-    closebutto.style.transform = "translate(-50%, -50%)"; // Center the butto
+    closebutto.style.top = "30%"; // Adjust the top position
+    closebutto.style.left = "5%"; // Adjust the left position
+    closebutto.style.transform = "translate(-50%, -50%)";
+
+    closebutto.addEventListener("click", function () {
+        document.body.removeChild(modal);
+    });
+
+    var fullScreenButton = document.createElement("button");
+    fullScreenButton.innerHTML = "Full Screen";
+    fullScreenButton.className = "fullscreen-button";
+    fullScreenButton.style.color = "#ffffff";
+    fullScreenButton.style.backgroundColor = "#3498db";
+    fullScreenButton.style.border = "0px";
+    fullScreenButton.style.position = "absolute";
+    fullScreenButton.style.bottom = "5%";
+    fullScreenButton.style.left = "50%";
+    fullScreenButton.style.transform = "translateX(-50%)";
+
+    fullScreenButton.addEventListener("click", function () {
+        if (modal.requestFullscreen) {
+            modal.requestFullscreen();
+        } else if (modal.mozRequestFullScreen) {
+            modal.mozRequestFullScreen();
+        } else if (modal.webkitRequestFullscreen) {
+            modal.webkitRequestFullscreen();
+        } else if (modal.msRequestFullscreen) {
+            modal.msRequestFullscreen();
+        }
+    });
 
     modal.appendChild(iframe);
     modal.appendChild(closebutto);
+    modal.appendChild(fullScreenButton);
     document.body.appendChild(modal);
 });
+
+    
 
 	
     
