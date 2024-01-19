@@ -1511,10 +1511,10 @@ playVideoButton.addEventListener("click", function() {
     video.autoplay = true;
 
     var closeButton = document.createElement("button");
-    closeButton.innerHTML = "&#10006;";
+    closeButton.innerHTML = "pip";
     closeButton.className = "close-button";
-    closeButton.style.color = "#ffffff";
-    closeButton.style.backgroundColor = "red";
+    closeButton.style.color = "#E74C3C";
+    closeButton.style.backgroundColor = "#333";
     closeButton.style.border = "0";
     closeButton.addEventListener("click", function() {
         document.body.removeChild(overlayBox);
