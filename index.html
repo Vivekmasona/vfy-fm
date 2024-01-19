@@ -1520,20 +1520,7 @@ playVideoButton.addEventListener("click", function() {
         document.body.removeChild(overlayBox);
     });
 
-    var playButton = document.createElement("button");
-    playButton.innerHTML = "▶"; // Unicode character for play
-    playButton.className = "play-button";
-    playButton.style.color = "#ffffff";
-    playButton.style.backgroundColor = "green";
-    playButton.style.border = "0";
-    playButton.style.position = "absolute";
-    playButton.style.top = "50%";
-    playButton.style.left = "50%";
-    playButton.style.transform = "translate(-50%, -50%)";
-    playButton.addEventListener("click", function() {
-        video.play();
-        playButton.style.display = "none"; // Hide the play button once clicked
-    });
+    
 
     overlayBox.appendChild(video);
     overlayBox.appendChild(closeButton);
