@@ -1520,24 +1520,25 @@ playVideoButton.addEventListener("click", function() {
         document.body.removeChild(overlayBox);
     });
 
-    var playButton = document.createElement("button");
-    playButton.innerHTML = "VFY"; // Unicode character for play
-    playButton.className = "play-button";
-    playButton.style.color = "#E74C3C";
-    playButton.style.backgroundColor = "#333";
-    playButton.style.border = "0";
-    playButton.style.position = "absolute";
-    playButton.style.top = "0%";
-    playButton.style.left = "0%";
-    playButton.style.transform = "translate(-0%, -0%)";
-    playButton.addEventListener("click", function() {
-        video.play();
-        playButton.style.display = "none"; // Hide the play button once clicked
+    var pipButton = document.createElement("button");
+    pipButton.innerHTML = "PiP"; // Text for PiP button
+    pipButton.className = "pip-button";
+    pipButton.style.color = "#ffffff";
+    pipButton.style.backgroundColor = "blue";
+    pipButton.style.border = "0";
+    pipButton.style.position = "absolute";
+    pipButton.style.top = "50%";
+    pipButton.style.left = "50%";
+    pipButton.style.transform = "translate(-50%, -50%)";
+    pipButton.addEventListener("click", function() {
+        if (video.requestPictureInPicture) {
+            video.requestPictureInPicture();
+        }
     });
 
     overlayBox.appendChild(video);
     overlayBox.appendChild(closeButton);
-    overlayBox.appendChild(playButton);
+    overlayBox.appendChild(pipButton);
     document.body.appendChild(overlayBox);
 });
 
