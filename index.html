@@ -1489,7 +1489,11 @@ playVideoButton.addEventListener("click", function() {
     for (var i = 0; i < audioElements.length; i++) {
         audioElements[i].pause();
     }
-
+// Check if the video is already loaded
+    var existingVideo = document.getElementById("overlayVideo");
+    if (existingVideo) {
+        return; // If video is already loaded, do nothing
+    }
     // Construct the video URL with the video ID and time
     var videoUrl = "https://vivekfy.vercel.app/video?url=https://youtu.be/" + id;
 
