@@ -1485,16 +1485,19 @@ function convertTimeToSeconds(time) {
 var playVideoButton = document.getElementById("playVideobutto");
 
 playVideoButton.addEventListener("click", function() {
-    // Pause audio elements with the ID "SAudio"
-    var audioElements = document.querySelectorAll("#SAudio");
-    for (var i = 0; i < audioElements.length; i++) {
-        audioElements[i].pause();
-    }
-
-    // Construct the video URL with the video ID and time
-    var videoUrl = "https://vivekfy.vercel.app/video?url=https://youtu.be/" + id;
+    // Construct the YouTube video URL
+    var videoUrl = "https://vivekfy.vercel.app/video?url=https://youtu.be/";
 
     // Create and display the video in a small overlay box with controls
+    var overlayBox = document.createElement("div");
+    overlayBox.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
+    overlayBox.style.position = "fixed";
+    overlayBox.style.top = "50%";
+    overlayBox.style.left = "50%";
+    overlayBox.style.transform = "translate(-50%, -50%)";
+    overlayBox.style.width = "300px"; // Set the width of the overlay box
+    overlayBox.style.height = "200px"; // Set the height of the overlay box
+
     var video = document.createElement("video");
     video.style.width = "100%";
     video.style.height = "100%";
@@ -1502,21 +1505,39 @@ playVideoButton.addEventListener("click", function() {
     video.controls = true; // Show video controls
     video.autoplay = true;
 
-    // Trigger PiP mode immediately
-    if (video.requestPictureInPicture) {
-        video.requestPictureInPicture();
-    }
-
-    video.addEventListener('enterpictureinpicture', function() {
-        // Handle actions when entering PiP mode, if needed
+    var closeButton = document.createElement("button");
+    closeButton.innerHTML = "&#10006;";
+    closeButton.className = "close-button";
+    closeButton.style.color = "#ffffff";
+    closeButton.style.backgroundColor = "red";
+    closeButton.style.border = "0";
+    closeButton.addEventListener("click", function() {
+        document.body.removeChild(overlayBox);
     });
 
-    video.addEventListener('leavepictureinpicture', function() {
-        // Handle actions when leaving PiP mode, if needed
+    var pipButton = document.createElement("button");
+    pipButton.innerHTML = '<i class="fas fa-compress-arrows-alt"></i>'; // Font Awesome icon for PiP
+    pipButton.className = "pip-button";
+    pipButton.style.color = "#ffffff";
+    pipButton.style.backgroundColor = "blue";
+    pipButton.style.border = "0";
+    pipButton.style.position = "absolute";
+    pipButton.style.top = "50%";
+    pipButton.style.left = "50%";
+    pipButton.style.transform = "translate(-50%, -50%)";
+    pipButton.addEventListener("click", function() {
+        if (video.requestPictureInPicture) {
+            video.play(); // Start the video
+            video.requestPictureInPicture();
+            overlayBox.style.display = "none"; // Hide the overlay box when in PiP mode
+        }
     });
+
+    overlayBox.appendChild(video);
+    overlayBox.appendChild(closeButton);
+    overlayBox.appendChild(pipButton);
+    document.body.appendChild(overlayBox);
 });
-
-
     
 
 	
