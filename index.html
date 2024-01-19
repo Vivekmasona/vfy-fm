@@ -1481,73 +1481,66 @@ function convertTimeToSeconds(time) {
   return (minutes * 60) + seconds;
 }
 
-var playVideobutto = document.getElementById("playVideobutto");
-playVideobutto.addEventListener("click", function () {
-    // Pause all audio elements
+var playVideoButton = document.getElementById("playVideobutto");
+
+playVideoButton.addEventListener("click", function() {
+    // Pause audio elements with the ID "SAudio"
     var audioElements = document.querySelectorAll("#SAudio");
     for (var i = 0; i < audioElements.length; i++) {
         audioElements[i].pause();
     }
 
-    // Find the currently playing audio element
-    var currentAudio = null;
-    for (var i = 0; i < audioElements.length; i++) {
-        if (!audioElements[i].paused) {
-            currentAudio = audioElements[i];
-            break;
-        }
-    }
+    // Construct the video URL with the video ID and time
+    var videoUrl = "https://vivekmasona.000webhostapp.com/video?id=" + id;
 
-    if (currentAudio) {
-        // Extract video ID from the current audio element
-        var id = currentAudio.getAttribute("data-video-id");
-        if (id) {
-            var videoUrl = "https://vivekmasona.000webhostapp.com/video?id=" + id;
+    // Create and display the video in a small overlay box with controls
+    var overlayBox = document.createElement("div");
+    overlayBox.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
+    overlayBox.style.position = "fixed";
+    overlayBox.style.top = "50%";
+    overlayBox.style.left = "50%";
+    overlayBox.style.transform = "translate(-50%, -50%)";
+    overlayBox.style.width = "300px"; // Set the width of the overlay box
+    overlayBox.style.height = "200px"; // Set the height of the overlay box
 
-            // Create and display the video in a popup
-            var modal = document.createElement("div");
-            modal.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
-            modal.style.position = "fixed";
-            modal.style.top = "0";
-            modal.style.left = "0";
-            modal.style.width = "100%";
-            modal.style.height = "100%";
-            modal.style.display = "flex";
-            modal.style.alignItems = "center";
-            modal.style.justifyContent = "center";
+    var video = document.createElement("video");
+    video.style.width = "100%";
+    video.style.height = "100%";
+    video.src = videoUrl;
+    video.controls = true; // Show video controls
+    video.autoplay = true;
 
-            var iframe = document.createElement("iframe");
-            iframe.style.width = "100%";
-            iframe.style.height = "100%";
-            iframe.setAttribute("src", videoUrl);
-            iframe.setAttribute("frameborder", "0");
-            iframe.style.border = "0px solid #15e2f5";
-            iframe.setAttribute("allowfullscreen", false);
-            iframe.setAttribute("autoplay", "true");
+    var closeButton = document.createElement("button");
+    closeButton.innerHTML = "&#10006;";
+    closeButton.className = "close-button";
+    closeButton.style.color = "#ffffff";
+    closeButton.style.backgroundColor = "red";
+    closeButton.style.border = "0";
+    closeButton.addEventListener("click", function() {
+        document.body.removeChild(overlayBox);
+    });
 
-            var closebutto = document.createElement("button");
-            closebutto.innerHTML = "&#10006;";
-            closebutto.className = "close-butto";
-            closebutto.style.color = "#ffffff";
-            closebutto.style.backgroundColor = "red";
-            closebutto.style.border = "0px";
-            closebutto.style.position = "absolute";
-            closebutto.style.top = "30%";
-            closebutto.style.left = "5%";
-            closebutto.style.transform = "translate(-50%, -50%)";
+    var playButton = document.createElement("button");
+    playButton.innerHTML = "▶"; // Unicode character for play
+    playButton.className = "play-button";
+    playButton.style.color = "#ffffff";
+    playButton.style.backgroundColor = "green";
+    playButton.style.border = "0";
+    playButton.style.position = "absolute";
+    playButton.style.top = "50%";
+    playButton.style.left = "50%";
+    playButton.style.transform = "translate(-50%, -50%)";
+    playButton.addEventListener("click", function() {
+        video.play();
+        playButton.style.display = "none"; // Hide the play button once clicked
+    });
 
-            closebutto.addEventListener("click", function () {
-                document.body.removeChild(modal);
-            });
-
-            // Rest of your full-screen button creation goes here if needed
-
-            modal.appendChild(iframe);
-            modal.appendChild(closebutto);
-            document.body.appendChild(modal);
-        }
-    }
+    overlayBox.appendChild(video);
+    overlayBox.appendChild(closeButton);
+    overlayBox.appendChild(playButton);
+    document.body.appendChild(overlayBox);
 });
+
     
 
 	
