@@ -3879,4 +3879,43 @@ z-imdex:999999;
 </style>	
 
 
+
+
+
+<b id="playButton" onclick="playPauseMusic()"></b>
+
+<script>
+    let isMusicPlaying = false;
+
+    function playPauseMusic() {
+        let audio = document.getElementById('SAudio');
+        
+        if (isMusicPlaying) {
+            // Pause the music
+            audio.pause();
+        } else {
+            // Play the music
+            audio.play();
+        }
+
+        isMusicPlaying = !isMusicPlaying;
+        updateBackButton();
+    }
+
+    function updateBackButton() {
+        if (isMusicPlaying) {
+            // Disable back functionality
+            window.history.pushState(null, null, window.location.href);
+            window.onpopstate = function () {
+                window.history.pushState(null, null, window.location.href);
+            };
+        } else {
+            // Enable back functionality
+            window.onpopstate = function () {};
+        }
+    }
+</script>
+
+
+	
 	
