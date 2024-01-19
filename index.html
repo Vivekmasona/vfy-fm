@@ -1521,15 +1521,15 @@ playVideoButton.addEventListener("click", function() {
     });
 
     var playButton = document.createElement("button");
-    playButton.innerHTML = "PLAY"; // Unicode character for play
+    playButton.innerHTML = "💝"; // Unicode character for play
     playButton.className = "play-button";
     playButton.style.color = "#E74C3C";
     playButton.style.backgroundColor = "#333";
     playButton.style.border = "0";
     playButton.style.position = "absolute";
-    playButton.style.top = "50%";
-    playButton.style.left = "50%";
-    playButton.style.transform = "translate(-50%, -50%)";
+    playButton.style.top = "0%";
+    playButton.style.left = "0%";
+    playButton.style.transform = "translate(-0%, -0%)";
     playButton.addEventListener("click", function() {
         video.play();
         playButton.style.display = "none"; // Hide the play button once clicked
