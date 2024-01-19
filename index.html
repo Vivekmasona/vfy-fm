@@ -2984,16 +2984,35 @@ background: radial-gradient(circle, rgba(59,175,194,0.9557312232860621) 0%, rgba
 
 <script>
     // Function to open the modal
-    function openModal() {
-      document.getElementById("modal").style.display = "block";
-      // Automatically close the modal after 2 minutes (120,000 milliseconds)
-      setTimeout(closeModal, 4000000);
-    }
+function openModal() {
+  document.getElementById("modal").style.display = "block";
+  // Automatically close the modal after 2 minutes (120,000 milliseconds)
+  setTimeout(closeModal, 120000);
 
-    // Function to close the modal
-    function closeModal() {
-      document.getElementById("modal").style.display = "none";
-    }
+  // Add event listener for the back button
+  window.addEventListener("popstate", closeModalOnBack);
+
+  // Push a dummy state to the history to enable popstate event
+  history.pushState(null, null, window.location.href);
+}
+
+// Function to close the modal
+function closeModal() {
+  document.getElementById("modal").style.display = "none";
+  // Remove the event listener when the modal is closed
+  window.removeEventListener("popstate", closeModalOnBack);
+}
+
+// Function to close the modal when the back button is pressed
+function closeModalOnBack() {
+  closeModal();
+  // Navigate back one step in the history to maintain proper behavior
+  history.back();
+}
+
+// Trigger openModal when the page loads (you can adjust this based on your requirements)
+window.onload = openModal;
+
   </script>
 
 <style>
