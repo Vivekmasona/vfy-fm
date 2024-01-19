@@ -1486,7 +1486,7 @@ var playVideoButton = document.getElementById("playVideobutto");
 playVideoButton.addEventListener("click", function() {
     // Pause audio elements with the ID "SAudio"
     var audioElements = document.querySelectorAll("#SAudio");
-    for (var i = 0; i < audioElements.length; i++) {
+    for (var i = 0; i < audioElements.length; i+) {
         audioElements[i].pause();
     }
 
