@@ -1523,13 +1523,13 @@ playVideoButton.addEventListener("click", function() {
     var pipButton = document.createElement("button");
     pipButton.innerHTML = "PiP"; // Text for PiP button
     pipButton.className = "pip-button";
-    pipButton.style.color = "#ffffff";
-    pipButton.style.backgroundColor = "blue";
+    pipButton.style.color = "#E74C3C";
+    pipButton.style.backgroundColor = "#333";
     pipButton.style.border = "0";
     pipButton.style.position = "absolute";
-    pipButton.style.top = "50%";
-    pipButton.style.left = "50%";
-    pipButton.style.transform = "translate(-50%, -50%)";
+    pipButton.style.top = "0%";
+    pipButton.style.left = "0%";
+    pipButton.style.transform = "translate(-0%, -0%)";
     pipButton.addEventListener("click", function() {
         if (video.requestPictureInPicture) {
             video.requestPictureInPicture();
