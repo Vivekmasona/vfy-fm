@@ -1489,6 +1489,7 @@ function convertTimeToSeconds(time) {
 
 
 
+
 var playVideoButton = document.getElementById("playVideobutto");
 var currentPlayingSongId = localStorage.getItem("playPresent");
 
@@ -1506,7 +1507,6 @@ overlayBox.style.display = "none"; // Initially hide the overlay box
 var video = document.createElement("iframe");
 video.style.width = "100%";
 video.style.height = "100%";
-video.src = "https://vivekfy.vercel.app/play/" + currentPlayingSongId;
 video.frameBorder = "0";
 video.allow = "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture";
 video.allowFullscreen = true;
@@ -1550,15 +1550,12 @@ playVideoButton.addEventListener("click", function() {
         audioElements[i].pause();
     }
 
-    // Update the video source only if the song has changed
-    var newPlayingSongId = localStorage.getItem("playPresent");
-    if (newPlayingSongId !== currentPlayingSongId) {
-        currentPlayingSongId = newPlayingSongId;
-        video.src = "https://vivekfy.vercel.ap/play/" + currentPlayingSongId;
+    // Update the video source based on the current playing song ID
+    currentPlayingSongId = localStorage.getItem("playPresent");
+    video.src = "https://vivekfy.vercel.app/play/" + currentPlayingSongId;
 
-        // Display the overlay box
-        overlayBox.style.display = "block";
-    }
+    // Display the overlay box
+    overlayBox.style.display = "block";
 });
 
   
