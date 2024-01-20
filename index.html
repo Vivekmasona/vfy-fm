@@ -1491,8 +1491,8 @@ function convertTimeToSeconds(time) {
 
 
 
-var playVideoButton = document.getElementById("playVideobutto");
-var overlayBox = null;
+
+    var playVideoButton = document.getElementById("playVideobutto");
 var player = null;
 
 playVideoButton.addEventListener("click", function() {
@@ -1504,31 +1504,62 @@ playVideoButton.addEventListener("click", function() {
 
     var currentPlayingSongId = localStorage.getItem("playPresent");
 
-    // Close the existing overlay box if it exists
-    var existingOverlayBox = document.getElementById("overlayBox");
-    if (existingOverlayBox) {
-        document.body.removeChild(existingOverlayBox);
-        if (player) {
-            player.destroy(); // Destroy Plyr player instance when closing the overlay
-            player = null;
-        }
+    // Initialize Plyr player with autoplay
+    player = new Plyr('#plyr-video', {
+        controls: ['play', 'progress', 'mute', 'volume', 'pip', 'airplay', 'fullscreen'],
+        autoplay: true,
+        autopause: false,
+        hideControls: false // Set to true if you want to hide controls initially
+    });
+
+    // Load the video source based on the current playing song ID
+    player.source({
+        type: 'video',
+        sources: [
+            {
+                src: 'https://vivekfy.vercel.app/play/' + currentPlayingSongId,
+                type: 'video/mp4',
+            },
+        ],
+    });
+
+    // Enter PiP mode if supported
+    if ('pictureInPictureEnabled' in document) {
+        player.on('play', function() {
+            if (player.pip === undefined) {
+                player.togglePictureInPicture();
+            }
+        });
     }
 
-    // Create and display the video in a new overlay box with Plyr player
-    overlayBox = document.createElement("div");
+    // Hide the overlay on play
+    player.on('play', function() {
+        var overlayBox = document.getElementById("overlayBox");
+        if (overlayBox) {
+            overlayBox.style.display = 'none';
+        }
+    });
+
+    // Show the overlay box when exiting PiP mode
+    document.addEventListener('fullscreenchange', function() {
+        if (document.fullscreenElement === null) {
+            var overlayBox = document.getElementById("overlayBox");
+            if (overlayBox) {
+                overlayBox.style.display = 'block';
+            }
+        }
+    });
+
+    // Display the overlay box initially
+    var overlayBox = document.createElement("div");
     overlayBox.id = "overlayBox";
     overlayBox.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
     overlayBox.style.position = "fixed";
     overlayBox.style.top = "50%";
     overlayBox.style.left = "50%";
     overlayBox.style.transform = "translate(-50%, -50%)";
-    overlayBox.style.width = "400px"; // Increased width for a better display
-    overlayBox.style.height = "300px"; // Increased height for a better display
-
-    var video = document.createElement("video");
-    video.style.width = "100%";
-    video.style.height = "100%";
-    video.controls = true; // Show default controls
+    overlayBox.style.width = "400px"; // Adjusted width for a better display
+    overlayBox.style.height = "300px"; // Adjusted height for a better display
 
     var closeButton = document.createElement("button");
     closeButton.innerHTML = "Exit";
@@ -1540,57 +1571,20 @@ playVideoButton.addEventListener("click", function() {
     closeButton.style.top = "5%";
     closeButton.style.left = "5%";
     closeButton.addEventListener("click", function() {
-        document.body.removeChild(overlayBox);
         if (player) {
             player.destroy(); // Destroy Plyr player instance when closing the overlay
             player = null;
         }
+        document.body.removeChild(overlayBox);
     });
 
-    overlayBox.appendChild(video);
     overlayBox.appendChild(closeButton);
     document.body.appendChild(overlayBox);
 
-    // Initialize Plyr player
-    player = new Plyr(video);
-
-    // Update the video source based on the current playing song ID
-    video.src = "https://vivekfy.vercel.app/play/" + currentPlayingSongId;
-
-    // Display the overlay box
-    overlayBox.style.display = "block";
-
-    // Override Android phone's back button press to close the overlay
-    window.onpopstate = function(event) {
-        if (overlayBox) {
-            document.body.removeChild(overlayBox);
-            if (player) {
-                player.destroy(); // Destroy Plyr player instance when closing the overlay
-                player = null;
-            }
-        }
-    };
-
-    history.pushState({}, ''); // Add a dummy state to the history stack
-    window.addEventListener('popstate', function() {
-        history.pushState({}, ''); // Ensure the dummy state stays in the history stack
-        if (overlayBox) {
-            document.body.removeChild(overlayBox);
-            if (player) {
-                player.destroy(); // Destroy Plyr player instance when closing the overlay
-                player = null;
-            }
-        }
-    });
-
-    // Listen for enter PiP event
-    player.on('enterpictureinpicture', function() {
-        // Hide the overlay box when entering PiP mode
-        if (overlayBox) {
-            overlayBox.style.display = "none";
-        }
-    });
+    // Display the overlay box initially
+    overlayBox.style.display = 'block';
 });
+
 
   
 
