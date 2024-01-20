@@ -469,6 +469,8 @@ box-shadow: 0 0 20px #000; /* Add dark black shadow */
 
 <html xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
 <head>
+<script src="https://cdn.plyr.io/3.6.3/plyr.js"></script>
+<link rel="stylesheet" href="https://cdn.plyr.io/3.6.3/plyr.css" />
 
 <script src="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery-1.11.3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/bootstrap.min.js"></script>
@@ -1490,6 +1492,7 @@ function convertTimeToSeconds(time) {
 
 var playVideoButton = document.getElementById("playVideobutto");
 var overlayBox = null;
+var player = null;
 
 playVideoButton.addEventListener("click", function() {
     // Pause audio elements with the ID "SAudio"
@@ -1506,7 +1509,7 @@ playVideoButton.addEventListener("click", function() {
         document.body.removeChild(existingOverlayBox);
     }
 
-    // Create and display the video in a new overlay box with controls
+    // Create and display the video in a new overlay box with Plyr player
     overlayBox = document.createElement("div");
     overlayBox.id = "overlayBox";
     overlayBox.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
@@ -1514,20 +1517,13 @@ playVideoButton.addEventListener("click", function() {
     overlayBox.style.top = "50%";
     overlayBox.style.left = "50%";
     overlayBox.style.transform = "translate(-50%, -50%)";
-    overlayBox.style.width = "300px";
-    overlayBox.style.height = "200px";
+    overlayBox.style.width = "400px"; // Increased width for a better display
+    overlayBox.style.height = "300px"; // Increased height for a better display
 
-    var video = document.createElement("iframe");
+    var video = document.createElement("video");
     video.style.width = "100%";
     video.style.height = "100%";
-    video.frameBorder = "0";
-    video.allow = "accelerometer; encrypted-media; gyroscope; picture-in-picture";
-    video.allowFullscreen = true;
-
-    // Wait for the iframe to load before attempting to play
-    video.addEventListener("load", function() {
-        video.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-    });
+    video.controls = true; // Show default controls
 
     var closeButton = document.createElement("button");
     closeButton.innerHTML = "Exit";
@@ -1537,29 +1533,18 @@ playVideoButton.addEventListener("click", function() {
     closeButton.style.border = "0";
     closeButton.addEventListener("click", function() {
         document.body.removeChild(overlayBox);
-    });
-
-    var pipButton = document.createElement("button");
-    pipButton.innerHTML = '<i class="fas fa-compress-arrows-alt"></i>'; // Font Awesome icon for PiP
-    pipButton.className = "pip-button";
-    pipButton.style.color = "#E74C3C";
-    pipButton.style.backgroundColor = "#333";
-    pipButton.style.border = "0";
-    pipButton.style.position = "absolute";
-    pipButton.style.top = "5%";
-    pipButton.style.left = "5%";
-    pipButton.style.transform = "translate(-5%, -5%)";
-    pipButton.addEventListener("click", function() {
-        if (video.requestPictureInPicture) {
-            video.requestPictureInPicture();
-            overlayBox.style.display = "none"; // Hide the overlay box when in PiP mode
+        if (player) {
+            player.destroy(); // Destroy Plyr player instance when closing the overlay
+            player = null;
         }
     });
 
     overlayBox.appendChild(video);
     overlayBox.appendChild(closeButton);
-    overlayBox.appendChild(pipButton);
     document.body.appendChild(overlayBox);
+
+    // Initialize Plyr player
+    player = new Plyr(video);
 
     // Update the video source based on the current playing song ID
     video.src = "https://vivekfy.vercel.app/play/" + currentPlayingSongId;
@@ -1567,6 +1552,7 @@ playVideoButton.addEventListener("click", function() {
     // Display the overlay box
     overlayBox.style.display = "block";
 });
+
 
 
 
