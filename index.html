@@ -1489,7 +1489,10 @@ function convertTimeToSeconds(time) {
 
 
 
-var playVideoButton = document.getElementById("playVideobutto");
+
+
+  var playVideoButton = document.getElementById("playVideobutto");
+var overlayBox = null; // Initialize overlayBox to null
 
 playVideoButton.addEventListener("click", function() {
     // Pause audio elements with the ID "SAudio"
@@ -1501,11 +1504,16 @@ playVideoButton.addEventListener("click", function() {
     // Get the current playing song ID from local storage
     var currentPlayingSongId = localStorage.getItem("playPresent");
 
-    // Construct the video URL with the current playing song ID
-    var videoUrl = "https://vivekfy.vercel.app/video?url=https://youtu.be/" + currentPlayingSongId;
+    // Close the existing overlay box if it exists
+    if (overlayBox) {
+        document.body.removeChild(overlayBox);
+    }
 
-    // Create and display the video in a small overlay box with controls
-    var overlayBox = document.createElement("div");
+    // Construct the video URL with the current playing song ID
+    var videoUrl = "https://vivekfy.vercel.app/play/" + currentPlayingSongId;
+
+    // Create and display the video in a new overlay box with controls
+    overlayBox = document.createElement("div");
     overlayBox.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
     overlayBox.style.position = "fixed";
     overlayBox.style.top = "50%";
@@ -1518,7 +1526,19 @@ playVideoButton.addEventListener("click", function() {
     video.style.width = "100%";
     video.style.height = "100%";
     video.src = videoUrl;
+    video.controls = true; // Show video controls
     video.autoplay = true;
+
+    var closeButton = document.createElement("button");
+    closeButton.innerHTML = "Exit";
+    closeButton.className = "close-button";
+    closeButton.style.color = "#E74C3C";
+    closeButton.style.backgroundColor = "#333";
+    closeButton.style.border = "0";
+    closeButton.addEventListener("click", function() {
+        document.body.removeChild(overlayBox);
+        overlayBox = null; // Reset overlayBox to null when closing the overlay
+    });
 
     var pipButton = document.createElement("button");
     pipButton.innerHTML = '<i class="fas fa-compress-arrows-alt"></i>'; // Font Awesome icon for PiP
@@ -1533,16 +1553,16 @@ playVideoButton.addEventListener("click", function() {
     pipButton.addEventListener("click", function() {
         if (video.requestPictureInPicture) {
             video.requestPictureInPicture();
+            overlayBox.style.display = "none"; // Hide the overlay box when in PiP mode
         }
     });
 
     overlayBox.appendChild(video);
+    overlayBox.appendChild(closeButton);
     overlayBox.appendChild(pipButton);
     document.body.appendChild(overlayBox);
 });
 
-
-  
   
 
     
