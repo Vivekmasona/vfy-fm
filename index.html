@@ -1483,6 +1483,7 @@ function convertTimeToSeconds(time) {
 
 
  var playVideoButton = document.getElementById("playVideobutto");
+var currentTime = 0; // Variable to store the current time
 
 playVideoButton.addEventListener("click", function() {
     // Pause audio elements with the ID "SAudio"
@@ -1491,14 +1492,14 @@ playVideoButton.addEventListener("click", function() {
         audioElements[i].pause();
     }
 
-    // Check if the video is already loaded
-    var existingVideo = document.getElementById("overlayVideo");
-    if (existingVideo) {
-        return; // If video is already loaded, do nothing
+    // Get the current time of the playing audio
+    var currentAudio = document.querySelector("#SAudio");
+    if (currentAudio) {
+        currentTime = currentAudio.currentTime;
     }
 
     // Construct the video URL with the video ID and time
-    var videoUrl = "https://vivekfy.vercel.app/video?url=https://youtu.be/" + id;
+    var videoUrl = "https://vivekfy.vercel.app/video?url=https://youtu.be/" + id + "&time=" + currentTime;
 
     // Create and display the video in a small overlay box with controls
     var overlayBox = document.createElement("div");
@@ -1511,7 +1512,6 @@ playVideoButton.addEventListener("click", function() {
     overlayBox.style.height = "200px"; // Set the height of the overlay box
 
     var video = document.createElement("video");
-    video.id = "overlayVideo"; // Set a unique ID for the video element
     video.style.width = "100%";
     video.style.height = "100%";
     video.src = videoUrl;
@@ -1532,7 +1532,6 @@ playVideoButton.addEventListener("click", function() {
     overlayBox.appendChild(closeButton);
     document.body.appendChild(overlayBox);
 });
-   
 	
     
 const mainAudio = document.getElementById('SAudio');
