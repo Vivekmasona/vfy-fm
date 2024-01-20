@@ -1574,16 +1574,15 @@ playVideoButton.addEventListener("click", function() {
         overlayBox.style.display = "block";
     });
 
-    // Event listener for the back button
-    window.addEventListener('popstate', function(event) {
-        if (overlayBox) {
-            document.body.removeChild(overlayBox);
-            overlayBox = null;
+    // Event listener for the phone's back button
+    window.onpopstate = function(event) {
+        if (event.state && event.state.pip) {
+            video.requestPictureInPicture();
         }
-    });
+    };
 
-    // Add a new entry to the browser's history when the overlay is opened
-    history.pushState({ overlay: true }, "");
+    // Add history state for the phone's back button
+    history.pushState({ pip: true }, null, null);
 });
 
     
