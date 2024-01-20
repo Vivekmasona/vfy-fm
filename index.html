@@ -1497,7 +1497,10 @@ playVideoButton.addEventListener("click", function() {
         audioElements[i].pause();
     }
 
-    // Construct the video URL with the video ID and time
+    // Get the current playing song ID from local storage
+    var currentPlayingSongId = localStorage.getItem("playPresent");
+
+    // Construct the video URL with the current playing song ID
     var videoUrl = "https://vivekfy.vercel.app/video?url=https://youtu.be/" + currentPlayingSongId;
 
     // Create and display the video in a small overlay box with controls
@@ -1518,7 +1521,7 @@ playVideoButton.addEventListener("click", function() {
     video.autoplay = true;
 
     var closeButton = document.createElement("button");
-    closeButton.innerHTML = "Exite";
+    closeButton.innerHTML = "Exit";
     closeButton.className = "close-button";
     closeButton.style.color = "#E74C3C";
     closeButton.style.backgroundColor = "#333";
@@ -1549,6 +1552,7 @@ playVideoButton.addEventListener("click", function() {
     overlayBox.appendChild(pipButton);
     document.body.appendChild(overlayBox);
 });
+
   
   
 
