@@ -1574,18 +1574,17 @@ playVideoButton.addEventListener("click", function() {
         overlayBox.style.display = "block";
     });
 
-    // Event listener for handling back navigation on mobile
-    window.addEventListener("popstate", function(event) {
-        // Close the overlay box when back navigation occurs
+    // Event listener for the back button
+    window.addEventListener('popstate', function(event) {
         if (overlayBox) {
             document.body.removeChild(overlayBox);
             overlayBox = null;
         }
     });
+
+    // Add a new entry to the browser's history when the overlay is opened
+    history.pushState({ overlay: true }, "");
 });
-
-  
-
 
     
 
