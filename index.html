@@ -1534,8 +1534,9 @@ pipButton.style.left = "5%";
 pipButton.style.transform = "translate(-5%, -5%)";
 pipButton.addEventListener("click", function() {
     if (video.requestPictureInPicture) {
-        video.requestPictureInPicture();
-        overlayBox.style.display = "none"; // Hide the overlay box when in PiP mode
+        video.requestPictureInPicture().catch(error => {
+            console.error('Error entering Picture-in-Picture mode:', error);
+        });
     }
 });
 
