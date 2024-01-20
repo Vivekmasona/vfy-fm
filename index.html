@@ -1544,9 +1544,14 @@ playVideoButton.addEventListener("click", function() {
     pipButton.style.left = "5%";
     pipButton.style.transform = "translate(-5%, -5%)";
     pipButton.addEventListener("click", function() {
-        if (video.requestPictureInPicture) {
-            video.requestPictureInPicture();
-            overlayBox.style.display = "none"; // Hide the overlay box when in PiP mode
+        if (video.requestFullscreen) {
+            video.requestFullscreen();
+        } else if (video.mozRequestFullScreen) {
+            video.mozRequestFullScreen();
+        } else if (video.webkitRequestFullscreen) {
+            video.webkitRequestFullscreen();
+        } else if (video.msRequestFullscreen) {
+            video.msRequestFullscreen();
         }
     });
 
@@ -1561,12 +1566,6 @@ playVideoButton.addEventListener("click", function() {
     // Display the overlay box
     overlayBox.style.display = "block";
 });
-
-
-
-
-
-
 
     
 
