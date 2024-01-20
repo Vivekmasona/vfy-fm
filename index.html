@@ -1491,9 +1491,21 @@ function convertTimeToSeconds(time) {
 
 
 
-var playVideoButton = document.getElementById("playVideobutto");
+
+  var playVideoButton = document.getElementById("playVideobutto");
+var pipButton = document.getElementById("pipButton"); // Assuming you have a button with the id "pipButton"
 var overlayBox = null; // Initialize overlayBox to null
 
+// Function to enter Picture-in-Picture (PiP) mode
+function enterPiPMode() {
+    var video = document.querySelector("iframe"); // Assuming there is only one video in the overlayBox
+    if (document.pictureInPictureEnabled && video) {
+        video.requestPictureInPicture();
+        overlayBox.style.display = "none"; // Hide the overlay box when in PiP mode
+    }
+}
+
+// Play Video button click event
 playVideoButton.addEventListener("click", function() {
     // Pause audio elements with the ID "SAudio"
     var audioElements = document.querySelectorAll("#SAudio");
@@ -1560,7 +1572,11 @@ playVideoButton.addEventListener("click", function() {
     });
 });
 
-  
+// PiP button click event
+pipButton.addEventListener("click", function() {
+    enterPiPMode();
+});
+
 
     
 
