@@ -1481,7 +1481,8 @@ function convertTimeToSeconds(time) {
   return (minutes * 60) + seconds;
 }
 
-var playVideoButton = document.getElementById("playVideobutto");
+
+ var playVideoButton = document.getElementById("playVideobutto");
 
 playVideoButton.addEventListener("click", function() {
     // Pause audio elements with the ID "SAudio"
@@ -1489,11 +1490,13 @@ playVideoButton.addEventListener("click", function() {
     for (var i = 0; i < audioElements.length; i++) {
         audioElements[i].pause();
     }
-// Check if the video is already loaded
+
+    // Check if the video is already loaded
     var existingVideo = document.getElementById("overlayVideo");
     if (existingVideo) {
         return; // If video is already loaded, do nothing
     }
+
     // Construct the video URL with the video ID and time
     var videoUrl = "https://vivekfy.vercel.app/video?url=https://youtu.be/" + id;
 
@@ -1508,6 +1511,7 @@ playVideoButton.addEventListener("click", function() {
     overlayBox.style.height = "200px"; // Set the height of the overlay box
 
     var video = document.createElement("video");
+    video.id = "overlayVideo"; // Set a unique ID for the video element
     video.style.width = "100%";
     video.style.height = "100%";
     video.src = videoUrl;
@@ -1515,7 +1519,7 @@ playVideoButton.addEventListener("click", function() {
     video.autoplay = true;
 
     var closeButton = document.createElement("button");
-    closeButton.innerHTML = "Exite";
+    closeButton.innerHTML = "Exit";
     closeButton.className = "close-button";
     closeButton.style.color = "#E74C3C";
     closeButton.style.backgroundColor = "#333";
@@ -1524,32 +1528,11 @@ playVideoButton.addEventListener("click", function() {
         document.body.removeChild(overlayBox);
     });
 
-    var pipButton = document.createElement("button");
-    pipButton.innerHTML = '<i class="fas fa-compress-arrows-alt"></i>'; // Font Awesome icon for PiP
-    pipButton.className = "pip-button";
-    pipButton.style.color = "#E74C3C";
-    pipButton.style.backgroundColor = "#333";
-    pipButton.style.border = "0";
-    pipButton.style.position = "absolute";
-    pipButton.style.top = "5%";
-    pipButton.style.left = "5%";
-    pipButton.style.transform = "translate(-5%, -5%)";
-    pipButton.addEventListener("click", function() {
-        if (video.requestPictureInPicture) {
-            video.requestPictureInPicture();
-            overlayBox.style.display = "none"; // Hide the overlay box when in PiP mode
-        }
-    });
-
     overlayBox.appendChild(video);
     overlayBox.appendChild(closeButton);
-    overlayBox.appendChild(pipButton);
     document.body.appendChild(overlayBox);
 });
-
-
-    
-
+   
 	
     
 const mainAudio = document.getElementById('SAudio');
