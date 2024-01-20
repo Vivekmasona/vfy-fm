@@ -1482,17 +1482,26 @@ function convertTimeToSeconds(time) {
 }
 
 
-    var playVideoButton = document.getElementById("playVideobutto");
+ var playVideoButton = document.getElementById("playVideobutto");
+var currentPlayingSongId; // Variable to track the currently playing song
 
 playVideoButton.addEventListener("click", function() {
     // Pause audio elements with the ID "SAudio"
-    var currentAudio = document.querySelector("#SAudio");
-    if (currentAudio) {
-        currentAudio.pause();
-        var currentTime = currentAudio.currentTime; // Get the current time of the playing audio
+    var audioElements = document.querySelectorAll("#SAudio");
+    for (var i = 0; i < audioElements.length; i++) {
+        audioElements[i].pause();
+    }
 
-        // Construct the video URL with only the current time
-        var videoUrl = "https://vivekfy.vercel.app/video?time=" + currentTime;
+    // Get the current song ID (replace this with your logic to get the ID)
+    var id = getCurrentSongId();
+
+    // Check if the video popup is already open for the current song
+    if (id !== currentPlayingSongId) {
+        // Update the current playing song ID
+        currentPlayingSongId = id;
+
+        // Construct the video URL with the video ID and time
+        var videoUrl = "https://vivekfy.vercel.app/video?url=https://youtu.be/" + id;
 
         // Create and display the video in a small overlay box with controls
         var overlayBox = document.createElement("div");
@@ -1521,12 +1530,37 @@ playVideoButton.addEventListener("click", function() {
             document.body.removeChild(overlayBox);
         });
 
+        var pipButton = document.createElement("button");
+        pipButton.innerHTML = '<i class="fas fa-compress-arrows-alt"></i>'; // Font Awesome icon for PiP
+        pipButton.className = "pip-button";
+        pipButton.style.color = "#E74C3C";
+        pipButton.style.backgroundColor = "#333";
+        pipButton.style.border = "0";
+        pipButton.style.position = "absolute";
+        pipButton.style.top = "5%";
+        pipButton.style.left = "5%";
+        pipButton.style.transform = "translate(-5%, -5%)";
+        pipButton.addEventListener("click", function() {
+            if (video.requestPictureInPicture) {
+                video.requestPictureInPicture();
+                overlayBox.style.display = "none"; // Hide the overlay box when in PiP mode
+            }
+        });
+
         overlayBox.appendChild(video);
         overlayBox.appendChild(closeButton);
+        overlayBox.appendChild(pipButton);
         document.body.appendChild(overlayBox);
     }
 });
- 
+
+// Function to get the ID of the currently playing song (replace this with your logic)
+function getCurrentSongId() {
+    // Implement your logic to get the ID of the currently playing song
+    // For example, you might use a data attribute on the play button or some other method
+    // Return the ID of the currently playing song
+}
+   
 	
     
 const mainAudio = document.getElementById('SAudio');
