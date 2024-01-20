@@ -723,6 +723,7 @@ width: 50%;
 
 
   
+<div id="currentPlayingSongId"></div>
 
 
 	    
@@ -1237,6 +1238,7 @@ function loadSong(song, ind) {
 
     // Set the current song title with marquee effect to the div with ID "currentSongTitle"
     $("#currentSongTitle").html('<marquee behavior="alternate" scrollamount="1" onmousedown="this.stop();" onmouseup="this.start();">' + title + '</marquee>');
+    
     // Create a div with ID "currentSongOutput" to display video ID and max resolution thumbnail
     $("#currentSongOutput").html('Video ID: ' + id + '<br>' +
                                  'Max Resolution Thumbnail: <img src="' + thumbnail + '" alt="Current Song Thumbnail" style="max-width:100%; max-height:100%;">');
@@ -1251,14 +1253,18 @@ function loadSong(song, ind) {
     // Add a click event listener to the iframe button
     downloadButton.on('click', function(event) {
         event.preventDefault(); // Prevent the default behavior of the link
-
         // Add any additional actions or code you want to execute when the button is clicked
         // For example, you might want to trigger a download or perform some other action
     });
 
+    // Display the current playing song ID
+    var currentPlayingSongId = localStorage.getItem("playPresent");
+    $("#currentPlayingSongId").text("Current Playing Song ID: " + currentPlayingSongId);
+
     play(id, indId);
 }
 
+    
 
 
 
