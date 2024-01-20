@@ -1492,6 +1492,7 @@ function convertTimeToSeconds(time) {
 
 var playVideoButton = document.getElementById("playVideobutto");
 var currentPlayingSongId = localStorage.getItem("playPresent");
+var isPopupOpen = false; // Flag to track whether the popup is open
 
 // Create and display the video in a small overlay box with controls
 var overlayBox = document.createElement("div");
@@ -1519,6 +1520,7 @@ closeButton.style.backgroundColor = "#333";
 closeButton.style.border = "0";
 closeButton.addEventListener("click", function() {
     document.body.removeChild(overlayBox);
+    isPopupOpen = false; // Reset the flag when the popup is closed
 });
 
 var pipButton = document.createElement("button");
@@ -1535,6 +1537,7 @@ pipButton.addEventListener("click", function() {
     if (video.requestPictureInPicture) {
         video.requestPictureInPicture();
         overlayBox.style.display = "none"; // Hide the overlay box when in PiP mode
+        isPopupOpen = false; // Reset the flag when the popup is closed
     }
 });
 
@@ -1550,16 +1553,18 @@ playVideoButton.addEventListener("click", function() {
         audioElements[i].pause();
     }
 
-    // Update the video source based on the current playing song ID
-    currentPlayingSongId = localStorage.getItem("playPresent");
-    video.src = "https://vivekfy.vercel.app/play/" + currentPlayingSongId;
+    // Check if the popup is already open
+    if (!isPopupOpen) {
+        // Update the video source based on the current playing song ID
+        currentPlayingSongId = localStorage.getItem("playPresent");
+        video.src = "https://vivekfy.vercel.app/play/" + currentPlayingSongId;
 
-    // Display the overlay box
-    overlayBox.style.display = "block";
+        // Display the overlay box
+        overlayBox.style.display = "block";
+        isPopupOpen = true; // Set the flag to true when the popup is open
+    }
 });
 
-  
-  
 
     
 
