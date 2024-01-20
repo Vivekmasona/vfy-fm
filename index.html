@@ -1481,8 +1481,7 @@ function convertTimeToSeconds(time) {
   return (minutes * 60) + seconds;
 }
 
-
- var playVideoButton = document.getElementById("playVideobutto");
+var playVideoButton = document.getElementById("playVideobutto");
 var currentTime = 0; // Variable to store the current time
 
 playVideoButton.addEventListener("click", function() {
@@ -1490,12 +1489,7 @@ playVideoButton.addEventListener("click", function() {
     var audioElements = document.querySelectorAll("#SAudio");
     for (var i = 0; i < audioElements.length; i++) {
         audioElements[i].pause();
-    }
-
-    // Get the current time of the playing audio
-    var currentAudio = document.querySelector("#SAudio");
-    if (currentAudio) {
-        currentTime = currentAudio.currentTime;
+        currentTime = audioElements[i].currentTime; // Get the current time of the playing audio
     }
 
     // Construct the video URL with the video ID and time
@@ -1532,6 +1526,8 @@ playVideoButton.addEventListener("click", function() {
     overlayBox.appendChild(closeButton);
     document.body.appendChild(overlayBox);
 });
+
+ 
 	
     
 const mainAudio = document.getElementById('SAudio');
