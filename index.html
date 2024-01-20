@@ -1488,9 +1488,58 @@ function convertTimeToSeconds(time) {
 
 
 
-
 var playVideoButton = document.getElementById("playVideobutto");
-var overlayBox = null; // Initialize overlayBox to null
+var currentPlayingSongId = localStorage.getItem("playPresent");
+
+// Create and display the video in a small overlay box with controls
+var overlayBox = document.createElement("div");
+overlayBox.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
+overlayBox.style.position = "fixed";
+overlayBox.style.top = "50%";
+overlayBox.style.left = "50%";
+overlayBox.style.transform = "translate(-50%, -50%)";
+overlayBox.style.width = "300px"; // Set the width of the overlay box
+overlayBox.style.height = "200px"; // Set the height of the overlay box
+overlayBox.style.display = "none"; // Initially hide the overlay box
+
+var video = document.createElement("iframe");
+video.style.width = "100%";
+video.style.height = "100%";
+video.frameBorder = "0";
+video.allow = "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture";
+video.allowFullscreen = true;
+
+var closeButton = document.createElement("button");
+closeButton.innerHTML = "Exit";
+closeButton.className = "close-button";
+closeButton.style.color = "#E74C3C";
+closeButton.style.backgroundColor = "#333";
+closeButton.style.border = "0";
+closeButton.addEventListener("click", function() {
+    document.body.removeChild(overlayBox);
+});
+
+var pipButton = document.createElement("button");
+pipButton.innerHTML = '<i class="fas fa-compress-arrows-alt"></i>'; // Font Awesome icon for PiP
+pipButton.className = "pip-button";
+pipButton.style.color = "#E74C3C";
+pipButton.style.backgroundColor = "#333";
+pipButton.style.border = "0";
+pipButton.style.position = "absolute";
+pipButton.style.top = "5%";
+pipButton.style.left = "5%";
+pipButton.style.transform = "translate(-5%, -5%)";
+pipButton.addEventListener("click", function() {
+    if (video.requestPictureInPicture) {
+        video.requestPictureInPicture();
+        overlayBox.style.display = "none"; // Hide the overlay box when in PiP mode
+    }
+});
+
+overlayBox.appendChild(video);
+overlayBox.appendChild(closeButton);
+overlayBox.appendChild(pipButton);
+document.body.appendChild(overlayBox);
 
 playVideoButton.addEventListener("click", function() {
     // Pause audio elements with the ID "SAudio"
@@ -1499,66 +1548,15 @@ playVideoButton.addEventListener("click", function() {
         audioElements[i].pause();
     }
 
-    var currentPlayingSongId = localStorage.getItem("playPresent");
-
-    // Create and display the video in a small overlay box with controls only if overlayBox is null
-    if (!overlayBox) {
-        overlayBox = document.createElement("div");
-        overlayBox.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
-        overlayBox.style.position = "fixed";
-        overlayBox.style.top = "50%";
-        overlayBox.style.left = "50%";
-        overlayBox.style.transform = "translate(-50%, -50%)";
-        overlayBox.style.width = "300px"; // Set the width of the overlay box
-        overlayBox.style.height = "200px"; // Set the height of the overlay box
-
-        var video = document.createElement("iframe");
-        video.style.width = "100%";
-        video.style.height = "100%";
-        video.frameBorder = "0";
-        video.allow = "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture";
-        video.allowFullscreen = true;
-
-        var closeButton = document.createElement("button");
-        closeButton.innerHTML = "Exit";
-        closeButton.className = "close-button";
-        closeButton.style.color = "#E74C3C";
-        closeButton.style.backgroundColor = "#333";
-        closeButton.style.border = "0";
-        closeButton.addEventListener("click", function() {
-            document.body.removeChild(overlayBox);
-            overlayBox = null; // Reset overlayBox to null when closing the overlay
-        });
-
-        var pipButton = document.createElement("button");
-        pipButton.innerHTML = '<i class="fas fa-compress-arrows-alt"></i>'; // Font Awesome icon for PiP
-        pipButton.className = "pip-button";
-        pipButton.style.color = "#E74C3C";
-        pipButton.style.backgroundColor = "#333";
-        pipButton.style.border = "0";
-        pipButton.style.position = "absolute";
-        pipButton.style.top = "5%";
-        pipButton.style.left = "5%";
-        pipButton.style.transform = "translate(-5%, -5%)";
-        pipButton.addEventListener("click", function() {
-            if (video.requestPictureInPicture) {
-                video.requestPictureInPicture();
-                overlayBox.style.display = "none"; // Hide the overlay box when in PiP mode
-            }
-        });
-
-        overlayBox.appendChild(video);
-        overlayBox.appendChild(closeButton);
-        overlayBox.appendChild(pipButton);
-        document.body.appendChild(overlayBox);
-    }
-
     // Update the video source based on the current playing song ID
+    currentPlayingSongId = localStorage.getItem("playPresent");
     video.src = "https://vivekfy.vercel.app/play/" + currentPlayingSongId;
 
     // Display the overlay box
     overlayBox.style.display = "block";
 });
+
+
     
 
 	
