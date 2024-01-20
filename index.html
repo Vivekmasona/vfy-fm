@@ -1490,6 +1490,7 @@ function convertTimeToSeconds(time) {
 
 
 
+
 var playVideoButton = document.getElementById("playVideobutto");
 var overlayBox = null;
 var player = null;
@@ -1581,9 +1582,15 @@ playVideoButton.addEventListener("click", function() {
             }
         }
     });
+
+    // Listen for enter PiP event
+    player.on('enterpictureinpicture', function() {
+        // Hide the overlay box when entering PiP mode
+        if (overlayBox) {
+            overlayBox.style.display = "none";
+        }
+    });
 });
-
-
 
   
 
