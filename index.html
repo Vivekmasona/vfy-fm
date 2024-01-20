@@ -1576,40 +1576,89 @@ playVideoButton.addEventListener("click", function() {
         resizeOverlayBox(); // Adjust the size of the overlay box
     });
 
-    // Override Android phone's back button press to close the overlay
-    window.onpopstate = function(event) {
-        if (overlayBox) {
-            document.body.removeChild(overlayBox);
-            if (player) {
-                player.destroy(); // Destroy Plyr player instance when closing the overlay
-                player = null;
-            }
-        }
-    };
-
-    history.pushState({}, ''); // Add a dummy state to the history stack
-    window.addEventListener('popstate', function() {
-        history.pushState({}, ''); // Ensure the dummy state stays in the history stack
-        if (overlayBox) {
-            document.body.removeChild(overlayBox);
-            if (player) {
-                player.destroy(); // Destroy Plyr player instance when closing the overlay
-                player = null;
-            }
-        }
-    });
-});
-
-// Function to resize the overlay box based on the video player's size
-function resizeOverlayBox() {
-    if (player) {
-        overlayBox.style.width = player.elements.container.clientWidth + "px";
-        overlayBox.style.height = player.elements.container.clientHeight + "px";
-    }
-}
    
 
 
+var playVideoButton = document.getElementById("playVideobutto");
+var overlayBox = null;
+var player = null;
+
+playVideoButton.addEventListener("click", function() {
+    // Pause audio elements with the ID "SAudio"
+    var audioElements = document.querySelectorAll("#SAudio");
+    for (var i = 0; i < audioElements.length; i++) {
+        audioElements[i].pause();
+    }
+
+    var currentPlayingSongId = localStorage.getItem("playPresent");
+
+    // Close the existing overlay box if it exists
+    var existingOverlayBox = document.getElementById("overlayBox");
+    if (existingOverlayBox) {
+        document.body.removeChild(existingOverlayBox);
+    }
+
+    // Create and display the video in a new overlay box with Plyr player
+    overlayBox = document.createElement("div");
+    overlayBox.id = "overlayBox";
+    overlayBox.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
+    overlayBox.style.position = "fixed";
+    overlayBox.style.top = "50%";
+    overlayBox.style.left = "50%";
+    overlayBox.style.transform = "translate(-50%, -50%)";
+    overlayBox.style.width = "400px"; // Increased width for a better display
+    overlayBox.style.height = "300px"; // Increased height for a better display
+
+    var video = document.createElement("video");
+    video.style.width = "100%";
+    video.style.height = "100%";
+    video.controls = true; // Show default controls
+
+    var closeButton = document.createElement("button");
+    closeButton.innerHTML = "Exit";
+    closeButton.className = "close-button";
+    closeButton.style.color = "#E74C3C";
+    closeButton.style.backgroundColor = "#333";
+    closeButton.style.border = "0";
+    closeButton.addEventListener("click", function() {
+        document.body.removeChild(overlayBox);
+        if (player) {
+            player.destroy(); // Destroy Plyr player instance when closing the overlay
+            player = null;
+        }
+    });
+
+    overlayBox.appendChild(video);
+    overlayBox.appendChild(closeButton);
+    document.body.appendChild(overlayBox);
+
+    // Initialize Plyr player with custom control color
+    player = new Plyr(video, {
+        controls: ['play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
+        iconUrl: 'https://cdn.plyr.io/3.6.3/plyr.svg',
+        iconPrefix: 'plyr',
+        settings: ['captions', 'quality', 'speed'],
+        controlBar: {
+            icons: {
+                play: '<svg class="icon--pressed" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18"><path d="M3,1a1,1,0,0,1,1,1V16a1,1,0,0,1-2,0V2A1,1,0,0,1,3,1Z"/><path d="M17,9a8,8,0,1,0-8,8A8,8,0,0,0,17,9ZM7,11V7L12,9Z"/></svg>',
+                pause: '<svg class="icon--pressed" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18"><path d="M3,1a1,1,0,0,1,1,1V16a1,1,0,0,1-2,0V2A1,1,0,0,1,3,1Z"/><rect width="4" height="14" x="10" y="2"/></svg>',
+                volume: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18"><path d="M3,3.74a1,1,0,0,1,1,0L8.75,7.8A1,1,0,0,1,10,9H13a1,1,0,0,1,1,1v5a1,1,0,0,1-2,0V10H11l-4.29-4.29a1,1,0,0,1,0-1.42Z"/><path d="M14.68,5.29a1,1,0,0,1,1.41,1.41,5,5,0,0,1,0,7.08,1,1,0,1,1-1.41-1.41,3,3,0,0,0,0-4.24A1,1,0,0,1,14.68,5.29Z"/></svg>',
+                mute: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18"><path d="M14.68,5.29a1,1,0,0,1,1.41,1.41,5,5,0,0,1,0,7.08,1,1,0,1,1-1.41-1.41,3,3,0,0,0,0-4.24A1,1,0,0,1,14.68,5.29Z"/><path d="M3,3.74a1,1,0,0,1,1,0L8.75,7.8A1,1,0,0,1,10,9H13a1,1,0,0,1,1,1v5a1,1,0,0,1-2,0V10H11l-4.29-4.29a1,1,0,0,1,0-1.42Z"/></svg>',
+                settings: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18"><circle cx="3" cy="3" r="3"/><circle cx="3" cy="9" r="3"/><circle cx="3" cy="15" r="3"/><circle cx="9" cy="3" r="3"/><circle cx="9" cy="9" r="3"/><circle cx="9" cy="15" r="3"/><circle cx="15" cy="3" r="3"/><circle cx="15" cy="9" r="3"/><circle cx="15" cy="15" r="3"/></svg>',
+                fullscreen: '<svg class="icon--maximize" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19,3H5A1,1,0,0,0,4,4V18a1,1,0,0,0,1,1H19a1,1,0,0,0,1-1V4A1,1,0,0,0,19,3ZM6,18V5H18V18Z"/></svg>',
+            },
+            volume: {
+                vertical: true,
+            },
+        },
+    });
+
+    // Update the video source based on the current playing song ID
+    video.src = "https://vivekfy.vercel.app/play/" + currentPlayingSongId;
+
+    // Display the overlay box
+    overlayBox.style.display = "block";
+});
   
 
     
