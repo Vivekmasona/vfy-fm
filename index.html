@@ -1488,6 +1488,7 @@ function convertTimeToSeconds(time) {
 
 
 
+
 var playVideoButton = document.getElementById("playVideobutto");
 
 playVideoButton.addEventListener("click", function() {
@@ -1533,17 +1534,13 @@ playVideoButton.addEventListener("click", function() {
         document.body.removeChild(overlayBox);
     });
 
-    var pipButton = document.createElement("button");
-    pipButton.innerHTML = '<i class="fas fa-compress-arrows-alt"></i>'; // Font Awesome icon for PiP
-    pipButton.className = "pip-button";
-    pipButton.style.color = "#E74C3C";
-    pipButton.style.backgroundColor = "#333";
-    pipButton.style.border = "0";
-    pipButton.style.position = "absolute";
-    pipButton.style.top = "5%";
-    pipButton.style.left = "5%";
-    pipButton.style.transform = "translate(-5%, -5%)";
-    pipButton.addEventListener("click", function() {
+    var fullscreenButton = document.createElement("button");
+    fullscreenButton.innerHTML = '<i class="fas fa-expand"></i>'; // Font Awesome icon for fullscreen
+    fullscreenButton.className = "fullscreen-button";
+    fullscreenButton.style.color = "#E74C3C";
+    fullscreenButton.style.backgroundColor = "#333";
+    fullscreenButton.style.border = "0";
+    fullscreenButton.addEventListener("click", function() {
         if (video.requestFullscreen) {
             video.requestFullscreen();
         } else if (video.mozRequestFullScreen) {
@@ -1555,8 +1552,22 @@ playVideoButton.addEventListener("click", function() {
         }
     });
 
+    var pipButton = document.createElement("button");
+    pipButton.innerHTML = 'PiP'; // Text for PiP button
+    pipButton.className = "pip-button";
+    pipButton.style.color = "#E74C3C";
+    pipButton.style.backgroundColor = "#333";
+    pipButton.style.border = "0";
+    pipButton.addEventListener("click", function() {
+        if (video.requestPictureInPicture) {
+            video.requestPictureInPicture();
+            overlayBox.style.display = "none"; // Hide the overlay box when in PiP mode
+        }
+    });
+
     overlayBox.appendChild(video);
     overlayBox.appendChild(closeButton);
+    overlayBox.appendChild(fullscreenButton);
     overlayBox.appendChild(pipButton);
     document.body.appendChild(overlayBox);
 
