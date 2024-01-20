@@ -1507,6 +1507,10 @@ playVideoButton.addEventListener("click", function() {
     var existingOverlayBox = document.getElementById("overlayBox");
     if (existingOverlayBox) {
         document.body.removeChild(existingOverlayBox);
+        if (player) {
+            player.destroy(); // Destroy Plyr player instance when closing the overlay
+            player = null;
+        }
     }
 
     // Create and display the video in a new overlay box with Plyr player
@@ -1531,6 +1535,9 @@ playVideoButton.addEventListener("click", function() {
     closeButton.style.color = "#E74C3C";
     closeButton.style.backgroundColor = "#333";
     closeButton.style.border = "0";
+    closeButton.style.position = "absolute";
+    closeButton.style.top = "5%";
+    closeButton.style.left = "5%";
     closeButton.addEventListener("click", function() {
         document.body.removeChild(overlayBox);
         if (player) {
@@ -1551,8 +1558,30 @@ playVideoButton.addEventListener("click", function() {
 
     // Display the overlay box
     overlayBox.style.display = "block";
-});
 
+    // Override Android phone's back button press to close the overlay
+    window.onpopstate = function(event) {
+        if (overlayBox) {
+            document.body.removeChild(overlayBox);
+            if (player) {
+                player.destroy(); // Destroy Plyr player instance when closing the overlay
+                player = null;
+            }
+        }
+    };
+
+    history.pushState({}, ''); // Add a dummy state to the history stack
+    window.addEventListener('popstate', function() {
+        history.pushState({}, ''); // Ensure the dummy state stays in the history stack
+        if (overlayBox) {
+            document.body.removeChild(overlayBox);
+            if (player) {
+                player.destroy(); // Destroy Plyr player instance when closing the overlay
+                player = null;
+            }
+        }
+    });
+});
 
 
 
