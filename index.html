@@ -3194,109 +3194,72 @@ for (let i = 0; i < 5; i++) {
  
 	
 	<script>
-$(document).ready(function() {
+$(document).ready(function () {
   var searchField = $("input.search-bar");
   var autocompleteResults = $("#autocomplete-results");
+  var typingTimer;
 
-  // Initialize autocomplete for the input field with the "search-bar" class
   searchField.autocomplete({
-    source: function(request, response) {
-      var term = request.term;
-      var s = {
-        client: "youtube",
-        ds: "yt"
-      }; // You can choose the appropriate client and ds here
+    source: function (request, response) {
+      clearTimeout(typingTimer); // Clear the previous timer
+      typingTimer = setTimeout(function () {
+        var term = request.term;
+        var s = {
+          client: "youtube",
+          ds: "yt"
+        };
 
-      $.ajax({
-        url: "//clients1.google.com/complete/search",
-        dataType: "jsonp",
-        data: {
-          q: term,
-          nolabels: "t",
-          client: s.client,
-          ds: s.ds
-        },
-        success: function(r) {
-          var data = r[1].map(function(item) {
-            return item[0];
-          });
+        $.ajax({
+          url: "//clients1.google.com/complete/search",
+          dataType: "jsonp",
+          data: {
+            q: term,
+            nolabels: "t",
+            client: s.client,
+            ds: s.ds
+          },
+          success: function (r) {
+            var data = r[1].map(function (item) {
+              return item[0];
+            });
 
-          // Display autocomplete results in the specified div
-          autocompleteResults.empty();
-          $.each(data, function(index, value) {
-            autocompleteResults.append("<p class='autocomplete-suggestion'>" + value + "</p>");
-          });
-        }
-      });
+            autocompleteResults.empty();
+            $.each(data, function (index, value) {
+              autocompleteResults.append("<p class='autocomplete-suggestion'>" + value + "</p>");
+            });
+          }
+        });
+      }, 5000); // Set a 5-second delay before making the AJAX request
     }
   });
 
-  // Handle clicks on autocomplete suggestions for manual search
-  autocompleteResults.on("click", ".autocomplete-suggestion", function() {
-    searchField.val($(this).text());
+  autocompleteResults.on("click", ".autocomplete-suggestion", function () {
+    var suggestion = $(this).text();
+    searchField.val(suggestion);
     hideAutocompleteResults();
+    $("#search-btn").click();
   });
-// Handle clicks on autocomplete suggestions for manual search
-autocompleteResults.on("click", ".autocomplete-suggestion", function() {
-  var suggestion = $(this).text();
-  searchField.val(suggestion);
-  hideAutocompleteResults();
 
-  // Programmatically trigger a click on the search butto
-  $("#search-btn").click();
-});
-
-  // Listen for "Enter" key press to disable autocomplete
-  searchField.keypress(function(event) {
+  searchField.keypress(function (event) {
     if (event.which === 8) {
-      // "Enter" key pressed, disable autocomplete
       searchField.autocomplete("disable");
     }
   });
 
+  searchField.on("input", function () {
+    clearTimeout(typingTimer); // Clear the previous timer
+    typingTimer = setTimeout(function () {
+      hideAutocompleteResults();
+    }, 5000); // Set a 5-second delay before hiding suggestions
+  });
+
   function hideAutocompleteResults() {
-    // Hide autocomplete results after 2 seconds
-    setTimeout(function() {
-      autocompleteResults.empty();
-    }, 20);
+    autocompleteResults.empty();
   }
 });
-</script>
 
 
-	
-
-
-<script>
-    // Button element
-    const button = document.getElementById('togglebutto');
-    let isClicked = false;
-    
-    // Function to handle the device motion event (shaking)
-    function handleDeviceMotion(event) {
-      if (isClicked) {
-        return; // If a click has already occurred, exit the function
-      }
-
-      const acceleration = event.accelerationIncludingGravity;
-      const threshold = 30; // Increased threshold for stronger shaking
-
-      if (Math.abs(acceleration.x) > threshold || Math.abs(acceleration.y) > threshold || Math.abs(acceleration.z) > threshold) {
-        // Logic to run when the device is shaken
-        button.click(); // Trigger the button click
-        isClicked = true; // Set the flag to prevent further clicks within this shake event
-       // alert('Button clicked by shaking!'); // Show an alert message
-
-        // Reset the flag after 2 seconds (2000 milliseconds)
-        setTimeout(function() {
-          isClicked = false;
-        }, 2000);
-      }
-    }
-
-    // Add an event listener for device motion
-    window.addEventListener('devicemotion', handleDeviceMotion);
-  </script>
+      </script>
 
   
 
