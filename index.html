@@ -1491,8 +1491,7 @@ function convertTimeToSeconds(time) {
 
 
 
-
-  var playVideoButton = document.getElementById("playVideobutto");
+var playVideoButton = document.getElementById("playVideobutto");
 var overlayBox = null; // Initialize overlayBox to null
 
 playVideoButton.addEventListener("click", function() {
@@ -1562,12 +1561,30 @@ playVideoButton.addEventListener("click", function() {
         pipButton.style.transform = "translate(-5%, -5%)";
         pipButton.addEventListener("click", function() {
             video.requestPictureInPicture();
+            // Hide the overlay box when entering PiP mode
+            overlayBox.style.display = "none";
         });
 
         overlayBox.appendChild(pipButton);
     }
-});
 
+    // Event listener for exiting PiP mode
+    video.addEventListener('leavepictureinpicture', function() {
+        // Show the overlay box when exiting PiP mode
+        overlayBox.style.display = "block";
+    });
+
+    // Event listener for the back button
+    window.addEventListener('popstate', function(event) {
+        if (overlayBox) {
+            document.body.removeChild(overlayBox);
+            overlayBox = null;
+        }
+    });
+
+    // Add a new entry to the browser's history when the overlay is opened
+    history.pushState({ overlay: true }, "");
+});
 
     
 
