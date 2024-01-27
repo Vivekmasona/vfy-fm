@@ -3194,18 +3194,20 @@ for (let i = 0; i < 5; i++) {
  
 	
 	<script>
-$(document).ready(function() {
+
+
+$(document).ready(function () {
   var searchField = $("input.search-bar");
   var autocompleteResults = $("#autocomplete-results");
+  var typingTimer;
 
-  // Initialize autocomplete for the input field with the "search-bar" class
   searchField.autocomplete({
-    source: function(request, response) {
+    source: function (request, response) {
       var term = request.term;
       var s = {
         client: "youtube",
         ds: "yt"
-      }; // You can choose the appropriate client and ds here
+      };
 
       $.ajax({
         url: "//clients1.google.com/complete/search",
@@ -3216,14 +3218,13 @@ $(document).ready(function() {
           client: s.client,
           ds: s.ds
         },
-        success: function(r) {
-          var data = r[1].map(function(item) {
+        success: function (r) {
+          var data = r[1].map(function (item) {
             return item[0];
           });
 
-          // Display autocomplete results in the specified div
           autocompleteResults.empty();
-          $.each(data, function(index, value) {
+          $.each(data, function (index, value) {
             autocompleteResults.append("<p class='autocomplete-suggestion'>" + value + "</p>");
           });
         }
@@ -3231,37 +3232,36 @@ $(document).ready(function() {
     }
   });
 
-  // Handle clicks on autocomplete suggestions for manual search
-  autocompleteResults.on("click", ".autocomplete-suggestion", function() {
-    searchField.val($(this).text());
+  autocompleteResults.on("click", ".autocomplete-suggestion", function () {
+    var suggestion = $(this).text();
+    searchField.val(suggestion);
     hideAutocompleteResults();
+    $("#search-btn").click();
   });
-// Handle clicks on autocomplete suggestions for manual search
-autocompleteResults.on("click", ".autocomplete-suggestion", function() {
-  var suggestion = $(this).text();
-  searchField.val(suggestion);
-  hideAutocompleteResults();
 
-  // Programmatically trigger a click on the search butto
-  $("#search-btn").click();
-});
-
-  // Listen for "Enter" key press to disable autocomplete
-  searchField.keypress(function(event) {
+  searchField.keypress(function (event) {
     if (event.which === 8) {
-      // "Enter" key pressed, disable autocomplete
       searchField.autocomplete("disable");
     }
   });
 
+  searchField.on("input", function () {
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(function () {
+      hideAutocompleteResults();
+    }, 5000);
+  });
+
   function hideAutocompleteResults() {
-    // Hide autocomplete results after 2 seconds
-    setTimeout(function() {
-      autocompleteResults.empty();
-    }, 20);
+    autocompleteResults.empty();
   }
 });
-</script>
+
+
+
+		
+      </script>
+	
 
 
 	
