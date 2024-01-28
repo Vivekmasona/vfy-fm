@@ -3088,38 +3088,49 @@ background: radial-gradient(circle, rgba(59,175,194,0.9557312232860621) 0%, rgba
   </div>
 </div>
 
-<script>
-    // Function to open the modal
-function openModal() {
-  document.getElementById("modal").style.display = "block";
-  // Automatically close the modal after 2 minutes (120,000 milliseconds)
-  setTimeout(closeModal, 120000);
 
-  // Add event listener for the back button
-  window.addEventListener("popstate", closeModalOnBack);
 
-  // Push a dummy state to the history to enable popstate event
-  history.pushState(null, null, window.location.href);
-}
 
-// Function to close the modal
-function closeModal() {
-  document.getElementById("modal").style.display = "none";
-  // Remove the event listener when the modal is closed
-  window.removeEventListener("popstate", closeModalOnBack);
-}
+    <div id="modal" style="display: none;">
+        This is the modal content.
+    </div>
 
-// Function to close the modal when the back button is pressed
-function closeModalOnBack() {
-  closeModal();
-  // Navigate back one step in the history to maintain proper behavior
-  history.back();
-}
+    <script>
+        // Function to open the modal
+        function openModal() {
+            document.getElementById("modal").style.display = "block";
+            // Automatically close the modal after 2 minutes (120,000 milliseconds)
+            setTimeout(closeModal, 120000);
 
-// Trigger openModal when the page loads (you can adjust this based on your requirements)
-window.onload = openModal;
+            // Add event listener for the back button
+            window.addEventListener("popstate", closeModalOnBack);
 
-  </script>
+            // Push a dummy state to the history to enable popstate event
+            history.pushState(null, null, window.location.href);
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            document.getElementById("modal").style.display = "none";
+            // Remove the event listener when the modal is closed
+            window.removeEventListener("popstate", closeModalOnBack);
+        }
+
+        // Function to close the modal when the back button is pressed
+        function closeModalOnBack() {
+            openModal();
+            // Navigate back one step in the history to maintain proper behavior
+            history.back();
+        }
+
+        // Trigger openModal when the page loads (you can adjust this based on your requirements)
+        window.onload = openModal;
+    </script>
+</body>
+</html>
+
+
+	
 
 <style>
 * {
