@@ -1072,17 +1072,27 @@ $(document).ready(function() {
   }
 });
 
+$(document).on('swipeleft', '.ui-page', function(event){    
+    if(event.handled !== true) // This will prevent event triggering more then once
+    {    
+        var nextpage = $.mobile.activePage.next('[data-role="page"]');
+        // swipe using id of next page if exists
+        if (nextpage.length > 0) {
+            $.mobile.changePage(nextpage, {transition: "slide", reverse: false}, true, true);
+        }
+        event.handled = true;
+    }
+    return false;         
+});
 
 $(document).ready(function(){
-    // Override default back button behavior
-    document.addEventListener("backbutton", function(e){
-        e.preventDefault(); // Prevent default back button behavior
-        
-        // Hide response content
-        $("#homepage-content").empty();
-        $("#manualContent").show();
-    }, false);
+    // Toggle button click event
+    $("#hide").click(function(){
+        $("#homepage-content").empty(); // Clear the response content
+        $("#menual").show(); // Show the manual content
+    });
 });
+
 
 
 	
@@ -3956,6 +3966,7 @@ z-imdex:999999;
   left: 0px;
 }
 </style>	
+
 
 
 
