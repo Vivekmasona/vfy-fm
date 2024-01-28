@@ -287,32 +287,14 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
 
 
 
- <!DOCTYPE html>
-<html>
-<head>
-    <title>Double Click to Go Back, Single Click to Hide Button</title>
-</head>
-<body>
-    <button id="hide1">Hide Button</button>
+
+  <
+    <button id="hide"></button>
 
     <script>
-        // Single click to hide button
-        document.getElementById("hide").addEventListener("click", function() {
-            alert("Button clicked!");
-        });
-
-        // Double click to go back
-        let clicked = false;
-        document.getElementById("hide").addEventListener("click", function() {
-            if (clicked) {
-                history.back();
-            } else {
-                clicked = true;
-                setTimeout(function() {
-                    clicked = false;
-                }, 500); // Change this value as per your preference for the double click delay
-            }
-        });
+        //document.getElementById("hide").addEventListener("click", function() {
+            //alert("Button clicked!");
+        //});
 
         // Handle phone back button press
         window.addEventListener("popstate", function(event) {
@@ -322,9 +304,8 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
         // Push state to history so that popstate event gets triggered
         history.pushState({}, "");
     </script>
-</body>
-</html>
-   
+
+ 
 
 
 
@@ -777,8 +758,7 @@ width: 50%;
      <input type="search"  name="search" onclick="startDictation()"  id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">SEARCH..</button></sr>
 	    
-	<button id="hide">Toggle Response</button>
-    
+	 
    <div id="autocomplete-results"></div>
 
     
