@@ -1095,18 +1095,16 @@ $(document).on('swipeleft', '.ui-page', function(event){
     return false;         
 });
 
-
-
-
 $(document).ready(function(){
     // Toggle button click event
-    $("#toggleButton").click(function(){
+    $("#hide").click(function(){
         $("#homepage-content").empty(); // Clear the response content
         $("#menual").show(); // Show the manual content
         $("#homepage-content").prepend($("#menual")); // Move manual content to the top
-        $("html, body").scrollTop($("#homepage-content").offset().top); // Scroll to top of homepage-content
     });
 });
+
+
 
 
 	
@@ -3980,6 +3978,7 @@ z-imdex:999999;
   left: 0px;
 }
 </style>	
+
 
 
 
