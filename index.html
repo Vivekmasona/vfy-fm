@@ -3090,10 +3090,28 @@ background: radial-gradient(circle, rgba(59,175,194,0.9557312232860621) 0%, rgba
 
 
 
-
-    <div id="modal" style="display: none;">
-        This is the modal content.
-    </div>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Modal with Back Button Integration</title>
+    <style>
+        /* Style for the modal */
+        #modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            color: white;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <b id="hide" style="display: none;"></b>
+    <div id="modal"></div>
 
     <script>
         // Function to open the modal
@@ -3112,13 +3130,14 @@ background: radial-gradient(circle, rgba(59,175,194,0.9557312232860621) 0%, rgba
         // Function to close the modal
         function closeModal() {
             document.getElementById("modal").style.display = "none";
+            document.getElementById("hide").click(); // Clicking the hide button
             // Remove the event listener when the modal is closed
             window.removeEventListener("popstate", closeModalOnBack);
         }
 
         // Function to close the modal when the back button is pressed
         function closeModalOnBack() {
-            openModal();
+            closeModal();
             // Navigate back one step in the history to maintain proper behavior
             history.back();
         }
@@ -3128,6 +3147,8 @@ background: radial-gradient(circle, rgba(59,175,194,0.9557312232860621) 0%, rgba
     </script>
 </body>
 </html>
+
+    
 
 
 	
