@@ -1074,24 +1074,15 @@ $(document).ready(function() {
 
 
 $(document).ready(function(){
-    // Listen for the back button press event
-    $(document).on('swiperight', '.ui-page', function(event){     
-        if(event.handled !== true) // This will prevent event triggering more than once
-        {      
-            var prevpage = $(this).prev('[data-role="page"]');
-            if (prevpage.length > 0) {
-                $.mobile.changePage(prevpage, {transition: "slide", reverse: true}, true, true);
-            }
-            event.handled = true;
-            
-            // Hide response content
-            $("#homepage-content").empty();
-            $("#menual").show();
-        }
-        return false;            
+    // Override default back button behavior
+    $(document).on("backbutton", function(e){
+        e.preventDefault(); // Prevent default back button behavior
+        
+        // Hide response content
+        $("#homepage-content").empty();
+        $("#menual").show();
     });
 });
-
 
 
 	
