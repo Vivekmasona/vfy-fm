@@ -1101,22 +1101,31 @@ $(document).on('swipeleft', '.ui-page', function(event){
 
 
 $(document).ready(function(){
-    var isResponseVisible = false; // Flag to track current state
+    // Initially disable toggle button
+    $("#hide").prop("disabled", true);
 
     // Toggle button click event
     $("#hide").click(function(){
-        if (!isResponseVisible) {
-            $("#homepage-content").empty(); // Clear the response content
-            $("#manualContent").show(); // Show the manual content
-            $("html, body").scrollTop(0); // Scroll to top of the page
-        } else {
-            $("#manualContent").hide(); // Hide the manual content
-            // Here you can add the code to show the response content again
-            // For example, you can call your search() function here
-            search(); // Assuming search() is the function to display response content
-        }
-        isResponseVisible = !isResponseVisible; // Toggle the flag
+        $("#homepage-content").empty(); // Clear the response content
+        $("#manualContent").show(); // Show the manual content
+        $("#hide").prop("disabled", true); // Disable toggle button again
     });
+
+    // Function to handle response
+    function handleResponse() {
+        $("#hide").prop("disabled", false); // Enable toggle button
+    }
+
+    // Example function to simulate receiving response
+    function receiveResponse() {
+        // Simulate receiving response after some delay (for demonstration)
+        setTimeout(function(){
+            handleResponse(); // Call handleResponse function
+        }, 1000); // Change delay as needed
+    }
+
+    // Call receiveResponse function to simulate receiving response
+    receiveResponse();
 });
 
 
