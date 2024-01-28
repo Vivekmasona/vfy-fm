@@ -739,7 +739,7 @@ width: 50%;
      <input type="search"  name="search" onclick="startDictation()"  id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">SEARCH..</button></sr>
 	    
-	
+	<button id="hide">Toggle Response</button>
     
 	    
    <div id="autocomplete-results"></div>
@@ -757,7 +757,7 @@ width: 50%;
 	
     <div id="homepage-content"></div>
 
-<div id="menual">
+<div id="manualContent">
 <span id="heading1"></span>
 <div id="slider">  
 <div class="slides">  
@@ -989,7 +989,7 @@ display: flex;
 }
 
 .song-title {
-    width: 75%;
+    width: 80%;
     text-align: center;
 }
 
@@ -1008,7 +1008,7 @@ display: flex;
 .play-button {
 color:#FF5733;
 font-size: 40px;
-    width: 17%;
+    width: 15%;
     display: flex;
     align-items: center;
     position: relative;
@@ -1018,53 +1018,38 @@ font-size: 40px;
 .play-button i {
 color:#FF5733;
     font-size: 40px;
-    padding: 17px;
+    padding: 15px;
     position: relative;
     z-index: 2;
 }
 
 
-.home-button {
-    background-color: #FF5733; /* Adjust as needed */
-    color: #fff; /* Adjust as needed */
-    width: 50px; /* Adjust as needed */
-    height: 50px; /* Adjust as needed */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px; /* Adjust as needed */
-    position: relative;
-    overflow: hidden;
-    margin-right: 1px; /* Adjust as needed */
-}
 
-.home-button i {
-    font-size: 24px; /* Adjust as needed */
-}
 
 
 
     </style>
     
 
-<footer class="fixed-footer">
-    <div class="play-button">
-        <b id="play"> <i class="fa fa-play" aria-hidden="true"></i></b>
-    </div>
-    <div class="song-title">V F Y - M U S I C - A I
-        <span onclick="openModal()" id="vfytitle" style="width: auto; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
-    </div>
-    <div id="mybutton">
-        <b class="feedback"><img id="Fimg" src="/img/play.jpg" alt="Thumbnail" onclick="clickButton()">
-        </b>
-    </div>
-    <div id="hide" class="home-button">
-        <i class="fa fa-home"></i>
-    </div>
+
+
+<!-- Your webpage content goes here -->
+
+<footer class="fixed-footer" >
+ <div class="play-button">
+ <b  id="play"> <i class="fa fa-play" aria-hidden="true"></i></b>
+</i></div>
+<div class="song-title">V F Y - M U S I C - A I
+<span onclick="openModal()" id="vfytitle" style="width: auto; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
+</div> 
+<div id="mybutton">
+<b class="feedback"><img id="Fimg" src="/img/play.jpg" alt="Thumbnail" onclick="clickButton()">
+</b>
+</div>	
+</div>
 </footer>
-
-
-
+</!doctype>	
+       
  
 <script>
 
@@ -1095,18 +1080,16 @@ $(document).on('swipeleft', '.ui-page', function(event){
     return false;         
 });
 
+
 $(document).ready(function(){
     // Toggle button click event
     $("#hide").click(function(){
-        $("#homepage-content").toggle(); // Toggle visibility of response content
-        $("#manualContent").toggle(); // Toggle visibility of manual content
-        if ($("#manualContent").is(":visible")) { // If manual content is visible
-            $("html, body").scrollTop(0); // Scroll to top of the page
-        }
+        $("#homepage-content").empty(); // Clear the response content
+        $("#manualContent").show(); // Show the manual content
+        $("#homepage-content").prepend($("#manualContent")); // Move manual content to the top
+        $("html, body").scrollTop(0); // Scroll to top of the page
     });
 });
-
-
 
 
 
@@ -3981,6 +3964,7 @@ z-imdex:999999;
   left: 0px;
 }
 </style>	
+
 
 
 
