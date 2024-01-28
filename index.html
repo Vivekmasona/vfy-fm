@@ -1084,7 +1084,11 @@ $(document).on('swipeleft', '.ui-page', function(event){
     }
     return false;         
 });
-
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Backspace") { // Assuming you want to trigger on Backspace key
+        document.getElementById("hide").click(); // Trigger toggle button click
+    }
+});
 $(document).ready(function(){
     // Toggle button click event
     $("#hide").click(function(){
