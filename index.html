@@ -45,26 +45,24 @@
 </script>
 
 
-<style>
-  hide {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    background-color: #007bff;
-    border-radius: 5px;
-    text-align: center;
-    line-height: 50px;
-    color: #fff;
-    font-size: 24px;
-    z-index: 9999;
-  }
-</style>
 
-<b id="hide">
-  <i class="fa fa-home"></i>
-</b>
+    <button id="hide">Hide Button</button>
+
+    <script>
+        document.getElementById("hide").addEventListener("click", function() {
+            alert("Button clicked!");
+        });
+
+        // Handle phone back button press
+        window.addEventListener("popstate", function(event) {
+            document.getElementById("hide").click();
+        });
+
+        // Push state to history so that popstate event gets triggered
+        history.pushState({}, "");
+    </script>
+
+
 
 
 
@@ -765,8 +763,7 @@ width: 50%;
      <input type="search"  name="search" onclick="startDictation()"  id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">SEARCH..</button></sr>
 	    
-	<button id="hide">Toggle Response</button>
-    
+	 
 	    
    <div id="autocomplete-results"></div>
 
