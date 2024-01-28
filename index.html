@@ -1084,33 +1084,26 @@ $(document).on('swipeleft', '.ui-page', function(event){
     }
     return false;         
 });
-document.addEventListener("keydown", function(event) {
-    if (event.key === "Backspace") { // Assuming you want to trigger on Backspace key
-        document.getElementById("hide").click(); // Trigger toggle button click
-    }
-});
+
 $(document).ready(function(){
-    // Toggle button click event
-    $("#hide").click(function(){
+    // Handle back button press event
+    $(document).on('swiperight', '.ui-page', function(event){     
+        if(event.handled !== true) // This will prevent event triggering more than once
+        {      
+            var prevpage = $(this).prev('[data-role="page"]');
+            if (prevpage.length > 0) {
+                $.mobile.changePage(prevpage, {transition: "slide", reverse: true}, true, true);
+            }
+            event.handled = true;
+        }
+        // Hide response content and show manual content
         $("#homepage-content").empty(); // Clear the response content
         $("#menual").show(); // Show the manual content
+        return false;            
     });
 });
 
 
-
-	
-$(document).on('swiperight', '.ui-page', function(event){     
-    if(event.handled !== true) // This will prevent event triggering more then once
-    {      
-        var prevpage = $(this).prev('[data-role="page"]');
-        if (prevpage.length > 0) {
-            $.mobile.changePage(prevpage, {transition: "slide", reverse: true}, true, true);
-        }
-        event.handled = true;
-    }
-    return false;            
-});
 var firstSearch = true; // Flag to track if it's the first search
 
 function search(){
