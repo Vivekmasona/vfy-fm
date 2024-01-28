@@ -1075,13 +1075,13 @@ $(document).ready(function() {
 
 $(document).ready(function(){
     // Override default back button behavior
-    $(document).on("backbutton", function(e){
+    document.addEventListener("backbutton", function(e){
         e.preventDefault(); // Prevent default back button behavior
         
         // Hide response content
         $("#homepage-content").empty();
-        $("#menual").show();
-    });
+        $("#manualContent").show();
+    }, false);
 });
 
 
