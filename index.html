@@ -3074,7 +3074,8 @@ background: radial-gradient(circle, rgba(59,175,194,0.9557312232860621) 0%, rgba
 
 
 
-<!DOCTYPE html>
+
+ <!DOCTYPE html>
 <html>
 <head>
     <title>Modal with Back Button Integration</title>
@@ -3094,13 +3095,17 @@ background: radial-gradient(circle, rgba(59,175,194,0.9557312232860621) 0%, rgba
     </style>
 </head>
 <body>
-    <b id="hide" style="display: none;"></b>
-    <div id="modal"></div>
+    <button id="hide" style="display: none;">Hide Button</button>
+    <div id="modal">This is a modal</div>
 
     <script>
+        // Variable to track modal state
+        let isModalOpen = false;
+
         // Function to open the modal
         function openModal() {
             document.getElementById("modal").style.display = "block";
+            isModalOpen = true;
             // Automatically close the modal after 2 minutes (120,000 milliseconds)
             setTimeout(closeModal, 120000);
 
@@ -3114,6 +3119,7 @@ background: radial-gradient(circle, rgba(59,175,194,0.9557312232860621) 0%, rgba
         // Function to close the modal
         function closeModal() {
             document.getElementById("modal").style.display = "none";
+            isModalOpen = false;
             document.getElementById("hide").click(); // Clicking the hide button
             // Remove the event listener when the modal is closed
             window.removeEventListener("popstate", closeModalOnBack);
@@ -3121,18 +3127,33 @@ background: radial-gradient(circle, rgba(59,175,194,0.9557312232860621) 0%, rgba
 
         // Function to close the modal when the back button is pressed
         function closeModalOnBack() {
-            closeModal();
+            if (isModalOpen) {
+                closeModal();
+            } else {
+                document.getElementById("hide").click(); // Clicking the hide button
+            }
             // Navigate back one step in the history to maintain proper behavior
             history.back();
         }
 
+        // Function to handle back button click
+        function handleBackButton() {
+            if (isModalOpen) {
+                closeModal();
+            } else {
+                document.getElementById("hide").click(); // Clicking the hide button
+            }
+        }
+
         // Trigger openModal when the page loads (you can adjust this based on your requirements)
         window.onload = openModal;
+
+        // Add event listener for back button click
+        window.addEventListener("popstate", handleBackButton);
     </script>
 </body>
 </html>
-
-    
+   
 
 
 	
