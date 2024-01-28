@@ -1098,11 +1098,14 @@ $(document).on('swipeleft', '.ui-page', function(event){
 $(document).ready(function(){
     // Toggle button click event
     $("#hide").click(function(){
-        $("#homepage-content").empty(); // Clear the response content
-        $("#menual").show(); // Show the manual content
-        $("#homepage-content").prepend($("#menual")); // Move manual content to the top
+        $("#homepage-content").toggle(); // Toggle visibility of response content
+        $("#manualContent").toggle(); // Toggle visibility of manual content
+        if ($("#manualContent").is(":visible")) { // If manual content is visible
+            $("html, body").scrollTop(0); // Scroll to top of the page
+        }
     });
 });
+
 
 
 
