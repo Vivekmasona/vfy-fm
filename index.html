@@ -1082,14 +1082,13 @@ $(document).on('swipeleft', '.ui-page', function(event){
 
 
 $(document).ready(function(){
-    var responseVisible = false; // Flag to track visibility of response
+    var isResponseVisible = false; // Flag to track current state
 
     // Toggle button click event
     $("#hide").click(function(){
-        if (!responseVisible) {
+        if (!isResponseVisible) {
             $("#homepage-content").empty(); // Clear the response content
             $("#manualContent").show(); // Show the manual content
-            $("#homepage-content").prepend($("#manualContent")); // Move manual content to the top
             $("html, body").scrollTop(0); // Scroll to top of the page
         } else {
             $("#manualContent").hide(); // Hide the manual content
@@ -1097,7 +1096,7 @@ $(document).ready(function(){
             // For example, you can call your search() function here
             search(); // Assuming search() is the function to display response content
         }
-        responseVisible = !responseVisible; // Toggle the flag
+        isResponseVisible = !isResponseVisible; // Toggle the flag
     });
 });
 
