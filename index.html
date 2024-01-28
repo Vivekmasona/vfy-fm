@@ -1081,13 +1081,24 @@ $(document).on('swipeleft', '.ui-page', function(event){
 });
 
 
+
 $(document).ready(function(){
     var isResponseVisible = false; // Flag to track current state
+    var isFirstSearch = true; // Flag to track if it's the first search
 
     // Toggle button click event
     $("#hide").click(function(){
         if (!isResponseVisible) {
-            $("#homepage-content").empty(); // Clear the response content
+            if (isFirstSearch) {
+                search(); // Display the initial search response
+                isFirstSearch = false; // Set the flag to false after the first search
+            }
+            else {
+                // Here you can add the code to show the previously fetched response
+                // For example, if you have stored the previous response in a variable, you can display it here
+                // For now, assuming there is a function showPreviousResponse() to display the previous response
+                showPreviousResponse();
+            }
             $("#manualContent").show(); // Show the manual content
             $("html, body").scrollTop(0); // Scroll to top of the page
         } else {
@@ -1099,7 +1110,6 @@ $(document).ready(function(){
         isResponseVisible = !isResponseVisible; // Toggle the flag
     });
 });
-
 
 
 
