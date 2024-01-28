@@ -287,11 +287,31 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
 
 
 
-    <b id="hide"></b>
+ <!DOCTYPE html>
+<html>
+<head>
+    <title>Double Click to Go Back, Single Click to Hide Button</title>
+</head>
+<body>
+    <button id="hide">Hide Button</button>
 
     <script>
+        // Single click to hide button
         document.getElementById("hide").addEventListener("click", function() {
-            //alert("Button clicked!");
+            alert("Button clicked!");
+        });
+
+        // Double click to go back
+        let clicked = false;
+        document.getElementById("hide").addEventListener("click", function() {
+            if (clicked) {
+                history.back();
+            } else {
+                clicked = true;
+                setTimeout(function() {
+                    clicked = false;
+                }, 500); // Change this value as per your preference for the double click delay
+            }
         });
 
         // Handle phone back button press
@@ -302,7 +322,9 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
         // Push state to history so that popstate event gets triggered
         history.pushState({}, "");
     </script>
-
+</body>
+</html>
+   
 
 
 
