@@ -1090,8 +1090,10 @@ $(document).ready(function(){
     $("#hide").click(function(){
         $("#homepage-content").empty(); // Clear the response content
         $("#menual").show(); // Show the manual content
+        $("#homepage-content").prepend($("#menual")); // Move manual content to the top
     });
 });
+
 
 
 
