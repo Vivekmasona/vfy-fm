@@ -1024,31 +1024,47 @@ color:#FF5733;
 }
 
 
+.home-button {
+    background-color: #fff; /* Adjust as needed */
+    color: #000; /* Adjust as needed */
+    width: 50px; /* Adjust as needed */
+    height: 50px; /* Adjust as needed */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px; /* Adjust as needed */
+    position: relative;
+    overflow: hidden;
+    margin-right: 10px; /* Adjust as needed */
+}
+
+.home-button i {
+    font-size: 24px; /* Adjust as needed */
+}
 
 
 
     </style>
     
 
-
-
-<!-- Your webpage content goes here -->
-
-<footer class="fixed-footer" >
- <div class="play-button">
- <b  id="play"> <i class="fa fa-play" aria-hidden="true"></i></b>
-</i></div>
-<div class="song-title">V F Y - M U S I C - A I
-<span onclick="openModal()" id="vfytitle" style="width: auto; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
-</div> 
-<div id="mybutton">
-<b class="feedback"><img id="Fimg" src="/img/play.jpg" alt="Thumbnail" onclick="clickButton()">
-</b>
-</div>	
-</div>
+<footer class="fixed-footer">
+    <div class="play-button">
+        <b id="play"> <i class="fa fa-play" aria-hidden="true"></i></b>
+    </div>
+    <div class="song-title">V F Y - M U S I C - A I
+        <span onclick="openModal()" id="vfytitle" style="width: auto; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
+    </div>
+    <div id="mybutton">
+        <b class="feedback"><img id="Fimg" src="/img/play.jpg" alt="Thumbnail" onclick="clickButton()">
+        </b>
+    </div>
+    <div class="home-button">
+        <i class="fa fa-home"></i>
+    </div>
 </footer>
-</!doctype>	
-       
+
+
+
  
 <script>
 
