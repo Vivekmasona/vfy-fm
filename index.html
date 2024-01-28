@@ -1082,17 +1082,22 @@ $(document).on('swipeleft', '.ui-page', function(event){
 
 
 $(document).ready(function(){
+    var responseVisible = false; // Flag to track visibility of response
+
     // Toggle button click event
-    $("#hide").click(function(){
-        if ($("#manualContent").is(":visible")) {
-            $("#homepage-content").empty(); // Clear the response content
-            $("#manualContent").hide(); // Hide the manual content
-        } else {
+    $("#toggleButton").click(function(){
+        if (!responseVisible) {
             $("#homepage-content").empty(); // Clear the response content
             $("#manualContent").show(); // Show the manual content
             $("#homepage-content").prepend($("#manualContent")); // Move manual content to the top
             $("html, body").scrollTop(0); // Scroll to top of the page
+        } else {
+            $("#manualContent").hide(); // Hide the manual content
+            // Here you can add the code to show the response content again
+            // For example, you can call your search() function here
+            search(); // Assuming search() is the function to display response content
         }
+        responseVisible = !responseVisible; // Toggle the flag
     });
 });
 
