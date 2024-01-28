@@ -755,9 +755,9 @@ width: 50%;
 
 
 	
-    <div id="homepage-content">
+    <div id="homepage-content"></div>
 
-
+<div id="menual">
 <span id="heading1"></span>
 <div id="slider">  
 <div class="slides">  
@@ -1083,9 +1083,11 @@ $(document).on('swipeleft', '.ui-page', function(event){
 $(document).ready(function(){
     // Toggle button click event
     $("#hide").click(function(){
-        $("#homepage-content").children().toggle(); // Toggle visibility of direct children of homepage-content
+        $("#homepage-content").empty(); // Clear the response content
+        $("#menual").show(); // Show the manual content
     });
 });
+
 
 
 	
