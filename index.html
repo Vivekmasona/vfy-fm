@@ -1080,23 +1080,14 @@ $(document).on('swipeleft', '.ui-page', function(event){
     return false;         
 });
 
-
 $(document).ready(function(){
     // Toggle button click event
     $("#hide").click(function(){
-        // Toggle visibility of homepage-content
-        $("#homepage-content").toggle(function(){
-            if($(this).is(":visible")) {
-                // If homepage-content is visible, remove the replacement div
-                $("#replacementDiv").remove();
-            } else {
-                // If homepage-content is hidden, create and append replacement div
-                var replacementDiv = $("<div id='replacementDiv'></div>");
-                // Add your content here
-                replacementDiv.html("Your additional content here");
-                $(this).after(replacementDiv);
-            }
-        });
+        $("#homepage-content").children().toggle(); // Toggle visibility of direct children of homepage-content
+    });
+});
+
+
 	
 $(document).on('swiperight', '.ui-page', function(event){     
     if(event.handled !== true) // This will prevent event triggering more then once
