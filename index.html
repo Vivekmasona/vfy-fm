@@ -1083,29 +1083,15 @@ $(document).on('swipeleft', '.ui-page', function(event){
 
 $(document).ready(function(){
     // Toggle button click event
-    $("#toggleButton").click(function(){
-        $("#homepage-content").toggle(); // Toggle visibility of response content
-        $("#manualContent").toggle(); // Toggle visibility of manual content
-        if ($("#manualContent").is(":visible")) { // If manual content is visible
-            $("html, body").scrollTop(0); // Scroll to top of the page
-        }
-    });
-
-    // Function to hide manual content when response content is displayed
-    function hideManualContent() {
-        $("#manualContent").hide();
+    $("#hide").click(function(){
+        $("#homepage-content").empty(); // Clear the response content
+        $("#manualContent").show(); // Show the manual content
+        $("#homepage-content").prepend($("#manualContent")); // Move manual content to the top
         $("html, body").scrollTop(0); // Scroll to top of the page
-    }
-
-    // Assuming this function is called when response content is displayed
-    function showResponseContent() {
-        $("#homepage-content").show();
-        hideManualContent(); // Call the function to hide manual content
-    }
-
-    // Call hideManualContent initially to ensure it's hidden by default
-    hideManualContent();
+    });
 });
+
+
 
 	
 $(document).on('swiperight', '.ui-page', function(event){     
