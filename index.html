@@ -3088,6 +3088,7 @@ background: radial-gradient(circle, rgba(59,175,194,0.9557312232860621) 0%, rgba
   </div>
 </div>
 
+
 <style>
     /* CSS for the modal */
     #modal {
@@ -3097,40 +3098,45 @@ background: radial-gradient(circle, rgba(59,175,194,0.9557312232860621) 0%, rgba
         left: 0;
         width: 100%;
         height: 200px; /* Adjust height as needed */
-        background-color: white;
+        
         z-index: 999;
+        transition: transform 0.5s ease; /* Smooth transition */
+    }
+
+    /* CSS for the modal when it's open */
+    #modal.open {
+        transform: translateY(0%);
+    }
+
+    /* CSS for the modal when it's closed */
+    #modal.closed {
+        transform: translateY(100%);
     }
 </style>
 
 <script>
     // Function to open the modal
     function openModal() {
-        document.getElementById("modal").style.display = "block";
+        const modal = document.getElementById("modal");
+        modal.style.display = "block";
         // Add event listener to close modal on escape key press
         document.addEventListener("keydown", closeModalOnEscape);
-        // Animate modal from bottom to top
-        animateModal("open");
+        // Trigger smooth transition to open the modal
+        modal.classList.add("open");
     }
 
     // Function to close the modal
     function closeModal() {
+        const modal = document.getElementById("modal");
         // Remove event listener for escape key press
         document.removeEventListener("keydown", closeModalOnEscape);
-        // Animate modal from top to bottom
-        animateModal("close");
-    }
-
-    // Function to animate the modal
-    function animateModal(action) {
-        const modal = document.getElementById("modal");
-        if (action === "open") {
-            modal.style.transform = "translateY(0%)";
-        } else if (action === "close") {
-            modal.style.transform = "translateY(100%)";
-            setTimeout(function() {
-                modal.style.display = "none";
-            }, 500); // Adjust delay to match animation duration
-        }
+        // Trigger smooth transition to close the modal
+        modal.classList.remove("open");
+        modal.classList.add("closed");
+        setTimeout(function() {
+            modal.style.display = "none";
+            modal.classList.remove("closed");
+        }, 500); // Adjust delay to match transition duration
     }
 
     // Function to close the modal on escape key press
