@@ -1101,8 +1101,8 @@ $(document).on('swipeleft', '.ui-page', function(event){
 
 
 $(document).ready(function(){
-    // Initially show manual content
-    $("#manualContent").show();
+    // Initially disable toggle button
+    $("#hide").prop("disabled", true);
 
     // Toggle button click event
     $("#hide").click(function(){
@@ -1113,7 +1113,6 @@ $(document).ready(function(){
 
     // Function to handle response
     function handleResponse() {
-        $("#manualContent").hide(); // Hide manual content
         $("#hide").prop("disabled", false); // Enable toggle button
     }
 
@@ -4003,6 +4002,7 @@ z-imdex:999999;
   left: 0px;
 }
 </style>	
+
 
 
 
