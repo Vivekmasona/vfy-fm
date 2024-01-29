@@ -1101,8 +1101,8 @@ $(document).on('swipeleft', '.ui-page', function(event){
 
 
 $(document).ready(function(){
-    // Initially disable toggle button
-    $("#hide").prop("disabled", true);
+    // Initially hide manual content
+    $("#manualContent").hide();
 
     // Toggle button click event
     $("#hide").click(function(){
@@ -1113,6 +1113,7 @@ $(document).ready(function(){
 
     // Function to handle response
     function handleResponse() {
+        $("#manualContent").hide(); // Hide manual content
         $("#hide").prop("disabled", false); // Enable toggle button
     }
 
@@ -1121,7 +1122,7 @@ $(document).ready(function(){
         // Simulate receiving response after some delay (for demonstration)
         setTimeout(function(){
             handleResponse(); // Call handleResponse function
-        }, 10); // Change delay as needed
+        }, 100); // Change delay as needed
     }
 
     // Call receiveResponse function to simulate receiving response
