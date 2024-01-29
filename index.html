@@ -1101,8 +1101,8 @@ $(document).on('swipeleft', '.ui-page', function(event){
 
 
 $(document).ready(function(){
-    // Initially hide manual content
-    $("#manualContent").hide();
+    // Initially show manual content
+    $("#manualContent").show();
 
     // Toggle button click event
     $("#hide").click(function(){
@@ -1122,7 +1122,7 @@ $(document).ready(function(){
         // Simulate receiving response after some delay (for demonstration)
         setTimeout(function(){
             handleResponse(); // Call handleResponse function
-        }, 100); // Change delay as needed
+        }, 10); // Change delay as needed
     }
 
     // Call receiveResponse function to simulate receiving response
