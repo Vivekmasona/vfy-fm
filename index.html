@@ -3103,10 +3103,10 @@ background: radial-gradient(circle, rgba(59,175,194,0.9557312232860621) 0%, rgba
         // Remove event listener for escape key press
         document.removeEventListener("keydown", closeModalOnEscape);
         // Slide up animation
-        $("#modal").slideUp();
-        setTimeout(function() {
+        $("#modal").slideUp(function() {
+            // Animation complete callback to hide modal
             document.getElementById("modal").style.display = "none";
-        }, 500); // Adjust delay to match animation duration
+        });
     }
 
     // Function to close the modal on escape key press
@@ -3119,6 +3119,7 @@ background: radial-gradient(circle, rgba(59,175,194,0.9557312232860621) 0%, rgba
     // Trigger openModal when the page loads (you can adjust this based on your requirements)
     window.onload = openModal;
 </script>
+
 
 
 <style>
