@@ -2430,6 +2430,8 @@ var offlineMsg = document.getElementById("offline-message");
 
     
 
+
+
     <script>
         window.addEventListener('load', function() {
             setTimeout(chhupa, 2000);
@@ -2552,22 +2554,20 @@ var offlineMsg = document.getElementById("offline-message");
                 const videoId = element.getAttribute('vid');
                 // You can implement the functionality to load the video in the music player here
                 console.log('Loading video with ID:', videoId);
+                
+                // Automatically click the next song after the current song ends
+                const currentIndex = parseInt(element.id.split('-')[2]);
+                const nextIndex = currentIndex + 1;
+                const nextSongElement = document.getElementById(`song-element-${nextIndex}`);
+                if (nextSongElement) {
+                    setTimeout(() => nextSongElement.click(), 5000); // Adjust delay as needed
+                }
             }
 
             // Function to extract playlist ID from a YouTube playlist URL
             function extractPlaylistId(playlistUrl) {
                 const urlParams = new URLSearchParams(new URL(playlistUrl).search);
                 return urlParams.get('list');
-            }
-
-            // Function to play the next song
-            function playNextSong() {
-                var nextSongIndex = Sid + 1; // Calculate the index of the next song
-                var playlistItems = document.getElementsByClassName("list");
-
-                if (nextSongIndex < playlistItems.length) {
-                    playlistItems[nextSongIndex].click(); // Play the next song
-                }
             }
 
             // Extract playlist URL from the shared URL and fetch videos
@@ -2611,10 +2611,21 @@ var offlineMsg = document.getElementById("offline-message");
             } else {
                 console.error('No URL provided');
             }
+
+            // Function to play the next song
+            function playNextSong() {
+                var nextSongIndex = Sid + 1; // Calculate the index of the next song
+                var playlistItems = document.getElementsByClassName("list");
+
+                if (nextSongIndex < playlistItems.length) {
+                    playlistItems[nextSongIndex].click(); // Play the next song
+                    audio.play(); // Play the audio
+                }
+            }
         });
     </script>
 
-            
+                                         <
 
 
 	    
