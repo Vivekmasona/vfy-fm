@@ -2428,9 +2428,6 @@ var offlineMsg = document.getElementById("offline-message");
 </style>
 
 
-
-    
-
     <script>
         window.addEventListener('load', function() {
             setTimeout(chhupa, 2000);
@@ -2486,14 +2483,15 @@ var offlineMsg = document.getElementById("offline-message");
                 return link.startsWith('http') || link.includes('www');
             }
 
-            // Function to extract playlist ID from a YouTube playlist URL
-            function extractPlaylistId(playlistUrl) {
-                const urlParams = new URLSearchParams(new URL(playlistUrl).search);
-                return urlParams.get('list');
-            }
-
             // Function to fetch videos from a YouTube playlist using the API
-            function fetchPlaylistVideos(playlistId, apiKey) {
+            function fetchPlaylistVideos(playlistUrl, apiKey) {
+                // Extract playlist ID from the URL
+                const playlistId = extractPlaylistId(playlistUrl);
+                if (!playlistId) {
+                    console.error('Invalid playlist URL');
+                    return;
+                }
+
                 const apiUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=${apiKey}`;
 
                 fetch(apiUrl)
@@ -2520,7 +2518,7 @@ var offlineMsg = document.getElementById("offline-message");
                 // Generate HTML for each video and append it to the video box
                 videos.forEach(video => {
                     const videoHtml = `
-                        <b class="list" vid="${video.videoId}" id="song-element">
+                        <b onclick="loadSong(this)" class="list" vid="${video.videoId}" id="song-element">
                             <div class="video">
                                 <img src="https://i.ytimg.com/vi/${video.videoId}/mqdefault.jpg" alt="${video.title}" class="video-thumbnail" vid="${video.videoId}">
                                 <section>
@@ -2541,60 +2539,39 @@ var offlineMsg = document.getElementById("offline-message");
                 document.querySelector('#loadingvkm1m').style = "display:none";
             }
 
-            // Agar shared link mein 'preventSearch' attribute hai
-            if (!url.searchParams.has('preventSearch')) {
-                if (isYouTubeLink(url.searchParams.get('text'))) {
-                    // YouTube URL hai, video container mein dikhao
-                    let vUrl = document.querySelector('#share_textvkm1m');
-                    vUrl.innerText = 'URL - ' + url.searchParams.get('text');
-
-                    let vTitle = document.querySelector('#share_titlevkm1m');
-                    vTitle.innerText = 'Title - ' + url.searchParams.get('title');
-
-                    // Song ko load karne ke liye HTML code set karo
-                    let songContainer = document.querySelector('#song-container');
-                    songContainer.innerHTML = `
-                        <b onclick="loadSong(this)" class="list" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}" id="song-element">
-                            <div class="video">
-                                <img src="https://i.ytimg.com/vi/${extractYouTubeVideoId(url.searchParams.get('text'))}/mqdefault.jpg" alt="Your Video Title" class="video-thumbnail" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}">
-                                <section>
-                                    <section>
-                                        <div>
-                                            <p>${url.searchParams.get('title')}</p>
-                                        </div>
-                                    </section>
-                                </section>
-                            </div>
-                        </b>`;
-
-                    // Automatic click karo
-                    let songElement = document.getElementById('song-element');
-                    if (songElement) {
-                        songElement.click();
-                    }
-                } else if (isUrlLink(url.searchParams.get('text'))) {
-                    // Other URL hai, download button overlay create karo
-                    openDownloadPopup(url.searchParams.get('text'));
-                } else {
-                    // Koi text hai, search box mein set karo
-                    let searchText = extractTextInDoubleQuotes(url.searchParams.get('text')) || url.searchParams.get('text');
-                    let searchBox = document.querySelector('#search-basic');
-                    searchBox.value = searchText;
-                    document.getElementById('search-btn').click();
-                }
+            // Function to load a song in the music player
+            function loadSong(element) {
+                const videoId = element.getAttribute('vid');
+                // You can implement the functionality to load the video in the music player here
+                console.log('Loading video with ID:', videoId);
             }
 
-            // Extract playlist ID from the shared URL and fetch videos
-            const sharedUrl = 'https://youtube.com/playlist?list=PLNhIv1Ws_Em54rEmmJuqMI2ILDfG4z5gA&si=qo3v1Tvsb5BqarXZ'; // Change this to the shared URL
-            const playlistId = extractPlaylistId(sharedUrl);
+            // Function to extract playlist ID from a YouTube playlist URL
+            function extractPlaylistId(playlistUrl) {
+                const urlParams = new URLSearchParams(new URL(playlistUrl).search);
+                return urlParams.get('list');
+            }
 
-            if (playlistId) {
-                // Replace 'YOUR_API_KEY' with your actual YouTube Data API key
-                const apiKey = 'AIzaSyAs_tSQYJXX9axDYXkYGe9RZmt1p-XRFWo';
-                fetchPlaylistVideos(playlistId, apiKey);
+            // Extract playlist URL from the shared URL and fetch videos
+            if (url.searchParams.has('text')) {
+                const playlistUrl = url.searchParams.get('text');
+                if (isYouTubeLink(playlistUrl)) {
+                    // Fetch videos from the playlist
+                    // Replace 'YOUR_API_KEY' with your actual YouTube Data API key
+                    const apiKey = 'AIzaSyAs_tSQYJXX9axDYXkYGe9RZmt1p-XRFWo';
+                    fetchPlaylistVideos(playlistUrl, apiKey);
+                } else {
+                    console.error('Invalid YouTube playlist URL');
+                }
+            } else {
+                console.error('No URL provided');
             }
         });
     </script>
+
+    
+                
+            
 
 
 
