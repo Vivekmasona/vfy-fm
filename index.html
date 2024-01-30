@@ -291,13 +291,13 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
     <b id="hide"></b>
 
     <script>
-       document.getElementById("play").addEventListener("click", function() {
+       document.getElementById("hide").addEventListener("click", function() {
             //alert("Button clicked!");
        });
 
         // Handle phone back button press
         window.addEventListener("popstate", function(event) {
-            document.getElementById("play").click();
+            document.getElementById("hide").click();
             // Push state back to maintain the same state
             history.pushState({}, "");
         });
@@ -1849,7 +1849,7 @@ recognition.onresult = function(event) {
             lastResult.toLowerCase() === 'Gana' ||
             lastResult.toLowerCase() === 'audio play') {
             // Handle playing songs or audio
-            const butto1 = document.getElementById('AdAudio');
+            const butto1 = document.getElementById('play');
             butto1.click();
             playAudio('/sound/song.mp3'); // Replace with the appropriate audio URL
             commandMatched = true;
