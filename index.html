@@ -2428,6 +2428,7 @@ var offlineMsg = document.getElementById("offline-message");
 </style>
 
 
+
     <script>
         window.addEventListener('load', function() {
             setTimeout(chhupa, 2000);
@@ -2516,9 +2517,9 @@ var offlineMsg = document.getElementById("offline-message");
                 const songContainer = document.querySelector('#song-container');
 
                 // Generate HTML for each video and append it to the video box
-                videos.forEach(video => {
+                videos.forEach((video, index) => {
                     const videoHtml = `
-                        <b onclick="loadSong(this)" class="list" vid="${video.videoId}" id="song-element">
+                        <b onclick="loadSong(this)" class="list" vid="${video.videoId}" id="song-element-${index}">
                             <div class="video">
                                 <img src="https://i.ytimg.com/vi/${video.videoId}/mqdefault.jpg" alt="${video.title}" class="video-thumbnail" vid="${video.videoId}">
                                 <section>
@@ -2532,6 +2533,12 @@ var offlineMsg = document.getElementById("offline-message");
                         </b>`;
                     songContainer.innerHTML += videoHtml;
                 });
+
+                // Start playing the first song automatically
+                const firstSongElement = document.getElementById('song-element-0');
+                if (firstSongElement) {
+                    firstSongElement.click();
+                }
             }
 
             // Function to hide loading message
@@ -2544,6 +2551,14 @@ var offlineMsg = document.getElementById("offline-message");
                 const videoId = element.getAttribute('vid');
                 // You can implement the functionality to load the video in the music player here
                 console.log('Loading video with ID:', videoId);
+                
+                // Automatically click the next song after the current song ends
+                const currentIndex = parseInt(element.id.split('-')[2]);
+                const nextIndex = currentIndex + 1;
+                const nextSongElement = document.getElementById(`song-element-${nextIndex}`);
+                if (nextSongElement) {
+                    setTimeout(() => nextSongElement.click(), 5000); // Adjust delay as needed
+                }
             }
 
             // Function to extract playlist ID from a YouTube playlist URL
@@ -2568,6 +2583,12 @@ var offlineMsg = document.getElementById("offline-message");
             }
         });
     </script>
+
+
+
+	    
+
+     
 
     
                 
