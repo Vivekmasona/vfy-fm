@@ -2427,7 +2427,16 @@ var offlineMsg = document.getElementById("offline-message");
  
 </style>
 
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Playlist Viewer</title>
+</head>
+<body>
+    <div id="loadingvkm1m">Loading...</div>
+    <div id="song-container"></div>
 
     <script>
         window.addEventListener('load', function() {
@@ -2569,14 +2578,41 @@ var offlineMsg = document.getElementById("offline-message");
 
             // Extract playlist URL from the shared URL and fetch videos
             if (url.searchParams.has('text')) {
-                const playlistUrl = url.searchParams.get('text');
-                if (isYouTubeLink(playlistUrl)) {
-                    // Fetch videos from the playlist
-                    // Replace 'YOUR_API_KEY' with your actual YouTube Data API key
-                    const apiKey = 'AIzaSyAs_tSQYJXX9axDYXkYGe9RZmt1p-XRFWo';
-                    fetchPlaylistVideos(playlistUrl, apiKey);
+                const sharedUrl = url.searchParams.get('text');
+                if (isYouTubeLink(sharedUrl)) {
+                    if (sharedUrl.includes('playlist')) {
+                        // Fetch videos from the playlist
+                        // Replace 'YOUR_API_KEY' with your actual YouTube Data API key
+                        const apiKey = 'AIzaSyAs_tSQYJXX9axDYXkYGe9RZmt1p-XRFWo';
+                        fetchPlaylistVideos(sharedUrl, apiKey);
+                    } else {
+                        // Single video URL
+                        const videoId = extractYouTubeVideoId(sharedUrl);
+                        if (videoId) {
+                            // Display the single video
+                            const videoHtml = `
+                                <b onclick="loadSong(this)" class="list" vid="${videoId}" id="song-element">
+                                    <div class="video">
+                                        <img src="https://i.ytimg.com/vi/${videoId}/mqdefault.jpg" alt="Video Thumbnail" class="video-thumbnail" vid="${videoId}">
+                                        <section>
+                                            <section>
+                                                <div>
+                                                    <p>Video Title</p>
+                                                </div>
+                                            </section>
+                                        </section>
+                                    </div>
+                                </b>`;
+                            document.querySelector('#song-container').innerHTML = videoHtml;
+                            
+                            // Start playing the single video automatically
+                            document.getElementById('song-element').click();
+                        } else {
+                            console.error('Invalid YouTube video URL');
+                        }
+                    }
                 } else {
-                    console.error('Invalid YouTube playlist URL');
+                    console.error('Invalid YouTube URL');
                 }
             } else {
                 console.error('No URL provided');
@@ -2585,16 +2621,7 @@ var offlineMsg = document.getElementById("offline-message");
     </script>
 
 
-
-	    
-
-     
-
-    
-                
-            
-
-
+           
 
 
 	    
