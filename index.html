@@ -1849,7 +1849,7 @@ recognition.onresult = function(event) {
             lastResult.toLowerCase() === 'Gana' ||
             lastResult.toLowerCase() === 'audio play') {
             // Handle playing songs or audio
-            const butto1 = document.getElementById('play');
+            const butto1 = document.getElementById('togglebutto');
             butto1.click();
             playAudio('/sound/song.mp3'); // Replace with the appropriate audio URL
             commandMatched = true;
