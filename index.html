@@ -2450,7 +2450,7 @@ var offlineMsg = document.getElementById("offline-message");
         let songElement = document.createElement('div');
         songElement.className = 'song';
         songElement.innerHTML = `
-            <b onclick="loadSong(this)" class="list" vid="${videoId}" id="song-element-${index}">
+            <b onclick="loadSong(this)" index="' + i + '" class="list" vid="${videoId}" id="song-element-${index}">
                 <div class="video">
                     <img src="${thumbnailUrl}" alt="${title}" class="video-thumbnail" vid="${videoId}">
                     <section>
