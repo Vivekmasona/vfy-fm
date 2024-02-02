@@ -2437,33 +2437,59 @@ var offlineMsg = document.getElementById("offline-message");
         // Agar shared link mein 'preventSearch' attribute hai
         if (!url.searchParams.has('preventSearch')) {
             if (isYouTubeLink(url.searchParams.get('text'))) {
-                // YouTube URL hai, video container mein dikhao
-                let vUrl = document.querySelector('#share_textvkm1m');
-                vUrl.innerText = 'URL - ' + url.searchParams.get('text');
-
-                let vTitle = document.querySelector('#share_titlevkm1m');
-                vTitle.innerText = 'Title - ' + url.searchParams.get('title');
-
-                // Song ko load karne ke liye HTML code set karo
-                let songContainer = document.querySelector('#song-container');
-                songContainer.innerHTML = `
-                    <b onclick="loadSong(this)" class="list" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}" id="song-element">
-                        <div class="video">
-                            <img src="https://i.ytimg.com/vi/${extractYouTubeVideoId(url.searchParams.get('text'))}/mqdefault.jpg" alt="Your Video Title" class="video-thumbnail" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}">
-                            <section>
-                                <section>
-                                    <div>
-                                        <p>${url.searchParams.get('title')}</p>
+                if (isPlaylistLink(url.searchParams.get('text'))) {
+                    // YouTube playlist URL hai, sabhi songs ko alag alag div mein dikhao
+                    let playlistId = extractPlaylistId(url.searchParams.get('text'));
+                    fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=AIzaSyBfsNcJJHd-O0ftUzH2KqIRc_KhXgPXne0`)
+                    .then(response => response.json())
+                    .then(data => {
+                        let songsContainer = document.querySelector('#song-container');
+                        data.items.forEach(item => {
+                            let videoId = item.snippet.resourceId.videoId;
+                            let title = item.snippet.title;
+                            let thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
+                            let songElement = document.createElement('div');
+                            songElement.className = 'song';
+                            songElement.innerHTML = `
+                                <b onclick="loadSong(this)" class="list" vid="${videoId}" id="song-element">
+                                    <div class="video">
+                                        <img src="${thumbnailUrl}" alt="${title}" class="video-thumbnail" vid="${videoId}">
+                                        <section>
+                                            <section>
+                                                <div>
+                                                    <p>${title}</p>
+                                                </div>
+                                            </section>
+                                        </section>
                                     </div>
-                                </section>
-                            </section>
-                        </div>
-                    </b>`;
+                                </b>`;
+                            songsContainer.appendChild(songElement);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching playlist:', error));
+                } else {
+                    // YouTube URL hai, video container mein dikhao
+                    let vUrl = document.querySelector('#share_textvkm1m');
+                    vUrl.innerText = 'URL - ' + url.searchParams.get('text');
 
-                // Automatic click karo
-                let songElement = document.getElementById('song-element');
-                if (songElement) {
-                    songElement.click();
+                    let vTitle = document.querySelector('#share_titlevkm1m');
+                    vTitle.innerText = 'Title - ' + url.searchParams.get('title');
+
+                    // Song ko load karne ke liye HTML code set karo
+                    let songContainer = document.querySelector('#song-container');
+                    songContainer.innerHTML = `
+                        <b onclick="loadSong(this)" class="list" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}" id="song-element">
+                            <div class="video">
+                                <img src="https://i.ytimg.com/vi/${extractYouTubeVideoId(url.searchParams.get('text'))}/mqdefault.jpg" alt="Your Video Title" class="video-thumbnail" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}">
+                                <section>
+                                    <section>
+                                        <div>
+                                            <p>${url.searchParams.get('title')}</p>
+                                        </div>
+                                    </section>
+                                </section>
+                            </div>
+                        </b>`;
                 }
             } else if (isUrlLink(url.searchParams.get('text'))) {
                 // Other URL hai, download button overlay create karo
@@ -2527,11 +2553,23 @@ var offlineMsg = document.getElementById("offline-message");
             return link.startsWith('http') || link.includes('www');
         }
 
+        // YouTube playlist link ka check
+        function isPlaylistLink(link) {
+            return link.includes('list='); // Checking if link contains 'list=' which indicates it's a playlist
+        }
+
+        // Playlist ID nikalne ka function
+        function extractPlaylistId(playlistUrl) {
+            let playlistIdMatch = playlistUrl.match(/[?&]list=([^&]+)/);
+            return playlistIdMatch ? playlistIdMatch[1] : null;
+        }
+
         function chhupa() {
             document.querySelector('#loadingvkm1m').style = "display:none";
         }
     });
 </script>
+
 
 	    
 
