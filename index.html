@@ -2442,31 +2442,35 @@ var offlineMsg = document.getElementById("offline-message");
                     fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=AIzaSyBfsNcJJHd-O0ftUzH2KqIRc_KhXgPXne0`)
                     .then(response => response.json())
                     .then(data => {
-                        let songsContainer = document.querySelector('#song-container');
-                        data.items.forEach(item => {
-                            let videoId = item.snippet.resourceId.videoId;
-                            let title = item.snippet.title;
-                            let thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
-                            let songElement = document.createElement('div');
-                            songElement.className = 'song';
-                            songElement.innerHTML = `
-                                <b onclick="loadSong(this)" class="list" vid="${videoId}" id="song-element">
-                                    <div class="video">
-                                        <img src="${thumbnailUrl}" alt="${title}" class="video-thumbnail" vid="${videoId}">
-                                        <section>
-                                            <section>
-                                                <div>
-                                                    <p>${title}</p>
-                                                </div>
-                                            </section>
-                                        </section>
-                                    </div>
-                                </b>`;
-                            songsContainer.appendChild(songElement);
-                            // Automatically trigger click event on the song element
-                            songElement.click();
-                        });
-                    })
+    let songsContainer = document.querySelector('#song-container');
+    data.items.forEach((item, index) => {
+        let videoId = item.snippet.resourceId.videoId;
+        let title = item.snippet.title;
+        let thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
+        let songElement = document.createElement('div');
+        songElement.className = 'song';
+        songElement.innerHTML = `
+            <b onclick="loadSong(this)" class="list" vid="${videoId}" id="song-element-${index}">
+                <div class="video">
+                    <img src="${thumbnailUrl}" alt="${title}" class="video-thumbnail" vid="${videoId}">
+                    <section>
+                        <section>
+                            <div>
+                                <p>${title}</p>
+                            </div>
+                        </section>
+                    </section>
+                </div>
+            </b>`;
+        songsContainer.appendChild(songElement);
+    });
+    // Automatic click on the first song
+    let firstSongElement = document.getElementById('song-element-0');
+    if (firstSongElement) {
+        firstSongElement.click();
+    }
+})
+
                     .catch(error => console.error('Error fetching playlist:', error));
                 } else {
                     // YouTube URL hai, video container mein dikhao
