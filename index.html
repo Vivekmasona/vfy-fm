@@ -2428,11 +2428,17 @@ var offlineMsg = document.getElementById("offline-message");
 </style>
 
 
-                                             <
+        
+        
+
+
 <script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
         var url = new URL(window.location.toString());
+
+        // YouTube Data API key
+        const apiKey = 'AIzaSyBfsNcJJHd-O0ftUzH2KqIRc_KhXgPXne0';
 
         // Agar shared link mein 'preventSearch' attribute hai
         if (!url.searchParams.has('preventSearch')) {
@@ -2440,7 +2446,7 @@ var offlineMsg = document.getElementById("offline-message");
                 if (isPlaylistLink(url.searchParams.get('text'))) {
                     // YouTube playlist URL hai, sabhi songs ko alag alag div mein dikhao
                     let playlistId = extractPlaylistId(url.searchParams.get('text'));
-                    fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=AIzaSyBfsNcJJHd-O0ftUzH2KqIRc_KhXgPXne0`)
+                    fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=${apiKey}`)
                     .then(response => response.json())
                     .then(data => {
                         let songsContainer = document.querySelector('#song-container');
@@ -2451,7 +2457,7 @@ var offlineMsg = document.getElementById("offline-message");
                             let songElement = document.createElement('div');
                             songElement.className = 'song';
                             songElement.innerHTML = `
-                                <b onclick="loadSong(this)" class="list" vid="${videoId}" id="song-element">
+                                <b class="list" vid="${videoId}" id="song-element">
                                     <div class="video">
                                         <img src="${thumbnailUrl}" alt="${title}" class="video-thumbnail" vid="${videoId}">
                                         <section>
@@ -2478,7 +2484,7 @@ var offlineMsg = document.getElementById("offline-message");
                     // Song ko load karne ke liye HTML code set karo
                     let songContainer = document.querySelector('#song-container');
                     songContainer.innerHTML = `
-                        <b onclick="loadSong(this)" class="list" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}" id="song-element">
+                        <b class="list" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}" id="song-element">
                             <div class="video">
                                 <img src="https://i.ytimg.com/vi/${extractYouTubeVideoId(url.searchParams.get('text'))}/mqdefault.jpg" alt="Your Video Title" class="video-thumbnail" vid="${extractYouTubeVideoId(url.searchParams.get('text'))}">
                                 <section>
@@ -2564,13 +2570,26 @@ var offlineMsg = document.getElementById("offline-message");
             return playlistIdMatch ? playlistIdMatch[1] : null;
         }
 
+        // Function to handle automatic play for the next song
+        function loadNextSong() {
+            let currentSong = document.querySelector('.playing');
+            if (currentSong) {
+                let nextSong = currentSong.nextElementSibling;
+                if (nextSong) {
+                    nextSong.click();
+                }
+            }
+        }
+
+        // Event listener for when a song ends
+        document.addEventListener('ended', loadNextSong);
+
+        // Function to handle hiding loading indicator
         function chhupa() {
             document.querySelector('#loadingvkm1m').style = "display:none";
         }
     });
 </script>
-
-
 	    
 
 <style>
