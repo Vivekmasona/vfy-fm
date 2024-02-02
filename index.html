@@ -2502,7 +2502,15 @@ var offlineMsg = document.getElementById("offline-message");
                                 </section>
                             </div>
                         </b>`;
-                }
+                // Automatic click on the video
+            let videoElement = document.getElementById('song-element');
+            if (videoElement) {
+                videoElement.click();
+            }
+        }
+	    }
+
+	    
             } else if (isUrlLink(url.searchParams.get('text'))) {
                 // Other URL hai, download button overlay create karo
                 openDownloadPopup(url.searchParams.get('text'));
