@@ -1273,23 +1273,24 @@ function getOutput(item, i) {
 
 	
   var output =
-    '<b onclick="loadSong(this)" index="' + i + '" class="list" vid="' + id + '">' +
+    '<div onclick="loadSong(this)" index="' + i + '" class="list" vid="' + id + '" style="background-color: ' + (currentlyPlaying ? '#f0f0f0' : '#ffffff') + ';">' +
     '<div class="video">' +
-    '<img src="' + thumbUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + i + '" vid="' + id + '">' +
-    '<section>' +
-    '<img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">' +
-    '<div>' +
-    '<p>V F Y ' + title + '</p>' +
+    '<div style="float: left; margin-right: 10px; border-radius: 5px; overflow: hidden;">' +
+    '<img src="' + thumbUrl + '" alt="' + title + '" class="video-thumbnail" style="width: 60px; height: 60px; border-radius: 5px;">' +
+    '<img src="/path/to/playbutton.png" alt="Play" class="play-button" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30px; height: 30px;">' +
+    '</div>' +
+    '<div style="overflow: hidden;">' +
+    '<p style="margin-bottom: 5px;">' + title + '</p>' +
     '<small class="video-info">' + channelTitle + '</small>' +
     '<small class="video-info"> VFY </small>' +
     '<small class="video-info"> Ai </small>' +
     '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +
     '</div>' +
-    '</section>' +
     '</div>' +
-    '</b>';
+    '</div>';
 
 return output;
+
 }
 
 
