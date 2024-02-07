@@ -75,48 +75,6 @@
 	
 </style>
 
-
-
-<style>
-
-.list {
-    cursor: pointer;
-    padding: 10px;
-}
-
-.video {
-    display: flex;
-    align-items: center;
-}
-
-.video-thumbnail {
-    width: 60px;
-    height: 60px;
-    border-radius: 5px;
-}
-
-.play-button {
-    display: none; /* Hide the play button by default */
-}
-
-.list:hover .play-button {
-    display: block; /* Display the play button when hovering over the list item */
-}
-
-.video-info {
-    display: block;
-    margin-top: 5px;
-    font-size: 12px;
-}
-
-/* Style for the currently playing song */
-.list.playing {
-    background-color: #f0f0f0;
-}
-
-
-	
-</style>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Khula:wght@400;600;700&family=Public+Sans:wght@100;300;400;600&display=swap');
 
@@ -1273,24 +1231,23 @@ function getOutput(item, i) {
 
 	
   var output =
-    '<div onclick="loadSong(this)" index="' + i + '" class="list" vid="' + id + '" style="background-color: ' + (currentlyPlaying ? '#f0f0f0' : '#ffffff') + ';">' +
+    '<b onclick="loadSong(this)" index="' + i + '" class="list" vid="' + id + '">' +
     '<div class="video">' +
-    '<div style="float: left; margin-right: 10px; border-radius: 5px; overflow: hidden;">' +
-    '<img src="' + thumbUrl + '" alt="' + title + '" class="video-thumbnail" style="width: 60px; height: 60px; border-radius: 5px;">' +
-    '<img src="/path/to/playbutton.png" alt="Play" class="play-button" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30px; height: 30px;">' +
-    '</div>' +
-    '<div style="overflow: hidden;">' +
-    '<p style="margin-bottom: 5px;">' + title + '</p>' +
+    '<img src="' + thumbUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + i + '" vid="' + id + '">' +
+    '<section>' +
+    '<img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">' +
+    '<div>' +
+    '<p>V F Y ' + title + '</p>' +
     '<small class="video-info">' + channelTitle + '</small>' +
     '<small class="video-info"> VFY </small>' +
     '<small class="video-info"> Ai </small>' +
     '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +
     '</div>' +
+    '</section>' +
     '</div>' +
-    '</div>';
+    '</b>';
 
 return output;
-
 }
 
 
@@ -4102,6 +4059,7 @@ z-imdex:999999;
   left: 0px;
 }
 </style>	
+
 
 
 
