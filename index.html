@@ -76,6 +76,47 @@
 </style>
 
 
+
+<style>
+
+.list {
+    cursor: pointer;
+    padding: 10px;
+}
+
+.video {
+    display: flex;
+    align-items: center;
+}
+
+.video-thumbnail {
+    width: 60px;
+    height: 60px;
+    border-radius: 5px;
+}
+
+.play-button {
+    display: none; /* Hide the play button by default */
+}
+
+.list:hover .play-button {
+    display: block; /* Display the play button when hovering over the list item */
+}
+
+.video-info {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+}
+
+/* Style for the currently playing song */
+.list.playing {
+    background-color: #f0f0f0;
+}
+
+
+	
+</style>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Khula:wght@400;600;700&family=Public+Sans:wght@100;300;400;600&display=swap');
 
