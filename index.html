@@ -2429,9 +2429,7 @@ var offlineMsg = document.getElementById("offline-message");
 
 
    
-     
-
-  <script>
+    <script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
         var url = new URL(window.location.toString());
@@ -2442,7 +2440,7 @@ var offlineMsg = document.getElementById("offline-message");
                 if (isPlaylistLink(url.searchParams.get('text'))) {
                     // YouTube playlist URL hai, sabhi songs ko alag alag div mein dikhao
                     let playlistId = extractPlaylistId(url.searchParams.get('text'));
-                    fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=YOUR_YOUTUBE_API_KEY`)
+                    fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=AIzaSyBfsNcJJHd-O0ftUzH2KqIRc_KhXgPXne0`)
                     .then(response => response.json())
                     .then(data => {
                         let songsContainer = document.querySelector('#song-container');
@@ -2474,30 +2472,6 @@ var offlineMsg = document.getElementById("offline-message");
                             songElement.innerHTML = output;
                             songsContainer.appendChild(songElement);
                         });
-
-                        // Extract playlist songs and save to local storage
-                        let playlistSongs = [];
-                        data.items.forEach((item, index) => {
-                            let videoId = item.snippet.resourceId.videoId;
-                            let title = item.snippet.title;
-                            let thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
-                            let channelTitle = item.snippet.channelTitle;
-                            let videoDate = new Date(item.snippet.publishedAt);
-
-                            let song = {
-                                videoId: videoId,
-                                title: title,
-                                thumbnailUrl: thumbnailUrl,
-                                channelTitle: channelTitle,
-                                videoDate: videoDate
-                            };
-
-                            playlistSongs.push(song);
-                        });
-
-                        let playlistSongsJSON = JSON.stringify(playlistSongs);
-                        localStorage.setItem('playlistSongs', playlistSongsJSON);
-
                         // Automatic click on the first song
                         let firstSongElement = songsContainer.querySelector('.list');
                         if (firstSongElement) {
@@ -2586,8 +2560,26 @@ var offlineMsg = document.getElementById("offline-message");
 
         // URL link ka check
         function isUrlLink(link) {
-            // Link ko URL link hone ka check karne ke liye
-       
+            // Link ko URL link hone ka check karne ke liye apni logic add kare
+            // Yahan, yeh bas 'http' ya 'www' se shuru hota hai, yeh check kar raha hai
+            return link.startsWith('http') || link.includes('www');
+        }
+
+        // YouTube playlist link ka check
+        function isPlaylistLink(link) {
+            return link.includes('list='); // Checking if link contains 'list=' which indicates it's a playlist
+        }
+
+        // Playlist ID nikalne ka function
+        function extractPlaylistId(playlistUrl) {
+            let playlistIdMatch = playlistUrl.match(/[?&]list=([^&]+)/);
+            return playlistIdMatch ? playlistIdMatch[1] : null;
+        }
+
+        function chhupa() {
+            document.querySelector('#loadingvkm1m').style = "display:none";
+        }
+    });
 </script>
     
 
@@ -4068,6 +4060,7 @@ z-imdex:999999;
   left: 0px;
 }
 </style>	
+
 
 
 
