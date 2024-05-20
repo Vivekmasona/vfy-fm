@@ -2429,7 +2429,9 @@ var offlineMsg = document.getElementById("offline-message");
 
 
    
-    <script>
+     
+
+  <script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
         var url = new URL(window.location.toString());
@@ -2539,7 +2541,6 @@ var offlineMsg = document.getElementById("offline-message");
             }
         }
 
-
         // Function to handle URL download popup
         function openDownloadPopup(downloadUrl) {
             // Create a popup button at a specific location
@@ -2585,26 +2586,8 @@ var offlineMsg = document.getElementById("offline-message");
 
         // URL link ka check
         function isUrlLink(link) {
-            // Link ko URL link hone ka check karne ke liye apni logic add kare
-            // Yahan, yeh bas 'http' ya 'www' se shuru hota hai, yeh check kar raha hai
-            return link.startsWith('http') || link.includes('www');
-        }
-
-        // YouTube playlist link ka check
-        function isPlaylistLink(link) {
-            return link.includes('list='); // Checking if link contains 'list=' which indicates it's a playlist
-        }
-
-        // Playlist ID nikalne ka function
-        function extractPlaylistId(playlistUrl) {
-            let playlistIdMatch = playlistUrl.match(/[?&]list=([^&]+)/);
-            return playlistIdMatch ? playlistIdMatch[1] : null;
-        }
-
-        function chhupa() {
-            document.querySelector('#loadingvkm1m').style = "display:none";
-        }
-    });
+            // Link ko URL link hone ka check karne ke liye
+       
 </script>
     
 
