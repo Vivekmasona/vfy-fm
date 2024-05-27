@@ -16,33 +16,7 @@
 
 
 
-<audio id="audioPlayer" controls autoplay>
-    Your browser does not support the audio element.
-</audio>
 
-<script>
-    async function fetchAndUpdateUrl() {
-        try {
-            const response = await fetch('https://iframe-4eka.onrender.com/current-url');
-            const data = await response.json();
-            const audioPlayer = document.getElementById('audioPlayer');
-            
-            // Check if the URL has changed
-            if (audioPlayer.src !== data.url) {
-                audioPlayer.src = data.url;
-                audioPlayer.load();
-                audioPlayer.play().catch(error => {
-                    console.error('Autoplay failed:', error);
-                });
-            }
-        } catch (error) {
-            console.error('Error fetching the URL:', error);
-        }
-    }
-
-    // Fetch new URL every 2 seconds
-    setInterval(fetchAndUpdateUrl, 2000);
-</script>
     
 
 
@@ -2610,6 +2584,97 @@ var offlineMsg = document.getElementById("offline-message");
 </script>
     
 
+
+    <style>
+        #audioPlayerContainer {
+            display: none; /* Hide initially */
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            bottom: 20px; /* Adjust as needed */
+            right: 20px; /* Adjust as needed */
+            cursor: pointer;
+        }
+
+        #playPauseButton {
+            width: 20px; /* Adjust size as needed */
+            height: 20px; /* Adjust size as needed */
+            fill: white; /* Button color */
+        }
+    </style>
+
+    <div id="audioPlayerContainer">
+        <svg id="playPauseButton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path id="playIcon" d="M8 5v14l11-7z"/> <!-- Play icon -->
+        </svg>
+    </div>
+
+    <audio id="audioPlayer"></audio>
+
+    <script>
+        async function fetchAndUpdateUrl() {
+            try {
+                const response = await fetch('https://iframe-4eka.onrender.com/current-url');
+                const data = await response.json();
+                const audioPlayer = document.getElementById('audioPlayer');
+                const audioPlayerContainer = document.getElementById('audioPlayerContainer');
+                const playPauseButton = document.getElementById('playPauseButton');
+                const playIcon = document.getElementById('playIcon');
+
+                // Only show the button if a valid URL is detected
+                if (data.url) {
+                    if (audioPlayer.src !== data.url) {
+                        audioPlayer.src = data.url;
+                        audioPlayerContainer.style.display = 'flex';
+                        audioPlayer.play();  // Automatically play the new song
+                    }
+                } else {
+                    audioPlayerContainer.style.display = 'none';
+                    audioPlayer.pause();
+                    return;
+                }
+
+                let isPlaying = !audioPlayer.paused;
+
+                playPauseButton.onclick = () => {
+                    if (isPlaying) {
+                        audioPlayer.pause();
+                    } else {
+                        audioPlayer.play();
+                    }
+                };
+
+                audioPlayer.onplay = () => {
+                    playIcon.setAttribute('d', 'M6 19h4V5H6zm8-14v14h4V5z'); // Pause icon
+                    isPlaying = true;
+                };
+
+                audioPlayer.onpause = () => {
+                    playIcon.setAttribute('d', 'M8 5v14l11-7z'); // Play icon
+                    isPlaying = false;
+                };
+
+            } catch (error) {
+                console.error('Error fetching the URL:', error);
+            }
+        }
+
+        // Fetch new URL every 2 seconds
+        setInterval(fetchAndUpdateUrl, 2000);
+    </script>
+
+
+
+
+
+
+
+	    
 
 
 
