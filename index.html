@@ -748,16 +748,6 @@ width: 50%;
 
 	    
 <h1>VFY
-
-<div id="audioPlayerContainer">
-        <svg id="playPauseButton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path id="playIcon" d="M8 5v14l11-7z"/> <!-- Play icon -->
-        </svg>
-    </div>
-
-
-
-	
 <span id="brandName"><span></span></span></h1>
     
     </div>
@@ -2606,7 +2596,10 @@ var offlineMsg = document.getElementById("offline-message");
             display: flex;
             align-items: center;
             justify-content: center;
-            
+            position: fixed;
+            bottom: 96%; /* Adjust as needed */
+            right: 30%; /* Adjust as needed */
+            cursor: pointer;
         }
 
         #playPauseButton {
@@ -2616,7 +2609,11 @@ var offlineMsg = document.getElementById("offline-message");
         }
     </style>
 
-    
+    <div id="audioPlayerContainer">
+        <svg id="playPauseButton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path id="playIcon" d="M8 5v14l11-7z"/> <!-- Play icon -->
+        </svg>
+    </div>
 
     <audio id="audioPlayer"></audio>
 
@@ -4156,6 +4153,7 @@ z-imdex:999999;
   left: 0px;
 }
 </style>	
+
 
 
 
