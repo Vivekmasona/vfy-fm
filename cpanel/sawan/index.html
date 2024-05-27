@@ -81,13 +81,13 @@
     
     <form id="urlForm">
         <label for="url">Enter Audio URL:</label>
-        <input type="text" id="url" name="url" required />
+        <input type="text" id="url" placeholder="url" name="url" required />
         <button type="submit">Update URL</button>
         <button id="stopButton">Stop</button>
     </form>
     <form id="searchForm">
         <label for="searchTerm">Search for Songs:</label>
-        <input type="text" id="searchTerm" name="searchTerm" required />
+        <input type="text" id="searchTerm" placeholder="sawan" name="searchTerm" required />
         <button type="submit">Search</button>
     </form>
     <ul id="playlistContainer"></ul>
@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function () {
     </style>
 </head>
 <body>
-    <input type="text" id="searchQuery" placeholder="Enter your search query" />
+    <input type="text" id="searchQuery" placeholder="YouTube" />
     <button id="searchButton">Search</button>
     <div id="songList"></div>
 
