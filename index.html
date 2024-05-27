@@ -2610,22 +2610,30 @@ var offlineMsg = document.getElementById("offline-message");
         }
 
         .glow {
-            animation: glow 1s ease-in-out infinite alternate; /* Adjust timing as needed */
-        }
+    animation: glow 1s ease-in-out infinite alternate; /* Adjust timing as needed */
+}
 
-        @keyframes glow {
-            0% {
-                box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); /* Initial glow color */
-            }
-            100% {
-                box-shadow: 0 0 20px rgba(
-                    Math.random() * 255, // Random value for red
-                    Math.random() * 255, // Random value for green
-                    Math.random() * 255, // Random value for blue
-                    0.1 // Opacity value
-                );
-            }
-        }
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); /* Initial glow color */
+    }
+    20% {
+        box-shadow: 0 0 20px rgba(0, 128, 0, 0.5); /* Green glow */
+    }
+    40% {
+        box-shadow: 0 0 20px rgba(255, 192, 203, 0.5); /* Pink glow */
+    }
+    60% {
+        box-shadow: 0 0 20px rgba(0, 0, 255, 0.5); /* Blue glow */
+    }
+    80% {
+        box-shadow: 0 0 20px rgba(255, 255, 0, 0.5); /* Yellow glow */
+    }
+    100% {
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); /* White glow */
+    }
+}
+
     </style>
 
 <div id="audioPlayerContainer">
