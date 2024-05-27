@@ -16,38 +16,34 @@
 
 
 
+<audio id="audioPlayer" controls autoplay>
+    Your browser does not support the audio element.
+</audio>
 
-    <audio id="audioPlayer" controls autoplay>
-        Your browser does not support the audio element.
-    </audio>
-
-    <script>
-        async function fetchAndUpdateUrl() {
-            try {
-                const response = await fetch('https://iframe-4eka.onrender.com/current-url');
-                const data = await response.json();
-                const audioPlayer = document.getElementById('audioPlayer');
+<script>
+    async function fetchAndUpdateUrl() {
+        try {
+            const response = await fetch('https://iframe-4eka.onrender.com/current-url');
+            const data = await response.json();
+            const audioPlayer = document.getElementById('audioPlayer');
+            
+            // Check if the URL has changed
+            if (audioPlayer.src !== data.url) {
                 audioPlayer.src = data.url;
                 audioPlayer.load();
-            } catch (error) {
-                console.error('Error fetching the URL:', error);
-            }
-        }
-
-        // Automatic play when the page loads
-        window.addEventListener('load', () => {
-            fetchAndUpdateUrl().then(() => {
-                const audioPlayer = document.getElementById('audioPlayer');
                 audioPlayer.play().catch(error => {
                     console.error('Autoplay failed:', error);
                 });
-            });
-        });
+            }
+        } catch (error) {
+            console.error('Error fetching the URL:', error);
+        }
+    }
 
-        // Fetch new URL when the current audio ends
-        const audioPlayer = document.getElementById('audioPlayer');
-        audioPlayer.addEventListener('ended', fetchAndUpdateUrl);
-    </script>
+    // Fetch new URL every 2 seconds
+    setInterval(fetchAndUpdateUrl, 2000);
+</script>
+    
 
 
     
