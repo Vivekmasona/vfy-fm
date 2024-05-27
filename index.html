@@ -15,6 +15,42 @@
 <title>music-AI</title>
 
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Player</title>
+</head>
+<body>
+    <h1>Audio Player</h1>
+    <audio id="audioPlayer" controls autoplay>
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        const backendUrl = 'https://iframe-4eka.onrender.com';
+
+        async function fetchUrl() {
+            try {
+                const response = await fetch(`${backendUrl}/current-url`);
+                const data = await response.json();
+                const audioPlayer = document.getElementById('audioPlayer');
+                audioPlayer.src = data.url;
+                audioPlayer.load();
+                audioPlayer.play().catch(error => {
+                    console.error('Autoplay failed:', error);
+                });
+            } catch (error) {
+                console.error('Error fetching the URL:', error);
+            }
+        }
+
+        // Fetch the URL when the page loads
+        document.addEventListener('DOMContentLoaded', fetchUrl);
+    </script>
+</body>
+</html>
 
 
 <audio id="myAudio" src="/sound/fw.mp3"></audio>
