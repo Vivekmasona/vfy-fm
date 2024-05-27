@@ -1,0 +1,44 @@
+<!doctype html>
+
+
+    
+    
+    Control Panel
+
+
+    <h1>Control Panel</h1>
+    <form id="urlForm">
+        <label for="url">Enter Audio URL:</label>
+        <input type="text" id="url" name="url" required />
+        <button type="submit">Update URL</button>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('urlForm');
+            form.addEventListener('submit', async function (event) {
+                event.preventDefault(); // Prevent the default form submission
+                const url = document.getElementById('url').value;
+                const backendUrl = 'https://iframe-4eka.onrender.com';
+                try {
+                    const response = await fetch(`${backendUrl}/update-url`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ url })
+                    });
+                    const data = await response.json();
+                    alert(data.status);
+
+                    // Update URL in index page
+                    const event = new CustomEvent('urlUpdated', { detail: { url } });
+                    document.dispatchEvent(event);
+                } catch (error) {
+                    console.error('Error updating the URL:', error);
+                }
+            });
+        });
+    </script>
+
+</!doctype>
