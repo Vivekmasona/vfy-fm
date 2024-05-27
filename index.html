@@ -15,14 +15,8 @@
 <title>music-AI</title>
 
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Player</title>
-</head>
-<body>
+
+
     <h1>Audio Player</h1>
     <audio id="audioPlayer" controls autoplay>
         Your browser does not support the audio element.
@@ -48,9 +42,20 @@
 
         // Fetch the URL when the page loads
         document.addEventListener('DOMContentLoaded', fetchUrl);
+
+        // Listen for URL update event from control panel
+        document.addEventListener('urlUpdated', function (event) {
+            const url = event.detail.url;
+            const audioPlayer = document.getElementById('audioPlayer');
+            audioPlayer.src = url;
+            audioPlayer.load();
+            audioPlayer.play().catch(error => {
+                console.error('Autoplay failed:', error);
+            });
+        });
     </script>
-</body>
-</html>
+
+</!doctype>
 
 
 <audio id="myAudio" src="/sound/fw.mp3"></audio>
