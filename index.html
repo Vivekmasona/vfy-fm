@@ -2593,12 +2593,12 @@ var offlineMsg = document.getElementById("offline-message");
             height: 40px;
 	    z-index:99999;
             border-radius: 50%;
-            background-color: #333;
+            background-color: transparent;
             display: flex;
             align-items: center;
             justify-content: center;
             position: fixed;
-            bottom: 14px; /* Adjust as needed */
+            bottom: 10px; /* Adjust as needed */
             right: 20px; /* Adjust as needed */
             cursor: pointer;
         }
@@ -2622,7 +2622,7 @@ var offlineMsg = document.getElementById("offline-message");
                     Math.random() * 255, // Random value for red
                     Math.random() * 255, // Random value for green
                     Math.random() * 255, // Random value for blue
-                    0.8 // Opacity value
+                    0.1 // Opacity value
                 );
             }
         }
