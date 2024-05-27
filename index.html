@@ -17,27 +17,14 @@
 
 
 
-
-<!doctype html>
-
-
-    
-    
-    Audio Player
-
-
-    <h1>Audio Player</h1>
     <audio id="audioPlayer" controls autoplay>
         Your browser does not support the audio element.
     </audio>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script>
-        const socket = io('https://remote-video.onrender.com');
-
         async function fetchAndUpdateUrl() {
             try {
-                const response = await fetch('https://remote-video.onrender.com/current-url');
+                const response = await fetch('https://iframe-4eka.onrender.com/current-url');
                 const data = await response.json();
                 const audioPlayer = document.getElementById('audioPlayer');
                 audioPlayer.src = data.url;
@@ -60,21 +47,7 @@
         // Fetch new URL when the current audio ends
         const audioPlayer = document.getElementById('audioPlayer');
         audioPlayer.addEventListener('ended', fetchAndUpdateUrl);
-
-        // Update audio source when the URL is changed
-        socket.on('urlUpdated', ({ url }) => {
-            const audioPlayer = document.getElementById('audioPlayer');
-            audioPlayer.src = url;
-            audioPlayer.load();
-            audioPlayer.play().catch(error => {
-                console.error('Autoplay failed:', error);
-            });
-        });
-    </script></!doctype>
-
-
-
-
+    </script>
 
 
     
@@ -4118,6 +4091,7 @@ z-imdex:999999;
   left: 0px;
 }
 </style>	
+
 
 
 
