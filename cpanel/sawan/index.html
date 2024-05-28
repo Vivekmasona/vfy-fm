@@ -191,7 +191,7 @@
         <label for="url">Enter Audio URL:</label>
         <input type="text" id="url" placeholder="url" name="url" required />
         <button type="submit">Update URL</button>
-        <button id="stopButton">Stop</button>
+        <button id="stopButto">Stop</button>
     </form>
     <form id="searchForm">
         <label for="searchTerm">Search for Songs:</label>
@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Function to stop the audio playback
-    const stopButton = document.getElementById('stopButton');
+    const stopButton = document.getElementById('stopButto');
     stopButton.addEventListener('click', function (event) {
         event.preventDefault(); // Prevent the default button action
         const fakeUrl = 'https://cdn.jsdelivr.net/gh/Vivekmasona/audjs/audio/r.mp3';
