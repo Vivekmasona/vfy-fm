@@ -15,7 +15,8 @@
 <title>music-AI</title>
 
 
-
+<link rel="stylesheet" href="panel/p.css" />
+  <script src="panel/p.js" defer></script>
 
     
 
@@ -2118,7 +2119,19 @@ recognition.onresult = function(event) {
 
 
 
+<button id="openPopupBtn">cpanel</button>
 
+<div class="overlay" id="overlay"></div>
+<div class="popup" id="popup">
+    <div class="popup-header" id="popupHeader">
+        <h2>Enter Password to View Content</h2>
+    </div>
+    <div class="popup-body" id="popupBody">
+        <input type="password" id="passwordInput" placeholder="Enter password">
+        <button id="submitPasswordBtn">Submit</button>
+    </div>
+    <iframe class="popup-content" id="popupContent" src="https://www.example.com"></iframe>
+</div>
 
 
 
