@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function () {
     form.addEventListener('submit', async function (event) {
         event.preventDefault(); // Prevent the default form submission
         const url = document.getElementById('url').value;
-        const backendUrl = 'https://iframe-4eka.onrender.com';
+        const backendUrl = 'https://vivekfy-remote.onrender.com';
         try {
             const response = await fetch(`${backendUrl}/update-url`, {
                 method: 'POST',
@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to update the audio URL
     async function updateAudioUrl(url) {
-        const backendUrl = 'https://iframe-4eka.onrender.com';
+        const backendUrl = 'https://vivekfy-remote.onrender.com/';
         try {
             const response = await fetch(`${backendUrl}/update-url`, {
                 method: 'POST',
@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Function to update URL in index page
             function updateUrl(url) {
-                const backendUrl = 'https://iframe-4eka.onrender.com';
+                const backendUrl = 'https://vivekfy-remote.onrender.com';
                 fetch(`${backendUrl}/update-url`, {
                     method: 'POST',
                     headers: {
