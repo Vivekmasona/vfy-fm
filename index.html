@@ -1843,6 +1843,15 @@ recognition.onresult = function(event) {
             playAudio('/sound/video.mp3'); // Replace with the appropriate audio URL
             commandMatched = true;
         }
+	if (lastResult.toLowerCase() === 'open controller' ||
+            lastResult.toLowerCase() === 'open final' ||
+            lastResult.toLowerCase() === 'open control panel') {
+            // Handle video playback commands
+            const butto1 = document.getElementById('openPopupBtn');
+            butto1.click();
+            playAudio('/sound/video.mp3'); // Replace with the appropriate audio URL
+            commandMatched = true;
+	}
         if (lastResult.toLowerCase() === 'song' ||
             lastResult.toLowerCase() === 'play song' ||
             lastResult.toLowerCase() === 'song play' ||
