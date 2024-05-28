@@ -2729,14 +2729,30 @@ var offlineMsg = document.getElementById("offline-message");
                         audioPlayer.src = audioUrl;
                         audioPlayer.load(); // Load the new audio source
                     }
-                } catch (error) {
-                    console.error('Error fetching audio status:', error);
-                }
-            }
+                
 
-            // Fetch audio status every 2 seconds
-            setInterval(fetchAndUpdateAudioStatus, 2000);
-        });
+audioPlayer.onplay = () => {
+                playIcon.setAttribute('d', 'M6 19h4V5H6zm8-14v14h4V5z'); // Pause icon
+                isPlaying = true;
+                audioPlayerContainer.classList.add('glow'); // Add glow class
+            };
+
+            audioPlayer.onpause = () => {
+                playIcon.setAttribute('d', 'M8 5v14l11-7z'); // Play icon
+                isPlaying = false;
+                audioPlayerContainer.classList.remove('glow'); // Remove glow class
+            };
+
+        } catch (error) {
+            console.error('Error fetching the URL:', error);
+        }
+    }
+
+    // Fetch new URL every 2 seconds
+    setInterval(fetchAndUpdateUrl, 2000);
+
+
+	    
     </script>
 
 </!doctype>
