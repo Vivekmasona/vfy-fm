@@ -2660,18 +2660,11 @@ var offlineMsg = document.getElementById("offline-message");
 
 
 
-
-
-
-    
-    
-    
-
-
-    <div id="audioPlayerContainer">
-        <svg id="playPauseButton" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24">
+	    
+<div id="audioPlayerContainer">
+        <svg id="playPauseButton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path id="playIcon" d="M8 5v14l11-7z"/> <!-- Play icon -->
-        </path></svg>
+        </svg>
     </div>
 
     <audio id="audioPlayer"></audio>
@@ -2693,14 +2686,18 @@ var offlineMsg = document.getElementById("offline-message");
                 }
             };
 
-            audioPlayer.onplay = () => {
+            
+
+		audioPlayer.onplay = () => {
                 playIcon.setAttribute('d', 'M6 19h4V5H6zm8-14v14h4V5z'); // Pause icon
                 isPlaying = true;
+                audioPlayerContainer.classList.add('glow'); // Add glow class
             };
 
             audioPlayer.onpause = () => {
                 playIcon.setAttribute('d', 'M8 5v14l11-7z'); // Play icon
                 isPlaying = false;
+                audioPlayerContainer.classList.remove('glow'); // Remove glow class
             };
 
             async function fetchAndUpdateAudioStatus() {
@@ -2729,37 +2726,15 @@ var offlineMsg = document.getElementById("offline-message");
                         audioPlayer.src = audioUrl;
                         audioPlayer.load(); // Load the new audio source
                     }
-                
+                } catch (error) {
+                    console.error('Error fetching audio status:', error);
+                }
+            }
 
-audioPlayer.onplay = () => {
-                playIcon.setAttribute('d', 'M6 19h4V5H6zm8-14v14h4V5z'); // Pause icon
-                isPlaying = true;
-                audioPlayerContainer.classList.add('glow'); // Add glow class
-            };
-
-            audioPlayer.onpause = () => {
-                playIcon.setAttribute('d', 'M8 5v14l11-7z'); // Play icon
-                isPlaying = false;
-                audioPlayerContainer.classList.remove('glow'); // Remove glow class
-            };
-
-        } catch (error) {
-            console.error('Error fetching the URL:', error);
-        }
-    }
-
-    // Fetch new URL every 2 seconds
-    setInterval(fetchAndUpdateUrl, 2000);
-
-
-	    
+            // Fetch audio status every 2 seconds
+            setInterval(fetchAndUpdateAudioStatus, 2000);
+        });
     </script>
-
-</!doctype>
-
-
-	    
-
 	    
 
 
