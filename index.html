@@ -2755,12 +2755,12 @@ var offlineMsg = document.getElementById("offline-message");
             async function fetchAndUpdateAudioStatus() {
                 try {
                     // Fetch current audio URL
-                    const urlResponse = await fetch('https://ethereal-soft-zucchini.glitch.me/current-url');
+                    const urlResponse = await fetch('https://innate-battle-spur.glitch.me/current-url');
                     const urlData = await urlResponse.json();
                     const audioUrl = urlData.url;
 
                     // Fetch audio status
-                    const statusResponse = await fetch('https://ethereal-soft-zucchini.glitch.me/audio-status');
+                    const statusResponse = await fetch('https://innate-battle-spur.glitch.me/audio-status');
                     const statusData = await statusResponse.json();
 
                     // Check the status received from the server and update the audio player accordingly
