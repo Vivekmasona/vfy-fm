@@ -24,98 +24,94 @@
     </style>
 
 
+<div id="controlPanel">
+    <button id="playButton" class="controlButton">Play</button>
+    <button id="pauseButton" class="controlButton">Pause</button>
+    <button id="stopButton" class="controlButton">Stop</button><br />
+    <input type="text" id="urlInput" placeholder="Enter Audio URL" />
+    <button id="updateUrlButton" class="controlButton">Update URL</button><br />
+    <input type="number" id="volumeInput" placeholder="Volume (0-100)" min="0" max="100">
+    <button id="setVolumeButton" class="controlButton">Set Volume</button>
+</div>
 
-    <div id="controlPanel">
-        <button id="playButton" class="controlButton">Play</button>
-        <button id="pauseButton" class="controlButton">Pause</button>
-        <button id="stopButton" class="controlButton">Stop</button><br />
-        <input type="text" id="urlInput" placeholder="Enter Audio URL" />
-        <button id="updateUrlButton" class="controlButton">Update URL</button><br />
-        <button class="controlButton volumeButton" data-volume="0">Volume 0%</button>
-        <button class="controlButton volumeButton" data-volume="20">Volume 20%</button>
-        <button class="controlButton volumeButton" data-volume="40">Volume 40%</button>
-        <button class="controlButton volumeButton" data-volume="60">Volume 60%</button>
-        <button class="controlButton volumeButton" data-volume="80">Volume 80%</button>
-        <button class="controlButton volumeButton" data-volume="100">Volume 100%</button>
-    </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const playButton = document.getElementById('playButton');
+        const pauseButton = document.getElementById('pauseButton');
+        const stopButton = document.getElementById('stopButton');
+        const urlInput = document.getElementById('urlInput');
+        const updateUrlButton = document.getElementById('updateUrlButton');
+        const volumeInput = document.getElementById('volumeInput');
+        const setVolumeButton = document.getElementById('setVolumeButton');
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const playButton = document.getElementById('playButton');
-            const pauseButton = document.getElementById('pauseButton');
-            const stopButton = document.getElementById('stopButton');
-            const urlInput = document.getElementById('urlInput');
-            const updateUrlButton = document.getElementById('updateUrlButton');
+        playButton.onclick = () => {
+            sendButtonClickToServer('play');
+        };
 
-            playButton.onclick = () => {
-                sendButtonClickToServer('play');
-            };
+        pauseButton.onclick = () => {
+            sendButtonClickToServer('pause');
+        };
 
-            pauseButton.onclick = () => {
-                sendButtonClickToServer('pause');
-            };
+        stopButton.onclick = () => {
+            sendButtonClickToServer('stop');
+        };
 
-            stopButton.onclick = () => {
-                sendButtonClickToServer('stop');
-            };
+        updateUrlButton.onclick = () => {
+            const newUrl = urlInput.value;
+            if (newUrl.trim() !== '') {
+                updateAudioUrl(newUrl);
+            } else {
+                alert('Please enter a valid URL.');
+            }
+        };
 
-            updateUrlButton.onclick = () => {
-                const newUrl = urlInput.value;
-                if (newUrl.trim() !== '') {
-                    updateAudioUrl(newUrl);
-                } else {
-                    alert('Please enter a valid URL.');
-                }
-            };
+        setVolumeButton.onclick = () => {
+            const volume = volumeInput.value;
+            if (volume >= 0 && volume <= 100) {
+                sendButtonClickToServer('volume', volume);
+            } else {
+                alert('Please enter a volume between 0 and 100.');
+            }
+        };
 
-            // Volume buttons
-            const volumeButtons = document.querySelectorAll('.volumeButton');
-            volumeButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const volume = button.getAttribute('data-volume');
-                    sendButtonClickToServer('volume', parseInt(volume));
+        async function sendButtonClickToServer(action, value) {
+            try {
+                const response = await fetch('https://innate-battle-spur.glitch.me/control', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ action, value })
                 });
-            });
-
-            async function sendButtonClickToServer(action, value) {
-                try {
-                    const response = await fetch('https://ethereal-soft-zucchini.glitch.me/control', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ action, value })
-                    });
-                    const data = await response.json();
-                    console.log(data); // Log the response from the server
-                } catch (error) {
-                    console.error('Error sending button click to server:', error);
-                }
+                const data = await response.json();
+                console.log(data); // Log the response from the server
+            } catch (error) {
+                console.error('Error sending button click to server:', error);
             }
+        }
 
-            async function updateAudioUrl(newUrl) {
-                try {
-                    const response = await fetch('https://ethereal-soft-zucchini.glitch.me/update-url', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ url: newUrl })
-                    });
-                    const data = await response.json();
-                    console.log(data); // Log the response from the server
-                    alert(data.status); // Show an alert with the server response
-                } catch (error) {
-                    console.error('Error updating the URL:', error);
-                    alert('Error updating the URL. Please try again.'); // Show an alert for any errors
-                }
+        async function updateAudioUrl(newUrl) {
+            try {
+                const response = await fetch('https://innate-battle-spur.glitch.me/update-url', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url: newUrl })
+                });
+                const data = await response.json();
+                console.log(data); // Log the response from the server
+                alert(data.status); // Show an alert with the server response
+            } catch (error) {
+                console.error('Error updating the URL:', error);
+                alert('Error updating the URL. Please try again.'); // Show an alert for any errors
             }
-        });
-    </script>
+        }
+    });
+</script>
 
+    
 
-</!doctype>
-        
 
 
 
@@ -223,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function () {
     form.addEventListener('submit', async function (event) {
         event.preventDefault(); // Prevent the default form submission
         const url = document.getElementById('url').value;
-        const backendUrl = 'https://ethereal-soft-zucchini.glitch.me';
+        const backendUrl = 'https://innate-battle-spur.glitch.me';
         try {
             const response = await fetch(`${backendUrl}/update-url`, {
                 method: 'POST',
@@ -300,7 +296,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to update the audio URL
     async function updateAudioUrl(url) {
-        const backendUrl = 'https://ethereal-soft-zucchini.glitch.me';
+        const backendUrl = 'https://innate-battle-spur.glitch.me';
         try {
             const response = await fetch(`${backendUrl}/update-url`, {
                 method: 'POST',
@@ -416,7 +412,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Function to update URL in index page
             function updateUrl(url) {
-                const backendUrl = 'https://ethereal-soft-zucchini.glitch.me';
+                const backendUrl = 'https://innate-battle-spur.glitch.me';
                 fetch(`${backendUrl}/update-url`, {
                     method: 'POST',
                     headers: {
