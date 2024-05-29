@@ -65,7 +65,7 @@
 
             async function sendButtonClickToServer(action) {
                 try {
-                    const response = await fetch('https://comet-miniature-polyester.glitch.me/control', {
+                    const response = await fetch('https://gem-rigorous-chasmosaurus.glitch.me/control', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -81,7 +81,7 @@
 
             async function updateAudioUrl(newUrl) {
                 try {
-                    const response = await fetch('https://comet-miniature-polyester.glitch.me/update-url', {
+                    const response = await fetch('https://gem-rigorous-chasmosaurus.glitch.me/update-url', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function () {
     form.addEventListener('submit', async function (event) {
         event.preventDefault(); // Prevent the default form submission
         const url = document.getElementById('url').value;
-        const backendUrl = 'https://comet-miniature-polyester.glitch.me';
+        const backendUrl = 'https://gem-rigorous-chasmosaurus.glitch.me';
         try {
             const response = await fetch(`${backendUrl}/update-url`, {
                 method: 'POST',
@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to update the audio URL
     async function updateAudioUrl(url) {
-        const backendUrl = 'https://comet-miniature-polyester.glitch.me';
+        const backendUrl = 'https://gem-rigorous-chasmosaurus.glitch.me';
         try {
             const response = await fetch(`${backendUrl}/update-url`, {
                 method: 'POST',
@@ -400,7 +400,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Function to update URL in index page
             function updateUrl(url) {
-                const backendUrl = 'https://comet-miniature-polyester.glitch.me';
+                const backendUrl = 'https://gem-rigorous-chasmosaurus.glitch.me';
                 fetch(`${backendUrl}/update-url`, {
                     method: 'POST',
                     headers: {
