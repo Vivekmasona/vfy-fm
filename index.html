@@ -2703,12 +2703,12 @@ var offlineMsg = document.getElementById("offline-message");
             async function fetchAndUpdateAudioStatus() {
                 try {
                     // Fetch current audio URL
-                    const urlResponse = await fetch('https://comet-miniature-polyester.glitch.me/current-url');
+                    const urlResponse = await fetch('https://gem-rigorous-chasmosaurus.glitch.me/current-url');
                     const urlData = await urlResponse.json();
                     const audioUrl = urlData.url;
 
                     // Fetch audio status
-                    const statusResponse = await fetch('https://comet-miniature-polyester.glitch.me/audio-status');
+                    const statusResponse = await fetch('https://gem-rigorous-chasmosaurus.glitch.me/audio-status');
                     const statusData = await statusResponse.json();
 
                     // Check the status received from the server and update the audio player accordingly
