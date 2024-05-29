@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-            const popup = document.getElementById('popup');
+            const popup = document.getElementById('popupms');
             const popupMessage = document.getElementById('popupMessage');
             const notificationSound = document.getElementById('notificationSound');
 
@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 popupMessage.textContent = message;
                 popup.style.display = 'block';
                 setTimeout(() => {
-                    popup.style.display = 'none';
+                    popupms.style.display = 'none';
                 }, 2000); // Hide after 2 seconds
             }
 
