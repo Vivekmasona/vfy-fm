@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 popupms.style.display = 'block';
                 setTimeout(() => {
                     popupms.style.display = 'none';
-                }, 2000); // Hide after 2 seconds
+                }, 4000); // Hide after 2 seconds
             }
 
             // Function to fetch messages from the server and display them
