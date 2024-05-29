@@ -1,1 +1,29 @@
 
+/* Styles for the popup */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 2px solid #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 9999;
+        }
+
+        .popup img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid orange;
+            vertical-align: middle;
+        }
+
+        .popup span {
+            margin-left: 10px;
+            vertical-align: middle;
+        }
