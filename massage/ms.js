@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Function to show a popup notification
             function showPopup(message) {
                 popupMessage.textContent = message;
-                popup.style.display = 'block';
+                popupms.style.display = 'block';
                 setTimeout(() => {
                     popupms.style.display = 'none';
                 }, 2000); // Hide after 2 seconds
