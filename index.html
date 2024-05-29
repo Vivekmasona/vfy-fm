@@ -2659,12 +2659,42 @@ var offlineMsg = document.getElementById("offline-message");
     </style>
 
 
+<!doctype html>
 
-	    
-<div id="audioPlayerContainer">
-        <svg id="playPauseButton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path id="playIcon" d="M8 5v14l11-7z"/> <!-- Play icon -->
-        </svg>
+
+
+    <style>
+        #audioPlayerContainer {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        #playPauseButton {
+            width: 100px;
+            height: 100px;
+            cursor: pointer;
+        }
+
+        .glow {
+            animation: glow 1s infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 10px #00ff00;
+            }
+            to {
+                box-shadow: 0 0 20px #00ff00;
+            }
+        }
+    </style>
+
+
+
+    <div id="audioPlayerContainer">
+        <svg id="playPauseButton" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24">
+            <path id="playIcon" d="M8 5v14l11-7z" /> <!-- Play icon -->
+        </path></svg>
     </div>
 
     <audio id="audioPlayer"></audio>
@@ -2686,9 +2716,7 @@ var offlineMsg = document.getElementById("offline-message");
                 }
             };
 
-            
-
-		audioPlayer.onplay = () => {
+            audioPlayer.onplay = () => {
                 playIcon.setAttribute('d', 'M6 19h4V5H6zm8-14v14h4V5z'); // Pause icon
                 isPlaying = true;
                 audioPlayerContainer.classList.add('glow'); // Add glow class
@@ -2700,15 +2728,39 @@ var offlineMsg = document.getElementById("offline-message");
                 audioPlayerContainer.classList.remove('glow'); // Remove glow class
             };
 
+            audioPlayer.addEventListener('loadeddata', () => {
+                console.log('Audio loaded');
+            });
+
+            audioPlayer.addEventListener('canplay', () => {
+                console.log('Audio can play');
+            });
+
+            audioPlayer.addEventListener('play', () => {
+                console.log('Audio playing');
+            });
+
+            audioPlayer.addEventListener('pause', () => {
+                console.log('Audio paused');
+            });
+
+            audioPlayer.addEventListener('ended', () => {
+                console.log('Audio ended');
+            });
+
+            audioPlayer.addEventListener('error', (event) => {
+                console.error('Audio error:', event);
+            });
+
             async function fetchAndUpdateAudioStatus() {
                 try {
                     // Fetch current audio URL
-                    const urlResponse = await fetch('https://gem-rigorous-chasmosaurus.glitch.me/current-url');
+                    const urlResponse = await fetch('https://ethereal-soft-zucchini.glitch.me/current-url');
                     const urlData = await urlResponse.json();
                     const audioUrl = urlData.url;
 
                     // Fetch audio status
-                    const statusResponse = await fetch('https://gem-rigorous-chasmosaurus.glitch.me/audio-status');
+                    const statusResponse = await fetch('https://ethereal-soft-zucchini.glitch.me/audio-status');
                     const statusData = await statusResponse.json();
 
                     // Check the status received from the server and update the audio player accordingly
@@ -2726,16 +2778,28 @@ var offlineMsg = document.getElementById("offline-message");
                         audioPlayer.src = audioUrl;
                         audioPlayer.load(); // Load the new audio source
                     }
+
+                    // Update volume if received from the server
+                    if (statusData.volume) {
+                        const volumePercentage = parseInt(statusData.volume);
+                        const volume = volumePercentage / 100;
+                        audioPlayer.volume = volume;
+                    }
                 } catch (error) {
                     console.error('Error fetching audio status:', error);
                 }
             }
 
-            // Fetch audio status every 2 seconds
+            // Fetch audio status every second
             setInterval(fetchAndUpdateAudioStatus, 1000);
         });
     </script>
+
+
+</!doctype>
 	    
+
+
 
 
 
