@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-            const popup = document.getElementById('popupms');
+            const popupms = document.getElementById('popupms');
             const popupMessage = document.getElementById('popupMessage');
             const notificationSound = document.getElementById('notificationSound');
 
