@@ -485,3 +485,129 @@ document.addEventListener('DOMContentLoaded', function () {
 </!doctype>
 
 
+<!doctype html>
+
+
+    
+    
+    Control Panel
+
+
+    <div id="controlPanel">
+        <label for="sessionIdInput">Session ID:</label>
+        <input type="text" id="sessionIdInput" placeholder="Enter Session ID" />
+        <button id="connectButton">Connect</button>
+        <br /><br />
+
+        <button id="playButton" class="controlButton">Play</button>
+        <button id="pauseButton" class="controlButton">Pause</button>
+        <button id="stopButton" class="controlButton">Stop</button>
+        <br /><br />
+
+        <input type="text" id="urlInput" placeholder="Enter Audio URL" />
+        <button id="updateUrlButton" class="controlButton">Update URL</button>
+        <br /><br />
+
+        <input type="number" id="volumeInput" placeholder="Volume (0-100)" min="0" max="100" />
+        <button id="setVolumeButton" class="controlButton">Set Volume</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sessionIdInput = document.getElementById('sessionIdInput');
+            const connectButton = document.getElementById('connectButton');
+            const playButton = document.getElementById('playButton');
+            const pauseButton = document.getElementById('pauseButton');
+            const stopButton = document.getElementById('stopButton');
+            const urlInput = document.getElementById('urlInput');
+            const updateUrlButton = document.getElementById('updateUrlButton');
+            const volumeInput = document.getElementById('volumeInput');
+            const setVolumeButton = document.getElementById('setVolumeButton');
+
+            let sessionId = null;
+
+            connectButton.onclick = () => {
+                sessionId = sessionIdInput.value.trim();
+                if (sessionId === '') {
+                    alert('Please enter a valid session ID.');
+                    return;
+                }
+                alert('Connected to session ID: ' + sessionId);
+            };
+
+            playButton.onclick = () => {
+                sendControlCommand('play');
+            };
+
+            pauseButton.onclick = () => {
+                sendControlCommand('pause');
+            };
+
+            stopButton.onclick = () => {
+                sendControlCommand('stop');
+            };
+
+            updateUrlButton.onclick = () => {
+                const newUrl = urlInput.value.trim();
+                if (newUrl !== '') {
+                    updateAudioUrl(newUrl);
+                } else {
+                    alert('Please enter a valid URL.');
+                }
+            };
+
+            setVolumeButton.onclick = () => {
+                const volume = parseInt(volumeInput.value);
+                if (!isNaN(volume) && volume >= 0 && volume <= 100) {
+                    sendControlCommand('volume', volume);
+                } else {
+                    alert('Please enter a valid volume between 0 and 100.');
+                }
+            };
+
+            function sendControlCommand(action, value = null) {
+                if (!sessionId) {
+                    alert('Please connect to a session ID first.');
+                    return;
+                }
+
+                fetch('https://helpful-gleaming-restaurant.glitch.me/control', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ action, value, sessionId })
+                })
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(error => console.error('Error sending control command:', error));
+            }
+
+            function updateAudioUrl(url) {
+                if (!sessionId) {
+                    alert('Please connect to a session ID first.');
+                    return;
+                }
+
+                fetch('https://helpful-gleaming-restaurant.glitch.me/update-url', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url, sessionId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    alert(data.status);
+                })
+                .catch(error => console.error('Error updating the URL:', error));
+            }
+        });
+    </script>
+
+</!doctype>
+
+
+
+
