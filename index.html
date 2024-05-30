@@ -1258,10 +1258,24 @@ function getOutput(item, i) {
     '</div>' +
     '</section>' +
     '</div>' +
+    '<button class="send-to-control-panel" onclick="sendToControlPanel(\'' + id + '\')">Send to Control Panel</button>' +
     '</b>';
 
 return output;
 }
+
+function sendToControlPanel(videoId) {
+    // Construct the URL to send to the control panel
+    var url = 'https://vivekfy.vercel.app/audio?url=https://www.youtube.com/watch?v=' + videoId;
+
+    // Call the function to send the URL to the control panel
+    sendControlCommand('update_url', url);
+}
+
+function sendControlCommand(action, url) {
+    // Your existing code to send control commands to the control panel
+}
+
 
 
 
