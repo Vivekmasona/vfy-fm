@@ -447,7 +447,7 @@ input[type="text"] {
 
     <div id="musicPlayerContainer" class="overlay hidden">
         <!-- Music Player Code Goes Here -->
-        <audio id="audioPlayer" controls></audio>
+        <audio id="audioPlayer1" controls></audio>
         <p>Session ID: <span id="sessionId"></span> <button id="copySessionId">Copy</button></p>
         <button id="renameSessionIdButton">Rename Session ID</button>
         <input type="text" id="newSessionId" placeholder="New Session ID" style="display: none;" />
@@ -461,7 +461,7 @@ input[type="text"] {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const musicPlayerContainer = document.getElementById('musicPlayerContainer');
-            const audioPlayer = document.getElementById('audioPlayer');
+            const audioPlayer = document.getElementById('audioPlayer1');
             const sessionIdElement = document.getElementById('sessionId');
             const copySessionIdButton = document.getElementById('copySessionId');
             const renameSessionIdButton = document.getElementById('renameSessionIdButton');
