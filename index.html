@@ -2619,195 +2619,216 @@ var offlineMsg = document.getElementById("offline-message");
 
 
 
+    
+
+
+
+
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dual Audio Player with Session Management</title>
     <style>
         #audioPlayerContainer {
-            display: none; /* Hide initially */
             width: 40px;
             height: 40px;
-	    z-index:99999;
+            z-index: 99999;
             border-radius: 50%;
-            background-color: transparent;
+            background-color: #333;
             display: flex;
             align-items: center;
             justify-content: center;
             position: fixed;
-            bottom: 10px; /* Adjust as needed */
-            right: 20px; /* Adjust as needed */
+            bottom: 10px;
+            right: 20px;
             cursor: pointer;
         }
 
         #playPauseButton {
-            width: 20px; /* Adjust size as needed */
-            height: 20px; /* Adjust size as needed */
-            fill: white; /* Button color */
+            width: 20px;
+            height: 20px;
+            fill: white;
         }
 
         .glow {
-    animation: glow 1s ease-in-out infinite alternate; /* Adjust timing as needed */
-}
-
-@keyframes glow {
-    0% {
-        box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); /* Initial glow color */
-    }
-    20% {
-        box-shadow: 0 0 20px rgba(0, 128, 0, 0.5); /* Green glow */
-    }
-    40% {
-        box-shadow: 0 0 20px rgba(255, 192, 203, 0.5); /* Pink glow */
-    }
-    60% {
-        box-shadow: 0 0 20px rgba(0, 0, 255, 0.5); /* Blue glow */
-    }
-    80% {
-        box-shadow: 0 0 20px rgba(255, 255, 0, 0.5); /* Yellow glow */
-    }
-    100% {
-        box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); /* White glow */
-    }
-}
-
-    </style>
-
-
-<!doctype html>
-
-
-
-    <style>
-        #audioPlayerContainer {
-            text-align: center;
-            margin-top: 50px;
-        }
-
-        #playPauseButton {
-            width: 100px;
-            height: 100px;
-            cursor: pointer;
-        }
-
-        .glow {
-            animation: glow 1s infinite alternate;
+            animation: glow 1s ease-in-out infinite alternate;
         }
 
         @keyframes glow {
-            from {
-                box-shadow: 0 0 10px #00ff00;
-            }
-            to {
-                box-shadow: 0 0 20px #00ff00;
-            }
+            0% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
+            20% { box-shadow: 0 0 20px rgba(0, 128, 0, 0.5); }
+            40% { box-shadow: 0 0 20px rgba(255, 192, 203, 0.5); }
+            60% { box-shadow: 0 0 20px rgba(0, 0, 255, 0.5); }
+            80% { box-shadow: 0 0 20px rgba(255, 255, 0, 0.5); }
+            100% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
         }
     </style>
+</head>
+<body>
+
+<div id="audioPlayerContainer">
+    <svg id="playPauseButton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path id="playIcon" d="M8 5v14l11-7z"></path>
+    </svg>
+</div>
+
+<audio id="audioPlayer1"></audio>
+<audio id="audioPlayer2"></audio>
 
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const audioPlayer1 = document.getElementById('audioPlayer1');
+        const audioPlayer2 = document.getElementById('audioPlayer2');
+        const audioPlayerContainer = document.getElementById('audioPlayerContainer');
+        const playPauseButton = document.getElementById('playPauseButton');
+        const playIcon = document.getElementById('playIcon');
+        const sessionIdElement = document.getElementById('sessionId');
+        const copySessionIdButton = document.getElementById('copySessionId');
+        const renameSessionIdButton = document.getElementById('renameSessionIdButton');
+        const newSessionIdInput = document.getElementById('newSessionId');
+        const saveSessionIdButton = document.getElementById('saveSessionId');
+        let sessionId = localStorage.getItem('sessionId');
+        let isPlaying = false;
 
-    <div id="audioPlayerContainer">
-        <svg id="playPauseButton" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24">
-            <path id="playIcon" d="M8 5v14l11-7z" /> <!-- Play icon -->
-        </path></svg>
-    </div>
+        // Generate a session ID if not already present
+        if (!sessionId) {
+            sessionId = generateSessionId();
+            localStorage.setItem('sessionId', sessionId);
+        }
 
-    <audio id="audioPlayer"></audio>
+        sessionIdElement.textContent = sessionId;
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const audioPlayer = document.getElementById('audioPlayer');
-            const audioPlayerContainer = document.getElementById('audioPlayerContainer');
-            const playPauseButton = document.getElementById('playPauseButton');
-            const playIcon = document.getElementById('playIcon');
+        // Function to generate session ID
+        function generateSessionId() {
+            return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        }
 
-            let isPlaying = false;
-
-            playPauseButton.onclick = () => {
-                if (isPlaying) {
-                    audioPlayer.pause();
-                } else {
-                    audioPlayer.play();
-                }
-            };
-
-            audioPlayer.onplay = () => {
-                playIcon.setAttribute('d', 'M6 19h4V5H6zm8-14v14h4V5z'); // Pause icon
-                isPlaying = true;
-                audioPlayerContainer.classList.add('glow'); // Add glow class
-            };
-
-            audioPlayer.onpause = () => {
-                playIcon.setAttribute('d', 'M8 5v14l11-7z'); // Play icon
-                isPlaying = false;
-                audioPlayerContainer.classList.remove('glow'); // Remove glow class
-            };
-
-            audioPlayer.addEventListener('loadeddata', () => {
-                console.log('Audio loaded');
-            });
-
-            audioPlayer.addEventListener('canplay', () => {
-                console.log('Audio can play');
-            });
-
-            audioPlayer.addEventListener('play', () => {
-                console.log('Audio playing');
-            });
-
-            audioPlayer.addEventListener('pause', () => {
-                console.log('Audio paused');
-            });
-
-            audioPlayer.addEventListener('ended', () => {
-                console.log('Audio ended');
-            });
-
-            audioPlayer.addEventListener('error', (event) => {
-                console.error('Audio error:', event);
-            });
-
-            async function fetchAndUpdateAudioStatus() {
-                try {
-                    // Fetch current audio URL
-                    const urlResponse = await fetch('https://innate-battle-spur.glitch.me/current-url');
-                    const urlData = await urlResponse.json();
-                    const audioUrl = urlData.url;
-
-                    // Fetch audio status
-                    const statusResponse = await fetch('https://innate-battle-spur.glitch.me/audio-status');
-                    const statusData = await statusResponse.json();
-
-                    // Check the status received from the server and update the audio player accordingly
-                    if (statusData.status === 'play') {
-                        audioPlayer.play();
-                    } else if (statusData.status === 'pause') {
-                        audioPlayer.pause();
-                    } else if (statusData.status === 'stop') {
-                        audioPlayer.pause();
-                        audioPlayer.currentTime = 0; // Reset the audio to the beginning
-                    }
-
-                    // Update the audio URL if a new URL is received
-                    if (audioUrl && audioPlayer.src !== audioUrl) {
-                        audioPlayer.src = audioUrl;
-                        audioPlayer.load(); // Load the new audio source
-                    }
-
-                    // Update volume if received from the server
-                    if (statusData.volume) {
-                        const volumePercentage = parseInt(statusData.volume);
-                        const volume = volumePercentage / 100;
-                        audioPlayer.volume = volume;
-                    }
-                } catch (error) {
-                    console.error('Error fetching audio status:', error);
-                }
+        playPauseButton.onclick = () => {
+            if (isPlaying) {
+                audioPlayer1.pause();
+                audioPlayer2.pause();
+            } else {
+                audioPlayer1.play();
+                audioPlayer2.play();
             }
+        };
 
-            // Fetch audio status every second
-            setInterval(fetchAndUpdateAudioStatus, 1000);
+        audioPlayer1.onplay = audioPlayer2.onplay = () => {
+            playIcon.setAttribute('d', 'M6 19h4V5H6zm8-14v14h4V5z'); // Pause icon
+            isPlaying = true;
+            audioPlayerContainer.classList.add('glow'); // Add glow class
+        };
+
+        audioPlayer1.onpause = audioPlayer2.onpause = () => {
+            playIcon.setAttribute('d', 'M8 5v14l11-7z'); // Play icon
+            isPlaying = false;
+            audioPlayerContainer.classList.remove('glow'); // Remove glow class
+        };
+
+        async function fetchCurrentUrl(sessionId) {
+            try {
+                const urlResponse1 = await fetch(`https://helpful-gleaming-restaurant.glitch.me/current-url/${sessionId}`);
+                const data1 = await urlResponse1.json();
+
+                const urlResponse2 = await fetch(`https://innate-battle-spur.glitch.me/current-url`);
+                const data2 = await urlResponse2.json();
+
+                if (data1.success && data1.sessionId === sessionId) {
+                    if (data1.url !== audioPlayer1.src) {
+                        audioPlayer1.src = data1.url;
+                    }
+                    audioPlayer1.volume = data1.volume / 100;
+                    if (data1.action === 'play') {
+                        audioPlayer1.play();
+                    } else if (data1.action === 'pause') {
+                        audioPlayer1.pause();
+                    } else if (data1.action === 'stop') {
+                        audioPlayer1.pause();
+                        audioPlayer1.currentTime = 0;
+                    } else if (data1.action === 'volume') {
+                        audioPlayer1.volume = data1.value / 100;
+                    }
+                } else {
+                    console.error('Error fetching current URL:', data1.error);
+                }
+
+                if (data2.url !== audioPlayer2.src) {
+                    audioPlayer2.src = data2.url;
+                    audioPlayer2.load();
+                }
+                audioPlayer2.volume = data2.volume / 100;
+                if (data2.status === 'play') {
+                    audioPlayer2.play();
+                } else if (data2.status === 'pause') {
+                    audioPlayer2.pause();
+                } else if (data2.status === 'stop') {
+                    audioPlayer2.pause();
+                    audioPlayer2.currentTime = 0;
+                }
+
+            } catch (error) {
+                console.error('Error fetching current URL:', error);
+            }
+        }
+
+        // Function to periodically check for URL updates
+        function checkForUpdates() {
+            setInterval(() => {
+                fetchCurrentUrl(sessionId);
+            }, 1000); // Check every second
+        }
+
+        // Initial call to fetch current URL
+        fetchCurrentUrl(sessionId);
+
+        // Start checking for updates
+        checkForUpdates();
+
+        // Function to copy session ID
+        copySessionIdButton.addEventListener('click', function () {
+            navigator.clipboard.writeText(sessionId).then(() => {
+                alert('Session ID copied to clipboard');
+            }).catch(err => {
+                console.error('Could not copy session ID: ', err);
+            });
         });
-    </script>
+
+        // Function to rename session ID
+        renameSessionIdButton.addEventListener('click', function () {
+            newSessionIdInput.style.display = 'inline';
+            newSessionIdInput.value = sessionId;
+            saveSessionIdButton.style.display = 'inline';
+        });
+
+        // Function to save renamed session ID
+        saveSessionIdButton.addEventListener('click', function () {
+            const newSessionId = newSessionIdInput.value.trim();
+            if (newSessionId !== '' && newSessionId !== sessionId) {
+                sessionId = newSessionId;
+                localStorage.setItem('sessionId', sessionId);
+                sessionIdElement.textContent = sessionId;
+                newSessionIdInput.style.display = 'none';
+                saveSessionIdButton.style.display = 'none';
+                alert('Session ID renamed to: ' + sessionId);
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
 
 
-</!doctype>
+
+
+
+
+
+	    
 	    
 
 
@@ -3758,6 +3779,12 @@ $(document).ready(function () {
 
 
 <div class="modal-content" data-modal-id="1">
+
+<p>Session ID: <span id="sessionId"></span> <button id="copySessionId">Copy</button></p>
+<button id="renameSessionIdButton">Rename Session ID</button>
+<input type="text" id="newSessionId" placeholder="New Session ID" style="display: none;" />
+<button id="saveSessionId" style="display: none;">Save</button>
+	
     <iframe src="/connect" style="position:fixed; top:20; left:0; bottom:0; right:0; width:100%; height:96%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999; "></iframe>  
  
 </div>
