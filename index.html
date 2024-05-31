@@ -2630,7 +2630,7 @@ var offlineMsg = document.getElementById("offline-message");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dual Audio Player with Session Management</title>
+    <title>Single Audio Player with Session Management</title>
     <style>
         #audioPlayerContainer {
             width: 40px;
@@ -2675,14 +2675,16 @@ var offlineMsg = document.getElementById("offline-message");
     </svg>
 </div>
 
-<audio id="audioPlayer1"></audio>
-<audio id="audioPlayer2"></audio>
+<audio id="audioPlayer"></audio>
 
+<p>Session ID: <span id="sessionId"></span> <button id="copySessionId">Copy</button></p>
+<button id="renameSessionIdButton">Rename Session ID</button>
+<input type="text" id="newSessionId" placeholder="New Session ID" style="display: none;" />
+<button id="saveSessionId" style="display: none;">Save</button>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const audioPlayer1 = document.getElementById('audioPlayer1');
-        const audioPlayer2 = document.getElementById('audioPlayer2');
+        const audioPlayer = document.getElementById('audioPlayer');
         const audioPlayerContainer = document.getElementById('audioPlayerContainer');
         const playPauseButton = document.getElementById('playPauseButton');
         const playIcon = document.getElementById('playIcon');
@@ -2709,65 +2711,49 @@ var offlineMsg = document.getElementById("offline-message");
 
         playPauseButton.onclick = () => {
             if (isPlaying) {
-                audioPlayer1.pause();
-                audioPlayer2.pause();
+                audioPlayer.pause();
             } else {
-                audioPlayer1.play();
-                audioPlayer2.play();
+                audioPlayer.play();
             }
         };
 
-        audioPlayer1.onplay = audioPlayer2.onplay = () => {
-            playIcon.setAttribute('d', 'M6 19h4V5H6zm8-14v14h4V5z'); // Pause icon
-            isPlaying = true;
-            audioPlayerContainer.classList.add('glow'); // Add glow class
-        };
+        function updatePlayPauseIcon() {
+            if (audioPlayer.paused) {
+                playIcon.setAttribute('d', 'M8 5v14l11-7z'); // Play icon
+                isPlaying = false;
+                audioPlayerContainer.classList.remove('glow'); // Remove glow class
+            } else {
+                playIcon.setAttribute('d', 'M6 19h4V5H6zm8-14v14h4V5z'); // Pause icon
+                isPlaying = true;
+                audioPlayerContainer.classList.add('glow'); // Add glow class
+            }
+        }
 
-        audioPlayer1.onpause = audioPlayer2.onpause = () => {
-            playIcon.setAttribute('d', 'M8 5v14l11-7z'); // Play icon
-            isPlaying = false;
-            audioPlayerContainer.classList.remove('glow'); // Remove glow class
-        };
+        audioPlayer.onplay = updatePlayPauseIcon;
+        audioPlayer.onpause = updatePlayPauseIcon;
 
         async function fetchCurrentUrl(sessionId) {
             try {
-                const urlResponse1 = await fetch(`https://helpful-gleaming-restaurant.glitch.me/current-url/${sessionId}`);
-                const data1 = await urlResponse1.json();
+                const urlResponse = await fetch(`https://helpful-gleaming-restaurant.glitch.me/current-url/${sessionId}`);
+                const data = await urlResponse.json();
 
-                const urlResponse2 = await fetch(`https://bevel-puddle-law.glitch.me/current-url`);
-                const data2 = await urlResponse2.json();
-
-                if (data1.success && data1.sessionId === sessionId) {
-                    if (data1.url !== audioPlayer1.src) {
-                        audioPlayer1.src = data1.url;
+                if (data.success && data.sessionId === sessionId) {
+                    if (data.url !== audioPlayer.src) {
+                        audioPlayer.src = data.url;
                     }
-                    audioPlayer1.volume = data1.volume / 100;
-                    if (data1.action === 'play') {
-                        audioPlayer1.play();
-                    } else if (data1.action === 'pause') {
-                        audioPlayer1.pause();
-                    } else if (data1.action === 'stop') {
-                        audioPlayer1.pause();
-                        audioPlayer1.currentTime = 0;
-                    } else if (data1.action === 'volume') {
-                        audioPlayer1.volume = data1.value / 100;
+                    audioPlayer.volume = data.volume / 100;
+                    if (data.action === 'play') {
+                        audioPlayer.play();
+                    } else if (data.action === 'pause') {
+                        audioPlayer.pause();
+                    } else if (data.action === 'stop') {
+                        audioPlayer.pause();
+                        audioPlayer.currentTime = 0;
+                    } else if (data.action === 'volume') {
+                        audioPlayer.volume = data.value / 100;
                     }
                 } else {
-                    console.error('Error fetching current URL:', data1.error);
-                }
-
-                if (data2.url !== audioPlayer2.src) {
-                    audioPlayer2.src = data2.url;
-                    audioPlayer2.load();
-                }
-                audioPlayer2.volume = data2.volume / 100;
-                if (data2.status === 'play') {
-                    audioPlayer2.play();
-                } else if (data2.status === 'pause') {
-                    audioPlayer2.pause();
-                } else if (data2.status === 'stop') {
-                    audioPlayer2.pause();
-                    audioPlayer2.currentTime = 0;
+                    console.error('Error fetching current URL:', data.error);
                 }
 
             } catch (error) {
@@ -2823,6 +2809,9 @@ var offlineMsg = document.getElementById("offline-message");
 </html>
 
 
+
+                
+        
 
 
 
