@@ -20,8 +20,12 @@
 <link rel="stylesheet" href="massage/ms.css" />
   <script src="massage/ms.js" defer></script>
 
-    
 
+<link rel="stylesheet" href="connect/panel.css" />
+  <script src="connect/panel.js" defer></script>
+    
+<link rel="stylesheet" href="connect/audio.css" />
+  <script src="connect/audio.js" defer></script>
 
     
 
@@ -3758,8 +3762,94 @@ $(document).ready(function () {
 
 
 <div class="modal-content" data-modal-id="1">
-    <iframe src="/connect" style="position:fixed; top:20; left:0; bottom:0; right:0; width:100%; height:96%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999; "></iframe>  
- 
+
+
+
+<!doctype html>
+
+
+   
+<!doctype html>
+
+
+
+    
+    
+    <style>
+        
+    </style>
+
+
+
+    <div class="container">
+        <div id="controlPanel">
+            <label for="sessionIdInput"></label>
+            <input type="text" id="sessionIdInput" placeholder="Enter Session ID" />
+            <button id="connectButton" class="controlButton">Connect</button>
+            
+
+            <button id="playButton" class="controlButton">Play</button>
+            <button id="pauseButton" class="controlButton">Pause</button>
+            <button id="stopButton" class="controlButton">Stop</button>
+            
+<input type="text" id="urlInput" placeholder="Enter Audio URL" />
+            <button id="updateUrlButton" class="controlButton">Update URL</button>
+            
+
+            <input type="number" id="volumeInput" placeholder="Volume (0-100)" min="0" max="100" />
+            <button id="setVolumeButton" class="controlButton">Set Volume</button>
+        </div>
+        <form id="searchForm">
+            <label for="searchTerm">Search for Songs:</label>
+            <input type="text" id="searchTerm" placeholder="Enter a song title" name="searchTerm" required />
+            <br />
+            <input type="radio" id="directUrl" name="source" value="directUrl" checked />
+            <label for="directUrl">Url</label>
+            <input type="radio" id="youtube" name="source" value="youtube" />
+            <label for="youtube">YouTube</label>
+            <input type="radio" id="swanMusicPlayer" name="source" value="swanMusicPlayer" />
+            <label for="swanMusicPlayer">Sawan Music</label>
+            <br /><br />
+            <button type="submit">Search</button>
+        </form>
+        <ul id="playlistContainer"></ul>
+    </div>
+
+    <script>
+        
+    </script></!doctype>
+
+
+
+
+
+
+ <style>
+</style>
+    
+    
+    <link rel="stylesheet" href="styles.css" />
+
+
+    <div id="musicPlayerContainer" class="overlay hidden">
+        <!-- Music Player Code Goes Here -->
+        <audio id="audioPlayer" controls></audio>
+        <p>Session ID: <span id="sessionId"></span> <button id="copySessionId">Copy</button></p>
+        <button id="renameSessionIdButton">Rename Session ID</button>
+        <input type="text" id="newSessionId" placeholder="New Session ID" style="display: none;" />
+        <button id="saveSessionId" style="display: none;">Save</button>
+    </div>
+
+    <div id="playerTab" class="tab">
+        <button id="togglePlayerButton">Open Player</button>
+    </div>
+
+    <script>
+        
+    </script>
+
+</!doctype>
+
 </div>
 
 <script>const modalContents = Array.from(
