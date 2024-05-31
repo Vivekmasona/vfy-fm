@@ -298,7 +298,7 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
 
     
     
-    Single Audio Player with Session Management
+    
     <style>
         #audioPlayerContainer {
             width: 40px;
@@ -473,6 +473,90 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
 </!doctype>
 
 
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        .settings-button {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #ccc;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .settings-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        .overlay-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        /* Styling input box */
+        #newSessionId {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 10px 0;
+            width: 100%;
+        }
+        /* Changing button color */
+        button {
+            background-color: orange;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="settings-button" id="settingsButton">
+        <i class="fas fa-cog settings-icon"></i>
+    </div>
+
+    <div class="overlay" id="overlay">
+        <div class="overlay-content">
+            <p>Session ID: <span id="sessionId"></span></p>
+            <button id="copySessionId">Copy</button>
+            <button id="renameSessionIdButton">Rename Session ID</button>
+            <!-- Stylish input box -->
+            <input type="text" id="newSessionId" placeholder="New Session ID" style="display: none;" />
+            <button id="saveSessionId" style="display: none;">Save</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("settingsButton").addEventListener("click", function() {
+            document.getElementById("overlay").style.display = "block";
+            setTimeout(function() {
+                document.getElementById("overlay").style.display = "none";
+            }, 4000);
+        });
+    </script>
+</body>
+</html>
 
 
 
@@ -969,11 +1053,7 @@ width: 50%;
      <input type="search"  name="search" onclick="startDictation()"  id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">SEARCH..</button></sr>
 	    
-	<p>Session ID: <span id="sessionId"></span> <button id="copySessionId">Copy</button></p>
-<button id="renameSessionIdButton">Rename Session ID</button>
-<input type="text" id="newSessionId" placeholder="New Session ID" style="display: none;" />
-<button id="saveSessionId" style="display: none;">Save</button>
- 
+	
    <div id="autocomplete-results"></div>
 
     
