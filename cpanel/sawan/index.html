@@ -76,7 +76,7 @@
 
         async function sendButtonClickToServer(action, value) {
             try {
-                const response = await fetch('https://innate-battle-spur.glitch.me/control', {
+                const response = await fetch('https://bevel-puddle-law.glitch.me', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function () {
     form.addEventListener('submit', async function (event) {
         event.preventDefault(); // Prevent the default form submission
         const url = document.getElementById('url').value;
-        const backendUrl = 'https://innate-battle-spur.glitch.me';
+        const backendUrl = 'https://bevel-puddle-law.glitch.me';
         try {
             const response = await fetch(`${backendUrl}/update-url`, {
                 method: 'POST',
@@ -296,7 +296,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to update the audio URL
     async function updateAudioUrl(url) {
-        const backendUrl = 'https://innate-battle-spur.glitch.me';
+        const backendUrl = 'https://bevel-puddle-law.glitch.me';
         try {
             const response = await fetch(`${backendUrl}/update-url`, {
                 method: 'POST',
@@ -412,7 +412,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Function to update URL in index page
             function updateUrl(url) {
-                const backendUrl = 'https://innate-battle-spur.glitch.me';
+                const backendUrl = 'https://bevel-puddle-law.glitch.me';
                 fetch(`${backendUrl}/update-url`, {
                     method: 'POST',
                     headers: {
