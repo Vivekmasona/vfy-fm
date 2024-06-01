@@ -17,7 +17,7 @@
             // Function to send a message to the server
             async function sendMessageToServer(message) {
                 try {
-                    const response = await fetch('https://e88acd8b-7a0f-42e0-b933-504ff9636c62-00-2331m38h2jm4.picard.replit.dev:3000/send-message', {
+                    const response = await fetch('https://developing-ash-ragamuffin.glitch.me/send-message', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
