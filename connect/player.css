@@ -13,10 +13,15 @@
             right: 20px;
         }
 
-        #playPauseButton {
+        #playPauseButton, #topButton, #volumeControl, #skipSlider {
+            margin-left: 10px;
+        }
+
+        #playPauseButton, #topButton {
             width: 20px;
             height: 20px;
             fill: white;
+            cursor: pointer;
         }
 
         .glow {
@@ -55,4 +60,8 @@
             background: none;
             color: white;
             cursor: pointer;
+        }
+
+        #skipSlider, #volumeControl {
+            width: 0px;
         }
