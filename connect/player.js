@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Function to fetch current audio URL and play
         async function fetchAndUpdateAudioStatus() {
             try {
-                const urlResponse = await fetch('https://helpful-gleaming-restaurant.glitch.me/current-url/' + sessionId);
+                const urlResponse = await fetch('https://193265e1-12fd-4d71-bb30-cde4689a8da2-00-36jbg2lfz0ap4.picard.replit.dev/current-url/' + sessionId);
                 const data = await urlResponse.json();
 
                 if (data.success && data.sessionId === sessionId) {
