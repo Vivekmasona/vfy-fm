@@ -1,198 +1,132 @@
 document.addEventListener('DOMContentLoaded', function () {
-            const sessionIdInput = document.getElementById('sessionIdInput');
-            const connectButton = document.getElementById('connectButton');
-            const playButton = document.getElementById('playButton');
-            const pauseButton = document.getElementById('pauseButton');
-            const stopButton = document.getElementById('stopButton');
-            const volumeSlider = document.getElementById('volumeSlider');
-            const seekSlider = document.getElementById('seekSlider');
-            const searchForm = document.getElementById('searchForm');
-            const playlistContainer = document.getElementById('playlistContainer');
-            const searchTermInput = document.getElementById('searchTerm');
+            const audioPlayer = document.getElementById('audioPlayer');
+            const audioPlayerContainer = document.getElementById('audioPlayerContainer');
+            const playPauseButton = document.getElementById('playPauseButton');
+            const playIcon = document.getElementById('playIcon');
+            const sessionIdElement = document.getElementById('sessionId');
+            const editSessionIdButton = document.getElementById('editSessionIdButton');
+            const copySessionIdButton = document.getElementById('copySessionIdButton');
+            const shareSessionIdButton = document.getElementById('shareSessionIdButton');
+            let sessionId = localStorage.getItem('sessionId');
+            let isPlaying = false;
+            let currentSeekValue = 0;
+            let previousSeekValue = 0;
 
-            let sessionId = null;
-            let lastSeekValue = 0;
+            // Generate a session ID if not already present
+            if (!sessionId) {
+                sessionId = generateSessionId();
+                localStorage.setItem('sessionId', sessionId);
+            }
 
-            connectButton.onclick = () => {
-                sessionId = sessionIdInput.value.trim();
-                if (sessionId === '') {
-                    alert('Please enter a valid session ID.');
-                    return;
+            sessionIdElement.textContent = sessionId;
+
+            // Function to generate session ID
+            function generateSessionId() {
+                return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+            }
+
+            // Function to copy session ID to clipboard
+            function copySessionId() {
+                navigator.clipboard.writeText(sessionId).then(() => {
+                    alert('Session ID copied to clipboard');
+                }).catch(err => {
+                    console.error('Could not copy session ID: ', err);
+                });
+            }
+
+            // Function to share session ID
+            function shareSessionId() {
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Session ID',
+                        text: 'Here is the session ID: ' + sessionId
+                    }).catch(err => {
+                        console.error('Error sharing session ID:', err);
+                    });
+                } else {
+                    alert('Web Share API not supported in this browser.');
                 }
-                alert('Connected to session ID: ' + sessionId);
-            };
+            }
 
-            playButton.onclick = () => {
-                sendControlCommand('play');
-            };
+            // Function to show buttons and hide session ID after 2 seconds
+            setTimeout(() => {
+                sessionIdElement.style.display = 'none';
+                copySessionIdButton.style.display = 'inline';
+                editSessionIdButton.style.display = 'inline';
+                shareSessionIdButton.style.display = 'inline';
+                copySessionIdButton.addEventListener('click', copySessionId);
+                shareSessionIdButton.addEventListener('click', shareSessionId);
+            }, 2000);
 
-            pauseButton.onclick = () => {
-                sendControlCommand('pause');
-            };
-
-            stopButton.onclick = () => {
-                sendControlCommand('stop');
-            };
-
-            volumeSlider.oninput = () => {
-                const volume = parseInt(volumeSlider.value);
-                sendControlCommand('volume', volume);
-            };
-
-            seekSlider.oninput = (event) => {
-                const value = event.target.value;
-                if (value !== lastSeekValue) {
-                    lastSeekValue = value;
-                    sendControlCommand('seek', value);
+            playPauseButton.onclick = () => {
+                if (isPlaying) {
+                    audioPlayer.pause();
+                } else {
+                    audioPlayer.play();
                 }
             };
 
-            searchForm.addEventListener('submit', async function (event) {
-                event.preventDefault(); // Prevent the default form submission
-                const searchTerm = searchTermInput.value.trim();
-                const selectedSource = document.querySelector('input[name="source"]:checked').value;
+            function updatePlayPauseIcon() {
+                if (audioPlayer.paused) {
+                    playIcon.setAttribute('d', 'M8 5v14l11-7z'); // Play icon
+                    isPlaying = false;
+                    audioPlayerContainer.classList.remove('glow'); // Remove glow class
+                } else {
+                    playIcon.setAttribute('d', 'M6 19h4V5H6zm8-14v14h4V5z'); // Pause icon
+                    isPlaying = true;
+                    audioPlayerContainer.classList.add('glow'); // Add glow class
+                }
+            }
 
-                if (selectedSource === 'directUrl') {
-                    const newUrl = searchTerm;
-                    if (newUrl !== '') {
-                        updateAudioUrl(newUrl);
-                    } else {
-                        alert('Please enter a valid URL.');
-                    }
-                } else if (selectedSource === 'youtube') {
-                    if (searchTerm !== '') {
-                        await fetchYouTubeSongs(searchTerm);
-                    } else {
-                        alert('Please enter a search term.');
-                    }
-                } else if (selectedSource === 'swanMusicPlayer') {
-                    if (searchTerm !== '') {
-                        await searchSongsFromSwan(searchTerm);
-                    } else {
-                        alert('Please enter a search term.');
-                    }
+            audioPlayer.onplay = updatePlayPauseIcon;
+            audioPlayer.onpause = updatePlayPauseIcon;
+
+            // Function to edit session ID
+            editSessionIdButton.addEventListener('click', function () {
+                const newSessionId = prompt('Enter new session ID:');
+                if (newSessionId && newSessionId.trim() !== '') {
+                    sessionId = newSessionId.trim();
+                    localStorage.setItem('sessionId', sessionId);
+                    sessionIdElement.textContent = sessionId;
+                    alert('Session ID edited to: ' + sessionId);
                 }
             });
 
-            async function fetchYouTubeSongs(searchTerm) {
-                const apiKey = 'AIzaSyAuncZ6zOgCiTErzcEc3cHGuhybV1UIJvA'; // Replace with your YouTube API key
-                const maxResults = 40;
-                const queryUrl = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&q=${encodeURIComponent(searchTerm)}&maxResults=${maxResults}&videoCategoryId=10&videoSyndicated=true&eventType=none`;
-
+            // Function to fetch current audio URL and play
+            async function fetchAndUpdateAudioStatus() {
                 try {
-                    const response = await fetch(queryUrl);
-                    const data = await response.json();
+                    const urlResponse = await fetch('https://bittersweet-pleasant-scent.glitch.me/current-url/' + sessionId);
+                    const data = await urlResponse.json();
 
-                    const videoIds = data.items.map(item => item.id.videoId).join(',');
-
-                    const detailsResponse = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&id=${videoIds}&part=contentDetails,statistics,snippet`);
-                    const detailsData = await detailsResponse.json();
-
-                    const songs = detailsData.items.filter(item => {
-                        const duration = item.contentDetails.duration;
-                        const isLive = item.snippet.liveBroadcastContent === 'none';
-                        const viewCount = parseInt(item.statistics.viewCount);
-                        return isLive && duration !== 'PT0S' && viewCount > 1000;
-                    }).map(item => ({
-                        name: item.snippet.title,
-                        image: item.snippet.thumbnails.default.url,
-                        url: `https://vivekfy.vercel.app/audio?url=https://youtu.be/${item.id}`
-                    }));
-
-                    if (songs.length > 0) {
-                        displaySongs(songs, 'youtube');
+                    if (data.success && data.sessionId === sessionId) {
+                        if (data.url !== audioPlayer.src) {
+                            audioPlayer.src = data.url;
+                        }
+                        audioPlayer.volume = data.volume / 100;
+                        if (data.action === 'play') {
+                            audioPlayer.play();
+                        } else if (data.action === 'pause') {
+                            audioPlayer.pause();
+                        } else if (data.action === 'stop') {
+                            audioPlayer.pause();
+                            audioPlayer.currentTime = 0;
+                        } else if (data.action === 'volume') {
+                            audioPlayer.volume = data.value / 100;
+                        } else if (data.action === 'seek') {
+                            currentSeekValue = data.value;
+                            if (currentSeekValue !== previousSeekValue) {
+                                audioPlayer.currentTime = (audioPlayer.duration * currentSeekValue) / 100;
+                                previousSeekValue = currentSeekValue;
+                            }
+                        }
                     } else {
-                        alert('No suitable YouTube videos found.');
+                        console.error('Error fetching current URL:', data.error);
                     }
                 } catch (error) {
-                    console.error('Error fetching YouTube songs:', error);
+                    console.error('Error fetching current URL:', error);
                 }
             }
 
-            async function searchSongsFromSwan(searchTerm) {
-                if (searchTerm !== '') {
-                    try {
-                        const response = await fetch(`https://svn-vivekfy.vercel.app/search/songs?query=${encodeURIComponent(searchTerm)}`);
-                        const data = await response.json();
-                        displaySongs(data.data.results, 'swan');
-                    } catch (error) {
-                        console.error('Error searching for songs:', error);
-                        alert('An error occurred while searching for songs.');
-                    }
-                } else {
-                    alert('Please enter a search term.');
-                }
-            }
-
-            function displaySongs(songs, source) {
-                playlistContainer.innerHTML = ''; // Clear previous results
-                songs.forEach(song => {
-                    let imageUrl;
-                    let songUrl;
-                    if (source === 'youtube') {
-                        imageUrl = song.image;
-                        songUrl = song.url;
-                    } else if (source === 'swan') {
-                        imageUrl = song.image ? (song.image[2]?.link || song.image) : 'default_image_url.jpg';
-                        songUrl = song.downloadUrl[1]?.link;
-                    }
-                    const listItem = document.createElement('li');
-                    listItem.classList.add('playlistItem');
-                    listItem.innerHTML = `
-                        <img src="${imageUrl}" alt="${song.name}" class="songImage">
-                        <div class="songInfo">
-                            <div class="songTitle">${song.name}</div>
-                            <div>${song.artist || ''}</div>
-                        </div>`;
-                    listItem.addEventListener('click', () => {
-                        updateAudioUrl(songUrl);
-                    });
-                    playlistContainer.appendChild(listItem);
-                });
-            }
-
-            function sendControlCommand(action, value = null) {
-                if (!sessionId) {
-                    alert('Please connect to a session ID first.');
-                    return;
-                }
-
-                fetch('https://bittersweet-pleasant-scent.glitch.me/control', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ action, value, sessionId })
-                })
-                .then(response => response.json())
-                .then(data => console.log(data))
-                .catch(error => {
-                    console.error('Error sending control command:', error);
-                    alert('Failed to send control command. Please try again later.');
-                });
-            }
-
-            function updateAudioUrl(url) {
-                if (!sessionId) {
-                    alert('Please connect to a session ID first.');
-                    return;
-                }
-
-                fetch('https://bittersweet-pleasant-scent.glitch.me/update-url', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ url, sessionId })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data);
-                    alert(data.status);
-                })
-                .catch(error => {
-                    console.error('Error updating the URL:', error);
-                    alert('Failed to update the URL. Please try again later.');
-                });
-            }
+            // Fetch audio status every second
+            setInterval(fetchAndUpdateAudioStatus, 1000);
         });
