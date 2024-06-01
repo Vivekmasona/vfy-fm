@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Function to fetch messages from the server and display them
             async function fetchAndDisplayMessages() {
                 try {
-                    const response = await fetch('https://spiral-gleaming-pail.glitch.me/messages');
+                    const response = await fetch('https://developing-ash-ragamuffin.glitch.me/messages');
                     const data = await response.json();
                     console.log(data); // Log the response from the server
 
