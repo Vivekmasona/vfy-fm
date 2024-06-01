@@ -2,8 +2,7 @@
 
 
     
-    
-    Audio Player Control Panel
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,13 +16,24 @@
             padding: 20px;
         }
 
-        .controlButton, #submit {
+        .controlPanel, .searchForm {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .controlButton {
             background-color: #E84C3D;
             color: white;
-            padding: 10px 20px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin-right: 10px;
         }
 
@@ -31,32 +41,44 @@
             background-color: #45a049;
         }
 
-        input[type="text"],
-        input[type="number"] {
+        input[type="text"] {
             padding: 8px;
-            margin-top: 5px;
-            margin-bottom: 15px;
-            border: 1px solid #E84C3D;
+            border: 2px solid #E84C3D;
             border-radius: 4px;
+            width: 120px;
             box-sizing: border-box;
+            margin-right: 10px;
         }
 
-        #searchForm {
-            margin-bottom: 20px;
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 15px;
+            background: #E84C3D;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+            cursor: pointer;
+            margin-right: 10px;
         }
-        button[type="submit"] {
-    background-color: #E84C3D;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-right: 10px;
-}
 
-button[type="submit"]:hover {
-    background-color: #45a049;
-}
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #333;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #333;
+            cursor: pointer;
+        }
 
         ul {
             list-style-type: none;
@@ -105,36 +127,24 @@ button[type="submit"]:hover {
 
 
     <div class="container">
-        <div id="controlPanel">
-            <label for="sessionIdInput"></label>
+        <div id="controlPanel" class="controlPanel">
             <input type="text" id="sessionIdInput" placeholder="Enter Session ID" />
-            <button id="connectButton" class="controlButton">Connect</button>
-            
-            <button id="playButton" class="controlButton">Play</button>
-            <button id="pauseButton" class="controlButton">Pause</button>
-            <button id="stopButton" class="controlButton">Stop</button>
-            
-            <input type="text" id="urlInput" placeholder="Enter Audio URL" />
-            <button id="updateUrlButton" class="controlButton">Update URL</button>
-            
-            <input type="number" id="volumeInput" placeholder="Volume (0-100)" min="0" max="100" />
-            <button id="setVolumeButton" class="controlButton">Set Volume</button>
-
+            <button id="connectButton" class="controlButton"><i class="fas fa-plug"></i></button>
+            <button id="playButton" class="controlButton"><i class="fas fa-play"></i></button>
+            <button id="pauseButton" class="controlButton"><i class="fas fa-pause"></i></button>
+            <button id="stopButton" class="controlButton"><i class="fas fa-stop"></i></button>
+            <input type="range" id="volumeSlider" min="0" max="100" value="50" step="1" />
             <input type="range" id="seekSlider" min="0" max="100" value="0" step="1" />
-            <label for="seekSlider">Seek</label>
         </div>
-        <form id="searchForm">
-            <label for="searchTerm">Search for Songs:</label>
+        <form id="searchForm" class="searchForm">
             <input type="text" id="searchTerm" placeholder="Enter a song title" name="searchTerm" required />
-            <br />
+            <button type="submit" class="controlButton"><i class="fas fa-search"></i></button>
             <input type="radio" id="directUrl" name="source" value="directUrl" checked />
-            <label for="directUrl">Url</label>
+            <label for="directUrl">URL</label>
             <input type="radio" id="youtube" name="source" value="youtube" />
-            <label for="youtube">YouTube</label>
+            <label for="youtube">YT</label>
             <input type="radio" id="swanMusicPlayer" name="source" value="swanMusicPlayer" />
-            <label for="swanMusicPlayer">Sawan Music</label>
-            <br /><br />
-            <button type="submit">Search</button>
+            <label for="swanMusicPlayer">JIO</label>
         </form>
         <ul id="playlistContainer"></ul>
     </div>
@@ -146,10 +156,7 @@ button[type="submit"]:hover {
             const playButton = document.getElementById('playButton');
             const pauseButton = document.getElementById('pauseButton');
             const stopButton = document.getElementById('stopButton');
-            const urlInput = document.getElementById('urlInput');
-            const updateUrlButton = document.getElementById('updateUrlButton');
-            const volumeInput = document.getElementById('volumeInput');
-            const setVolumeButton = document.getElementById('setVolumeButton');
+            const volumeSlider = document.getElementById('volumeSlider');
             const seekSlider = document.getElementById('seekSlider');
             const searchForm = document.getElementById('searchForm');
             const playlistContainer = document.getElementById('playlistContainer');
@@ -179,22 +186,9 @@ button[type="submit"]:hover {
                 sendControlCommand('stop');
             };
 
-            updateUrlButton.onclick = () => {
-                const newUrl = urlInput.value.trim();
-                if (newUrl !== '') {
-                    updateAudioUrl(newUrl);
-                } else {
-                    alert('Please enter a valid URL.');
-                }
-            };
-
-            setVolumeButton.onclick = () => {
-                const volume = parseInt(volumeInput.value);
-                if (!isNaN(volume) && volume >= 0 && volume <= 100) {
-                    sendControlCommand('volume', volume);
-                } else {
-                    alert('Please enter a valid volume between 0 and 100.');
-                }
+            volumeSlider.oninput = () => {
+                const volume = parseInt(volumeSlider.value);
+                sendControlCommand('volume', volume);
             };
 
             seekSlider.oninput = (event) => {
