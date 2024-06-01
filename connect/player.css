@@ -14,7 +14,7 @@
         }
 
         #playPauseButton, #topButton, #volumeControl, #skipSlider {
-            margin-left: 10px;
+            margin-left: 1px;
         }
 
         #playPauseButton, #topButton {
