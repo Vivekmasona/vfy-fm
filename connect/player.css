@@ -14,12 +14,12 @@
         }
 
         #playPauseButton, #topButton, #volumeControl, #skipSlider {
-            margin-left: 1px;
+            margin-left: 2px;
         }
 
         #playPauseButton, #topButton {
-            width: 20px;
-            height: 20px;
+            width: 30px;
+            height: 30px;
             fill: white;
             cursor: pointer;
         }
@@ -51,7 +51,7 @@
         #copySessionIdButton,
         #editSessionIdButton,
         #shareSessionIdButton {
-            margin-left: -10px; /* Adjust this line to 1px */
+            margin-left: 1px; /* Adjust this line to 1px */
             display: none;
         }
 
