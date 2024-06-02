@@ -12,20 +12,35 @@ app.post('/control', (req, res) => {
     const { action, value, sessionId } = req.body;
 
     if (!sessions[sessionId]) {
-        sessions[sessionId] = { url: '', status: 'stop', volume: 100, action: null, value: null };
+        sessions[sessionId] = { url: '', status: 'stop', volume: 100, action: null, value: null, lastSkipValue: null, lastSkipDirection: null };
     }
 
-    sessions[sessionId].action = action;
-    sessions[sessionId].value = value;
+    const session = sessions[sessionId];
 
-    res.json({ status: 'Command received', action, value, sessionId });
+    if (action === 'skip') {
+        const direction = value > session.lastSkipValue ? 'forward' : 'backward';
+
+        if (value !== session.lastSkipValue || direction !== session.lastSkipDirection) {
+            session.lastSkipValue = value;
+            session.lastSkipDirection = direction;
+            session.action = action;
+            session.value = value;
+            res.json({ status: 'Skip action processed', action, value, sessionId });
+        } else {
+            res.json({ status: 'Skip action ignored', action, value, sessionId });
+        }
+    } else {
+        session.action = action;
+        session.value = value;
+        res.json({ status: 'Command received', action, value, sessionId });
+    }
 });
 
 app.post('/update-url', (req, res) => {
     const { url, sessionId } = req.body;
 
     if (!sessions[sessionId]) {
-        sessions[sessionId] = { url: '', status: 'stop', volume: 100, action: null, value: null };
+        sessions[sessionId] = { url: '', status: 'stop', volume: 100, action: null, value: null, lastSkipValue: null, lastSkipDirection: null };
     }
 
     sessions[sessionId].url = url;
