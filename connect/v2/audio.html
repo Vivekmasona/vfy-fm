@@ -1,10 +1,10 @@
-<!doctype html>
-
-
-    
-    
-    Single Audio Player with Session Management
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Single Audio Player with Session Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         #audioPlayerContainer {
             display: flex;
@@ -22,12 +22,12 @@
         }
 
         #playPauseButton, #topButton, #volumeControl, #skipSlider {
-            margin-left: 10px;
+            margin-left: 2px;
         }
 
         #playPauseButton, #topButton {
-            width: 20px;
-            height: 20px;
+            width: 30px;
+            height: 30px;
             fill: white;
             cursor: pointer;
         }
@@ -73,9 +73,10 @@
         #skipSlider, #volumeControl {
             width: 0px;
         }
+
     </style>
-
-
+</head>
+<body>
 
 <div id="audioPlayerContainer">
     <svg id="playPauseButton" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24">
@@ -97,7 +98,7 @@
 <audio id="audioPlayer"></audio>
 
 <script>
-        document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
             const audioPlayer = document.getElementById('audioPlayer');
             const audioPlayerContainer = document.getElementById('audioPlayerContainer');
             const playPauseButton = document.getElementById('playPauseButton');
@@ -229,7 +230,5 @@
             // Fetch audio status every second
             setInterval(fetchAndUpdateAudioStatus, 1000);
         });
-    </script>
+</script>
 
-
-</!doctype>
