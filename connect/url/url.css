@@ -14,14 +14,14 @@
 
         /* Popup content */
         .popup-content {
-            border-radius: 10px;
+            border-radius: 20px;
             background-color: #333;
-            margin: 35% auto; /* 15% from the top and centered */
+            margin: 45% auto; /* 15% from the top and centered */
             padding: 20px;
             z-index: 99999;
             border-raduce:8px;
-            border: 1px solid #888;
-            width: 90%; /* Could be more or less, depending on screen size */
+            border: 0px solid #888;
+            width: 95%; /* Could be more or less, depending on screen size */
         }
 
         /* Close button */
