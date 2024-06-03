@@ -13,11 +13,11 @@
             right: 20px;
         }
 
-        #playPauseButton, #openPopupBtn, #volumeControl, #skipSlider {
+        #playPauseButton, #topButton, #volumeControl, #skipSlider {
             margin-left: 2px;
         }
 
-        #playPauseButton, #openPopupBtn {
+        #playPauseButton, #topButton {
             width: 30px;
             height: 30px;
             fill: white;
