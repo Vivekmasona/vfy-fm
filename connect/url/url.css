@@ -15,12 +15,12 @@
         /* Popup content */
         .popup-content {
             background-color: #333;
-            margin: 45% auto; /* 15% from the top and centered */
+            margin: 35% auto; /* 15% from the top and centered */
             padding: 20px;
             z-index: 99999;
             border-raduce:8px;
             border: 1px solid #888;
-            width: 60%; /* Could be more or less, depending on screen size */
+            width: 90%; /* Could be more or less, depending on screen size */
         }
 
         /* Close button */
