@@ -14,6 +14,7 @@
 
         /* Popup content */
         .popup-content {
+            border-radius: 10px;
             background-color: #333;
             margin: 35% auto; /* 15% from the top and centered */
             padding: 20px;
