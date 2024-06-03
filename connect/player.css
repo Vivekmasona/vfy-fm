@@ -50,6 +50,7 @@
 
         #copySessionIdButton,
         #editSessionIdButton,
+         #openPopupBtn,
         #shareSessionIdButton {
             margin-left: 10px; /* Adjust this line to 1px */
             display: none;
