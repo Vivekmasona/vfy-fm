@@ -51,7 +51,7 @@
         #copySessionIdButton,
         #editSessionIdButton,
         #shareSessionIdButton {
-            margin-left: 1px; /* Adjust this line to 1px */
+            margin-left: 10px; /* Adjust this line to 1px */
             display: none;
         }
 
