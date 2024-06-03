@@ -36,7 +36,10 @@
             80% { box-shadow: 0 0 20px rgba(255, 255, 0, 0.5); }
             100% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
         }
-
+#openPopupBtn
+          {
+             margin-left: 10px;
+          }
         #wifiIcon {
             color: #fff;
             margin-right: -10px;
@@ -50,7 +53,7 @@
 
         #copySessionIdButton,
         #editSessionIdButton,
-         #openPopupBtn,
+         
         #shareSessionIdButton {
             margin-left: 10px; /* Adjust this line to 1px */
             display: none;
