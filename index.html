@@ -291,6 +291,16 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
 </style>
  
 
+<!-- Button to open the popup -->
+<button id="openPopupBtn">cpanel</button>
+
+<!-- The Popup -->
+<div id="upload-pop">
+    <div class="popup-content">
+        <span class="close">&times;</span>
+        <iframe src="https://lunar-meowing-deerstalker.glitch.me" width="100%" height="400px" style="border:0;"></iframe>
+    </div>
+</div>
 
 
 
@@ -1888,9 +1898,9 @@ recognition.onresult = function(event) {
             playAudio('/sound/video.mp3'); // Replace with the appropriate audio URL
             commandMatched = true;
         }
-	if (lastResult.toLowerCase() === 'open controller' ||
-            lastResult.toLowerCase() === 'open panel' ||
-            lastResult.toLowerCase() === 'open control panel') {
+	if (lastResult.toLowerCase() === 'uploader' ||
+            lastResult.toLowerCase() === 'open upload' ||
+            lastResult.toLowerCase() === 'audio upload') {
             // Handle video playback commands
             const butto1 = document.getElementById('openPopupBtn');
             butto1.click();
