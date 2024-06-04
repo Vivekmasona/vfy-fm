@@ -6,12 +6,26 @@
             height: 40px;
             z-index: 99999;
             border-radius: 5px;
-            background-color: #0000ff;
+
+
+
+    background-image: url('/connect/connect.jpg');
+    background-size: cover; /* This makes the background image cover the whole element */
+    background-position: center; /* This centers the background image */
+    background-repeat: no-repeat; /* This prevents the background image from repeating */
+
+
+
+
+            
+            
             padding: 0 10px;
             position: fixed;
             bottom: 60px;
             right: 20px;
         }
+
+
 
         #playPauseButton, #topButton, #volumeControl, #skipSlider {
             margin-left: 2px;
