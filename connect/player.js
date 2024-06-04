@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (navigator.share) {
                     navigator.share({
                         title: 'Session ID',
-                        text: 'Here is the session ID: ' + sessionId
+                        text: 'https://vfy.netlify.app Here is the session ID: ' + sessionId
                     }).catch(err => {
                         console.error('Error sharing session ID:', err);
                     });
