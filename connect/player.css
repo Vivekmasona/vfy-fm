@@ -9,7 +9,7 @@
 
 
 
-    background-image: url('/connect/c2.jpg');
+    background-image: url('/connect/connectjpg.jpeg');
     background-size: cover; /* This makes the background image cover the whole element */
     background-position: center; /* This centers the background image */
     background-repeat: no-repeat; /* This prevents the background image from repeating */
@@ -34,7 +34,7 @@
         #playPauseButton, #topButton {
             width: 30px;
             height: 30px;
-            fill: #E84C3D;
+            fill: #fff;
             cursor: pointer;
         }
 
@@ -55,14 +55,14 @@
              margin-left: 10px;
           }
         #wifiIcon {
-            color: #E84C3D;
+            color: #fff;
             margin-right: -10px;
         }
 
         #sessionInfoContainer {
             display: flex;
             align-items: center;
-            color: #E84C3D;
+            color: #fff;
         }
 
         #copySessionIdButton,
@@ -76,7 +76,7 @@
         #sessionInfoContainer button {
             border: none;
             background: none;
-            color: #E84C3D;
+            color: #fff;
             cursor: pointer;
         }
 
