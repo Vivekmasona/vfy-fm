@@ -1458,9 +1458,9 @@ audio.addEventListener("ended", function() {
 // Listen for the 'error' event
 var alternativeAudioSources = [
 "https://vivekfy.vercel.app/low-audio?url=" + id,
-"https://vivekfy-server.000webhostapp.com/play/deno?url=https://youtu.be/"+ id,
+"https://vivekfy.fanclub.rocks/deno?url=https://youtu.be/"+ id,
 "https://vivekfy.vercel.app/audio/" + id,   
-"https://vivekfy-server.000webhostapp.com/play/vercel?url=https://youtu.be/" + id,
+"https://vivekfy.fanclub.rocks/vercel?url=https://youtu.be/" + id,
 "https://vivekfy-api-v1.vercel.app/audio?url=https://youtu.be/" + id,
     
 ];
@@ -2589,7 +2589,7 @@ var offlineMsg = document.getElementById("offline-message");
             let downloadButton = document.createElement('button');
             downloadButton.className = 'download-popup-button shake';
             downloadButton.innerHTML = `
-                <a href="https://vivekfy-server.000webhostapp.com/api?url=${encodeURIComponent(downloadUrl)}" download><i class="fas fa-download"></i></a>
+                <a href="https://vivekfy.fanclub.rocks/api?url=${encodeURIComponent(downloadUrl)}" download><i class="fas fa-download"></i></a>
             `;
             downloadButton.addEventListener('click', function() {
                 // Change icon to "done" when clicked
@@ -2695,7 +2695,7 @@ var offlineMsg = document.getElementById("offline-message");
 
     .download-popup-button {
         position: fixed;
-        bottom: 10%;
+        bottom: 15%;
         right: 6%;
         background: #E74C3C; /* Change download button background color */
         color: white;
