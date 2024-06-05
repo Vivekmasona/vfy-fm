@@ -1,7 +1,6 @@
 <!doctype html>
-
-
-    
+<html>
+<head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
         body {
@@ -14,6 +13,19 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+        }
+
+        .fixed-header {
+            position: fixed;
+            top: 10;
+            height:30px;
+            width: 100%;
+            background-color: #BABED9;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
         }
 
         .controlPanel, .searchForm {
@@ -126,10 +138,87 @@
         .songTitle {
             font-weight: bold;
         }
+
+        audio {
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-left-color: #E84C3D;
+            animation: spin 1s linear infinite;
+            margin-left: -20px;
+        }
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        #uploadForm {
+            display: flex;
+            align-items: center;
+            margin-right: 70px;
+        }
+
+        #audioFile {
+            display: none;
+        }
+
+        #fakeButton {
+        	margin-top:-15px;
+            background-color: #E84C3D;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            margin-right: 10px;
+        }
+
+        #fakeButton:hover {
+            background-color: #45a049;
+        }
+
+        #uploadLabel {
+            background-color: #E84C3D;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        #uploadLabel:hover {
+            background-color: #45a049;
+        }
+
     </style>
+</head>
+<body>
+    <div class="fixed-header">
+        <form id="uploadForm" enctype="multipart/form-data">
+            <label for="audioFile" id="uploadLabel"><i class="fas fa-upload"></i> Upload Audio</label>
+            <input type="file" id="audioFile" name="audio" accept="audio/*" required />
+        </form>
+        <div class="spinner" id="spinner"></div>
+        <button id="fakeButton"><i class="fas fa-arrow-alt-circle-up"></i>Send To Play</button>
+    </div>
 
-
-    <div class="container">
+    <div class="container" style="padding-top: 80px;">
         <div id="controlPanel" class="controlPanel">
             <input type="text" id="sessionIdInput" placeholder="Enter Session ID" />
             <button id="connectButton" class="controlButton"><i class="fas fa-plug"></i></button>
@@ -150,8 +239,13 @@
             <label for="swanMusicPlayer">JIO</label>
         </form>
         <ul id="playlistContainer"></ul>
+        
+        <audio controls id="audioPlayer" style="display:none">
+            Your browser does not support the audio element.
+        </audio>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const sessionIdInput = document.getElementById('sessionIdInput');
@@ -164,6 +258,10 @@
             const searchForm = document.getElementById('searchForm');
             const playlistContainer = document.getElementById('playlistContainer');
             const searchTermInput = document.getElementById('searchTerm');
+            const audioFileInput = document.getElementById('audioFile');
+            const spinner = document.getElementById('spinner');
+            const fakeButton = document.getElementById('fakeButton');
+            const audioPlayer = document.getElementById('audioPlayer');
 
             let sessionId = null;
             let lastSeekValue = 0;
@@ -230,7 +328,7 @@
             });
 
             async function fetchYouTubeSongs(searchTerm) {
-                const apiKey = 'AIzaSyAuncZ6zOgCiTErzcEc3cHGuhybV1UIJvA'; // Replace with your YouTube API key
+                const apiKey = 'YOUR_YOUTUBE_API_KEY';
                 const maxResults = 40;
                 const queryUrl = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=video&q=${encodeURIComponent(searchTerm)}&maxResults=${maxResults}&videoCategoryId=10&videoSyndicated=true&eventType=none`;
 
@@ -350,7 +448,37 @@
                     alert('Failed to update the URL. Please try again later.');
                 });
             }
-        });
-    </script>
 
-</!doctype>
+            audioFileInput.addEventListener('change', function() {
+                if (audioFileInput.files.length > 0) {
+                    const formData = new FormData();
+                    formData.append('audio', audioFileInput.files[0]);
+                    spinner.style.display = 'block'; // Show spinner
+
+                    fetch('https://daily-comet-family.glitch.me/upload', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('File uploaded:', data.url);
+                        spinner.style.display = 'none'; // Hide spinner
+                        updateAudioUrl(data.url); // Update the audio URL
+                    })
+                    .catch(error => {
+                        console.error('Error uploading file:', error);
+                        spinner.style.display = 'none'; // Hide spinner on error
+                        alert('Upload complete huaa ab send button click kre');
+                    });
+                }
+            });
+
+            fakeButton.addEventListener('click', () => {
+                const randomCode = Math.random().toString(36).substring(7); // Generate random code
+                const fixedUrl = `https://daily-comet-family.glitch.me/play?${randomCode}`; // Append random code to URL
+                updateAudioUrl(fixedUrl); // Update the audio URL
+            });
+        });    
+    </script>
+</body>
+</html>
