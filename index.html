@@ -1625,7 +1625,7 @@ playVideoButton.addEventListener("click", function() {
     video.autoplay = true; // Autoplay video
 
     var source = document.createElement("source");
-    source.src = "https://vivekfy.vercel.app/play/" + currentPlayingSongId;
+    source.src = "https://vivekfy.vercel.app/video?url=" + currentPlayingSongId;
     source.type = "video/mp4"; // Change the type if needed
 
     video.appendChild(source);
