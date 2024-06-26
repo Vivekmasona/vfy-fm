@@ -1534,19 +1534,45 @@ volumeSlider.addEventListener('input', function () {
 
 
 	
-const titleaudio = document.getElementById('SAudio');
-const songTitleElement = document.getElementById('vfytitle'); // Assuming the song title is displayed in an element with ID 'vfytitle'
+const audio = document.getElementById('SAudio');
+const songTitleElement = document.getElementById('vfytitle');
+const thumbnailElement = document.getElementById('imgthumb');
 
-audio.addEventListener('play', () => {
-  // Update the tab title when audio starts playing
-  const songTitle = songTitleElement.textContent; // Get the song title from the 'vfytitle' element
-  document.title = songTitle + ' - ' + audio.currentTime + ' seconds';
-});
+// Update media session metadata
+if ('mediaSession' in navigator) {
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: songTitleElement.textContent,
+    artwork: [
+      { src: thumbnailElement.src, sizes: '512x512', type: 'image/jpg' },
+    ],
+  });
 
-audio.addEventListener('pause', () => {
-  // Restore the original page title when audio is paused
-  document.title = 'VIVEKFY-AI';
-});
+  navigator.mediaSession.setActionHandler('play', function() {
+    audio.play();
+    setFavicon(thumbnailElement.src); // Set thumbnail as favicon when play action is triggered
+  });
+
+  navigator.mediaSession.setActionHandler('pause', function() {
+    audio.pause();
+    restoreFavicon(); // Restore default favicon when pause action is triggered
+  });
+}
+
+function setFavicon(url) {
+  const favicon = document.querySelector('link[rel="icon"]');
+  if (favicon) {
+    favicon.href = url;
+  }
+}
+
+function restoreFavicon() {
+  // Restore default favicon URL here
+  const defaultFavicon = 'path_to_your_default_favicon.ico';
+  const favicon = document.querySelector('link[rel="icon"]');
+  if (favicon) {
+    favicon.href = defaultFavicon;
+  }
+}
 
 
 
