@@ -1534,19 +1534,43 @@ volumeSlider.addEventListener('input', function () {
 
 
 	
-const titleaudio = document.getElementById('SAudio');
+const audio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle'); // Assuming the song title is displayed in an element with ID 'vfytitle'
+const thumbnailElement = document.getElementById('thumbnail'); // Assuming the thumbnail image is an <img> element with ID 'thumbnail'
 
 audio.addEventListener('play', () => {
-  // Update the tab title when audio starts playing
   const songTitle = songTitleElement.textContent; // Get the song title from the 'vfytitle' element
-  document.title = songTitle + ' - ' + audio.currentTime + ' seconds';
+  const thumbnailUrl = getThumbnailUrl(songTitle); // Replace with your function to get the thumbnail URL based on the song title
+
+  const updateTitleAndThumbnail = () => {
+    document.title = songTitle + ' - ' + Math.floor(audio.currentTime) + ' seconds';
+    thumbnailElement.src = thumbnailUrl;
+  };
+
+  // Update title and thumbnail initially and then every second
+  updateTitleAndThumbnail();
+  audio.titleInterval = setInterval(updateTitleAndThumbnail, 1000);
 });
 
 audio.addEventListener('pause', () => {
-  // Restore the original page title when audio is paused
+  // Clear the interval and restore the original page title when audio is paused
+  clearInterval(audio.titleInterval);
   document.title = 'VIVEKFY-AI';
+  thumbnailElement.src = ''; // Optionally clear the thumbnail image when paused
 });
+
+audio.addEventListener('ended', () => {
+  // Clear the interval and restore the original page title when audio ends
+  clearInterval(audio.titleInterval);
+  document.title = 'VIVEKFY-AI';
+  thumbnailElement.src = ''; // Optionally clear the thumbnail image when ended
+});
+
+function getThumbnailUrl(songTitle) {
+  // Replace this function with your logic to fetch the thumbnail URL based on the song title
+  // Example: return `thumbnails/${songTitle}.jpg`;
+  return ''; // Return the actual URL of the thumbnail image
+}
 
 
 
