@@ -1533,8 +1533,6 @@ volumeSlider.addEventListener('input', function () {
 });
 
 
-	
-
 const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle'); // Assuming the song title is displayed in an element with ID 'vfytitle'
 const thumbnailElement = document.getElementById('SThumb'); // Element to get the thumbnail
@@ -1545,8 +1543,8 @@ if ('mediaSession' in navigator) {
 
     navigator.mediaSession.metadata = new MediaMetadata({
         title: songTitle,
-        artist: 'VFY-AI', // Adjust as necessary
-        album: 'Alltype', // Adjust as necessary
+        artist: 'neelkamal singh', // Adjust as necessary
+        album: 'bhojpuri', // Adjust as necessary
         artwork: [
             { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
             { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
@@ -1555,6 +1553,13 @@ if ('mediaSession' in navigator) {
             { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
             { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
         ]
+    });
+
+    // Define the action handler for the "Next" button
+    navigator.mediaSession.setActionHandler('nexttrack', () => {
+        // Logic to play the next track
+        console.log('Next track clicked');
+        // Implement the logic to play the next song here
     });
 } else {
     console.log('The Media Session API is not supported in this browser.');
@@ -1571,14 +1576,20 @@ titleaudio.addEventListener('play', () => {
     if (Notification.permission === 'granted') {
         new Notification(songTitle, {
             body: 'Audio is playing',
-            icon: thumbnailUrl
+            icon: thumbnailUrl,
+            actions: [
+                { action: 'nexttrack', title: 'Next', icon: 'path/to/next-icon.png' }
+            ]
         });
     } else if (Notification.permission !== 'denied') {
         Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
                 new Notification(songTitle, {
                     body: 'Audio is playing',
-                    icon: thumbnailUrl
+                    icon: thumbnailUrl,
+                    actions: [
+                        { action: 'nexttrack', title: 'Next', icon: 'path/to/next-icon.png' }
+                    ]
                 });
             }
         });
@@ -1588,7 +1599,9 @@ titleaudio.addEventListener('play', () => {
 titleaudio.addEventListener('pause', () => {
     // Restore the original page title when audio is paused
     document.title = 'VIVEKFY-AI';
-});
+});	
+
+
 
 
 	
