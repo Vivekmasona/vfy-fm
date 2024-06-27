@@ -1590,7 +1590,24 @@ titleaudio.addEventListener('pause', () => {
     document.title = 'VIVEKFY-AI';
 });
 
+const titleaudio = document.getElementById('SAudio');
+const seekBar = document.getElementById('seekBar'); // Replace 'seekBar' with your actual seek bar element ID
 
+titleaudio.addEventListener('loadedmetadata', () => {
+    // Set the initial position of the seek bar when audio metadata is loaded
+    seekBar.max = titleaudio.duration;
+});
+
+titleaudio.addEventListener('timeupdate', () => {
+    // Update the seek bar position as the audio plays
+    seekBar.value = titleaudio.currentTime;
+});
+
+// Seek bar change listener
+seekBar.addEventListener('input', () => {
+    // Seek to the position in the audio corresponding to the seek bar's value
+    titleaudio.currentTime = seekBar.value;
+});
 	
 
 const audioPlayer = document.getElementById("SAudio");
