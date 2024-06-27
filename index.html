@@ -1285,7 +1285,7 @@ function getOutput(item, i) {
     '<div>' +
     '<p>V F Y ' + title + '</p>' +
     '<small class="video-info">' + channelTitle + '</small>' +
-   '<small class="video-info"> VFY </small>' +
+    '<small class="video-info"> VFY </small>' +
     '<small class="video-info"> Ai </small>' +
     '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +
     '</div>' +
@@ -1533,18 +1533,19 @@ volumeSlider.addEventListener('input', function () {
 });
 
 
+	
+
 const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle'); // Assuming the song title is displayed in an element with ID 'vfytitle'
 const thumbnailElement = document.getElementById('SThumb'); // Element to get the thumbnail
-const nextButton = document.getElementById('nextbutto'); // Existing button for next song
 
-const updateMetadata = () => {
+if ('mediaSession' in navigator) {
     const songTitle = songTitleElement.textContent; // Get the song title from the 'vfytitle' element
     const thumbnailUrl = thumbnailElement.src; // Get the current thumbnail URL from the 'SThumb' element
 
     navigator.mediaSession.metadata = new MediaMetadata({
         title: songTitle,
-        artist: 'neelkamal singh', // Adjust as necessary
+        artist: '🥰VFY-AI', // Adjust as necessary
         album: 'bhojpuri', // Adjust as necessary
         artwork: [
             { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
@@ -1555,21 +1556,12 @@ const updateMetadata = () => {
             { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
         ]
     });
-};
-
-if ('mediaSession' in navigator) {
-    updateMetadata();
-
-    // Define the action handler for the "Next" button
-    navigator.mediaSession.setActionHandler('nexttrack', () => {
-        console.log('Next track clicked');
-        playNextSong();
-    });
 } else {
     console.log('The Media Session API is not supported in this browser.');
 }
 
 titleaudio.addEventListener('play', () => {
+    // Update the tab title when audio starts playing
     const songTitle = songTitleElement.textContent; // Get the song title from the 'vfytitle' element
     const thumbnailUrl = thumbnailElement.src; // Get the current thumbnail URL from the 'SThumb' element
 
@@ -1579,20 +1571,14 @@ titleaudio.addEventListener('play', () => {
     if (Notification.permission === 'granted') {
         new Notification(songTitle, {
             body: 'Audio is playing',
-            icon: thumbnailUrl,
-            actions: [
-                { action: 'nexttrack', title: 'Next', icon: 'path/to/next-icon.png' }
-            ]
+            icon: thumbnailUrl
         });
     } else if (Notification.permission !== 'denied') {
         Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
                 new Notification(songTitle, {
                     body: 'Audio is playing',
-                    icon: thumbnailUrl,
-                    actions: [
-                        { action: 'nexttrack', title: 'Next', icon: 'path/to/next-icon.png' }
-                    ]
+                    icon: thumbnailUrl
                 });
             }
         });
@@ -1603,23 +1589,6 @@ titleaudio.addEventListener('pause', () => {
     // Restore the original page title when audio is paused
     document.title = 'VIVEKFY-AI';
 });
-
-// Event listener for the existing "Next" button
-nextButton.addEventListener('click', () => {
-    console.log('Next button clicked');
-    playNextSong();
-});
-
-// Function to play the next song
-function playNextSong() {
-    // Your logic to play the next song
-    console.log('Playing next song...');
-    // Example logic to update the audio source and metadata
-    // titleaudio.src = 'path/to/next-song.mp3';
-    // titleaudio.play();
-    // updateMetadata();
-}
-
 
 
 	
@@ -3268,7 +3237,7 @@ background: radial-gradient(circle, rgba(59,175,194,0.9557312232860621) 0%, rgba
       </div> 
 	
 <div class="button">
-          <i id="nextbutton" class="fas fa-step-forward"></i>
+          <i id="nextbutto" class="fas fa-step-forward"></i>
       </div>
 	    
     </div><!-- /song-controls -->
