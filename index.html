@@ -1537,11 +1537,12 @@ volumeSlider.addEventListener('input', function () {
 
 const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle'); // Assuming the song title is displayed in an element with ID 'vfytitle'
-const youtubeVideoId = 'FkFvdukWpAI'; // Replace with your YouTube video ID
-const thumbnailUrl = `https://img.youtube.com/vi/${youtubeVideoId}/hqdefault.jpg`;
+const thumbnailElement = document.getElementById('SThumb'); // Element to get the thumbnail
 
 if ('mediaSession' in navigator) {
     const songTitle = songTitleElement.textContent; // Get the song title from the 'vfytitle' element
+    const thumbnailUrl = thumbnailElement.src; // Get the current thumbnail URL from the 'SThumb' element
+
     navigator.mediaSession.metadata = new MediaMetadata({
         title: songTitle,
         artist: 'neelkamal singh', // Adjust as necessary
@@ -1562,6 +1563,8 @@ if ('mediaSession' in navigator) {
 titleaudio.addEventListener('play', () => {
     // Update the tab title when audio starts playing
     const songTitle = songTitleElement.textContent; // Get the song title from the 'vfytitle' element
+    const thumbnailUrl = thumbnailElement.src; // Get the current thumbnail URL from the 'SThumb' element
+
     document.title = songTitle + ' - ' + titleaudio.currentTime + ' seconds';
 
     // Show notification with thumbnail
@@ -1586,7 +1589,6 @@ titleaudio.addEventListener('pause', () => {
     // Restore the original page title when audio is paused
     document.title = 'VIVEKFY-AI';
 });
-
 
 
 	
