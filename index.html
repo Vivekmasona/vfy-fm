@@ -51,6 +51,28 @@ if (window !== window.top) {
 	
 </script>
 
+
+<script>
+        // Yeh function website ko active rakhne ke liye request bhejta hai
+        function keepWebsiteActive() {
+            fetch('https://vivekfy.fanclub.rocks/home/')
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Website active hai');
+                    } else {
+                        console.log('Website ko active rakhne mein problem aayi');
+                    }
+                })
+                .catch(error => {
+                    console.log('Error:', error);
+                });
+        }
+
+        // Har 5 minute (300000 milliseconds) mein function ko call karta hai
+        setInterval(keepWebsiteActive, 300000);
+    </script>
+
+
 <style>
 
 #thumbnailContainer {
