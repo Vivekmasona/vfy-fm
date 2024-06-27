@@ -1534,18 +1534,35 @@ volumeSlider.addEventListener('input', function () {
 
 
 	
-const audio = document.getElementById('SAudio');
-const songTitleElement = document.getElementById('vfytitle'); // Assuming the song title is displayed in an element with ID 'vfytitle'
 
-audio.addEventListener('play', () => {
+const titleaudio = document.getElementById('SAudio');
+const songTitleElement = document.getElementById('vfytitle'); // Assuming the song title is displayed in an element with ID 'vfytitle'
+const youtubeVideoId = 'FkFvdukWpAI'; // Replace with your YouTube video ID
+const thumbnailUrl = `https://img.youtube.com/vi/${youtubeVideoId}/hqdefault.jpg`;
+
+if ('mediaSession' in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+        title: 'kamar kare lach lacha lach neelkamal singh song',
+        artist: 'neelkamal singh',
+        album: 'bhojpuri',
+        artwork: [
+            { src: 'https://img.youtube.com/vi/FkFvdukWpAI/maxresdefault.jpg', sizes: '96x96', type: 'image/jpg' },
+            { src: 'https://img.youtube.com/vi/FkFvdukWpAI/maxresdefault.jpg', sizes: '128x128', type: 'image/jpg' },
+            { src: 'https://img.youtube.com/vi/FkFvdukWpAI/maxresdefault.jpg', sizes: '192x192', type: 'image/jpg' },
+            { src: 'https://img.youtube.com/vi/FkFvdukWpAI/maxresdefault.jpg', sizes: '256x256', type: 'image/jpg' },
+            { src: 'https://img.youtube.com/vi/FkFvdukWpAI/maxresdefault.jpg', sizes: '384x384', type: 'image/jpg' },
+            { src: 'https://img.youtube.com/vi/FkFvdukWpAI/maxresdefault.jpg', sizes: '512x512', type: 'image/jpg' },
+        ]
+    });
+} else {
+    console.log('The Media Session API is not supported in this browser.');
+}
+
+titleaudio.addEventListener('play', () => {
   // Update the tab title when audio starts playing
   const songTitle = songTitleElement.textContent; // Get the song title from the 'vfytitle' element
-  document.title = songTitle + ' - ' + audio.currentTime + ' seconds';
-
-  // Replace with your YouTube video ID dynamically if needed
-  const youtubeVideoId = 'FkFvdukWpAI';
-  const thumbnailUrl = `https://img.youtube.com/vi/${youtubeVideoId}/hqdefault.jpg`;
-
+  document.title = songTitle + ' - ' + titleaudio.currentTime + ' seconds';
+  
   // Show notification with thumbnail
   if (Notification.permission === 'granted') {
     new Notification(songTitle, {
@@ -1564,11 +1581,10 @@ audio.addEventListener('play', () => {
   }
 });
 
-audio.addEventListener('pause', () => {
+titleaudio.addEventListener('pause', () => {
   // Restore the original page title when audio is paused
   document.title = 'VIVEKFY-AI';
 });
-
 
 
 
