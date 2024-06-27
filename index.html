@@ -1536,8 +1536,9 @@ volumeSlider.addEventListener('input', function () {
 const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle'); // Assuming the song title is displayed in an element with ID 'vfytitle'
 const thumbnailElement = document.getElementById('SThumb'); // Element to get the thumbnail
+const nextButton = document.getElementById('nextbutto'); // Existing button for next song
 
-if ('mediaSession' in navigator) {
+const updateMetadata = () => {
     const songTitle = songTitleElement.textContent; // Get the song title from the 'vfytitle' element
     const thumbnailUrl = thumbnailElement.src; // Get the current thumbnail URL from the 'SThumb' element
 
@@ -1554,19 +1555,21 @@ if ('mediaSession' in navigator) {
             { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
         ]
     });
+};
+
+if ('mediaSession' in navigator) {
+    updateMetadata();
 
     // Define the action handler for the "Next" button
     navigator.mediaSession.setActionHandler('nexttrack', () => {
-        // Logic to play the next track
         console.log('Next track clicked');
-        // Implement the logic to play the next song here
+        playNextSong();
     });
 } else {
     console.log('The Media Session API is not supported in this browser.');
 }
 
 titleaudio.addEventListener('play', () => {
-    // Update the tab title when audio starts playing
     const songTitle = songTitleElement.textContent; // Get the song title from the 'vfytitle' element
     const thumbnailUrl = thumbnailElement.src; // Get the current thumbnail URL from the 'SThumb' element
 
@@ -1599,8 +1602,23 @@ titleaudio.addEventListener('play', () => {
 titleaudio.addEventListener('pause', () => {
     // Restore the original page title when audio is paused
     document.title = 'VIVEKFY-AI';
-});	
+});
 
+// Event listener for the existing "Next" button
+nextButton.addEventListener('click', () => {
+    console.log('Next button clicked');
+    playNextSong();
+});
+
+// Function to play the next song
+function playNextSong() {
+    // Your logic to play the next song
+    console.log('Playing next song...');
+    // Example logic to update the audio source and metadata
+    // titleaudio.src = 'path/to/next-song.mp3';
+    // titleaudio.play();
+    // updateMetadata();
+}
 
 
 
