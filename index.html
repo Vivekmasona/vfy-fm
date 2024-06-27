@@ -1534,13 +1534,10 @@ volumeSlider.addEventListener('input', function () {
 
 
 	
+
 const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle'); // Assuming the song title is displayed in an element with ID 'vfytitle'
 const thumbnailElement = document.getElementById('SThumb'); // Element to get the thumbnail
-
-// Base64-encoded icons for WiFi and music (dummy examples)
-const wifiIconBase64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cGF0aCBkPSJNMTIgMTB2NmMwIDEtMSAyLTItMlYxOGMwIDEgMSAyIDJ2NmMwIDEtMSAyLTItMlY0YzAtMS0xLTIuOS0yLjktMi05IDAtMi0yLjktMi05VjJjMC0xLTEtMi0yLTl6bTAtM2MwLTEtMC0yLTItMnYtM2MwLTEtMC0yLTItMnptMC0zYzAtMS0xLTIuOS0yLjktMi05IDAtMi0yLjktMi05VjJjMC0xLTEtMi0yLTl6bTIgMGMwLTEtMS0yLjktMi45LTIgMC0yLTIuOS0yLTlWMTVjMC0xLTEtMi0yLTl6bTIgMGMwLTEtMS0yLjktMi45LTIgMC0yLTIuOS0yLTlWMTVjMC0xLTEtMi0yLTl6bTMgMGMwLTEtMS0yLjktMi45LTIgMC0yLTIuOS0yLTlWMTVjMC0xLTEtMi0yLTl6IiBmaWxsPSIjZmZmIi8+Cjwvc3ZnPgo='; // Placeholder WiFi icon base64
-const musicIconBase64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iMTIiIHZpZXdCb3g9IjAgMCAxMiAxMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cGF0aCBkPSJNMTIgMTB2NmMwIDEtMSAyLTItMlYxOGMwIDEgMSAyIDJ2NmMwIDEtMSAyLTItMlY0YzAtMS0xLTIuOS0yLjktMi05IDAtMi0yLjktMi05VjJjMC0xLTEtMi0yLTl6bTAtM2MwLTEtMC0yLTItMnYtM2MwLTEtMC0yLTItMnptMC0zYzAtMS0xLTIuOS0yLjktMiAwbTIgMGMwLTEtMS0yLjktMi45LTIgMC0yLTIuOS0yLTlWMTVjMC0xLTEtMi0yLTl6bTIgMGMwLTEtMS0yLjktMi45LTIgMC0yLTIuOS0yLTlWMTVjMC0xLTEtMi0yLTl6bTMgMGMwLTEtMS0yLjktMi45LTIgMC0yLTIuOS0yLTlWMTVjMC0xLTEtMi0yLTl6IiBmaWxsPSIjZmZmIi8+Cjwvc3ZnPgo='; // Placeholder Music icon base64
 
 if ('mediaSession' in navigator) {
     const songTitle = songTitleElement.textContent; // Get the song title from the 'vfytitle' element
@@ -1549,7 +1546,7 @@ if ('mediaSession' in navigator) {
     navigator.mediaSession.metadata = new MediaMetadata({
         title: songTitle,
         artist: '🥰VFY-AI', // Adjust as necessary
-        album: 'Alltype', // Adjust as necessary
+        album: 'bhojpuri', // Adjust as necessary
         artwork: [
             { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
             { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
@@ -1557,8 +1554,6 @@ if ('mediaSession' in navigator) {
             { src: thumbnailUrl, sizes: '256x256', type: 'image/jpg' },
             { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
             { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
-            { src: wifiIconBase64, sizes: '96x96', type: 'image/svg+xml' }, // WiFi icon base64
-            { src: musicIconBase64, sizes: '96x96', type: 'image/svg+xml' }, // Music icon base64
         ]
     });
 } else {
@@ -1572,51 +1567,19 @@ titleaudio.addEventListener('play', () => {
 
     document.title = songTitle + ' - ' + titleaudio.currentTime + ' seconds';
 
-    // Show notification with thumbnail and music icon
+    // Show notification with thumbnail
     if (Notification.permission === 'granted') {
-        const notification = new Notification(songTitle, {
+        new Notification(songTitle, {
             body: 'Audio is playing',
-            icon: musicIconBase64 // Music icon base64
-        });
-
-        // Add a seek bar to the notification (example)
-        notification.addEventListener('show', () => {
-            const notificationBody = notification.body;
-            const notificationIcon = notification.icon;
-
-            const notificationHtml = `
-                <div style="display: flex; align-items: center;">
-                    <img src="${wifiIconBase64}" alt="WiFi Icon" width="20" height="20" style="margin-right: 10px;">
-                    <img src="${notificationIcon}" alt="Music Icon" width="20" height="20" style="margin-right: 10px;">
-                    <span>${notificationBody}</span>
-                    <input type="range" min="0" max="100" value="0" style="width: 100px; margin-left: 10px;">
-                </div>
-            `;
-
-            notification.close(); // Close the original notification
-
-            const customNotification = new Notification(songTitle, {
-                body: notificationHtml,
-                icon: musicIconBase64 // Music icon base64
-            });
-
-            // Example: Handle seek bar input change
-            const seekBar = customNotification.body.querySelector('input[type="range"]');
-            seekBar.addEventListener('input', () => {
-                // Handle seek bar input change logic here
-                console.log('Seek bar value changed:', seekBar.value);
-            });
+            icon: thumbnailUrl
         });
     } else if (Notification.permission !== 'denied') {
         Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
-                const notification = new Notification(songTitle, {
+                new Notification(songTitle, {
                     body: 'Audio is playing',
-                    icon: musicIconBase64 // Music icon base64
+                    icon: thumbnailUrl
                 });
-
-                // Add a seek bar to the notification (example)
-                // ... Same as above
             }
         });
     }
@@ -1626,7 +1589,7 @@ titleaudio.addEventListener('pause', () => {
     // Restore the original page title when audio is paused
     document.title = 'VIVEKFY-AI';
 });
-	
+
 
 	
 
