@@ -1533,10 +1533,11 @@ volumeSlider.addEventListener('input', function () {
 });
 
 
+	
+
 const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle'); // Assuming the song title is displayed in an element with ID 'vfytitle'
 const thumbnailElement = document.getElementById('SThumb'); // Element to get the thumbnail
-let currentArtist = 'VFY-AI'; // Initial artist name
 
 if ('mediaSession' in navigator) {
     const songTitle = songTitleElement.textContent; // Get the song title from the 'vfytitle' element
@@ -1544,8 +1545,8 @@ if ('mediaSession' in navigator) {
 
     navigator.mediaSession.metadata = new MediaMetadata({
         title: songTitle,
-        artist: currentArtist,
-        album: 'Alltype', // Adjust as necessary
+        artist: '🥰VFY-AI', // Adjust as necessary
+        album: 'bhojpuri', // Adjust as necessary
         artwork: [
             { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
             { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
@@ -1582,21 +1583,12 @@ titleaudio.addEventListener('play', () => {
             }
         });
     }
-
-    // Change artist name dynamically after 2 seconds
-    setTimeout(() => {
-        currentArtist = 'DEVELOPER VIVEK MASONA';
-        if ('mediaSession' in navigator) {
-            navigator.mediaSession.metadata.artist = currentArtist;
-        }
-    }, 2000);
 });
 
 titleaudio.addEventListener('pause', () => {
     // Restore the original page title when audio is paused
     document.title = 'VIVEKFY-AI';
-});	
-
+});
 
 
 	
@@ -4190,4 +4182,5 @@ z-imdex:999999;
   left: 0px;
 }
 </style>	
+
 
