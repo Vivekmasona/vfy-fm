@@ -1533,32 +1533,20 @@ volumeSlider.addEventListener('input', function () {
 });
 
 
-	
-
 const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle'); // Assuming the song title is displayed in an element with ID 'vfytitle'
 const thumbnailElement = document.getElementById('SThumb'); // Element to get the thumbnail
+const seekBar = document.getElementById('seekBar'); // Replace 'seekBar' with your actual seek bar element ID
 
-if ('mediaSession' in navigator) {
-    const songTitle = songTitleElement.textContent; // Get the song title from the 'vfytitle' element
-    const thumbnailUrl = thumbnailElement.src; // Get the current thumbnail URL from the 'SThumb' element
-
-    navigator.mediaSession.metadata = new MediaMetadata({
-        title: songTitle,
-        artist: '🥰VFY-AI', // Adjust as necessary
-        album: 'bhojpuri', // Adjust as necessary
-        artwork: [
-            { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
-            { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
-            { src: thumbnailUrl, sizes: '192x192', type: 'image/jpg' },
-            { src: thumbnailUrl, sizes: '256x256', type: 'image/jpg' },
-            { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
-            { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
-        ]
-    });
-} else {
-    console.log('The Media Session API is not supported in this browser.');
-}
+// Update seek bar when audio time changes
+titleaudio.addEventListener('timeupdate', () => {
+    const currentTime = titleaudio.currentTime;
+    const duration = titleaudio.duration;
+    // Calculate seek bar position as a percentage
+    const progress = (currentTime / duration) * 100;
+    // Update the seek bar value
+    seekBar.value = progress;
+});
 
 titleaudio.addEventListener('play', () => {
     // Update the tab title when audio starts playing
@@ -1589,6 +1577,14 @@ titleaudio.addEventListener('pause', () => {
     // Restore the original page title when audio is paused
     document.title = 'VIVEKFY-AI';
 });
+
+// Seek bar change listener
+seekBar.addEventListener('input', () => {
+    const duration = titleaudio.duration;
+    const seekTo = (seekBar.value * duration) / 100;
+    titleaudio.currentTime = seekTo;
+});	
+
 
 
 	
