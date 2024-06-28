@@ -1468,7 +1468,11 @@ audio.addEventListener("error", function () {
 });
 
 
-
+// butto click event
+var nextbutto = document.getElementById("nextbutto");
+nextbutto.addEventListener("click", function () {
+    playNextSong();
+});
 
 
 
@@ -1533,46 +1537,62 @@ volumeSlider.addEventListener('input', function () {
 });
 
 
-// Initialize Media Session API
+	
+
+const titleaudio = document.getElementById('SAudio');
+const songTitleElement = document.getElementById('vfytitle'); // Assuming the song title is displayed in an element with ID 'vfytitle'
+const thumbnailElement = document.getElementById('SThumb'); // Element to get the thumbnail
+
 if ('mediaSession' in navigator) {
-  const songTitleElement = document.getElementById('vfytitle');
-  const thumbnailElement = document.getElementById('SThumb');
+    const songTitle = songTitleElement.textContent; // Get the song title from the 'vfytitle' element
+    const thumbnailUrl = thumbnailElement.src; // Get the current thumbnail URL from the 'SThumb' element
 
-  navigator.mediaSession.metadata = new MediaMetadata({
-    title: songTitleElement.textContent,
-    artist: '🥰VFY-AI',
-    album: 'bhojpuri',
-    artwork: [
-      { src: thumbnailElement.src, sizes: '96x96', type: 'image/jpg' },
-      { src: thumbnailElement.src, sizes: '128x128', type: 'image/jpg' },
-      { src: thumbnailElement.src, sizes: '192x192', type: 'image/jpg' },
-      { src: thumbnailElement.src, sizes: '256x256', type: 'image/jpg' },
-      { src: thumbnailElement.src, sizes: '384x384', type: 'image/jpg' },
-      { src: thumbnailElement.src, sizes: '512x512', type: 'image/jpg' },
-    ]
-  });
-
-  navigator.mediaSession.setActionHandler('nexttrack', playNextSong);
+    navigator.mediaSession.metadata = new MediaMetadata({
+        title: songTitle,
+        artist: '🥰VFY-AI', // Adjust as necessary
+        album: 'bhojpuri', // Adjust as necessary
+        artwork: [
+            { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
+            { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
+            { src: thumbnailUrl, sizes: '192x192', type: 'image/jpg' },
+            { src: thumbnailUrl, sizes: '256x256', type: 'image/jpg' },
+            { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
+            { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
+        ]
+    });
 } else {
-  console.log('The Media Session API is not supported in this browser.');
+    console.log('The Media Session API is not supported in this browser.');
 }
 
-function playNextSong() {
-  // Implement logic to play the next song from your dynamically fetched list
-  // Example: Increment current song index or fetch the next song from the list
-  // Ensure to update 'songTitleElement' and 'thumbnailElement' accordingly
-  // For example:
-  // currentSongIndex = (currentSongIndex + 1) % songs.length;
-  // loadSong(currentSongIndex);
-  console.log('Next song action triggered.');
-}
+titleaudio.addEventListener('play', () => {
+    // Update the tab title when audio starts playing
+    const songTitle = songTitleElement.textContent; // Get the song title from the 'vfytitle' element
+    const thumbnailUrl = thumbnailElement.src; // Get the current thumbnail URL from the 'SThumb' element
 
-// Button click event for 'Next Song'
-var nextbutto = document.getElementById("nextbutto");
-nextbutto.addEventListener("click", function () {
-  playNextSong();
-});	
+    document.title = songTitle + ' - ' + titleaudio.currentTime + ' seconds';
 
+    // Show notification with thumbnail
+    if (Notification.permission === 'granted') {
+        new Notification(songTitle, {
+            body: 'Audio is playing',
+            icon: thumbnailUrl
+        });
+    } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                new Notification(songTitle, {
+                    body: 'Audio is playing',
+                    icon: thumbnailUrl
+                });
+            }
+        });
+    }
+});
+
+titleaudio.addEventListener('pause', () => {
+    // Restore the original page title when audio is paused
+    document.title = 'VIVEKFY-AI';
+});
 
 
 	
