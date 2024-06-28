@@ -1280,24 +1280,36 @@ function getOutput(item, i) {
 
 
 	
-  var output =
-    '<b onclick="loadSong(this)" index="' + i + '" class="list" vid="' + id + '">' +
-    '<div class="video">' +
-    '<img src="' + thumbUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + i + '" vid="' + id + '">' +
-    '<section>' +
-    '<img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">' +
-    '<div>' +
-    '<p>V F Y ' + title + '</p>' +
-    '<small class="video-info">' + channelTitle + '</small>' +
-    '<small class="video-info"> VFY </small>' +
-    '<small class="video-info"> Ai </small>' +
-    '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +
-    '</div>' +
-    '</section>' +
-    '</div>' +
-    '</b>';
+  function generateSongList(songsData) {
+    songs = songsData.map((song, index) => {
+        return {
+            title: song.title,
+            src: song.src,
+            thumbnail: song.thumbUrl,
+            index: index
+        };
+    });
 
-return output;
+    // Render song list (Example)
+    const songListContainer = document.getElementById('songList');
+    songListContainer.innerHTML = songs.map(song => {
+        return `
+            <b onclick="loadSong(this)" index="${song.index}" class="list">
+                <div class="video">
+                    <img src="${song.thumbnail}" alt="${song.title}" class="video-thumbnail" onclick="loadSong(this)" index="${song.index}">
+                    <section>
+                        <img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">
+                        <div>
+                            <p>V F Y ${song.title}</p>
+                            <small class="video-info">Channel</small>
+                            <small class="video-info">VFY</small>
+                            <small class="video-info">Ai</small>
+                            <small class="video-info">Release Date</small>
+                        </div>
+                    </section>
+                </div>
+            </b>`;
+    }).join('');
 }
 
 
