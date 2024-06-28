@@ -1541,26 +1541,63 @@ volumeSlider.addEventListener('input', function () {
 const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle');
 const thumbnailElement = document.getElementById('SThumb');
+const nextbutto = document.getElementById("nextbutto");
 
-if ('mediaSession' in navigator) {
-    const songTitle = songTitleElement.textContent;
-    const thumbnailUrl = thumbnailElement.src;
+// Array to store dynamically generated songs
+let songs = [];
+let currentSongIndex = 0;
 
-    navigator.mediaSession.metadata = new MediaMetadata({
-        title: songTitle,
-        artist: '🥰VFY-AI',
-        album: 'bhojpuri',
-        artwork: [
-            { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
-            { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
-            { src: thumbnailUrl, sizes: '192x192', type: 'image/jpg' },
-            { src: thumbnailUrl, sizes: '256x256', type: 'image/jpg' },
-            { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
-            { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
-        ]
-    });
-} else {
-    console.log('The Media Session API is not supported in this browser.');
+function loadSong(element) {
+    currentSongIndex = parseInt(element.getAttribute('index'));
+    const selectedSong = songs[currentSongIndex];
+
+    titleaudio.src = selectedSong.src;
+    songTitleElement.textContent = selectedSong.title;
+    thumbnailElement.src = selectedSong.thumbnail;
+
+    titleaudio.play();
+
+    updateMediaSessionMetadata();
+}
+
+function playNextSong() {
+    currentSongIndex = (currentSongIndex + 1) % songs.length;
+    const nextSong = songs[currentSongIndex];
+
+    titleaudio.src = nextSong.src;
+    songTitleElement.textContent = nextSong.title;
+    thumbnailElement.src = nextSong.thumbnail;
+
+    titleaudio.play();
+
+    updateMediaSessionMetadata();
+}
+
+nextbutto.addEventListener("click", playNextSong);
+
+function updateMediaSessionMetadata() {
+    if ('mediaSession' in navigator) {
+        const songTitle = songTitleElement.textContent;
+        const thumbnailUrl = thumbnailElement.src;
+
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: songTitle,
+            artist: '🥰VFY-AI',
+            album: 'bhojpuri',
+            artwork: [
+                { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '192x192', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '256x256', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
+            ]
+        });
+
+        navigator.mediaSession.setActionHandler('nexttrack', playNextSong);
+    } else {
+        console.log('The Media Session API is not supported in this browser.');
+    }
 }
 
 titleaudio.addEventListener('play', () => {
@@ -1572,15 +1609,29 @@ titleaudio.addEventListener('play', () => {
     if (Notification.permission === 'granted') {
         new Notification(songTitle, {
             body: 'Audio is playing',
-            icon: thumbnailUrl
-        });
+            icon: thumbnailUrl,
+            actions: [
+                { action: 'next', title: 'Next', icon: 'next-icon.png' }
+            ]
+        }).onclick = (event) => {
+            if (event.action === 'next') {
+                playNextSong();
+            }
+        };
     } else if (Notification.permission !== 'denied') {
         Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
                 new Notification(songTitle, {
                     body: 'Audio is playing',
-                    icon: thumbnailUrl
-                });
+                    icon: thumbnailUrl,
+                    actions: [
+                        { action: 'next', title: 'Next', icon: 'next-icon.png' }
+                    ]
+                }).onclick = (event) => {
+                    if (event.action === 'next') {
+                        playNextSong();
+                    }
+                };
             }
         });
     }
@@ -1597,6 +1648,8 @@ titleaudio.addEventListener('timeupdate', () => {
     }
 });
 
+updateMediaSessionMetadata();
+	
 
 
 	
