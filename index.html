@@ -1538,19 +1538,18 @@ volumeSlider.addEventListener('input', function () {
 
 
 	
-
 const titleaudio = document.getElementById('SAudio');
-const songTitleElement = document.getElementById('vfytitle'); // Assuming the song title is displayed in an element with ID 'vfytitle'
-const thumbnailElement = document.getElementById('SThumb'); // Element to get the thumbnail
+const songTitleElement = document.getElementById('vfytitle');
+const thumbnailElement = document.getElementById('SThumb');
 
 if ('mediaSession' in navigator) {
-    const songTitle = songTitleElement.textContent; // Get the song title from the 'vfytitle' element
-    const thumbnailUrl = thumbnailElement.src; // Get the current thumbnail URL from the 'SThumb' element
+    const songTitle = songTitleElement.textContent;
+    const thumbnailUrl = thumbnailElement.src;
 
     navigator.mediaSession.metadata = new MediaMetadata({
         title: songTitle,
-        artist: '🥰VFY-AI', // Adjust as necessary
-        album: 'bhojpuri', // Adjust as necessary
+        artist: '🥰VFY-AI',
+        album: 'bhojpuri',
         artwork: [
             { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
             { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
@@ -1565,13 +1564,11 @@ if ('mediaSession' in navigator) {
 }
 
 titleaudio.addEventListener('play', () => {
-    // Update the tab title when audio starts playing
-    const songTitle = songTitleElement.textContent; // Get the song title from the 'vfytitle' element
-    const thumbnailUrl = thumbnailElement.src; // Get the current thumbnail URL from the 'SThumb' element
+    const songTitle = songTitleElement.textContent;
+    const thumbnailUrl = thumbnailElement.src;
 
-    document.title = songTitle + ' - ' + titleaudio.currentTime + ' seconds';
+    document.title = `${songTitle} - ${Math.floor(titleaudio.currentTime)} seconds`;
 
-    // Show notification with thumbnail
     if (Notification.permission === 'granted') {
         new Notification(songTitle, {
             body: 'Audio is playing',
@@ -1590,9 +1587,16 @@ titleaudio.addEventListener('play', () => {
 });
 
 titleaudio.addEventListener('pause', () => {
-    // Restore the original page title when audio is paused
     document.title = 'VIVEKFY-AI';
 });
+
+titleaudio.addEventListener('timeupdate', () => {
+    if (!titleaudio.paused) {
+        const songTitle = songTitleElement.textContent;
+        document.title = `${songTitle} - ${Math.floor(titleaudio.currentTime)} seconds`;
+    }
+});
+
 
 
 	
