@@ -1280,36 +1280,24 @@ function getOutput(item, i) {
 
 
 	
-  function generateSongList(songsData) {
-    songs = songsData.map((song, index) => {
-        return {
-            title: song.title,
-            src: song.src,
-            thumbnail: song.thumbUrl,
-            index: index
-        };
-    });
+  var output =
+    '<b onclick="loadSong(this)" index="' + i + '" class="list" vid="' + id + '">' +
+    '<div class="video">' +
+    '<img src="' + thumbUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + i + '" vid="' + id + '">' +
+    '<section>' +
+    '<img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">' +
+    '<div>' +
+    '<p>V F Y ' + title + '</p>' +
+    '<small class="video-info">' + channelTitle + '</small>' +
+    '<small class="video-info"> VFY </small>' +
+    '<small class="video-info"> Ai </small>' +
+    '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +
+    '</div>' +
+    '</section>' +
+    '</div>' +
+    '</b>';
 
-    // Render song list (Example)
-    const songListContainer = document.getElementById('songList');
-    songListContainer.innerHTML = songs.map(song => {
-        return `
-            <b onclick="loadSong(this)" index="${song.index}" class="list">
-                <div class="video">
-                    <img src="${song.thumbnail}" alt="${song.title}" class="video-thumbnail" onclick="loadSong(this)" index="${song.index}">
-                    <section>
-                        <img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">
-                        <div>
-                            <p>V F Y ${song.title}</p>
-                            <small class="video-info">Channel</small>
-                            <small class="video-info">VFY</small>
-                            <small class="video-info">Ai</small>
-                            <small class="video-info">Release Date</small>
-                        </div>
-                    </section>
-                </div>
-            </b>`;
-    }).join('');
+return output;
 }
 
 
@@ -1550,118 +1538,61 @@ volumeSlider.addEventListener('input', function () {
 
 
 	
+
 const titleaudio = document.getElementById('SAudio');
-const songTitleElement = document.getElementById('vfytitle');
-const thumbnailElement = document.getElementById('SThumb');
-const nextbutto = document.getElementById("nextbutto");
+const songTitleElement = document.getElementById('vfytitle'); // Assuming the song title is displayed in an element with ID 'vfytitle'
+const thumbnailElement = document.getElementById('SThumb'); // Element to get the thumbnail
 
-// Array to store dynamically generated songs
-let songs = [];
-let currentSongIndex = 0;
+if ('mediaSession' in navigator) {
+    const songTitle = songTitleElement.textContent; // Get the song title from the 'vfytitle' element
+    const thumbnailUrl = thumbnailElement.src; // Get the current thumbnail URL from the 'SThumb' element
 
-function loadSong(element) {
-    currentSongIndex = parseInt(element.getAttribute('index'));
-    const selectedSong = songs[currentSongIndex];
-
-    titleaudio.src = selectedSong.src;
-    songTitleElement.textContent = selectedSong.title;
-    thumbnailElement.src = selectedSong.thumbnail;
-
-    titleaudio.play();
-
-    updateMediaSessionMetadata();
-}
-
-function playNextSong() {
-    currentSongIndex = (currentSongIndex + 1) % songs.length;
-    const nextSong = songs[currentSongIndex];
-
-    titleaudio.src = nextSong.src;
-    songTitleElement.textContent = nextSong.title;
-    thumbnailElement.src = nextSong.thumbnail;
-
-    titleaudio.play();
-
-    updateMediaSessionMetadata();
-}
-
-nextbutto.addEventListener("click", playNextSong);
-
-function updateMediaSessionMetadata() {
-    if ('mediaSession' in navigator) {
-        const songTitle = songTitleElement.textContent;
-        const thumbnailUrl = thumbnailElement.src;
-
-        navigator.mediaSession.metadata = new MediaMetadata({
-            title: songTitle,
-            artist: '🥰VFY-AI',
-            album: 'bhojpuri',
-            artwork: [
-                { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '192x192', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '256x256', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
-            ]
-        });
-
-        navigator.mediaSession.setActionHandler('nexttrack', playNextSong);
-    } else {
-        console.log('The Media Session API is not supported in this browser.');
-    }
+    navigator.mediaSession.metadata = new MediaMetadata({
+        title: songTitle,
+        artist: '🥰VFY-AI', // Adjust as necessary
+        album: 'bhojpuri', // Adjust as necessary
+        artwork: [
+            { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
+            { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
+            { src: thumbnailUrl, sizes: '192x192', type: 'image/jpg' },
+            { src: thumbnailUrl, sizes: '256x256', type: 'image/jpg' },
+            { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
+            { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
+        ]
+    });
+} else {
+    console.log('The Media Session API is not supported in this browser.');
 }
 
 titleaudio.addEventListener('play', () => {
-    const songTitle = songTitleElement.textContent;
-    const thumbnailUrl = thumbnailElement.src;
+    // Update the tab title when audio starts playing
+    const songTitle = songTitleElement.textContent; // Get the song title from the 'vfytitle' element
+    const thumbnailUrl = thumbnailElement.src; // Get the current thumbnail URL from the 'SThumb' element
 
-    document.title = `${songTitle} - ${Math.floor(titleaudio.currentTime)} seconds`;
+    document.title = songTitle + ' - ' + titleaudio.currentTime + ' seconds';
 
+    // Show notification with thumbnail
     if (Notification.permission === 'granted') {
         new Notification(songTitle, {
             body: 'Audio is playing',
-            icon: thumbnailUrl,
-            actions: [
-                { action: 'next', title: 'Next', icon: 'next-icon.png' }
-            ]
-        }).onclick = (event) => {
-            if (event.action === 'next') {
-                playNextSong();
-            }
-        };
+            icon: thumbnailUrl
+        });
     } else if (Notification.permission !== 'denied') {
         Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
                 new Notification(songTitle, {
                     body: 'Audio is playing',
-                    icon: thumbnailUrl,
-                    actions: [
-                        { action: 'next', title: 'Next', icon: 'next-icon.png' }
-                    ]
-                }).onclick = (event) => {
-                    if (event.action === 'next') {
-                        playNextSong();
-                    }
-                };
+                    icon: thumbnailUrl
+                });
             }
         });
     }
 });
 
 titleaudio.addEventListener('pause', () => {
+    // Restore the original page title when audio is paused
     document.title = 'VIVEKFY-AI';
 });
-
-titleaudio.addEventListener('timeupdate', () => {
-    if (!titleaudio.paused) {
-        const songTitle = songTitleElement.textContent;
-        document.title = `${songTitle} - ${Math.floor(titleaudio.currentTime)} seconds`;
-    }
-});
-
-updateMediaSessionMetadata();
-	
 
 
 	
@@ -4255,5 +4186,6 @@ z-imdex:999999;
   left: 0px;
 }
 </style>	
+
 
 
