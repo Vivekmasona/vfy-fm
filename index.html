@@ -1609,6 +1609,12 @@ function playNextSong() {
   console.log('Next song action triggered.');
 }
 
+// Button click event for 'Next Song'
+var nextbutto = document.getElementById("nextbutto");
+nextbutto.addEventListener("click", function () {
+  playNextSong();
+});
+
 	
 
 const audioPlayer = document.getElementById("SAudio");
