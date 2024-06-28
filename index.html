@@ -1533,8 +1533,6 @@ volumeSlider.addEventListener('input', function () {
 });
 
 
-	
-
 // Initialize Media Session API
 if ('mediaSession' in navigator) {
   const songTitleElement = document.getElementById('vfytitle');
@@ -1559,46 +1557,6 @@ if ('mediaSession' in navigator) {
   console.log('The Media Session API is not supported in this browser.');
 }
 
-const titleaudio = document.getElementById('SAudio');
-titleaudio.addEventListener('play', () => {
-  const songTitle = document.getElementById('vfytitle').textContent;
-  const thumbnailUrl = document.getElementById('SThumb').src;
-
-  document.title = songTitle + ' - ' + titleaudio.currentTime + ' seconds';
-
-  // Show notification with thumbnail and next button
-  if (Notification.permission === 'granted') {
-    showNotification(songTitle, thumbnailUrl);
-  } else if (Notification.permission !== 'denied') {
-    Notification.requestPermission().then(permission => {
-      if (permission === 'granted') {
-        showNotification(songTitle, thumbnailUrl);
-      }
-    });
-  }
-});
-
-titleaudio.addEventListener('pause', () => {
-  document.title = 'VIVEKFY-AI';
-});
-
-function showNotification(songTitle, thumbnailUrl) {
-  const options = {
-    body: 'Audio is playing',
-    icon: thumbnailUrl,
-    actions: [
-      { action: 'next', title: 'Next Song' }
-    ]
-  };
-
-  const notification = new Notification(songTitle, options);
-  notification.onclick = (event) => {
-    if (event.action === 'next') {
-      playNextSong();
-    }
-  };
-}
-
 function playNextSong() {
   // Implement logic to play the next song from your dynamically fetched list
   // Example: Increment current song index or fetch the next song from the list
@@ -1613,7 +1571,9 @@ function playNextSong() {
 var nextbutto = document.getElementById("nextbutto");
 nextbutto.addEventListener("click", function () {
   playNextSong();
-});
+});	
+
+
 
 	
 
