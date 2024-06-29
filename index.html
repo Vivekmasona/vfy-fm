@@ -1545,7 +1545,6 @@ volumeSlider.addEventListener('input', function () {
 
 
 
-
 const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle');
 const thumbnailElement = document.getElementById('SThumb');
@@ -1574,6 +1573,12 @@ function updateMediaSessionMetadata() {
         });
 
         // Set action handlers
+        navigator.mediaSession.setActionHandler('play', () => {
+            titleaudio.play();
+        });
+        navigator.mediaSession.setActionHandler('pause', () => {
+            titleaudio.pause();
+        });
         navigator.mediaSession.setActionHandler('nexttrack', () => {
             nextButtonElement.click();
         });
@@ -1581,7 +1586,10 @@ function updateMediaSessionMetadata() {
             heartButtonElement.click();
         });
         navigator.mediaSession.setActionHandler('seekbackward', () => {
-            downloadButtonElement.click();
+            titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
+        });
+        navigator.mediaSession.setActionHandler('seekforward', () => {
+            titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
         });
     } else {
         console.log('The Media Session API is not supported in this browser.');
@@ -1679,7 +1687,7 @@ downloadButtonElement.addEventListener('click', () => {
 });
 
 
-        
+    
                 
     
 
