@@ -1393,6 +1393,12 @@ function play(id,Sid){
         location.href= "https://vivekfy.fanclub.rocks/audio?url=https://youtu.be/"+id;
         //location.href= "https://vivekdl.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
     };
+
+	document.getElementById("VFYmp3v2").onclick = ()=>{
+        location.href= "https://vivekfy.vercel.app/download/audio?url=https://youtu.be/"+id;
+        //location.href= "https://vivekfy.fanclub.rocks/audio?url=https://youtu.be/"+id;
+        //location.href= "https://vivekdl.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
+    };
 document.getElementById("vivekmasona").onclick = ()=>{
         location.href= "https://vivekdl.000webhostapp.com/ytvid?url=https://youtu.be/"+id;
         //location.href= "https://myserver-dev-akkd.2.sg-1.fl0.io/mp4?url=https://youtu.be/"+id;
@@ -1539,11 +1545,12 @@ volumeSlider.addEventListener('input', function () {
 
 
 
+
 const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle');
 const thumbnailElement = document.getElementById('SThumb');
 const nextButtonElement = document.getElementById('nextbutto'); // Updated ID for the next button
-const downloadButtonElement = document.getElementById('VFYmp3'); // ID for the download button
+const heartButtonElement = document.getElementById('VFYmp3v2'); // ID for the heart button
 
 // Function to update Media Session metadata
 function updateMediaSessionMetadata() {
@@ -1553,7 +1560,7 @@ function updateMediaSessionMetadata() {
     if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
             title: songTitle,
-            artist: 'Download', // Replacing artist with 'Download'
+            artist: '🥰VFY-AI',
             album: 'bhojpuri',
             artwork: [
                 { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
@@ -1569,15 +1576,15 @@ function updateMediaSessionMetadata() {
         navigator.mediaSession.setActionHandler('nexttrack', () => {
             nextButtonElement.click();
         });
-        navigator.mediaSession.setActionHandler('download', () => {
-            downloadButtonElement.click();
+        navigator.mediaSession.setActionHandler('previoustrack', () => {
+            heartButtonElement.click();
         });
     } else {
         console.log('The Media Session API is not supported in this browser.');
     }
 }
 
-// Function to show notification with "next song" and "download" buttons
+// Function to show notification with "next song" and "heart" buttons
 function showNotification() {
     const songTitle = songTitleElement.textContent;
     const thumbnailUrl = thumbnailElement.src;
@@ -1592,9 +1599,9 @@ function showNotification() {
                 icon: 'path/to/next-icon.png' // Provide the path to your next icon
             },
             {
-                action: 'download',
-                title: 'Download',
-                icon: 'path/to/download-icon.png' // Provide the path to your download icon
+                action: 'heart',
+                title: 'Favorite',
+                icon: 'path/to/heart-icon.png' // Provide the path to your heart icon
             }
         ]
     };
@@ -1604,8 +1611,8 @@ function showNotification() {
         notification.addEventListener('click', (event) => {
             if (event.action === 'next') {
                 nextButtonElement.click();
-            } else if (event.action === 'download') {
-                downloadButtonElement.click();
+            } else if (event.action === 'heart') {
+                heartButtonElement.click();
             }
         });
     } else if (Notification.permission !== 'denied') {
@@ -1615,8 +1622,8 @@ function showNotification() {
                 notification.addEventListener('click', (event) => {
                     if (event.action === 'next') {
                         nextButtonElement.click();
-                    } else if (event.action === 'download') {
-                        downloadButtonElement.click();
+                    } else if (event.action === 'heart') {
+                        heartButtonElement.click();
                     }
                 });
             }
@@ -1644,12 +1651,13 @@ nextButtonElement.addEventListener('click', () => {
     // titleaudio.play();
 });
 
-// Add event listener for the download button
-downloadButtonElement.addEventListener('click', () => {
-    // Your logic for the download button
-    console.log('Download button clicked');
-    // Example: start the download process
+// Add event listener for the heart button
+heartButtonElement.addEventListener('click', () => {
+    // Your logic for the heart button
+    console.log('Heart button clicked');
+    // Example: mark the song as favorite
 });
+        
                 
     
 
