@@ -1540,59 +1540,98 @@ volumeSlider.addEventListener('input', function () {
 	
 
 const titleaudio = document.getElementById('SAudio');
-const songTitleElement = document.getElementById('vfytitle'); // Assuming the song title is displayed in an element with ID 'vfytitle'
-const thumbnailElement = document.getElementById('SThumb'); // Element to get the thumbnail
+const songTitleElement = document.getElementById('vfytitle');
+const thumbnailElement = document.getElementById('SThumb');
+const nextButtonElement = document.getElementById('nextbutto'); // Updated ID
 
-if ('mediaSession' in navigator) {
-    const songTitle = songTitleElement.textContent; // Get the song title from the 'vfytitle' element
-    const thumbnailUrl = thumbnailElement.src; // Get the current thumbnail URL from the 'SThumb' element
+// Function to update Media Session metadata
+function updateMediaSessionMetadata() {
+    const songTitle = songTitleElement.textContent;
+    const thumbnailUrl = thumbnailElement.src;
 
-    navigator.mediaSession.metadata = new MediaMetadata({
-        title: songTitle,
-        artist: '🥰VFY-AI', // Adjust as necessary
-        album: 'bhojpuri', // Adjust as necessary
-        artwork: [
-            { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
-            { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
-            { src: thumbnailUrl, sizes: '192x192', type: 'image/jpg' },
-            { src: thumbnailUrl, sizes: '256x256', type: 'image/jpg' },
-            { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
-            { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
-        ]
-    });
-} else {
-    console.log('The Media Session API is not supported in this browser.');
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: songTitle,
+            artist: '🥰VFY-AI',
+            album: 'bhojpuri',
+            artwork: [
+                { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '192x192', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '256x256', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
+            ]
+        });
+
+        // Set action handlers
+        navigator.mediaSession.setActionHandler('nexttrack', () => {
+            nextButtonElement.click();
+        });
+    } else {
+        console.log('The Media Session API is not supported in this browser.');
+    }
 }
 
-titleaudio.addEventListener('play', () => {
-    // Update the tab title when audio starts playing
-    const songTitle = songTitleElement.textContent; // Get the song title from the 'vfytitle' element
-    const thumbnailUrl = thumbnailElement.src; // Get the current thumbnail URL from the 'SThumb' element
+// Function to show notification with "next song" button
+function showNotification() {
+    const songTitle = songTitleElement.textContent;
+    const thumbnailUrl = thumbnailElement.src;
 
-    document.title = songTitle + ' - ' + titleaudio.currentTime + ' seconds';
+    const options = {
+        body: 'Audio is playing',
+        icon: thumbnailUrl,
+        actions: [
+            {
+                action: 'next',
+                title: 'Next Song',
+                icon: 'path/to/next-icon.png' // Provide the path to your next icon
+            }
+        ]
+    };
 
-    // Show notification with thumbnail
     if (Notification.permission === 'granted') {
-        new Notification(songTitle, {
-            body: 'Audio is playing',
-            icon: thumbnailUrl
+        const notification = new Notification(songTitle, options);
+        notification.addEventListener('click', (event) => {
+            if (event.action === 'next') {
+                nextButtonElement.click();
+            }
         });
     } else if (Notification.permission !== 'denied') {
         Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
-                new Notification(songTitle, {
-                    body: 'Audio is playing',
-                    icon: thumbnailUrl
+                const notification = new Notification(songTitle, options);
+                notification.addEventListener('click', (event) => {
+                    if (event.action === 'next') {
+                        nextButtonElement.click();
+                    }
                 });
             }
         });
     }
+}
+
+// Update the Media Session metadata initially
+updateMediaSessionMetadata();
+
+titleaudio.addEventListener('play', () => {
+    document.title = songTitleElement.textContent + ' - ' + titleaudio.currentTime + ' seconds';
+    showNotification();
 });
 
 titleaudio.addEventListener('pause', () => {
-    // Restore the original page title when audio is paused
     document.title = 'VIVEKFY-AI';
 });
+
+// Add event listener for the next button
+nextButtonElement.addEventListener('click', () => {
+    // Your logic to play the next song
+    console.log('Next song button clicked');
+    // Example: titleaudio.src = 'path/to/next/song.mp3';
+    // titleaudio.play();
+});
+
+	
 
 
 	
