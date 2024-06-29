@@ -1414,9 +1414,6 @@ function playNextSong() {
     var nextSongIndex = Sid + 1; // Calculate the index of the next song
     var playlistItems = document.getElementsByClassName("list");
 
-    
-	
-
     if (nextSongIndex < playlistItems.length) {
         playlistItems[nextSongIndex].click(); // Play the next song
         audio.play(); // Play the audio
@@ -1435,23 +1432,57 @@ function playNextSong() {
     }
 }
 
-function playPause() {
-   var audio = document.getElementById("SAudio");
+// Function to play the previous song
+function playPreviousSong() {
+    var previousSongIndex = Sid - 1; // Calculate the index of the previous song
+    var playlistItems = document.getElementsByClassName("list");
 
-   if (audio.paused) {
-      audio.play();
-   } else {
-      audio.pause();
-   }
+    if (previousSongIndex >= 0) {
+        playlistItems[previousSongIndex].click(); // Play the previous song
+        audio.play(); // Play the audio
+
+        // Update the profile thumbnail and video ID for the previous song
+        var previousSong = playlistItems[previousSongIndex];
+        var previousThumbnail = $(previousSong).children('img').attr("src");
+        var previousVideoId = $(previousSong).attr("vid");
+        $("#profileThumbnail").html('<img src="' + previousThumbnail + '" alt="Profile Thumbnail">');
+        $("#profileThumbnail").data("videoId", previousVideoId);
+
+        console.log('Automatically went to the previous song and started playing.');
+    } else {
+        console.log('Beginning of playlist');
+        // You may want to handle what happens when it's the beginning of the playlist.
+    }
 }
-
-	
 
 // Listen for the 'ended' event
 audio.addEventListener("ended", function() {
     playNextSong();
 });
 
+// Button click event listeners for previous and next buttons
+document.getElementById('previousButton').addEventListener('click', function() {
+    playPreviousSong();
+});
+
+document.getElementById('nextButton').addEventListener('click', function() {
+    playNextSong();
+});
+
+// Function to handle play/pause toggle
+function playPause() {
+    if (audio.paused) {
+        audio.play();
+    } else {
+        audio.pause();
+    }
+}
+
+	
+
+
+
+	
 // Listen for the 'error' event
 var alternativeAudioSources = [
 "https://vivekfy.vercel.app/low-audio?url=" + id,
