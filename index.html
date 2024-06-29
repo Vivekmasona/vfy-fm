@@ -808,7 +808,7 @@ width: 50%;
     <div data-role="main" class="ui-content">
      <input type="search"  name="search" onclick="startDictation()"  id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">SEARCH..</button></sr>
-	<div id="channelNameDiv"></div>
+	    
 	
    <div id="autocomplete-results"></div>
 
@@ -1363,28 +1363,7 @@ function loadSong(song, ind) {
     var currentPlayingSongId = localStorage.getItem("playPresent");
     $("#currentPlayingSongId").text("Current Playing Song ID: " + currentPlayingSongId);
 
-    // Fetch the channel name without using API key
-    fetchChannelNameWithoutApiKey(id);
-
     play(id, indId);
-}
-
-// Function to fetch the channel name without using YouTube API key
-function fetchChannelNameWithoutApiKey(videoId) {
-    var proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-    var youtubeUrl = 'https://www.youtube.com/watch?v=' + videoId;
-
-    $.get(proxyUrl + youtubeUrl, function(data) {
-        var htmlContent = $(data);
-        var channelName = htmlContent.find('meta[itemprop="author"]').attr('content');
-        if (channelName) {
-            $("#channelNameDiv").text("Channel Name: " + channelName);
-        } else {
-            $("#channelNameDiv").text("Channel Name: Not found");
-        }
-    }).fail(function() {
-        $("#channelNameDiv").text("Channel Name: Error fetching data");
-    });
 }
 
     
