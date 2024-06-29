@@ -1538,10 +1538,13 @@ volumeSlider.addEventListener('input', function () {
 
 
 	
-
 const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle'); // Assuming the song title is displayed in an element with ID 'vfytitle'
 const thumbnailElement = document.getElementById('SThumb'); // Element to get the thumbnail
+
+// Base64-encoded icons
+const nextIconBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABhUlEQVQ4T63TvUsDURjG8c9MRKQkyYKhPQgopQItLCQoFFBEEBBO6LiAoCDwCgiG5WKgQXUQiAiNEC1pI3KHylgCAI0FzX2rPz73us2vd+dUzdvs/A7ZlpJZqouUjWbfT9YXUpgrfJgiyFhRQLUru1YRmSqOiyvQFlFkVyPiRG4aJ1vK7pD4qLu1yb9I8kK9yAfZAWDFimnp2j1BPSdXL6p9E2Sc6h4GcvpHaLkaVD0kS1MJcCTrWY+q/5k39k9TWITd8UO5RRTNLSCd8xlfEx+m2LMUG/NCZId9i0VvjbzGyUQ75RCR6RGeQscLJzflIlMsrZqETXKjSTIKsi4IbfZ/LOdKt7UB4KQkhk+lM48nvAxU7heI+bO0W1r7DDUkxvscuBAdcB4noH8x1iJhAfD4xG2kcRs/wiqHMe0xtNbeSwXx9BJTXwfa0Clc9rXEN4QXi3i9BdXMNtOl0X0UEdAAAAAElFTkSuQmCC'; // Replace with your next icon base64 string
+const downloadIconBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABGklEQVQ4T2NkoBAwUqifjzFgpAwh+V+j/w/itVfEKS8E0kmxAx+LfkoF/2/yNJViwNo3siQBbhxg5zVD8UqZgpgx43cAsrg4sGkHQNbN1kNIgFHEHKTxHNOBOhEQFUIOTmHTAQwa3JdBwOn0BJATVgMw2jVIaQxgAxigWxEl3rwEHEGlL+UwSVBqiwpBLgjxC7fBcpLIAtINyAOwiNYF4DYREzDEgVByI6xlBNmFAAFXB7qEMHgLshAp4eJhMg7Zg1QADrgksF4jFYCAAQs0hDquBPKwAAAABJRU5ErkJggg=='; // Replace with your download icon base64 string
 
 if ('mediaSession' in navigator) {
     const songTitle = songTitleElement.textContent; // Get the song title from the 'vfytitle' element
@@ -1580,12 +1583,12 @@ titleaudio.addEventListener('play', () => {
                 {
                     action: 'next',
                     title: 'Next',
-                    icon: 'next_icon_url' // Replace with actual icon URL
+                    icon: nextIconBase64 // Base64 encoded icon
                 },
                 {
                     action: 'download',
                     title: 'Download',
-                    icon: 'download_icon_url' // Replace with actual icon URL
+                    icon: downloadIconBase64 // Base64 encoded icon
                 }
             ]
         });
@@ -1599,12 +1602,12 @@ titleaudio.addEventListener('play', () => {
                         {
                             action: 'next',
                             title: 'Next',
-                            icon: 'next_icon_url' // Replace with actual icon URL
+                            icon: nextIconBase64 // Base64 encoded icon
                         },
                         {
                             action: 'download',
                             title: 'Download',
-                            icon: 'download_icon_url' // Replace with actual icon URL
+                            icon: downloadIconBase64 // Base64 encoded icon
                         }
                     ]
                 });
@@ -1631,6 +1634,8 @@ navigator.serviceWorker.addEventListener('notificationclick', event => {
         event.notification.close();
     }
 });
+
+	
 
 
 	
