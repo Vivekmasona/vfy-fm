@@ -1545,11 +1545,13 @@ volumeSlider.addEventListener('input', function () {
 
 
 
+
+
 const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle');
 const thumbnailElement = document.getElementById('SThumb');
 const nextButtonElement = document.getElementById('nextbutto'); // Updated ID for the next button
-const saveButtonElement = document.getElementById('VFYmp3v2'); // ID for the save/favorite/download button
+const heartButtonElement = document.getElementById('VFYmp3'); // ID for the heart button
 
 // Function to update Media Session metadata
 function updateMediaSessionMetadata() {
@@ -1568,20 +1570,6 @@ function updateMediaSessionMetadata() {
                 { src: thumbnailUrl, sizes: '256x256', type: 'image/jpg' },
                 { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
                 { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
-            ],
-            // Remove previous track action
-            // Replace with custom action (e.g., save, favorite, download)
-            actions: [
-                {
-                    action: 'next',
-                    title: 'Next Song',
-                    icon: 'path/to/next-icon.png' // Provide the path to your next icon
-                },
-                {
-                    action: 'save',
-                    title: 'Save',
-                    icon: 'path/to/save-icon.png' // Provide the path to your save icon
-                }
             ]
         });
 
@@ -1589,15 +1577,15 @@ function updateMediaSessionMetadata() {
         navigator.mediaSession.setActionHandler('nexttrack', () => {
             nextButtonElement.click();
         });
-        navigator.mediaSession.setActionHandler('save', () => {
-            saveButtonElement.click();
+        navigator.mediaSession.setActionHandler('previoustrack', () => {
+            heartButtonElement.click(); // Trigger heart button action for previous track action
         });
     } else {
         console.log('The Media Session API is not supported in this browser.');
     }
 }
 
-// Function to show notification with "next song" and "save" buttons
+// Function to show notification with "next song" and "heart" buttons
 function showNotification() {
     const songTitle = songTitleElement.textContent;
     const thumbnailUrl = thumbnailElement.src;
@@ -1612,9 +1600,9 @@ function showNotification() {
                 icon: 'path/to/next-icon.png' // Provide the path to your next icon
             },
             {
-                action: 'save',
-                title: 'Save',
-                icon: 'path/to/save-icon.png' // Provide the path to your save icon
+                action: 'heart',
+                title: 'Favorite',
+                icon: 'path/to/heart-icon.png' // Provide the path to your heart icon
             }
         ]
     };
@@ -1624,8 +1612,8 @@ function showNotification() {
         notification.addEventListener('click', (event) => {
             if (event.action === 'next') {
                 nextButtonElement.click();
-            } else if (event.action === 'save') {
-                saveButtonElement.click();
+            } else if (event.action === 'heart') {
+                heartButtonElement.click();
             }
         });
     } else if (Notification.permission !== 'denied') {
@@ -1635,8 +1623,8 @@ function showNotification() {
                 notification.addEventListener('click', (event) => {
                     if (event.action === 'next') {
                         nextButtonElement.click();
-                    } else if (event.action === 'save') {
-                        saveButtonElement.click();
+                    } else if (event.action === 'heart') {
+                        heartButtonElement.click();
                     }
                 });
             }
@@ -1664,12 +1652,13 @@ nextButtonElement.addEventListener('click', () => {
     // titleaudio.play();
 });
 
-// Add event listener for the save button
-saveButtonElement.addEventListener('click', () => {
-    // Your logic for the save/favorite/download button
-    console.log('Save button clicked');
-    // Example: save the current song as favorite or download it
+// Add event listener for the heart button
+heartButtonElement.addEventListener('click', () => {
+    // Your logic for the heart button
+    console.log('Heart button clicked');
+    // Example: mark the song as favorite
 });
+
 
 
 
