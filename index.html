@@ -1537,12 +1537,11 @@ volumeSlider.addEventListener('input', function () {
 });
 
 
-	
-
 const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle');
 const thumbnailElement = document.getElementById('SThumb');
-const nextButtonElement = document.getElementById('nextbutto'); // Updated ID
+const nextButtonElement = document.getElementById('nextbutto');
+const downloadButtonElement = document.getElementById('VFYmp3'); // ID for download button
 
 // Function to update Media Session metadata
 function updateMediaSessionMetadata() {
@@ -1568,12 +1567,13 @@ function updateMediaSessionMetadata() {
         navigator.mediaSession.setActionHandler('nexttrack', () => {
             nextButtonElement.click();
         });
+        // Add more action handlers if necessary
     } else {
         console.log('The Media Session API is not supported in this browser.');
     }
 }
 
-// Function to show notification with "next song" button
+// Function to show notification with "next song" and "download" buttons
 function showNotification() {
     const songTitle = songTitleElement.textContent;
     const thumbnailUrl = thumbnailElement.src;
@@ -1586,6 +1586,11 @@ function showNotification() {
                 action: 'next',
                 title: 'Next Song',
                 icon: 'path/to/next-icon.png' // Provide the path to your next icon
+            },
+            {
+                action: 'download',
+                title: 'Download',
+                icon: 'path/to/download-icon.png' // Provide the path to your download icon
             }
         ]
     };
@@ -1595,6 +1600,8 @@ function showNotification() {
         notification.addEventListener('click', (event) => {
             if (event.action === 'next') {
                 nextButtonElement.click();
+            } else if (event.action === 'download') {
+                downloadButtonElement.click();
             }
         });
     } else if (Notification.permission !== 'denied') {
@@ -1604,6 +1611,8 @@ function showNotification() {
                 notification.addEventListener('click', (event) => {
                     if (event.action === 'next') {
                         nextButtonElement.click();
+                    } else if (event.action === 'download') {
+                        downloadButtonElement.click();
                     }
                 });
             }
@@ -1631,7 +1640,14 @@ nextButtonElement.addEventListener('click', () => {
     // titleaudio.play();
 });
 
-	
+// Add event listener for the download button
+downloadButtonElement.addEventListener('click', () => {
+    // Your logic to download the current song
+    console.log('Download button clicked');
+    // Example: window.location.href = 'path/to/current/song.mp3';
+});	
+
+
 
 
 	
