@@ -1537,97 +1537,111 @@ volumeSlider.addEventListener('input', function () {
 });
 
 
-const titleaudio = document.getElementById('SAudio');
-const songTitleElement = document.getElementById('vfytitle'); // Assuming the song title is displayed in an element with ID 'vfytitle'
-const thumbnailElement = document.getElementById('SThumb'); // Element to get the thumbnail
 
-if ('mediaSession' in navigator) {
-    const songTitle = songTitleElement.textContent; // Get the song title from the 'vfytitle' element
-    const thumbnailUrl = thumbnailElement.src; // Get the current thumbnail URL from the 'SThumb' element
-
-    navigator.mediaSession.metadata = new MediaMetadata({
-        title: songTitle,
-        artist: '🥰VFY-AI', // Adjust as necessary
-        album: 'Alltype', // Adjust as necessary
-        artwork: [
-            { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
-            { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
-            { src: thumbnailUrl, sizes: '192x192', type: 'image/jpg' },
-            { src: thumbnailUrl, sizes: '256x256', type: 'image/jpg' },
-            { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
-            { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
-        ]
-    });
-
-    // Handle play action
-    navigator.mediaSession.setActionHandler('play', () => {
-        titleaudio.play();
-    });
-
-    // Handle pause action
-    navigator.mediaSession.setActionHandler('pause', () => {
-        titleaudio.pause();
-    });
-
-    // Handle next action
-    navigator.mediaSession.setActionHandler('nexttrack', () => {
-        // Logic for playing the next song
-        playNextSong();
-    });
-
-    // Handle previous action
-    navigator.mediaSession.setActionHandler('previoustrack', () => {
-        // Logic for playing the previous song
-        playPreviousSong();
-    });
-
-} else {
-    console.log('The Media Session API is not supported in this browser.');
-}
-
-titleaudio.addEventListener('play', () => {
-    // Update the tab title when audio starts playing
-    const songTitle = songTitleElement.textContent; // Get the song title from the 'vfytitle' element
-    const thumbnailUrl = thumbnailElement.src; // Get the current thumbnail URL from the 'SThumb' element
-
-    document.title = songTitle + ' - ' + titleaudio.currentTime + ' seconds';
-
-    // Show notification with thumbnail
-    if (Notification.permission === 'granted') {
-        new Notification(songTitle, {
-            body: 'Audio is playing',
-            icon: thumbnailUrl
-        });
-    } else if (Notification.permission !== 'denied') {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                new Notification(songTitle, {
-                    body: 'Audio is playing',
-                    icon: thumbnailUrl
-                });
-            }
-        });
-    }
-});
-
-titleaudio.addEventListener('pause', () => {
-    // Restore the original page title when audio is paused
-    document.title = 'VIVEKFY-AI';
-});
+var audio = document.getElementById("SAudio");
+var Sid = 0; // Current song index
+var playlistItems = document.getElementsByClassName("list");
 
 // Function to play the next song
 function playNextSong() {
-    // Logic to fetch and play the next song from your list
-    console.log('Next song is playing.');
+    Sid++;
+    if (Sid >= playlistItems.length) {
+        Sid = 0; // Loop back to the first song if we're at the end of the playlist
+    }
+    var nextSong = playlistItems[Sid].dataset.url; // Assuming each list item has a data-url attribute with the song URL
+    var nextSongTitle = playlistItems[Sid].dataset.title; // Assuming each list item has a data-title attribute with the song title
+    var nextSongThumbnail = playlistItems[Sid].dataset.thumbnail; // Assuming each list item has a data-thumbnail attribute with the song thumbnail
+
+    audio.src = nextSong;
+    audio.play();
+
+    // Update the media session metadata
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: nextSongTitle,
+            artist: '🥰VFY-AI', // Adjust as necessary
+            album: 'Alltype', // Adjust as necessary
+            artwork: [
+                { src: nextSongThumbnail, sizes: '96x96', type: 'image/jpg' },
+                { src: nextSongThumbnail, sizes: '128x128', type: 'image/jpg' },
+                { src: nextSongThumbnail, sizes: '192x192', type: 'image/jpg' },
+                { src: nextSongThumbnail, sizes: '256x256', type: 'image/jpg' },
+                { src: nextSongThumbnail, sizes: '384x384', type: 'image/jpg' },
+                { src: nextSongThumbnail, sizes: '512x512', type: 'image/jpg' },
+            ]
+        });
+    }
 }
 
-// Function to play the previous song
-function playPreviousSong() {
-    // Logic to fetch and play the previous song from your list
-    console.log('Previous song is playing.');
-}	
+// Event listener for when the current song ends
+audio.addEventListener('ended', playNextSong);
+
+// Add media session action handlers
+if ('mediaSession' in navigator) {
+    navigator.mediaSession.setActionHandler('play', () => {
+        audio.play();
+    });
+
+    navigator.mediaSession.setActionHandler('pause', () => {
+        audio.pause();
+    });
+
+    navigator.mediaSession.setActionHandler('nexttrack', playNextSong);
+
+    navigator.mediaSession.setActionHandler('previoustrack', () => {
+        Sid--;
+        if (Sid < 0) {
+            Sid = playlistItems.length - 1; // Loop back to the last song if we're at the beginning of the playlist
+        }
+        var prevSong = playlistItems[Sid].dataset.url;
+        var prevSongTitle = playlistItems[Sid].dataset.title;
+        var prevSongThumbnail = playlistItems[Sid].dataset.thumbnail;
+
+        audio.src = prevSong;
+        audio.play();
+
+        // Update the media session metadata
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: prevSongTitle,
+                artist: '🥰VFY-AI', // Adjust as necessary
+                album: 'Alltype', // Adjust as necessary
+                artwork: [
+                    { src: prevSongThumbnail, sizes: '96x96', type: 'image/jpg' },
+                    { src: prevSongThumbnail, sizes: '128x128', type: 'image/jpg' },
+                    { src: prevSongThumbnail, sizes: '192x192', type: 'image/jpg' },
+                    { src: prevSongThumbnail, sizes: '256x256', type: 'image/jpg' },
+                    { src: prevSongThumbnail, sizes: '384x384', type: 'image/jpg' },
+                    { src: prevSongThumbnail, sizes: '512x512', type: 'image/jpg' },
+                ]
+            });
+        }
+    });
+}
+
+// Initial media session metadata setup
+if ('mediaSession' in navigator) {
+    const initialSongTitle = playlistItems[Sid].dataset.title;
+    const initialSongThumbnail = playlistItems[Sid].dataset.thumbnail;
+
+    navigator.mediaSession.metadata = new MediaMetadata({
+        title: initialSongTitle,
+        artist: '🥰VFY-AI', // Adjust as necessary
+        album: 'Alltype', // Adjust as necessary
+        artwork: [
+            { src: initialSongThumbnail, sizes: '96x96', type: 'image/jpg' },
+            { src: initialSongThumbnail, sizes: '128x128', type: 'image/jpg' },
+            { src: initialSongThumbnail, sizes: '192x192', type: 'image/jpg' },
+            { src: initialSongThumbnail, sizes: '256x256', type: 'image/jpg' },
+            { src: initialSongThumbnail, sizes: '384x384', type: 'image/jpg' },
+            { src: initialSongThumbnail, sizes: '512x512', type: 'image/jpg' },
+        ]
+    });
+}
 
 
+
+	
 
 
 	
