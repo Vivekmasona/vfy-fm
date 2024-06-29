@@ -1550,7 +1550,7 @@ const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle');
 const thumbnailElement = document.getElementById('SThumb');
 const nextButtonElement = document.getElementById('nextbutto'); // Updated ID for the next button
-const heartButtonElement = document.getElementById('VFYmp3v2'); // ID for the heart button
+const heartButtonElement = document.getElementById('togglebutto'); // ID for the heart button
 
 // Function to update Media Session metadata
 function updateMediaSessionMetadata() {
@@ -1561,7 +1561,7 @@ function updateMediaSessionMetadata() {
         navigator.mediaSession.metadata = new MediaMetadata({
             title: songTitle,
             artist: '🥰VFY-AI',
-            album: 'bhojpuri',
+            album: 'VivekFy',
             artwork: [
                 { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
                 { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
