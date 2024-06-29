@@ -1545,12 +1545,12 @@ volumeSlider.addEventListener('input', function () {
 
 
 
+
 const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle');
 const thumbnailElement = document.getElementById('SThumb');
 const nextButtonElement = document.getElementById('nextbutto'); // Updated ID for the next button
-const heartButtonElement = document.getElementById('VFYmp3'); // ID for the heart button
-//const artistElement = document.getElementById('artist-name'); // Replace with actual ID of artist name element
+const heartButtonElement = document.getElementById('VFYmp3v2'); // ID for the heart button
 
 // Function to update Media Session metadata
 function updateMediaSessionMetadata() {
@@ -1577,7 +1577,7 @@ function updateMediaSessionMetadata() {
             nextButtonElement.click();
         });
         navigator.mediaSession.setActionHandler('previoustrack', () => {
-            heartButtonElement.click(); // Trigger heart button action for previous track action
+            heartButtonElement.click();
         });
     } else {
         console.log('The Media Session API is not supported in this browser.');
@@ -1657,14 +1657,6 @@ heartButtonElement.addEventListener('click', () => {
     console.log('Heart button clicked');
     // Example: mark the song as favorite
 });
-
-// Add event listener for artist element to click VFYmp3v2
-artistElement.addEventListener('click', () => {
-    document.getElementById('VFYmp3v2').click();
-});
-
-
-    
         
                 
     
@@ -4262,6 +4254,7 @@ z-imdex:999999;
   left: 0px;
 }
 </style>	
+
 
 
 
