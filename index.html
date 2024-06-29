@@ -1550,7 +1550,7 @@ if ('mediaSession' in navigator) {
     navigator.mediaSession.metadata = new MediaMetadata({
         title: songTitle,
         artist: '🥰VFY-AI', // Adjust as necessary
-        album: 'bhojpuri', // Adjust as necessary
+        album: 'Alltype', // Adjust as necessary
         artwork: [
             { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
             { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
@@ -1571,18 +1571,42 @@ titleaudio.addEventListener('play', () => {
 
     document.title = songTitle + ' - ' + titleaudio.currentTime + ' seconds';
 
-    // Show notification with thumbnail
+    // Show notification with thumbnail and buttons
     if (Notification.permission === 'granted') {
         new Notification(songTitle, {
             body: 'Audio is playing',
-            icon: thumbnailUrl
+            icon: thumbnailUrl,
+            actions: [
+                {
+                    action: 'next',
+                    title: 'Next',
+                    icon: 'next_icon_url' // Replace with actual icon URL
+                },
+                {
+                    action: 'download',
+                    title: 'Download',
+                    icon: 'download_icon_url' // Replace with actual icon URL
+                }
+            ]
         });
     } else if (Notification.permission !== 'denied') {
         Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
                 new Notification(songTitle, {
                     body: 'Audio is playing',
-                    icon: thumbnailUrl
+                    icon: thumbnailUrl,
+                    actions: [
+                        {
+                            action: 'next',
+                            title: 'Next',
+                            icon: 'next_icon_url' // Replace with actual icon URL
+                        },
+                        {
+                            action: 'download',
+                            title: 'Download',
+                            icon: 'download_icon_url' // Replace with actual icon URL
+                        }
+                    ]
                 });
             }
         });
@@ -1592,6 +1616,20 @@ titleaudio.addEventListener('play', () => {
 titleaudio.addEventListener('pause', () => {
     // Restore the original page title when audio is paused
     document.title = 'VIVEKFY-AI';
+});
+
+// Handle notification actions
+navigator.serviceWorker.addEventListener('notificationclick', event => {
+    if (event.action === 'next') {
+        // Handle the next button click
+        // Your logic to play the next song goes here
+    } else if (event.action === 'download') {
+        // Handle the download button click
+        // Your logic to download the current song goes here
+    } else {
+        // Handle other notification clicks
+        event.notification.close();
+    }
 });
 
 
