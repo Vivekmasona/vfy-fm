@@ -1546,12 +1546,11 @@ volumeSlider.addEventListener('input', function () {
 
 
 
-
-    const titleaudio = document.getElementById('SAudio');
+const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle');
 const thumbnailElement = document.getElementById('SThumb');
-const nextButtonElement = document.getElementById('nextbutto'); // ID for the next button
-const heartButtonElement = document.getElementById('VFYmp3'); // ID for the heart button
+const nextButtonElement = document.getElementById('nextbutto'); // Updated ID for the next button
+const heartButtonElement = document.getElementById('VFYmp3v2'); // ID for the heart button
 
 // Function to update Media Session metadata
 function updateMediaSessionMetadata() {
@@ -1562,7 +1561,7 @@ function updateMediaSessionMetadata() {
         navigator.mediaSession.metadata = new MediaMetadata({
             title: songTitle,
             artist: '🥰VFY-AI',
-            album: 'bhojpuri',
+            album: 'VivekFy',
             artwork: [
                 { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
                 { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
@@ -1574,38 +1573,11 @@ function updateMediaSessionMetadata() {
         });
 
         // Set action handlers
-        navigator.mediaSession.setActionHandler('play', () => {
-            titleaudio.play();
-        });
-        navigator.mediaSession.setActionHandler('pause', () => {
-            titleaudio.pause();
-        });
-        navigator.mediaSession.setActionHandler('previoustrack', () => {
-            heartButtonElement.click(); // Trigger heart button action for previous track action
-        });
         navigator.mediaSession.setActionHandler('nexttrack', () => {
             nextButtonElement.click();
         });
-        navigator.mediaSession.setActionHandler('seekbackward', (details) => {
-            titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
-        });
-        navigator.mediaSession.setActionHandler('seekforward', (details) => {
-            titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
-        });
-        navigator.mediaSession.setActionHandler('seekto', (details) => {
-            if (details.fastSeek && 'fastSeek' in titleaudio) {
-                titleaudio.fastSeek(details.seekTime);
-            } else {
-                titleaudio.currentTime = details.seekTime;
-            }
-        });
-        navigator.mediaSession.setActionHandler('stop', () => {
-            titleaudio.pause();
-            titleaudio.currentTime = 0;
-        });
-        navigator.mediaSession.setActionHandler('skipad', () => {
-            // Your logic to skip the advertisement
-            console.log('Skip ad button clicked');
+        navigator.mediaSession.setActionHandler('previoustrack', () => {
+            heartButtonElement.click();
         });
     } else {
         console.log('The Media Session API is not supported in this browser.');
@@ -1630,11 +1602,6 @@ function showNotification() {
                 action: 'heart',
                 title: 'Favorite',
                 icon: 'path/to/heart-icon.png' // Provide the path to your heart icon
-            },
-            {
-                action: 'artist',
-                title: '🥰VFY-AI',
-                icon: thumbnailUrl // Use the thumbnail or an appropriate icon
             }
         ]
     };
@@ -1646,8 +1613,6 @@ function showNotification() {
                 nextButtonElement.click();
             } else if (event.action === 'heart') {
                 heartButtonElement.click();
-            } else if (event.action === 'artist') {
-                heartButtonElement.click();
             }
         });
     } else if (Notification.permission !== 'denied') {
@@ -1658,8 +1623,6 @@ function showNotification() {
                     if (event.action === 'next') {
                         nextButtonElement.click();
                     } else if (event.action === 'heart') {
-                        heartButtonElement.click();
-                    } else if (event.action === 'artist') {
                         heartButtonElement.click();
                     }
                 });
@@ -1694,7 +1657,7 @@ heartButtonElement.addEventListener('click', () => {
     console.log('Heart button clicked');
     // Example: mark the song as favorite
 });
-
+        
                 
     
 
@@ -4291,6 +4254,7 @@ z-imdex:999999;
   left: 0px;
 }
 </style>	
+
 
 
 
