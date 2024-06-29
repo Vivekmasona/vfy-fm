@@ -1363,7 +1363,28 @@ function loadSong(song, ind) {
     var currentPlayingSongId = localStorage.getItem("playPresent");
     $("#currentPlayingSongId").text("Current Playing Song ID: " + currentPlayingSongId);
 
+    // Fetch the channel name without using API key
+    fetchChannelNameWithoutApiKey(id);
+
     play(id, indId);
+}
+
+// Function to fetch the channel name without using YouTube API key
+function fetchChannelNameWithoutApiKey(videoId) {
+    var proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+    var youtubeUrl = 'https://www.youtube.com/watch?v=' + videoId;
+
+    $.get(proxyUrl + youtubeUrl, function(data) {
+        var htmlContent = $(data);
+        var channelName = htmlContent.find('meta[itemprop="author"]').attr('content');
+        if (channelName) {
+            $("#channelNameDiv").text("Channel Name: " + channelName);
+        } else {
+            $("#channelNameDiv").text("Channel Name: Not found");
+        }
+    }).fail(function() {
+        $("#channelNameDiv").text("Channel Name: Error fetching data");
+    });
 }
 
     
