@@ -1537,6 +1537,7 @@ volumeSlider.addEventListener('input', function () {
 });
 
 
+
 const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle');
 const thumbnailElement = document.getElementById('SThumb');
@@ -1595,6 +1596,8 @@ function showNotification() {
         ]
     };
 
+    console.log('Notification options:', options); // Debugging line
+
     if (Notification.permission === 'granted') {
         const notification = new Notification(songTitle, options);
         notification.addEventListener('click', (event) => {
@@ -1645,8 +1648,8 @@ downloadButtonElement.addEventListener('click', () => {
     // Your logic to download the current song
     console.log('Download button clicked');
     // Example: window.location.href = 'path/to/current/song.mp3';
-});	
-
+});
+    
 
 
 
