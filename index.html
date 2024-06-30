@@ -2623,7 +2623,6 @@ var offlineMsg = document.getElementById("offline-message");
 
 
 
-        
 <script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
@@ -2634,46 +2633,26 @@ var offlineMsg = document.getElementById("offline-message");
         // Load saved songs from local storage
         loadSavedSongs();
 
-        // Agar shared link mein 'preventSearch' attribute hai
+        // Agar shared link mein 'preventSearch' attribute nahi hai
         if (!url.searchParams.has('preventSearch')) {
             if (isYouTubeLink(url.searchParams.get('text'))) {
                 if (isPlaylistLink(url.searchParams.get('text'))) {
                     // YouTube playlist URL hai, sabhi songs ko alag alag div mein dikhao
                     let playlistId = extractPlaylistId(url.searchParams.get('text'));
-                    fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=YOUR_API_KEY`)
-                    .then(response => response.json())
-                    .then(data => {
-                        let songsContainer = document.querySelector('#song-container');
-                        data.items.forEach((item, index) => {
-                            let videoId = item.snippet.resourceId.videoId;
-                            let title = item.snippet.title;
-                            songList.push({ videoId, title });
-
-                            let songElement = createSongElement(videoId, title, index);
-                            songsContainer.appendChild(songElement);
-                        });
-
-                        // Automatic click on the first song
-                        let firstSongElement = songsContainer.querySelector('.list');
-                        if (firstSongElement) {
-                            firstSongElement.click();
-                        }
-                    })
-                    .catch(error => console.error('Error fetching playlist:', error));
+                    fetchPlaylist(playlistId);
                 } else {
-                    // YouTube URL hai, video container mein dikhao
+                    // Single YouTube video URL hai, video container mein dikhao
                     let vUrl = document.querySelector('#share_textvkm1m');
                     vUrl.innerText = 'URL - ' + url.searchParams.get('text');
 
                     let vTitle = document.querySelector('#share_titlevkm1m');
                     vTitle.innerText = 'Title - ' + url.searchParams.get('title');
 
-                    // Song ko load karne ke liye HTML code set karo
                     let songContainer = document.querySelector('#song-container');
                     let videoId = extractYouTubeVideoId(url.searchParams.get('text'));
                     let title = url.searchParams.get('title');
                     songList.push({ videoId, title });
-                    
+
                     let songElement = createSongElement(videoId, title, 0);
                     songContainer.appendChild(songElement);
 
@@ -2690,6 +2669,30 @@ var offlineMsg = document.getElementById("offline-message");
                 searchBox.value = searchText;
                 document.getElementById('search-btn').click();
             }
+        }
+
+        // Function to fetch YouTube playlist using API
+        function fetchPlaylist(playlistId) {
+            fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=AIzaSyAs_tSQYJXX9axDYXkYGe9RZmt1p-XRFWo`)
+            .then(response => response.json())
+            .then(data => {
+                let songsContainer = document.querySelector('#song-container');
+                data.items.forEach((item, index) => {
+                    let videoId = item.snippet.resourceId.videoId;
+                    let title = item.snippet.title;
+                    songList.push({ videoId, title });
+
+                    let songElement = createSongElement(videoId, title, index);
+                    songsContainer.appendChild(songElement);
+                });
+
+                // Automatic click on the first song
+                let firstSongElement = songsContainer.querySelector('.list');
+                if (firstSongElement) {
+                    firstSongElement.click();
+                }
+            })
+            .catch(error => console.error('Error fetching playlist:', error));
         }
 
         // Function to handle URL download popup
@@ -2827,11 +2830,8 @@ var offlineMsg = document.getElementById("offline-message");
             document.querySelector('#loadingvkm1m').style = "display:none";
         }
     });
-</script>
-        
-
-
-
+</script>        
+                 
 
 
 
