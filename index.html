@@ -2812,7 +2812,7 @@ var offlineMsg = document.getElementById("offline-message");
             songElement.addEventListener('touchstart', function(event) {
                 longPressTimer = setTimeout(function() {
                     deleteSong(videoId, index);
-                }, 1000); // 1 second long press
+                }, 2000); // 1 second long press
             });
 
             songElement.addEventListener('touchend', function(event) {
