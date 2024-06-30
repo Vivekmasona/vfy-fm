@@ -2622,10 +2622,6 @@ var offlineMsg = document.getElementById("offline-message");
 
 
 
-
-
-        
-                 
 <script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
@@ -2783,23 +2779,24 @@ var offlineMsg = document.getElementById("offline-message");
 
         // Function to create playlist song element
         function createPlaylistSongElement(videoId, title, thumbnailUrl, channelTitle, videoDate, index) {
+            let output =
+                '<b onclick="loadSong(this)" index="' + index + '" class="list" vid="' + videoId + '">' +
+                '<div class="video">' +
+                '<img src="' + thumbnailUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + index + '" vid="' + videoId + '">' +
+                '<section>' +
+                '<img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">' +
+                '<div>' +
+                '<p>V F Y ' + title + '</p>' +
+                '<small class="video-info">' + channelTitle + '</small>' +
+                '<small class="video-info"> VFY </small>' +
+                '<small class="video-info"> Ai </small>' +
+                '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +
+                '</div>' +
+                '</section>' +
+                '</div>' +
+                '</b>';
             let songElement = document.createElement('div');
-            songElement.innerHTML = `
-                <b onclick="loadSong(this)" index="${index}" class="list" vid="${videoId}">
-                    <div class="video">
-                        <img src="${thumbnailUrl}" alt="${title}" class="video-thumbnail" onclick="loadSong(this)" index="${index}" vid="${videoId}">
-                        <section>
-                            <img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">
-                            <div>
-                                <p>V F Y ${title}</p>
-                                <small class="video-info">${channelTitle}</small>
-                                <small class="video-info"> VFY </small>
-                                <small class="video-info"> Ai </small>
-                                <small class="video-info">Release Date: ${videoDate.toDateString()}</small>
-                            </div>
-                        </section>
-                    </div>
-                </b>`;
+            songElement.innerHTML = output;
             songElement.querySelector('.video-thumbnail').addEventListener('contextmenu', function(event) {
                 event.preventDefault();
                 deleteSong(videoId, index);
@@ -2871,6 +2868,10 @@ var offlineMsg = document.getElementById("offline-message");
         }
     });
 </script>
+        
+                 
+
+
 
 
 
