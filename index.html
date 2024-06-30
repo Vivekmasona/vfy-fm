@@ -2683,7 +2683,7 @@ var offlineMsg = document.getElementById("offline-message");
                 data.items.forEach((item, index) => {
                     let videoId = item.snippet.resourceId.videoId;
                     let title = item.snippet.title;
-                    let thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
+                    let thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
                     let channelTitle = item.snippet.channelTitle;
                     let videoDate = new Date(item.snippet.publishedAt);
                     songList.push({ videoId, title });
@@ -2813,7 +2813,7 @@ var offlineMsg = document.getElementById("offline-message");
             songElement.innerHTML = `
                 <b onclick="loadSong(this)" class="list" vid="${videoId}" index="${index}" id="song-element-${index}">
                     <div class="video">
-                        <img src="https://i.ytimg.com/vi/${videoId}/mqdefault.jpg" alt="${title}" class="video-thumbnail" vid="${videoId}">
+                        <img src="https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg" alt="${title}" class="video-thumbnail" vid="${videoId}">
                         <section>
                             <section>
                                 <div>
