@@ -2621,10 +2621,15 @@ var offlineMsg = document.getElementById("offline-message");
 </style>
 
 
+
+
+        
 <script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
         var url = new URL(window.location.toString());
+
+        let songList = [];
 
         // Load saved songs from local storage
         loadSavedSongs();
@@ -2642,31 +2647,12 @@ var offlineMsg = document.getElementById("offline-message");
                         data.items.forEach((item, index) => {
                             let videoId = item.snippet.resourceId.videoId;
                             let title = item.snippet.title;
-                            let thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
-                            let channelTitle = item.snippet.channelTitle;
-                            let videoDate = new Date(item.snippet.publishedAt);
+                            songList.push({ videoId, title });
 
-                            let output =
-                                '<b onclick="loadSong(this)" index="' + index + '" class="list" vid="' + videoId + '">' +
-                                '<div class="video">' +
-                                '<img src="' + thumbnailUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + index + '" vid="' + videoId + '">' +
-                                '<section>' +
-                                '<img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">' +
-                                '<div>' +
-                                '<p>V F Y ' + title + '</p>' +
-                                '<small class="video-info">' + channelTitle + '</small>' +
-                                '<small class="video-info"> VFY </small>' +
-                                '<small class="video-info"> Ai </small>' +
-                                '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +
-                                '</div>' +
-                                '</section>' +
-                                '</div>' +
-                                '</b>';
-
-                            let songElement = document.createElement('div');
-                            songElement.innerHTML = output;
+                            let songElement = createSongElement(videoId, title, index);
                             songsContainer.appendChild(songElement);
                         });
+
                         // Automatic click on the first song
                         let firstSongElement = songsContainer.querySelector('.list');
                         if (firstSongElement) {
@@ -2686,8 +2672,9 @@ var offlineMsg = document.getElementById("offline-message");
                     let songContainer = document.querySelector('#song-container');
                     let videoId = extractYouTubeVideoId(url.searchParams.get('text'));
                     let title = url.searchParams.get('title');
+                    songList.push({ videoId, title });
                     
-                    let songElement = createSongElement(videoId, title);
+                    let songElement = createSongElement(videoId, title, 0);
                     songContainer.appendChild(songElement);
 
                     // Save song to local storage
@@ -2778,19 +2765,20 @@ var offlineMsg = document.getElementById("offline-message");
         function loadSavedSongs() {
             let savedSongs = JSON.parse(localStorage.getItem('savedSongs')) || [];
             let songContainer = document.querySelector('#song-container');
-            savedSongs.forEach(song => {
-                let songElement = createSongElement(song.videoId, song.title);
+            savedSongs.forEach((song, index) => {
+                let songElement = createSongElement(song.videoId, song.title, index);
                 songContainer.appendChild(songElement);
+                songList.push(song);
             });
         }
 
         // Function to create song element
-        function createSongElement(videoId, title) {
+        function createSongElement(videoId, title, index) {
             let songElement = document.createElement('div');
             songElement.innerHTML = `
-                <b onclick="loadSong(this)" class="list" vid="${videoId}" id="song-element">
+                <b onclick="loadSong(this)" class="list" vid="${videoId}" index="${index}" id="song-element-${index}">
                     <div class="video">
-                        <img src="https://i.ytimg.com/vi/${videoId}/mqdefault.jpg" alt="Your Video Title" class="video-thumbnail" vid="${videoId}">
+                        <img src="https://i.ytimg.com/vi/${videoId}/mqdefault.jpg" alt="${title}" class="video-thumbnail" vid="${videoId}">
                         <section>
                             <section>
                                 <div>
@@ -2802,26 +2790,45 @@ var offlineMsg = document.getElementById("offline-message");
                 </b>`;
             songElement.querySelector('.video-thumbnail').addEventListener('contextmenu', function(event) {
                 event.preventDefault();
-                deleteSong(videoId);
+                deleteSong(videoId, index);
             });
             return songElement;
         }
 
         // Function to delete song from local storage and DOM
-        function deleteSong(videoId) {
+        function deleteSong(videoId, index) {
             let savedSongs = JSON.parse(localStorage.getItem('savedSongs')) || [];
             savedSongs = savedSongs.filter(song => song.videoId !== videoId);
             localStorage.setItem('savedSongs', JSON.stringify(savedSongs));
-            document.querySelector(`#song-element[vid="${videoId}"]`).parentElement.remove();
+            document.querySelector(`#song-element-${index}`).remove();
+        }
+
+        // Function to load a song
+        function loadSong(element) {
+            let videoId = element.getAttribute('vid');
+            let index = parseInt(element.getAttribute('index'));
+            playVideo(videoId, index);
+        }
+
+        // Function to play video and set up autoplay for the next song
+        function playVideo(videoId, index) {
+            let videoPlayer = document.querySelector('#video-player');
+            videoPlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+            videoPlayer.onended = function() {
+                let nextIndex = index + 1;
+                if (nextIndex < songList.length) {
+                    let nextSong = songList[nextIndex];
+                    playVideo(nextSong.videoId, nextIndex);
+                }
+            };
         }
 
         function chhupa() {
             document.querySelector('#loadingvkm1m').style = "display:none";
         }
     });
-</script>                
-            
-
+</script>
+        
 
 
 
