@@ -2621,8 +2621,6 @@ var offlineMsg = document.getElementById("offline-message");
 </style>
 
 
-                
-            
 <script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
@@ -2637,7 +2635,7 @@ var offlineMsg = document.getElementById("offline-message");
                 if (isPlaylistLink(url.searchParams.get('text'))) {
                     // YouTube playlist URL hai, sabhi songs ko alag alag div mein dikhao
                     let playlistId = extractPlaylistId(url.searchParams.get('text'));
-                    fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=AIzaSyBfsNcJJHd-O0ftUzH2KqIRc_KhXgPXne0`)
+                    fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=YOUR_API_KEY`)
                     .then(response => response.json())
                     .then(data => {
                         let songsContainer = document.querySelector('#song-container');
@@ -2663,7 +2661,6 @@ var offlineMsg = document.getElementById("offline-message");
                                 '</div>' +
                                 '</section>' +
                                 '</div>' +
-                                '<button class="delete-btn" onclick="deleteSong(this, \'' + videoId + '\')">Delete</button>' +
                                 '</b>';
 
                             let songElement = document.createElement('div');
@@ -2690,25 +2687,9 @@ var offlineMsg = document.getElementById("offline-message");
                     let videoId = extractYouTubeVideoId(url.searchParams.get('text'));
                     let title = url.searchParams.get('title');
                     
-                    let output = `
-                        <b onclick="loadSong(this)" class="list" vid="${videoId}" id="song-element">
-                            <div class="video">
-                                <img src="https://i.ytimg.com/vi/${videoId}/mqdefault.jpg" alt="${title}" class="video-thumbnail" vid="${videoId}">
-                                <section>
-                                    <section>
-                                        <div>
-                                            <p>${title}</p>
-                                        </div>
-                                    </section>
-                                </section>
-                            </div>
-                            <button class="delete-btn" onclick="deleteSong(this, '${videoId}')">Delete</button>
-                        </b>`;
-                    
-                    let songElement = document.createElement('div');
-                    songElement.innerHTML = output;
+                    let songElement = createSongElement(videoId, title);
                     songContainer.appendChild(songElement);
-                    
+
                     // Save song to local storage
                     saveSongToLocal(videoId, title);
                 }
@@ -2787,8 +2768,9 @@ var offlineMsg = document.getElementById("offline-message");
 
         // Function to save song details to local storage
         function saveSongToLocal(videoId, title) {
+            let songDetails = { videoId: videoId, title: title };
             let savedSongs = JSON.parse(localStorage.getItem('savedSongs')) || [];
-            savedSongs.push({ videoId: videoId, title: title });
+            savedSongs.push(songDetails);
             localStorage.setItem('savedSongs', JSON.stringify(savedSongs));
         }
 
@@ -2797,41 +2779,50 @@ var offlineMsg = document.getElementById("offline-message");
             let savedSongs = JSON.parse(localStorage.getItem('savedSongs')) || [];
             let songContainer = document.querySelector('#song-container');
             savedSongs.forEach(song => {
-                let output = `
-                    <b onclick="loadSong(this)" class="list" vid="${song.videoId}" id="song-element">
-                        <div class="video">
-                            <img src="https://i.ytimg.com/vi/${song.videoId}/mqdefault.jpg" alt="${song.title}" class="video-thumbnail" vid="${song.videoId}">
-                            <section>
-                                <section>
-                                    <div>
-                                        <p>${song.title}</p>
-                                    </div>
-                                </section>
-                            </section>
-                        </div>
-                        <button class="delete-btn" onclick="deleteSong(this, '${song.videoId}')">Delete</button>
-                    </b>`;
-                let songElement = document.createElement('div');
-                songElement.innerHTML = output;
+                let songElement = createSongElement(song.videoId, song.title);
                 songContainer.appendChild(songElement);
             });
         }
 
-        // Function to delete a song from local storage
-        function deleteSong(element, videoId) {
-            element.parentElement.remove();
-            let savedSongs = JSON.parse
-	// delete remaining
+        // Function to create song element
+        function createSongElement(videoId, title) {
+            let songElement = document.createElement('div');
+            songElement.innerHTML = `
+                <b onclick="loadSong(this)" class="list" vid="${videoId}" id="song-element">
+                    <div class="video">
+                        <img src="https://i.ytimg.com/vi/${videoId}/mqdefault.jpg" alt="Your Video Title" class="video-thumbnail" vid="${videoId}">
+                        <section>
+                            <section>
+                                <div>
+                                    <p>${title}</p>
+                                </div>
+                            </section>
+                        </section>
+                    </div>
+                </b>`;
+            songElement.querySelector('.video-thumbnail').addEventListener('contextmenu', function(event) {
+                event.preventDefault();
+                deleteSong(videoId);
+            });
+            return songElement;
+        }
+
+        // Function to delete song from local storage and DOM
+        function deleteSong(videoId) {
             let savedSongs = JSON.parse(localStorage.getItem('savedSongs')) || [];
             savedSongs = savedSongs.filter(song => song.videoId !== videoId);
             localStorage.setItem('savedSongs', JSON.stringify(savedSongs));
+            document.querySelector(`#song-element[vid="${videoId}"]`).parentElement.remove();
         }
 
         function chhupa() {
             document.querySelector('#loadingvkm1m').style = "display:none";
         }
     });
-</script>
+</script>                
+            
+
+
 
 
 
