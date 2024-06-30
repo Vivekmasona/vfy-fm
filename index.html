@@ -2620,155 +2620,114 @@ var offlineMsg = document.getElementById("offline-message");
  
 </style>
 
-            
 
+                
+            
 <script>
     window.addEventListener('load', function() {
-        setTimeout(hideLoading, 2000);
+        setTimeout(chhupa, 2000);
         var url = new URL(window.location.toString());
-        var songsContainer = document.querySelector('#song-container');
 
-        // Check if 'preventSearch' attribute is not present
+        // Load saved song from local storage
+        loadSavedSong();
+
+        // Agar shared link mein 'preventSearch' attribute hai
         if (!url.searchParams.has('preventSearch')) {
             if (isYouTubeLink(url.searchParams.get('text'))) {
                 if (isPlaylistLink(url.searchParams.get('text'))) {
-                    // YouTube playlist URL, fetch and display all songs
+                    // YouTube playlist URL hai, sabhi songs ko alag alag div mein dikhao
                     let playlistId = extractPlaylistId(url.searchParams.get('text'));
-                    fetchPlaylistData(playlistId).then(playlistData => {
-                        savePlaylistToLocalStorage(playlistData);
-                        displaySongs(playlistData);
+                    fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=AIzaSyBfsNcJJHd-O0ftUzH2KqIRc_KhXgPXne0`)
+                    .then(response => response.json())
+                    .then(data => {
+                        let songsContainer = document.querySelector('#song-container');
+                        data.items.forEach((item, index) => {
+                            let videoId = item.snippet.resourceId.videoId;
+                            let title = item.snippet.title;
+                            let thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
+                            let channelTitle = item.snippet.channelTitle;
+                            let videoDate = new Date(item.snippet.publishedAt);
 
+                            let output =
+                                '<b onclick="loadSong(this)" index="' + index + '" class="list" vid="' + videoId + '">' +
+                                '<div class="video">' +
+                                '<img src="' + thumbnailUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + index + '" vid="' + videoId + '">' +
+                                '<section>' +
+                                '<img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">' +
+                                '<div>' +
+                                '<p>V F Y ' + title + '</p>' +
+                                '<small class="video-info">' + channelTitle + '</small>' +
+                                '<small class="video-info"> VFY </small>' +
+                                '<small class="video-info"> Ai </small>' +
+                                '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +
+                                '</div>' +
+                                '</section>' +
+                                '</div>' +
+                                '</b>';
+
+                            let songElement = document.createElement('div');
+                            songElement.innerHTML = output;
+                            songsContainer.appendChild(songElement);
+                        });
                         // Automatic click on the first song
                         let firstSongElement = songsContainer.querySelector('.list');
                         if (firstSongElement) {
                             firstSongElement.click();
                         }
-                    }).catch(error => console.error('Error fetching playlist:', error));
+                    })
+                    .catch(error => console.error('Error fetching playlist:', error));
                 } else {
-                    // YouTube single video URL, display it
-                    displaySingleVideo(url.searchParams.get('text'), url.searchParams.get('title'));
+                    // YouTube URL hai, video container mein dikhao
+                    let vUrl = document.querySelector('#share_textvkm1m');
+                    vUrl.innerText = 'URL - ' + url.searchParams.get('text');
+
+                    let vTitle = document.querySelector('#share_titlevkm1m');
+                    vTitle.innerText = 'Title - ' + url.searchParams.get('title');
+
+                    // Song ko load karne ke liye HTML code set karo
+                    let songContainer = document.querySelector('#song-container');
+                    let videoId = extractYouTubeVideoId(url.searchParams.get('text'));
+                    let title = url.searchParams.get('title');
+                    
+                    songContainer.innerHTML = `
+                        <b onclick="loadSong(this)" class="list" vid="${videoId}" id="song-element">
+                            <div class="video">
+                                <img src="https://i.ytimg.com/vi/${videoId}/mqdefault.jpg" alt="Your Video Title" class="video-thumbnail" vid="${videoId}">
+                                <section>
+                                    <section>
+                                        <div>
+                                            <p>${title}</p>
+                                        </div>
+                                    </section>
+                                </section>
+                            </div>
+                        </b>`;
+                    
+                    // Save song to local storage
+                    saveSongToLocal(videoId, title);
                 }
             } else if (isUrlLink(url.searchParams.get('text'))) {
-                // Other URL, create a download button overlay
+                // Other URL hai, download button overlay create karo
                 openDownloadPopup(url.searchParams.get('text'));
             } else {
-                // Text, set it in the search box
+                // Koi text hai, search box mein set karo
                 let searchText = extractTextInDoubleQuotes(url.searchParams.get('text')) || url.searchParams.get('text');
                 let searchBox = document.querySelector('#search-basic');
                 searchBox.value = searchText;
                 document.getElementById('search-btn').click();
             }
-        } else {
-            // Load songs from local storage
-            let storedSongs = getAllSongsFromLocalStorage();
-            if (storedSongs.length > 0) {
-                displaySongs(storedSongs);
-                // Automatic click on the first song
-                let firstSongElement = songsContainer.querySelector('.list');
-                if (firstSongElement) {
-                    firstSongElement.click();
-                }
-            }
-        }
-
-        // Function to fetch playlist data from YouTube API
-        async function fetchPlaylistData(playlistId) {
-            const response = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=AIzaSyBfsNcJJHd-O0ftUzH2KqIRc_KhXgPXne0`);
-            const data = await response.json();
-            return data.items.map(item => ({
-                videoId: item.snippet.resourceId.videoId,
-                title: item.snippet.title,
-                thumbnailUrl: `https://i.ytimg.com/vi/${item.snippet.resourceId.videoId}/mqdefault.jpg`,
-                channelTitle: item.snippet.channelTitle,
-                videoDate: item.snippet.publishedAt
-            }));
-        }
-
-        // Function to display songs
-        function displaySongs(items) {
-            songsContainer.innerHTML = '';
-            items.forEach((item, index) => {
-                let videoId = item.videoId;
-                let title = item.title;
-                let thumbnailUrl = item.thumbnailUrl;
-                let channelTitle = item.channelTitle;
-                let videoDate = new Date(item.videoDate);
-
-                let output =
-                    '<b onclick="loadSong(this)" index="' + index + '" class="list" vid="' + videoId + '">' +
-                    '<div class="video">' +
-                    '<img src="' + thumbnailUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + index + '" vid="' + videoId + '">' +
-                    '<section>' +
-                    '<img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">' +
-                    '<div>' +
-                    '<p>V F Y ' + title + '</p>' +
-                    '<small class="video-info">' + channelTitle + '</small>' +
-                    '<small class="video-info"> VFY </small>' +
-                    '<small class="video-info"> Ai </small>' +
-                    '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +
-                    '</div>' +
-                    '</section>' +
-                    '</div>' +
-                    '</b>';
-
-                let songElement = document.createElement('div');
-                songElement.innerHTML = output;
-                songsContainer.appendChild(songElement);
-            });
-        }
-
-        // Function to save each song to local storage
-        function savePlaylistToLocalStorage(items) {
-            items.forEach(item => {
-                localStorage.setItem('song_' + item.videoId, JSON.stringify(item));
-            });
-        }
-
-        // Function to get all songs from local storage
-        function getAllSongsFromLocalStorage() {
-            let songs = [];
-            for (let i = 0; i < localStorage.length; i++) {
-                let key = localStorage.key(i);
-                if (key.startsWith('song_')) {
-                    let song = JSON.parse(localStorage.getItem(key));
-                    songs.push(song);
-                }
-            }
-            return songs;
-        }
-
-        // Function to display a single video
-        function displaySingleVideo(videoUrl, videoTitle) {
-            let vUrl = document.querySelector('#share_textvkm1m');
-            vUrl.innerText = 'URL - ' + videoUrl;
-
-            let vTitle = document.querySelector('#share_titlevkm1m');
-            vTitle.innerText = 'Title - ' + videoTitle;
-
-            let songContainer = document.querySelector('#song-container');
-            songContainer.innerHTML = `
-                <b onclick="loadSong(this)" class="list" vid="${extractYouTubeVideoId(videoUrl)}" id="song-element">
-                    <div class="video">
-                        <img src="https://i.ytimg.com/vi/${extractYouTubeVideoId(videoUrl)}/mqdefault.jpg" alt="${videoTitle}" class="video-thumbnail" vid="${extractYouTubeVideoId(videoUrl)}">
-                        <section>
-                            <section>
-                                <div>
-                                    <p>${videoTitle}</p>
-                                </div>
-                            </section>
-                        </section>
-                    </div>
-                </b>`;
         }
 
         // Function to handle URL download popup
         function openDownloadPopup(downloadUrl) {
+            // Create a popup button at a specific location
             let downloadButton = document.createElement('button');
             downloadButton.className = 'download-popup-button shake';
             downloadButton.innerHTML = `
                 <a href="https://vivekfy.fanclub.rocks/api?url=${encodeURIComponent(downloadUrl)}" download><i class="fas fa-download"></i></a>
             `;
             downloadButton.addEventListener('click', function() {
+                // Change icon to "done" when clicked
                 let icon = downloadButton.querySelector('i');
                 if (icon) {
                     icon.classList.remove('fa-download');
@@ -2778,48 +2737,81 @@ var offlineMsg = document.getElementById("offline-message");
             document.body.appendChild(downloadButton);
         }
 
-        // Check if given link is a YouTube link
+        // Check kare ki diya gaya link YouTube link hai ya nahi
         function isYouTubeLink(link) {
             return link.includes('youtube.com') || link.includes('youtu.be');
         }
 
-        // Extract text within double quotes
+        // Double quotes ke bheetar text nikalne ka function
         function extractTextInDoubleQuotes(link) {
             let match = link.match(/"([^"]+)"/);
             return match ? match[1].trim() : '';
         }
 
-        // Extract YouTube video ID from the link
+        // URL link se title ya ID nikalne ka function
+        function extractTitleFromUrl(link) {
+            // Link se title ya ID nikalne ke liye apni logic add kare
+            // Yahan, yeh bas link ko return kar raha hai
+            return link;
+        }
+
+        // YouTube link se video ID nikalne ka function
         function extractYouTubeVideoId(youtubeUrl) {
             let videoIdMatch = youtubeUrl.match(/[?&]v=([^&]+)/);
             return videoIdMatch ? videoIdMatch[1] : null;
         }
 
-        // Check if link is a URL
+        // URL link ka check
         function isUrlLink(link) {
+            // Link ko URL link hone ka check karne ke liye apni logic add kare
+            // Yahan, yeh bas 'http' ya 'www' se shuru hota hai, yeh check kar raha hai
             return link.startsWith('http') || link.includes('www');
         }
 
-        // Check if link is a YouTube playlist link
+        // YouTube playlist link ka check
         function isPlaylistLink(link) {
             return link.includes('list='); // Checking if link contains 'list=' which indicates it's a playlist
         }
 
-        // Extract playlist ID from the link
+        // Playlist ID nikalne ka function
         function extractPlaylistId(playlistUrl) {
             let playlistIdMatch = playlistUrl.match(/[?&]list=([^&]+)/);
             return playlistIdMatch ? playlistIdMatch[1] : null;
         }
 
-        function hideLoading() {
+        // Function to save song details to local storage
+        function saveSongToLocal(videoId, title) {
+            let songDetails = { videoId: videoId, title: title };
+            localStorage.setItem('savedSong', JSON.stringify(songDetails));
+        }
+
+        // Function to load saved song from local storage
+        function loadSavedSong() {
+            let savedSong = localStorage.getItem('savedSong');
+            if (savedSong) {
+                savedSong = JSON.parse(savedSong);
+                let songContainer = document.querySelector('#song-container');
+                songContainer.innerHTML = `
+                    <b onclick="loadSong(this)" class="list" vid="${savedSong.videoId}" id="song-element">
+                        <div class="video">
+                            <img src="https://i.ytimg.com/vi/${savedSong.videoId}/mqdefault.jpg" alt="Your Video Title" class="video-thumbnail" vid="${savedSong.videoId}">
+                            <section>
+                                <section>
+                                    <div>
+                                        <p>${savedSong.title}</p>
+                                    </div>
+                                </section>
+                            </section>
+                        </div>
+                    </b>`;
+            }
+        }
+
+        function chhupa() {
             document.querySelector('#loadingvkm1m').style = "display:none";
         }
     });
-</script>
-   
-                
-            
-        
+</script>        
 
 
 
