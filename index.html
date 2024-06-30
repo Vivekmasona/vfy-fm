@@ -2620,12 +2620,11 @@ var offlineMsg = document.getElementById("offline-message");
  
 </style>
 
-
-   
-    <script>
+<script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
         var url = new URL(window.location.toString());
+        var songsContainer = document.querySelector('#song-container');
 
         // Agar shared link mein 'preventSearch' attribute hai
         if (!url.searchParams.has('preventSearch')) {
@@ -2636,35 +2635,8 @@ var offlineMsg = document.getElementById("offline-message");
                     fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=AIzaSyBfsNcJJHd-O0ftUzH2KqIRc_KhXgPXne0`)
                     .then(response => response.json())
                     .then(data => {
-                        let songsContainer = document.querySelector('#song-container');
-                        data.items.forEach((item, index) => {
-                            let videoId = item.snippet.resourceId.videoId;
-                            let title = item.snippet.title;
-                            let thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
-                            let channelTitle = item.snippet.channelTitle;
-                            let videoDate = new Date(item.snippet.publishedAt);
-
-                            let output =
-                                '<b onclick="loadSong(this)" index="' + index + '" class="list" vid="' + videoId + '">' +
-                                '<div class="video">' +
-                                '<img src="' + thumbnailUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + index + '" vid="' + videoId + '">' +
-                                '<section>' +
-                                '<img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">' +
-                                '<div>' +
-                                '<p>V F Y ' + title + '</p>' +
-                                '<small class="video-info">' + channelTitle + '</small>' +
-                                '<small class="video-info"> VFY </small>' +
-                                '<small class="video-info"> Ai </small>' +
-                                '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +
-                                '</div>' +
-                                '</section>' +
-                                '</div>' +
-                                '</b>';
-
-                            let songElement = document.createElement('div');
-                            songElement.innerHTML = output;
-                            songsContainer.appendChild(songElement);
-                        });
+                        savePlaylistToLocalStorage(data.items);
+                        displaySongs(data.items);
                         // Automatic click on the first song
                         let firstSongElement = songsContainer.querySelector('.list');
                         if (firstSongElement) {
@@ -2706,6 +2678,61 @@ var offlineMsg = document.getElementById("offline-message");
                 searchBox.value = searchText;
                 document.getElementById('search-btn').click();
             }
+        } else {
+            // Local storage se songs ko load kare
+            let storedSongs = getPlaylistFromLocalStorage();
+            if (storedSongs && storedSongs.length > 0) {
+                displaySongs(storedSongs);
+                // Automatic click on the first song
+                let firstSongElement = songsContainer.querySelector('.list');
+                if (firstSongElement) {
+                    firstSongElement.click();
+                }
+            }
+        }
+
+        // Function to display songs
+        function displaySongs(items) {
+            songsContainer.innerHTML = '';
+            items.forEach((item, index) => {
+                let videoId = item.snippet.resourceId.videoId;
+                let title = item.snippet.title;
+                let thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
+                let channelTitle = item.snippet.channelTitle;
+                let videoDate = new Date(item.snippet.publishedAt);
+
+                let output =
+                    '<b onclick="loadSong(this)" index="' + index + '" class="list" vid="' + videoId + '">' +
+                    '<div class="video">' +
+                    '<img src="' + thumbnailUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + index + '" vid="' + videoId + '">' +
+                    '<section>' +
+                    '<img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">' +
+                    '<div>' +
+                    '<p>V F Y ' + title + '</p>' +
+                    '<small class="video-info">' + channelTitle + '</small>' +
+                    '<small class="video-info"> VFY </small>' +
+                    '<small class="video-info"> Ai </small>' +
+                    '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +
+                    '</div>' +
+                    '</section>' +
+                    '</div>' +
+                    '</b>';
+
+                let songElement = document.createElement('div');
+                songElement.innerHTML = output;
+                songsContainer.appendChild(songElement);
+            });
+        }
+
+        // Function to save playlist to local storage
+        function savePlaylistToLocalStorage(items) {
+            localStorage.setItem('playlist', JSON.stringify(items));
+        }
+
+        // Function to get playlist from local storage
+        function getPlaylistFromLocalStorage() {
+            let storedSongs = localStorage.getItem('playlist');
+            return storedSongs ? JSON.parse(storedSongs) : [];
         }
 
         // Function to handle URL download popup
@@ -2774,6 +2801,8 @@ var offlineMsg = document.getElementById("offline-message");
         }
     });
 </script>
+   
+    
     
 
 
