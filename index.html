@@ -2620,7 +2620,8 @@ var offlineMsg = document.getElementById("offline-message");
  
 </style>
 
-<script>
+            
+ <script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
         var url = new URL(window.location.toString());
@@ -2635,8 +2636,17 @@ var offlineMsg = document.getElementById("offline-message");
                     fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=AIzaSyBfsNcJJHd-O0ftUzH2KqIRc_KhXgPXne0`)
                     .then(response => response.json())
                     .then(data => {
-                        savePlaylistToLocalStorage(data.items);
-                        displaySongs(data.items);
+                        let playlistData = data.items.map(item => ({
+                            videoId: item.snippet.resourceId.videoId,
+                            title: item.snippet.title,
+                            thumbnailUrl: `https://i.ytimg.com/vi/${item.snippet.resourceId.videoId}/mqdefault.jpg`,
+                            channelTitle: item.snippet.channelTitle,
+                            videoDate: item.snippet.publishedAt
+                        }));
+
+                        savePlaylistToLocalStorage(playlistData);
+                        displaySongs(playlistData);
+
                         // Automatic click on the first song
                         let firstSongElement = songsContainer.querySelector('.list');
                         if (firstSongElement) {
@@ -2695,11 +2705,11 @@ var offlineMsg = document.getElementById("offline-message");
         function displaySongs(items) {
             songsContainer.innerHTML = '';
             items.forEach((item, index) => {
-                let videoId = item.snippet.resourceId.videoId;
-                let title = item.snippet.title;
-                let thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
-                let channelTitle = item.snippet.channelTitle;
-                let videoDate = new Date(item.snippet.publishedAt);
+                let videoId = item.videoId;
+                let title = item.title;
+                let thumbnailUrl = item.thumbnailUrl;
+                let channelTitle = item.channelTitle;
+                let videoDate = new Date(item.videoDate);
 
                 let output =
                     '<b onclick="loadSong(this)" index="' + index + '" class="list" vid="' + videoId + '">' +
@@ -2800,8 +2810,7 @@ var offlineMsg = document.getElementById("offline-message");
             document.querySelector('#loadingvkm1m').style = "display:none";
         }
     });
-</script>
-   
+</script>  
     
     
 
