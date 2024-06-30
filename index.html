@@ -2622,6 +2622,7 @@ var offlineMsg = document.getElementById("offline-message");
 
 
 
+
 <script>
     window.addEventListener('load', function() {
         setTimeout(chhupa, 2000);
@@ -2672,19 +2673,16 @@ var offlineMsg = document.getElementById("offline-message");
 
         // Function to fetch YouTube playlist using API
         function fetchPlaylist(playlistId) {
-            fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=YOUR_API_KEY`)
+            fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=AIzaSyAs_tSQYJXX9axDYXkYGe9RZmt1p-XRFWo`)
             .then(response => response.json())
             .then(data => {
                 let songsContainer = document.querySelector('#song-container');
                 data.items.forEach((item, index) => {
                     let videoId = item.snippet.resourceId.videoId;
                     let title = item.snippet.title;
-                    let thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
-                    let channelTitle = item.snippet.channelTitle;
-                    let videoDate = new Date(item.snippet.publishedAt);
                     songList.push({ videoId, title });
 
-                    let songElement = createPlaylistSongElement(videoId, title, thumbnailUrl, channelTitle, videoDate, index);
+                    let songElement = createSongElement(videoId, title, index);
                     songsContainer.appendChild(songElement);
                 });
 
@@ -2777,33 +2775,7 @@ var offlineMsg = document.getElementById("offline-message");
             });
         }
 
-        // Function to create playlist song element
-        function createPlaylistSongElement(videoId, title, thumbnailUrl, channelTitle, videoDate, index) {
-            let songElement = document.createElement('div');
-            songElement.innerHTML = `
-                <b onclick="loadSong(this)" index="${index}" class="list" vid="${videoId}">
-                    <div class="video">
-                        <img src="${thumbnailUrl}" alt="${title}" class="video-thumbnail" onclick="loadSong(this)" index="${index}" vid="${videoId}">
-                        <section>
-                            <img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">
-                            <div>
-                                <p>V F Y ${title}</p>
-                                <small class="video-info">${channelTitle}</small>
-                                <small class="video-info"> VFY </small>
-                                <small class="video-info"> Ai </small>
-                                <small class="video-info">Release Date: ${videoDate.toDateString()}</small>
-                            </div>
-                        </section>
-                    </div>
-                </b>`;
-            songElement.querySelector('.video-thumbnail').addEventListener('contextmenu', function(event) {
-                event.preventDefault();
-                deleteSong(videoId, index);
-            });
-            return songElement;
-        }
-
-        // Function to create single song element
+        // Function to create song element
         function createSongElement(videoId, title, index) {
             let songElement = document.createElement('div');
             songElement.innerHTML = `
@@ -2834,39 +2806,32 @@ var offlineMsg = document.getElementById("offline-message");
             document.querySelector(`#song-element-${index}`).remove();
         }
 
-        // Function to load song
+        // Function to load a song
         function loadSong(element) {
             let videoId = element.getAttribute('vid');
-            // Add your logic here to load and play the song using the videoId
-            // Example: load the song in an iframe or video player
-            document.querySelector('#video-player').src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-
-            // Update the currently playing song in local storage
-            localStorage.setItem('currentSong', JSON.stringify({ videoId, index: element.getAttribute('index') }));
+            let index = parseInt(element.getAttribute('index'));
+            playVideo(videoId, index);
         }
 
-        // Function to play the next song in the list
-        function playNextSong() {
-            let currentSong = JSON.parse(localStorage.getItem('currentSong'));
-            if (currentSong) {
-                let nextIndex = parseInt(currentSong.index) + 1;
+        // Function to play video and set up autoplay for the next song
+        function playVideo(videoId, index) {
+            let videoPlayer = document.querySelector('#video-player');
+            videoPlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+            videoPlayer.onended = function() {
+                let nextIndex = index + 1;
                 if (nextIndex < songList.length) {
-                    let nextSongElement = document.querySelector(`#song-element-${nextIndex}`);
-                    if (nextSongElement) {
-                        nextSongElement.click();
-                    }
+                    let nextSong = songList[nextIndex];
+                    playVideo(nextSong.videoId, nextIndex);
                 }
-            }
+            };
         }
-
-        // Automatically play the next song when the current one ends
-        document.querySelector('#video-player').addEventListener('ended', playNextSong);
 
         function chhupa() {
-            document.querySelector('#loadingvkm1m').style.display = "none";
+            document.querySelector('#loadingvkm1m').style = "display:none";
         }
     });
-</script>
+</script>        
+                 
 
 
 
@@ -4358,6 +4323,7 @@ z-imdex:999999;
   left: 0px;
 }
 </style>	
+
 
 
 
