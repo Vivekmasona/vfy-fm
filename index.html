@@ -2622,18 +2622,17 @@ var offlineMsg = document.getElementById("offline-message");
 
             
 
-
-   <script>
+<script>
     window.addEventListener('load', function() {
         setTimeout(hideLoading, 2000);
         var url = new URL(window.location.toString());
         var songsContainer = document.querySelector('#song-container');
 
-        // Agar shared link mein 'preventSearch' attribute nahi hai
+        // Check if 'preventSearch' attribute is not present
         if (!url.searchParams.has('preventSearch')) {
             if (isYouTubeLink(url.searchParams.get('text'))) {
                 if (isPlaylistLink(url.searchParams.get('text'))) {
-                    // YouTube playlist URL hai, sabhi songs ko alag alag div mein dikhao
+                    // YouTube playlist URL, fetch and display all songs
                     let playlistId = extractPlaylistId(url.searchParams.get('text'));
                     fetchPlaylistData(playlistId).then(playlistData => {
                         savePlaylistToLocalStorage(playlistData);
@@ -2646,23 +2645,23 @@ var offlineMsg = document.getElementById("offline-message");
                         }
                     }).catch(error => console.error('Error fetching playlist:', error));
                 } else {
-                    // YouTube URL hai, video container mein dikhao
+                    // YouTube single video URL, display it
                     displaySingleVideo(url.searchParams.get('text'), url.searchParams.get('title'));
                 }
             } else if (isUrlLink(url.searchParams.get('text'))) {
-                // Other URL hai, download button overlay create karo
+                // Other URL, create a download button overlay
                 openDownloadPopup(url.searchParams.get('text'));
             } else {
-                // Koi text hai, search box mein set karo
+                // Text, set it in the search box
                 let searchText = extractTextInDoubleQuotes(url.searchParams.get('text')) || url.searchParams.get('text');
                 let searchBox = document.querySelector('#search-basic');
                 searchBox.value = searchText;
                 document.getElementById('search-btn').click();
             }
         } else {
-            // Local storage se songs ko load kare
-            let storedSongs = getPlaylistFromLocalStorage();
-            if (storedSongs && storedSongs.length > 0) {
+            // Load songs from local storage
+            let storedSongs = getAllSongsFromLocalStorage();
+            if (storedSongs.length > 0) {
                 displaySongs(storedSongs);
                 // Automatic click on the first song
                 let firstSongElement = songsContainer.querySelector('.list');
@@ -2718,15 +2717,24 @@ var offlineMsg = document.getElementById("offline-message");
             });
         }
 
-        // Function to save playlist to local storage
+        // Function to save each song to local storage
         function savePlaylistToLocalStorage(items) {
-            localStorage.setItem('playlist', JSON.stringify(items));
+            items.forEach(item => {
+                localStorage.setItem('song_' + item.videoId, JSON.stringify(item));
+            });
         }
 
-        // Function to get playlist from local storage
-        function getPlaylistFromLocalStorage() {
-            let storedSongs = localStorage.getItem('playlist');
-            return storedSongs ? JSON.parse(storedSongs) : [];
+        // Function to get all songs from local storage
+        function getAllSongsFromLocalStorage() {
+            let songs = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if (key.startsWith('song_')) {
+                    let song = JSON.parse(localStorage.getItem(key));
+                    songs.push(song);
+                }
+            }
+            return songs;
         }
 
         // Function to display a single video
@@ -2770,34 +2778,34 @@ var offlineMsg = document.getElementById("offline-message");
             document.body.appendChild(downloadButton);
         }
 
-        // Check kare ki diya gaya link YouTube link hai ya nahi
+        // Check if given link is a YouTube link
         function isYouTubeLink(link) {
             return link.includes('youtube.com') || link.includes('youtu.be');
         }
 
-        // Double quotes ke bheetar text nikalne ka function
+        // Extract text within double quotes
         function extractTextInDoubleQuotes(link) {
             let match = link.match(/"([^"]+)"/);
             return match ? match[1].trim() : '';
         }
 
-        // YouTube link se video ID nikalne ka function
+        // Extract YouTube video ID from the link
         function extractYouTubeVideoId(youtubeUrl) {
             let videoIdMatch = youtubeUrl.match(/[?&]v=([^&]+)/);
             return videoIdMatch ? videoIdMatch[1] : null;
         }
 
-        // URL link ka check
+        // Check if link is a URL
         function isUrlLink(link) {
             return link.startsWith('http') || link.includes('www');
         }
 
-        // YouTube playlist link ka check
+        // Check if link is a YouTube playlist link
         function isPlaylistLink(link) {
             return link.includes('list='); // Checking if link contains 'list=' which indicates it's a playlist
         }
 
-        // Playlist ID nikalne ka function
+        // Extract playlist ID from the link
         function extractPlaylistId(playlistUrl) {
             let playlistIdMatch = playlistUrl.match(/[?&]list=([^&]+)/);
             return playlistIdMatch ? playlistIdMatch[1] : null;
@@ -2807,9 +2815,10 @@ var offlineMsg = document.getElementById("offline-message");
             document.querySelector('#loadingvkm1m').style = "display:none";
         }
     });
-</script>     
-
+</script>
+   
                 
+            
         
 
 
