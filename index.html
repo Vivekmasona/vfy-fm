@@ -51,35 +51,7 @@ if (window !== window.top) {
 	
 </script>
 
-<script>
-    function saveAppState() {
-      localStorage.setItem('appState', 'minimized');
-    }
 
-    window.addEventListener('beforeunload', saveAppState);
-  </script>
-
-  <script>
-    window.onpopstate = function(event) {
-      if (confirm('Do you want to minimize the app and keep it running in the background?')) {
-        // App ko minimize karna (kuch bhi na karna aur browser ko handle karne dena)
-      } else {
-        // Default back navigation allow karna
-        window.history.back();
-      }
-    };
-  </script>
-<script>
-// index.js
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js')
-    .then(function(registration) {
-      console.log('Service Worker registration successful with scope: ', registration.scope);
-    })
-    .catch(function(err) {
-      console.log('Service Worker registration failed: ', err);
-    });
-}</script>
 
 <style>
 
