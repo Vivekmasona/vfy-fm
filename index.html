@@ -51,7 +51,24 @@ if (window !== window.top) {
 	
 </script>
 
+<script>
+    function saveAppState() {
+      localStorage.setItem('appState', 'minimized');
+    }
 
+    window.addEventListener('beforeunload', saveAppState);
+  </script>
+
+  <script>
+    window.onpopstate = function(event) {
+      if (confirm('Do you want to minimize the app and keep it running in the background?')) {
+        // App ko minimize karna (kuch bhi na karna aur browser ko handle karne dena)
+      } else {
+        // Default back navigation allow karna
+        window.history.back();
+      }
+    };
+  </script>
 
 
 
