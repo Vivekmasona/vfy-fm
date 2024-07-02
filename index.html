@@ -1408,14 +1408,12 @@ document.getElementById("vivekmasona").onclick = ()=>{
 
     
 var audio = document.getElementById("SAudio");
+var Sid = localStorage.getItem('currentSongIndex') ? parseInt(localStorage.getItem('currentSongIndex')) : 0;
 
 // Function to play the next song
 function playNextSong() {
     var nextSongIndex = Sid + 1; // Calculate the index of the next song
     var playlistItems = document.getElementsByClassName("list");
-
-    
-	
 
     if (nextSongIndex < playlistItems.length) {
         playlistItems[nextSongIndex].click(); // Play the next song
@@ -1428,6 +1426,10 @@ function playNextSong() {
         $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');
         $("#profileThumbnail").data("videoId", nextVideoId);
 
+        // Save the current song index
+        Sid = nextSongIndex;
+        localStorage.setItem('currentSongIndex', Sid);
+
         console.log('Automatically went to the next song and started playing.');
     } else {
         console.log('End of playlist');
@@ -1436,15 +1438,36 @@ function playNextSong() {
 }
 
 function playPause() {
-   var audio = document.getElementById("SAudio");
-
-   if (audio.paused) {
-      audio.play();
-   } else {
-      audio.pause();
-   }
+    if (audio.paused) {
+        audio.play();
+    } else {
+        audio.pause();
+    }
 }
 
+// Function to resume the last played song and position
+function resumeLastSong() {
+    var savedSongIndex = localStorage.getItem('currentSongIndex');
+    var savedPosition = localStorage.getItem('currentSongPosition');
+
+    if (savedSongIndex !== null && savedPosition !== null) {
+        Sid = parseInt(savedSongIndex);
+        var playlistItems = document.getElementsByClassName("list");
+        if (Sid < playlistItems.length) {
+            playlistItems[Sid].click();
+            audio.currentTime = parseFloat(savedPosition);
+            audio.play();
+        }
+    }
+}
+
+// Save the current song position before the page unloads
+window.addEventListener('beforeunload', function() {
+    localStorage.setItem('currentSongPosition', audio.currentTime);
+});
+
+// Resume the last played song and position when the page loads
+window.addEventListener('load', resumeLastSong);
 	
 
 // Listen for the 'ended' event
