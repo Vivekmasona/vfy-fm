@@ -1416,19 +1416,24 @@ function playNextSong() {
     var playlistItems = document.getElementsByClassName("list");
 
     if (nextSongIndex < playlistItems.length) {
-        playlistItems[nextSongIndex].click(); // Play the next song
+        var nextSong = playlistItems[nextSongIndex];
+        var nextThumbnail = $(nextSong).children('img').attr("src");
+        var nextTitle = $(nextSong).attr("data-title");
+        var nextAudioUrl = $(nextSong).attr("data-audio-url");
+
+        audio.src = nextAudioUrl;
         audio.play(); // Play the audio
 
         // Update the profile thumbnail and video ID for the next song
-        var nextSong = playlistItems[nextSongIndex];
-        var nextThumbnail = $(nextSong).children('img').attr("src");
-        var nextVideoId = $(nextSong).attr("vid");
         $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');
-        $("#profileThumbnail").data("videoId", nextVideoId);
+        $("#profileThumbnail").data("videoId", $(nextSong).attr("vid"));
 
-        // Save the current song index
+        // Save the current song index and details to local storage
         Sid = nextSongIndex;
         localStorage.setItem('currentSongIndex', Sid);
+        localStorage.setItem('currentSongTitle', nextTitle);
+        localStorage.setItem('currentSongThumbnail', nextThumbnail);
+        localStorage.setItem('currentSongAudioUrl', nextAudioUrl);
 
         console.log('Automatically went to the next song and started playing.');
     } else {
@@ -1449,15 +1454,21 @@ function playPause() {
 function resumeLastSong() {
     var savedSongIndex = localStorage.getItem('currentSongIndex');
     var savedPosition = localStorage.getItem('currentSongPosition');
+    var savedTitle = localStorage.getItem('currentSongTitle');
+    var savedThumbnail = localStorage.getItem('currentSongThumbnail');
+    var savedAudioUrl = localStorage.getItem('currentSongAudioUrl');
 
-    if (savedSongIndex !== null && savedPosition !== null) {
+    if (savedSongIndex !== null && savedPosition !== null && savedTitle !== null && savedThumbnail !== null && savedAudioUrl !== null) {
         Sid = parseInt(savedSongIndex);
-        var playlistItems = document.getElementsByClassName("list");
-        if (Sid < playlistItems.length) {
-            playlistItems[Sid].click();
-            audio.currentTime = parseFloat(savedPosition);
-            audio.play();
-        }
+        audio.src = savedAudioUrl;
+        audio.currentTime = parseFloat(savedPosition);
+        audio.play();
+
+        // Update the profile thumbnail and title
+        $("#profileThumbnail").html('<img src="' + savedThumbnail + '" alt="Profile Thumbnail">');
+        $("#profileThumbnail").data("videoId", $(document.getElementsByClassName("list")[Sid]).attr("vid"));
+
+        console.log('Resumed last played song:', savedTitle);
     }
 }
 
@@ -1468,7 +1479,6 @@ window.addEventListener('beforeunload', function() {
 
 // Resume the last played song and position when the page loads
 window.addEventListener('load', resumeLastSong);
-	
 
 // Listen for the 'ended' event
 audio.addEventListener("ended", function() {
