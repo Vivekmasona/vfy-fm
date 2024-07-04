@@ -808,8 +808,7 @@ width: 50%;
     <div data-role="main" class="ui-content">
      <input type="search"  name="search" onclick="startDictation()"  id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">SEARCH..</button></sr>
-	<button id="preButton">Pichhla</button>
-    
+	    
 	
    <div id="autocomplete-results"></div>
 
@@ -1451,39 +1450,6 @@ function playPause() {
 // Listen for the 'ended' event
 audio.addEventListener("ended", function() {
     playNextSong();
-});
-
-
-document.addEventListener("DOMContentLoaded", function() {
-    var audio = document.getElementById("SAudio");
-    var preButton = document.getElementById("preButton");
-
-    // Initialize Sid to track the current song index
-    var Sid = 0;
-
-    // Function to update song information
-    function updateSongInfo(index) {
-        var playlistItems = document.getElementsByClassName("list");
-        if (index >= 0 && index < playlistItems.length) {
-            // Update Sid to the selected song index
-            Sid = index;
-            // Select the song visually (not playing audio, just updating UI)
-            var selectedSong = playlistItems[index];
-            var thumbnail = $(selectedSong).children('img').attr("src");
-            var videoId = $(selectedSong).attr("vid");
-            $("#profileThumbnail").html('<img src="' + thumbnail + '" alt="Profile Thumbnail">');
-            $("#profileThumbnail").data("videoId", videoId);
-            console.log('Selected song:', Sid);
-        }
-    }
-
-    // Event listener for Previous button
-    preButton.addEventListener("click", function() {
-        updateSongInfo(Sid - 1); // Select previous song
-    });
-
-    // Initial setup: select the first song in the playlist
-    updateSongInfo(Sid);
 });
 
 // Listen for the 'error' event
