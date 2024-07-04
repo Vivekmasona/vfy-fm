@@ -1406,8 +1406,8 @@ document.getElementById("vivekmasona").onclick = ()=>{
      //location.href= "https://vivekfy-obg6.onrender.com/download/video?url=https://youtu.be/"+id;
         };
 
-    
 var audio = document.getElementById("SAudio");
+var Sid = 0; // Initialize Sid to track the current song index
 
 // Function to play the next song
 function playNextSong() {
@@ -1415,6 +1415,7 @@ function playNextSong() {
     var playlistItems = document.getElementsByClassName("list");
 
     if (nextSongIndex < playlistItems.length) {
+        Sid = nextSongIndex; // Update Sid to the new song index
         playlistItems[nextSongIndex].click(); // Play the next song
         audio.play(); // Play the audio
 
@@ -1438,6 +1439,7 @@ function playPreviousSong() {
     var playlistItems = document.getElementsByClassName("list");
 
     if (previousSongIndex >= 0) {
+        Sid = previousSongIndex; // Update Sid to the new song index
         playlistItems[previousSongIndex].click(); // Play the previous song
         audio.play(); // Play the audio
 
@@ -1470,6 +1472,22 @@ audio.addEventListener("ended", function() {
     playNextSong();
 });
 
+// Adding event listeners to playlist items to set Sid
+var playlistItems = document.getElementsByClassName("list");
+for (var i = 0; i < playlistItems.length; i++) {
+    playlistItems[i].addEventListener("click", function(index) {
+        return function() {
+            Sid = index; // Update Sid to the clicked song index
+        };
+    }(i));
+}    
+
+
+
+
+
+
+	
 // Listen for the 'error' event
 var alternativeAudioSources = [
 "https://vivekfy.vercel.app/low-audio?url=" + id,
