@@ -1382,8 +1382,7 @@ function play(id,Sid){
      //data = "https://myserver-dev-atmq.2.ie-1.fl0.io/audio?url=https://youtu.be/"+id;
      //data = "https://audioserver-dev-cgen.2.sg-1.fl0.io/"+id;
     document.getElementById("SThumb").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
-   document.getElementById("SThumb2").src = "https://i.ytimg.com/vi/"+id+"/sddefault.jpg";
-   document.getElementById("Fimg").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
+    document.getElementById("Fimg").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
      document.getElementById("pahilagana").onclick = ()=>{
        location.href= "https://vivekfy.fanclub.rocks/audio?url=https://youtu.be/"+id;
         //location.href= "https://vivekfy.vercel.app/download/audio?url=https://youtu.be/"+id;
@@ -1548,7 +1547,7 @@ volumeSlider.addEventListener('input', function () {
 
 const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle');
-const thumbnailElement = document.getElementById('SThumb2');
+const thumbnailElement = document.getElementById('SThumb');
 const nextButtonElement = document.getElementById('nextbutto'); // Updated ID for the next button
 const heartButtonElement = document.getElementById('VFYmp3v2'); // ID for the heart button
 const downloadButtonElement = document.getElementById('VFYmp3'); // ID for the download button
@@ -2295,7 +2294,7 @@ recognition.onresult = function(event) {
         audio.play();
     }
 </script>
-<b id="SThumb2"></b>
+
 <b id="VFYmp3v2"></b>            
 <div id="AdVideo"></div>            
 <div id="AdAudio"></div>
@@ -4398,6 +4397,7 @@ z-imdex:999999;
   left: 0px;
 }
 </style>	
+
 
 
 
