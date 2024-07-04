@@ -1545,146 +1545,74 @@ volumeSlider.addEventListener('input', function () {
 
 
 
-const titleaudio = document.getElementById('SAudio');
-const songTitleElement = document.getElementById('vfytitle');
-const thumbnailElement = document.getElementById('SThumb');
-const nextButtonElement = document.getElementById('nextbutto'); // Updated ID for the next button
-const heartButtonElement = document.getElementById('VFYmp3v2'); // ID for the heart button
-const downloadButtonElement = document.getElementById('VFYmp3'); // ID for the download button
+// Add next, previous, and repeat functions to the audio player
+audio.addEventListener("ended", function() {
+  playNextSong();
+});
 
-// Function to update Media Session metadata
+function playNextSong() {
+  var nextSongIndex = Sid + 1;
+  var playlistItems = document.getElementsByClassName("list");
+  if (nextSongIndex < playlistItems.length) {
+    playlistItems[nextSongIndex].click();
+    audio.play();
+  } else {
+    console.log('End of playlist');
+  }
+}
+
+function playPreviousSong() {
+  var previousSongIndex = Sid - 1;
+  var playlistItems = document.getElementsByClassName("list");
+  if (previousSongIndex >= 0) {
+    playlistItems[previousSongIndex].click();
+    audio.play();
+  } else {
+    console.log('Start of playlist');
+  }
+}
+
+function repeatSong() {
+  audio.currentTime = 0;
+  audio.play();
+}
+
+// Add next, previous, and repeat buttons to the audio player
+var nextButton = document.getElementById("nextbutto");
+nextButton.addEventListener("click", playNextSong);
+
+var previousButton = document.getElementById("previousbutto");
+previousButton.addEventListener("click", playPreviousSong);
+
+var repeatButton = document.getElementById("repeatbutto");
+repeatButton.addEventListener("click", repeatSong);
+
+// Update the Media Session API notification with the song title, thumbnail, and channel name
 function updateMediaSessionMetadata() {
-    const songTitle = songTitleElement.textContent;
-    const thumbnailUrl = thumbnailElement.src;
-
-    if ('mediaSession' in navigator) {
-        navigator.mediaSession.metadata = new MediaMetadata({
-            title: songTitle,
-            artist: 'status vivekfy.ai',
-            album: 'VivekFy',
-            artwork: [
-                { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '192x192', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '256x256', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
-            ]
-        });
-
-        // Set action handlers
-        navigator.mediaSession.setActionHandler('play', () => {
-            titleaudio.play();
-        });
-        navigator.mediaSession.setActionHandler('pause', () => {
-            titleaudio.pause();
-        });
-        navigator.mediaSession.setActionHandler('nexttrack', () => {
-            nextButtonElement.click();
-        });
-        navigator.mediaSession.setActionHandler('previoustrack', () => {
-            heartButtonElement.click();
-        });
-        navigator.mediaSession.setActionHandler('seekbackward', () => {
-            titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
-        });
-        navigator.mediaSession.setActionHandler('seekforward', () => {
-            titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
-        });
-    } else {
-        console.log('The Media Session API is not supported in this browser.');
-    }
+  const songTitle = songTitleElement.textContent;
+  const thumbnailUrl = thumbnailElement.src;
+  const channelName = "VIVEKFY-AI"; // Replace with the actual channel name
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: songTitle,
+      artist: channelName,
+      album: 'VivekFy',
+      artwork: [
+        { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
+        { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
+        { src: thumbnailUrl, sizes: '192x192', type: 'image/jpg' },
+        { src: thumbnailUrl, sizes: '256x256', type: 'image/jpg' },
+        { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
+        { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
+      ]
+    });
+    navigator.mediaSession.setActionHandler('nexttrack', playNextSong);
+    navigator.mediaSession.setActionHandler('previoustrack', playPreviousSong);
+    navigator.mediaSession.setActionHandler('repeat', repeatSong);
+  } else {
+    console.log('The Media Session API is not supported in this browser.');
+  }
 }
-
-// Function to show notification with "next song", "heart", and "download" buttons
-function showNotification() {
-    const songTitle = songTitleElement.textContent;
-    const thumbnailUrl = thumbnailElement.src;
-
-    const options = {
-        body: 'Audio is playing',
-        icon: thumbnailUrl,
-        actions: [
-            {
-                action: 'next',
-                title: 'Next Song',
-                icon: 'path/to/next-icon.png' // Provide the path to your next icon
-            },
-            {
-                action: 'heart',
-                title: 'Favorite',
-                icon: 'path/to/heart-icon.png' // Provide the path to your heart icon
-            },
-            {
-                action: 'download',
-                title: 'Download',
-                icon: 'path/to/download-icon.png' // Provide the path to your download icon
-            }
-        ]
-    };
-
-    if (Notification.permission === 'granted') {
-        const notification = new Notification(songTitle, options);
-        notification.addEventListener('click', (event) => {
-            if (event.action === 'next') {
-                nextButtonElement.click();
-            } else if (event.action === 'heart') {
-                heartButtonElement.click();
-            } else if (event.action === 'download') {
-                downloadButtonElement.click();
-            }
-        });
-    } else if (Notification.permission !== 'denied') {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                const notification = new Notification(songTitle, options);
-                notification.addEventListener('click', (event) => {
-                    if (event.action === 'next') {
-                        nextButtonElement.click();
-                    } else if (event.action === 'heart') {
-                        heartButtonElement.click();
-                    } else if (event.action === 'download') {
-                        downloadButtonElement.click();
-                    }
-                });
-            }
-        });
-    }
-}
-
-// Update the Media Session metadata initially
-updateMediaSessionMetadata();
-
-titleaudio.addEventListener('play', () => {
-    document.title = songTitleElement.textContent + ' - ' + titleaudio.currentTime + ' seconds';
-    showNotification();
-});
-
-titleaudio.addEventListener('pause', () => {
-    document.title = 'VIVEKFY-AI';
-});
-
-// Add event listener for the next button
-nextButtonElement.addEventListener('click', () => {
-    // Your logic to play the next song
-    console.log('Next song button clicked');
-    // Example: titleaudio.src = 'path/to/next/song.mp3';
-    // titleaudio.play();
-});
-
-// Add event listener for the heart button
-heartButtonElement.addEventListener('click', () => {
-    // Your logic for the heart button
-    console.log('Heart button clicked');
-    // Example: mark the song as favorite
-});
-
-// Add event listener for the download button
-downloadButtonElement.addEventListener('click', () => {
-    // Your logic for the download button
-    console.log('Download button clicked');
-    // Example: initiate download
-});
 
 
     
