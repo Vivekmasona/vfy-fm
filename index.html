@@ -1456,24 +1456,28 @@ audio.addEventListener("ended", function() {
 
 document.addEventListener("DOMContentLoaded", function() {
     var audio = document.getElementById("SAudio");
-    var Sid = 0; // Current song index
+    var preButton = document.getElementById("preButton");
+
+    // Initialize Sid to track the current song index
+    var Sid = 0;
 
     // Function to update song information
     function updateSongInfo(index) {
         var playlistItems = document.getElementsByClassName("list");
         if (index >= 0 && index < playlistItems.length) {
+            // Update Sid to the selected song index
+            Sid = index;
+            // Select the song visually (not playing audio, just updating UI)
             var selectedSong = playlistItems[index];
             var thumbnail = $(selectedSong).children('img').attr("src");
             var videoId = $(selectedSong).attr("vid");
             $("#profileThumbnail").html('<img src="' + thumbnail + '" alt="Profile Thumbnail">');
             $("#profileThumbnail").data("videoId", videoId);
-            Sid = index; // Update Sid to the selected song index
             console.log('Selected song:', Sid);
         }
     }
 
     // Event listener for Previous button
-    var preButton = document.getElementById("preButton");
     preButton.addEventListener("click", function() {
         updateSongInfo(Sid - 1); // Select previous song
     });
@@ -1481,9 +1485,6 @@ document.addEventListener("DOMContentLoaded", function() {
     // Initial setup: select the first song in the playlist
     updateSongInfo(Sid);
 });
-
-
-	
 
 // Listen for the 'error' event
 var alternativeAudioSources = [
