@@ -3411,7 +3411,7 @@ background: radial-gradient(circle, rgba(59,175,194,0.9557312232860621) 0%, rgba
       </h1>
       <span class="artist"></span>
 <div id="downloadButtonDiv"></div>
-
+<div id="transcript"></div>
 	    
     </div> <!-- /song-details -->
 
@@ -4399,7 +4399,46 @@ z-imdex:999999;
 </style>	
 
 
+<script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const audio = document.getElementById('SAudio');
+            const transcriptContainer = document.getElementById('transcript');
 
+            // Fetch the transcript
+            fetch('https://youtube-transcriber-api.vercel.app/v1/transcripts?id=B2aHXbnu9dI&lang=')
+                .then(response => response.json())
+                .then(data => {
+                    const transcriptText = data.transcripts[0].text;
+                    const words = transcriptText.split(' ');
+
+                    // Assuming an approximate total duration of the audio
+                    const totalDuration = 180; // Change this to the actual duration of the audio in seconds
+                    const wordsPerSecond = words.length / totalDuration;
+                    let currentTime = 0;
+
+                    words.forEach((word, index) => {
+                        const span = document.createElement('span');
+                        span.textContent = word + ' ';
+                        span.classList.add('hidden');
+                        span.setAttribute('data-time', (currentTime).toFixed(2));
+                        transcriptContainer.appendChild(span);
+                        currentTime += 1 / wordsPerSecond;
+                    });
+
+                    audio.addEventListener('timeupdate', () => {
+                        const currentTime = audio.currentTime;
+                        const spans = transcriptContainer.getElementsByTagName('span');
+                        for (let i = 0; i < spans.length; i++) {
+                            if (parseFloat(spans[i].getAttribute('data-time')) <= currentTime) {
+                                spans[i].classList.remove('hidden');
+                            } else {
+                                spans[i].classList.add('hidden');
+                            }
+                        }
+                    });
+                });
+        });
+    </script>
 
 
 
