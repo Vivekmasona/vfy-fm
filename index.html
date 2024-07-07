@@ -1605,7 +1605,6 @@ volumeSlider.addEventListener('input', function () {
 
 
 
-
 const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle');
 const thumbnailElement = document.getElementById('SThumb');
@@ -1624,14 +1623,14 @@ async function fetchLyrics(url) {
 }
 
 // Function to update Media Session metadata
-function updateMediaSessionMetadata() {
+function updateMediaSessionMetadata(currentLyrics = '') {
     const songTitle = songTitleElement.textContent;
     const thumbnailUrl = thumbnailElement.src;
 
     if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
             title: songTitle,
-            artist: 'status vivekfy.ai',
+            artist: currentLyrics || 'status vivekfy.ai',
             album: 'VivekFy',
             artwork: [
                 { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
@@ -1744,6 +1743,10 @@ function displayAndSyncLyrics() {
             if (currentLine > 0) {
                 transcriptElement.children[currentLine - 1].classList.remove('highlight');
             }
+
+            // Update Media Session metadata with current lyrics line
+            updateMediaSessionMetadata(lyrics[currentLine].text);
+
             currentLine++;
         }
 
@@ -1793,8 +1796,9 @@ downloadButtonElement.addEventListener('click', () => {
     console.log('Download button clicked');
     // Example: initiate download
 });
+
     
-                
+
     
 
 
