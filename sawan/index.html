@@ -142,7 +142,6 @@
 
 
 
-
 <div id="searchBox">
   <input type="text" id="searchInput" placeholder="Vivekfy Song Store">
   <button id="searchButton" onclick="searchSongs()"><i class="fas fa-search"></i></button>
@@ -227,15 +226,26 @@
       }, 60000);
 
       // Update Media Session metadata
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: song.name,
-        artist: song.artist || 'Unknown Artist', // Fallback if artist is not available
-        album: song.album || 'Unknown Album', // Fallback if album is not available
-        artwork: [
-          { src: song.image[2]?.link, sizes: '150x150', type: 'image/png' },
-          { src: song.image[3]?.link, sizes: '500x500', type: 'image/png' },
-        ]
-      });
+      if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: song.name,
+          artist: song.artist || 'Unknown Artist', // Fallback if artist is not available
+          album: song.album || 'VivekFy', // Fallback if album is not available
+          artwork: [
+            { src: song.image[2]?.link, sizes: '96x96', type: 'image/jpg' },
+            { src: song.image[2]?.link, sizes: '128x128', type: 'image/jpg' },
+            { src: song.image[2]?.link, sizes: '192x192', type: 'image/jpg' },
+            { src: song.image[2]?.link, sizes: '256x256', type: 'image/jpg' },
+            { src: song.image[2]?.link, sizes: '384x384', type: 'image/jpg' },
+            { src: song.image[2]?.link, sizes: '512x512', type: 'image/jpg' },
+          ]
+        });
+
+        navigator.mediaSession.setActionHandler('play', togglePlayPause);
+        navigator.mediaSession.setActionHandler('pause', togglePlayPause);
+        navigator.mediaSession.setActionHandler('previoustrack', playPreviousSong);
+        navigator.mediaSession.setActionHandler('nexttrack', playNextSong);
+      }
     } else {
       console.log('Song URL not found.');
     }
@@ -322,14 +332,6 @@
         });
     }
   }
-
-  // Media Session API action handlers
-  if ('mediaSession' in navigator) {
-    navigator.mediaSession.setActionHandler('play', togglePlayPause);
-    navigator.mediaSession.setActionHandler('pause', togglePlayPause);
-    navigator.mediaSession.setActionHandler('previoustrack', playPreviousSong);
-    navigator.mediaSession.setActionHandler('nexttrack', playNextSong);
-  }
 </script>
 
 <!--!doctype-->
@@ -337,7 +339,6 @@
 <div class="clear"></div>
 </div></div>
 <!-- Please Keep The Credits -->
-
 
 
 
