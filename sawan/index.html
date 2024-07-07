@@ -229,7 +229,7 @@
       if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
           title: song.name,
-          artist: song.artist || 'Unknown Artist', // Fallback if artist is not available
+          artist: song.primaryArtists || 'Unknown Artist', // Fetch primaryArtists from the JSON data
           album: song.album || 'VivekFy', // Fallback if album is not available
           artwork: [
             { src: song.image[2]?.link, sizes: '96x96', type: 'image/jpg' },
@@ -339,9 +339,6 @@
 <div class="clear"></div>
 </div></div>
 <!-- Please Keep The Credits -->
-
-
-
 
 
 
