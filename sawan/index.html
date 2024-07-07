@@ -141,6 +141,8 @@
   </style>
 
 
+
+
 <div id="searchBox">
   <input type="text" id="searchInput" placeholder="Vivekfy Song Store">
   <button id="searchButton" onclick="searchSongs()"><i class="fas fa-search"></i></button>
@@ -227,8 +229,8 @@
       // Update Media Session metadata
       navigator.mediaSession.metadata = new MediaMetadata({
         title: song.name,
-        artist: song.artist,
-        album: song.album,
+        artist: song.artist || 'Unknown Artist', // Fallback if artist is not available
+        album: song.album || 'Unknown Album', // Fallback if album is not available
         artwork: [
           { src: song.image[2]?.link, sizes: '150x150', type: 'image/png' },
           { src: song.image[3]?.link, sizes: '500x500', type: 'image/png' },
@@ -335,6 +337,11 @@
 <div class="clear"></div>
 </div></div>
 <!-- Please Keep The Credits -->
+
+
+
+
+
 
 
 <script type="text/javascript" src="https://www.blogger.com/static/v1/widgets/679989195-widgets.js"></script>
