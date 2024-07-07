@@ -6,6 +6,8 @@
 <meta content='width=device-width, user-scalable=no' name='viewport'>
 </meta>
 <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
+  <!doctype html>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
     body {
       margin: 0;
@@ -39,7 +41,7 @@
       padding: 10px;
       border: none;
       border-radius: 20px;
-      background-color:#E74C3C;
+      background-color: #E74C3C;
       color: #E74C3C;
       font-size: 16px;
       outline: none;
@@ -55,8 +57,8 @@
       height: 40px;
       border: none;
       border-radius: 20px;
-      background-color:#E74C3C;
-      color:#fff;
+      background-color: #E74C3C;
+      color: #fff;
       font-size: 16px;
       cursor: pointer;
       margin-left: 10px;
@@ -113,28 +115,89 @@
       width: 100%;
     }
 
-    
+    #overlayListButton {
+      position: fixed;
+      bottom: 70px; /* Adjust as needed to position above the footer */
+      right: 10px;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background-color 0.3s ease-in-out;
+    }
+
+    #overlayListButton:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    #overlayListButton i {
+      color: #E74C3C;
+      font-size: 24px;
+    }
+
+    #overlayListContainer {
+      position: fixed;
+      bottom: 140px; /* Adjust to align with the overlay list button */
+      right: 0;
+      width: 250px; /* Adjust width as needed */
+      background-color: rgba(0, 0, 0, 0.8);
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      overflow-y: auto; /* Enable scrolling if needed */
+      max-height: calc(100vh - 200px); /* Adjust max height based on your layout */
+      display: none; /* Hide initially */
+    }
+
+    #overlayListContainer.visible {
+      display: block;
+    }
+
+    #overlayListContainer div {
+      padding: 10px;
+      color: white;
+      border-bottom: 1px solid #555;
+      cursor: pointer;
+      transition: background-color 0.3s ease-in-out;
+    }
+
+    #overlayListContainer div:last-child {
+      border-bottom: none;
+    }
+
+    #overlayListContainer div:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
   </style>
 
 
 
 <div id="searchBox">
-  <input type="text" id="searchInput" placeholder="Vivekfy Song Store">
+  <input type="text" id="searchInput" placeholder="Vivekfy Song Store" />
   <button id="searchButton" onclick="searchSongs()"><i class="fas fa-search"></i></button>
 </div>
 
+<div id="searchesults"></div> <!-- Container for search results -->
+
 <div id="footer">
-  <img id="poster" src="/img/newdp.png" alt="vivekmasona">
+  <img id="poster" src="/img/newdp.png" alt="vivekmasona" />
   <i id="prevIcon" class="fas fa-step-backward" onclick="playPreviousSong()"></i>
   <i id="playPauseIcon" class="fas fa-play" onclick="togglePlayPause()"></i>
   <i id="nextIcon" class="fas fa-step-forward" onclick="playNextSong()"></i>
-  <input type="range" id="seekBar" value="0" step="1" style="flex-grow: 1; background-color: #E74C3C;"> <!-- Set seek bar color -->
+  <input type="range" id="seekBar" value="0" step="1" style="flex-grow: 1; background-color: #E74C3C;" /> <!-- Set seek bar color -->
   <i id="micIcon" class="fas fa-microphone"></i>
 </div>
 
 <p id="currentSongTitle"></p>
 
 <audio id="audioPlayer" controls=""></audio>
+
+<div id="overlayListButton">
+  <i class="fas fa-list" onclick="toggleOverlayList()"></i>
+</div>
+
+<div id="overlayListContainer">
+  <!-- List of songs will be dynamically added here -->
+</div>
 
 <script>
   var recognition = new webkitSpeechRecognition();
@@ -148,6 +211,7 @@
   var seekBar = document.getElementById('seekBar');
   var watermarkDiv = document.getElementById('watermark');
   var searchInput = document.getElementById('searchInput');
+  var searchResults = document.getElementById('searchResults');
   var isPlaying = false;
   var playlist = [];
   var currentSongIndex = 0;
@@ -206,94 +270,45 @@
         navigator.mediaSession.metadata = new MediaMetadata({
           title: song.name,
           artist: song.primaryArtists || 'Unknown Artist', // Fetch primaryArtists from the JSON data
-          album: song.album || 'VivekFy', // Fallback if album is not available
-          artwork: [
-            { src: song.image[2]?.link, sizes: '96x96', type: 'image/jpg' },
-            { src: song.image[2]?.link, sizes: '128x128', type: 'image/jpg' },
-            { src: song.image[2]?.link, sizes: '192x192', type: 'image/jpg' },
-            { src: song.image[2]?.link, sizes: '256x256', type: 'image/jpg' },
-            { src: song.image[2]?.link, sizes: '384x384', type: 'image/jpg' },
-            { src: song.image[2]?.link, sizes: '512x512', type: 'image/jpg' },
-          ]
-        });
+            album: song.album || 'VivekFy', // Fallback if album is not available
+            artwork: [
+              { src: song.image[2]?.link, sizes: '96x96', type: 'image/jpg' },
+              { src: song.image[2]?.link, sizes: '128x128', type: 'image/jpg' },
+              { src: song.image[2]?.link, sizes: '192x192', type: 'image/jpg' },
+              { src: song.image[2]?.link, sizes: '256x256', type: 'image/jpg' },
+              { src: song.image[2]?.link, sizes: '384x384', type: 'image/jpg' },
+              { src: song.image[2]?.link, sizes: '512x512', type: 'image/jpg' },
+            ]
+          });
 
-        navigator.mediaSession.setActionHandler('play', togglePlayPause);
-        navigator.mediaSession.setActionHandler('pause', togglePlayPause);
-        navigator.mediaSession.setActionHandler('previoustrack', playPreviousSong);
-        navigator.mediaSession.setActionHandler('nexttrack', playNextSong);
+          navigator.mediaSession.setActionHandler('play', togglePlayPause);
+          navigator.mediaSession.setActionHandler('pause', togglePlayPause);
+          navigator.mediaSession.setActionHandler('previoustrack', playPreviousSong);
+          navigator.mediaSession.setActionHandler('nexttrack', playNextSong);
+        }
+      } else {
+        console.log('Song URL not found.');
       }
-    } else {
-      console.log('Song URL not found.');
     }
-  }
 
-  // Function to toggle play/pause
-  function togglePlayPause() {
-    if (isPlaying) {
-      audioPlayer.pause();
-      playPauseIcon.className = 'fas fa-play';
-      isPlaying = false;
-    } else {
-      playSongAtIndex(currentSongIndex);
-    }
-  }
-
-  // Event listener for speech recognition results
-  recognition.onresult = function(event) {
-    var spokenText = event.results[0][0].transcript.trim();
-    console.log('Spoken Text:', spokenText);
-
-    // Make API request to your server with the spoken text as the search query
-    fetch(`https://svn-vivekfy.vercel.app/search/songs?query=${encodeURIComponent(spokenText)}`)
-      .then(response => response.json())
-      .then(data => {
-        // Update the playlist with the new songs
-        playlist = data?.data?.results || [];
-        currentSongIndex = 0;
-
-        // Play the first song in the playlist
+    // Function to toggle play/pause
+    function togglePlayPause() {
+      if (isPlaying) {
+        audioPlayer.pause();
+        playPauseIcon.className = 'fas fa-play';
+        isPlaying = false;
+      } else {
         playSongAtIndex(currentSongIndex);
-      })
-      .catch(error => {
-        console.error('Error fetching song data:', error);
-      });
-  };
-
-  // Event listener for speech recognition error
-  recognition.onerror = function(event) {
-    console.error('Speech recognition error:', event.error);
-  };
-
-  // Event listener to update seek bar as the song plays
-  audioPlayer.addEventListener('timeupdate', function() {
-    seekBar.value = audioPlayer.currentTime;
-  });
-
-  // Event listener to play the next song when the current one ends
-  audioPlayer.addEventListener('ended', function() {
-    playNextSong();
-  });
-
-  // Event listener for seek bar changes
-  seekBar.addEventListener('input', function() {
-    audioPlayer.currentTime = seekBar.value;
-  });
-
-  // Event listener for mic icon click to toggle voice recognition
-  micIcon.addEventListener('click', function() {
-    if (recognition.isStarted) {
-      recognition.stop();
-    } else {
-      recognition.start();
+      }
     }
-  });
 
-  // Function to search for songs based on input
-  function searchSongs() {
-    const searchTerm = searchInput.value.trim();
-    if (searchTerm !== '') {
-      // Make API request to your server with the search term as the query
-      fetch(`https://svn-vivekfy.vercel.app/search/songs?query=${encodeURIComponent(searchTerm)}`)
+    // Event listener for speech recognition results
+    recognition.onresult = function(event) {
+      var spokenText = event.results[0][0].transcript.trim();
+      console.log('Spoken Text:', spokenText);
+
+      // Make API request to your server with the spoken text as the search query
+      fetch(`https://svn-vivekfy.vercel.app/search/songs?query=${encodeURIComponent(spokenText)}`)
         .then(response => response.json())
         .then(data => {
           // Update the playlist with the new songs
@@ -302,19 +317,173 @@
 
           // Play the first song in the playlist
           playSongAtIndex(currentSongIndex);
+
+          // Display search results
+          displaySearchResults(playlist);
         })
         .catch(error => {
           console.error('Error fetching song data:', error);
         });
+    };
+
+    // Event listener for speech recognition error
+    recognition.onerror = function(event) {
+      console.error('Speech recognition error:', event.error);
+    };
+
+    // Event listener to update seek bar as the song plays
+    audioPlayer.addEventListener('timeupdate', function() {
+      seekBar.value = audioPlayer.currentTime;
+    });
+
+    // Event listener to play the next song when the current one ends
+    audioPlayer.addEventListener('ended', function() {
+      playNextSong();
+    });
+
+    // Event listener for seek bar changes
+    seekBar.addEventListener('input', function() {
+      audioPlayer.currentTime = seekBar.value;
+    });
+
+    // Event listener for mic icon click to toggle voice recognition
+    micIcon.addEventListener('click', function() {
+      if (recognition.isStarted) {
+        recognition.stop();
+      } else {
+        recognition.start();
+      }
+    });
+
+    // Function to search for songs based on input
+    function searchSongs() {
+      const searchTerm = searchInput.value.trim();
+      if (searchTerm !== '') {
+        // Make API request to your server with the search term as the query
+        fetch(`https://svn-vivekfy.vercel.app/search/songs?query=${encodeURIComponent(searchTerm)}`)
+          .then(response => response.json())
+          .then(data => {
+            // Update the playlist with the new songs
+            playlist = data?.data?.results || [];
+            currentSongIndex = 0;
+
+            // Play the first song in the playlist
+            playSongAtIndex(currentSongIndex);
+
+            // Display search results
+            displaySearchResults(playlist);
+          })
+          .catch(error => {
+            console.error('Error fetching song data:', error);
+          });
+      }
     }
-  }
-</script>
 
-<!--!doctype-->
-</div>
-<div class="clear"></div>
-</div></div>
-<!-- Please Keep The Credits -->
+    // Function to display search results
+    function displaySearchResults(results) {
+      searchResults.innerHTML = ''; // Clear previous results
 
+      results.forEach(song => {
+        const songElement = document.createElement('div');
+        songElement.style.display = 'flex';
+        songElement.style.alignItems = 'center';
+        songElement.style.padding = '10px';
+        songElement.style.cursor = 'pointer';
 
+        const poster = document.createElement('img');
+        poster.src = song.image[1]?.link; // Use "80x80" quality for poster
+        poster.alt = song.name;
+        poster.style.width = '80px';
+        poster.style.height = '80px';
+        poster.style.objectFit = 'cover';
+        poster.style.marginRight = '10px';
 
+        const songInfo = document.createElement('div');
+        songInfo.style.flex = '1';
+
+        const songTitle = document.createElement('p');
+        songTitle.textContent = song.name;
+        songTitle.style.fontWeight = 'bold';
+        songTitle.style.margin = '0';
+
+        const songArtist = document.createElement('p');
+        songArtist.textContent = song.primaryArtists || 'Unknown Artist';
+        songArtist.style.margin = '0';
+
+        songInfo.appendChild(songTitle);
+        songInfo.appendChild(songArtist);
+
+        songElement.appendChild(poster);
+        songElement.appendChild(songInfo);
+
+        // Add click event to play the selected song
+        songElement.addEventListener('click', () => {
+          const index = playlist.findIndex(s => s.name === song.name);
+          if (index !== -1) {
+            currentSongIndex = index;
+            playSongAtIndex(currentSongIndex);
+          }
+        });
+
+        searchResults.appendChild(songElement);
+      });
+    }
+
+    // Function to toggle overlay list visibility
+    function toggleOverlayList() {
+      const overlayListContainer = document.getElementById('overlayListContainer');
+      overlayListContainer.classList.toggle('visible');
+
+      // Populate the overlay list if visible
+      if (overlayListContainer.classList.contains('visible')) {
+        populateOverlayList();
+      }
+    }
+
+    // Function to populate the overlay list with current playlist songs
+    function populateOverlayList() {
+      const overlayListContainer = document.getElementById('overlayListContainer');
+      overlayListContainer.innerHTML = ''; // Clear previous list items
+
+      playlist.forEach((song, index) => {
+        const listItem = document.createElement('div');
+        listItem.textContent = `${index + 1}. ${song.name} - ${song.primaryArtists || 'Unknown Artist'}`;
+        listItem.classList.add('overlayListItem');
+
+        listItem.addEventListener('click', () => {
+          currentSongIndex = index;
+          playSongAtIndex(currentSongIndex);
+          toggleOverlayList(); // Hide overlay list after selecting a song
+        });
+
+        overlayListContainer.appendChild(listItem);
+      });
+    }
+
+    // Initialize the audio player and media session
+    function initAudioPlayer() {
+      audioPlayer.addEventListener('loadedmetadata', function() {
+        seekBar.max = audioPlayer.duration;
+      });
+
+      audioPlayer.addEventListener('timeupdate', function() {
+        seekBar.value = audioPlayer.currentTime;
+      });
+
+      audioPlayer.addEventListener('ended', function() {
+        playNextSong();
+      });
+
+      if ('mediaSession' in navigator) {
+        navigator.mediaSession.setActionHandler('play', togglePlayPause);
+        navigator.mediaSession.setActionHandler('pause', togglePlayPause);
+        navigator.mediaSession.setActionHandler('previoustrack', playPreviousSong);
+        navigator.mediaSession.setActionHandler('nexttrack', playNextSong);
+      }
+    }
+
+    // Call function to initialize audio player and media session
+    initAudioPlayer();
+  </script>
+
+</!doctype>
