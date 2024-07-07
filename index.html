@@ -4461,26 +4461,23 @@ z-imdex:999999;
 
 
 
-
-
-
-
-    <script>
+<script>
         document.addEventListener("DOMContentLoaded", function() {
             const audio = document.getElementById('SAudio');
             const transcriptContainer = document.getElementById('transcript');
             const transcriptId = 'channelNameDiv'; // Your provided ID
             const apiUrl = `https://youtube-transcriber-api.vercel.app/v1/transcripts?id=${transcriptId}`;
 
-            // Fetch the transcript
             fetch(apiUrl)
                 .then(response => response.json())
                 .then(data => {
                     const transcriptText = data.text;
                     const words = transcriptText.split(' ');
+                    let currentLine = '';
+                    let currentLineIndex = 0;
 
                     audio.addEventListener('loadedmetadata', () => {
-                        const totalDuration = audio.duration; // Use the actual duration of the audio
+                        const totalDuration = audio.duration;
                         const wordsPerSecond = words.length / totalDuration;
                         let currentTime = 0;
 
@@ -4489,6 +4486,7 @@ z-imdex:999999;
                             span.textContent = word + ' ';
                             span.classList.add('hidden');
                             span.setAttribute('data-time', (currentTime).toFixed(2));
+                            span.setAttribute('data-index', index);
                             transcriptContainer.appendChild(span);
                             currentTime += 1 / wordsPerSecond;
                         });
@@ -4499,8 +4497,30 @@ z-imdex:999999;
                             for (let i = 0; i < spans.length; i++) {
                                 if (parseFloat(spans[i].getAttribute('data-time')) <= currentTime) {
                                     spans[i].classList.remove('hidden');
+                                    currentLine += spans[i].textContent;
+                                    if (currentLine.split(' ').length > 5) { // Adjust this to determine when a new line should start
+                                        const lineDiv = document.createElement('div');
+                                        lineDiv.textContent = currentLine;
+                                        lineDiv.classList.add('line');
+                                        lineDiv.style.top = '40px'; // Start new lines below the container
+                                        transcriptContainer.appendChild(lineDiv);
+
+                                        setTimeout(() => {
+                                            lineDiv.style.top = '0px';
+                                        }, 50); // Create the typing effect
+                                        
+                                        currentLine = '';
+                                        currentLineIndex++;
+                                    }
                                 } else {
                                     spans[i].classList.add('hidden');
+                                }
+                            }
+
+                            const lines = transcriptContainer.getElementsByClassName('line');
+                            for (let i = 0; i < lines.length; i++) {
+                                if (i < currentLineIndex - 1) {
+                                    lines[i].style.top = '-40px'; // Move old lines up and out of view
                                 }
                             }
                         });
@@ -4512,11 +4532,4 @@ z-imdex:999999;
 
 
 
-
-
-
-
-
-
-
-
+    
