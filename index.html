@@ -1605,6 +1605,8 @@ volumeSlider.addEventListener('input', function () {
 
 
 
+
+
 const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle');
 const thumbnailElement = document.getElementById('SThumb');
@@ -1620,6 +1622,7 @@ async function fetchLyrics(url) {
     const response = await fetch(url);
     const data = await response.json();
     lyrics = data.lyrics;
+    displayAndSyncLyrics();
 }
 
 // Function to update Media Session metadata
@@ -1796,9 +1799,6 @@ downloadButtonElement.addEventListener('click', () => {
     console.log('Download button clicked');
     // Example: initiate download
 });
-
-    
-
     
 
 
