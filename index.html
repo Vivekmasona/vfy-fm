@@ -4456,13 +4456,23 @@ z-imdex:999999;
         }
         .line {
             position: absolute;
-            width: 100%;
             white-space: nowrap;
             opacity: 0;
-            transition: opacity 0.5s, top 0.5s;
+            animation: scrollUp 10s linear forwards; /* Adjust animation duration as needed */
+        }
+
+        @keyframes scrollUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100%);
+            }
         }
     </style>
-
+    
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const audio = document.getElementById('SAudio');
@@ -4505,29 +4515,17 @@ z-imdex:999999;
                                         const lineDiv = document.createElement('div');
                                         lineDiv.textContent = currentLine;
                                         lineDiv.classList.add('line');
-                                        lineDiv.style.top = '40px'; // Start new lines below the container
                                         transcriptContainer.appendChild(lineDiv);
 
                                         setTimeout(() => {
-                                            lineDiv.style.opacity = '1';
-                                        }, 50); // Fade in the line
-
-                                        setTimeout(() => {
-                                            lineDiv.style.opacity = '0';
-                                        }, (lineDiv.textContent.split(' ').length * 500) + 1000); // Fade out the line
+                                            lineDiv.remove();
+                                        }, 10000); // Adjust timeout to match animation duration
                                         
                                         currentLine = '';
                                         currentLineIndex++;
                                     }
                                 } else {
                                     spans[i].classList.add('hidden');
-                                }
-                            }
-
-                            const lines = transcriptContainer.getElementsByClassName('line');
-                            for (let i = 0; i < lines.length; i++) {
-                                if (i < currentLineIndex - 1) {
-                                    lines[i].style.top = '-40px'; // Move old lines up and out of view
                                 }
                             }
                         });
