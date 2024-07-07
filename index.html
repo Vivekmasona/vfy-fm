@@ -808,7 +808,7 @@ width: 50%;
     <div data-role="main" class="ui-content">
      <input type="search"  name="search" onclick="startDictation()"  id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">SEARCH..</button></sr>
-	    
+	<button id="whatsappShareButton">Share Lyrics on WhatsApp</button>    
 	
    <div id="autocomplete-results"></div>
 
@@ -4450,109 +4450,59 @@ z-imdex:999999;
 </style>	
 
 
-    
-    
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const audio = document.getElementById('SAudio');
-            const transcriptContainer = document.getElementById('transcript');
-            const transcriptId = 'channelNameDiv'; // Your provided ID
-            const apiUrl = `https://youtube-transcriber-api.vercel.app/v1/transcripts?id=${transcriptId}`;
+   <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const audio = document.getElementById('SAudio');
+        const transcriptContainer = document.getElementById('transcript');
+        const transcriptId = 'channelNameDiv'; // Your provided ID
+        const apiUrl = `https://youtube-transcriber-api.vercel.app/v1/transcripts?id=${transcriptId}`;
 
-            fetch(apiUrl)
-                .then(response => response.json())
-                .then(data => {
-                    const transcriptText = data.text;
-                    const words = transcriptText.split(' ');
-                    let currentLine = '';
-                    let currentLineIndex = 0;
+        // Fetch the transcript
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                const transcriptText = data.text;
+                const words = transcriptText.split(' ');
 
-                    audio.addEventListener('loadedmetadata', () => {
-                        const totalDuration = audio.duration;
-                        const wordsPerSecond = words.length / totalDuration;
-                        let currentTime = 0;
+                audio.addEventListener('loadedmetadata', () => {
+                    const totalDuration = audio.duration; // Use the actual duration of the audio
+                    const wordsPerSecond = words.length / totalDuration;
+                    let currentTime = 0;
 
-                        words.forEach((word, index) => {
-                            const span = document.createElement('span');
-                            span.textContent = word + ' ';
-                            span.classList.add('hidden');
-                            span.setAttribute('data-time', (currentTime).toFixed(2));
-                            span.setAttribute('data-index', index);
-                            transcriptContainer.appendChild(span);
-                            currentTime += 1 / wordsPerSecond;
-                        });
-
-                        audio.addEventListener('timeupdate', () => {
-                            const currentTime = audio.currentTime;
-                            const spans = transcriptContainer.getElementsByTagName('span');
-
-                            for (let i = 0; i < spans.length; i++) {
-                                if (parseFloat(spans[i].getAttribute('data-time')) <= currentTime) {
-                                    spans[i].classList.remove('hidden');
-                                    currentLine += spans[i].textContent;
-                                    if (currentLine.split(' ').length > 5) { // Adjust this to determine when a new line should start
-                                        const lineDiv = document.createElement('div');
-                                        lineDiv.textContent = currentLine;
-                                        lineDiv.classList.add('line');
-                                        transcriptContainer.appendChild(lineDiv);
-
-                                        setTimeout(() => {
-                                            lineDiv.remove();
-                                        }, 10000); // Adjust timeout to match animation duration
-                                        
-                                        currentLine = '';
-                                        currentLineIndex++;
-                                    }
-                                } else {
-                                    spans[i].classList.add('hidden');
-                                }
-                            }
-                        });
+                    words.forEach((word, index) => {
+                        const span = document.createElement('span');
+                        span.textContent = word + ' ';
+                        span.classList.add('hidden');
+                        span.setAttribute('data-time', (currentTime).toFixed(2));
+                        transcriptContainer.appendChild(span);
+                        currentTime += 1 / wordsPerSecond;
                     });
-                })
-                .catch(error => console.error('Error fetching transcript:', error));
-        });
-    </script>
 
+                    audio.addEventListener('timeupdate', () => {
+                        const currentTime = audio.currentTime;
+                        const spans = transcriptContainer.getElementsByTagName('span');
+                        for (let i = 0; i < spans.length; i++) {
+                            if (parseFloat(spans[i].getAttribute('data-time')) <= currentTime) {
+                                spans[i].classList.remove('hidden');
+                            } else {
+                                spans[i].classList.add('hidden');
+                            }
+                        }
+                    });
 
+                    // WhatsApp share button functionality
+                    const whatsappShareButton = document.getElementById('whatsappShareButton');
+                    whatsappShareButton.addEventListener('click', () => {
+                        const visibleSpans = Array.from(transcriptContainer.querySelectorAll('span:not(.hidden)'));
+                        const transcriptToSend = visibleSpans.map(span => span.textContent.trim()).join(' ');
 
-
-	   <style>
-#transcript {
-            
-            
-            position: relative;
-            font-size: 20px;
-            text-align: center;
-        }
-        .line {
-            position: absolute;
-            white-space: ;
-            opacity: 0;
-            animation: scrollUp 0s linear forwards; /* Adjust animation duration as needed */
-        }
-		   
-        #output-box {
-            height: 40px; /* Fixed height for the marquee */
-            overflow: hidden; /* Hide overflow to create the scrolling effect */
-            position: relative;
-            background-color: transparent;
-            border: 0px solid #ccc;
-        }
-        .marquee {
-            position: absolute;
-            white-space: ;
-		animation: marquee 120s linear infinite; /* Adjust animation duration as needed */
-       
-             }
-
-        @keyframes marquee {
-            0% {
-                transform: translateY(100%);
-            }
-            100% {
-                transform: translateY(-100%);
-            }
-        }
-    </style>
+                        const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(transcriptToSend)}`;
+                        window.open(whatsappUrl, '_blank');
+                    });
+                });
+            })
+            .catch(error => console.error('Error fetching transcript:', error));
+    });
+</script> 
     
+  
