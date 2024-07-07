@@ -1599,16 +1599,17 @@ const titleaudio = document.getElementById('SAudio');
         const nextButtonElement = document.getElementById('nextbutto'); // Updated ID for the next button
         const heartButtonElement = document.getElementById('VFYmp3v2'); // ID for the heart button
         const downloadButtonElement = document.getElementById('VFYmp3'); // ID for the download button
+        const channelNameDiv = document.getElementById('channelNameDiv');
 
         // Function to update Media Session metadata
-        function updateMediaSessionMetadata(lyrics) {
+        function updateMediaSessionMetadata() {
             const songTitle = songTitleElement.textContent;
             const thumbnailUrl = thumbnailElement.src;
 
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: songTitle,
-                    artist: lyrics, // Use lyrics as the artist name
+                    artist: 'status vivekfy.ai',
                     album: 'VivekFy',
                     artwork: [
                         { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
@@ -1656,7 +1657,7 @@ const titleaudio = document.getElementById('SAudio');
         }
 
         // Function to show notification with "next song", "heart", and "download" buttons
-        function showNotification(lyrics) {
+        function showNotification() {
             const songTitle = songTitleElement.textContent;
             const thumbnailUrl = thumbnailElement.src;
 
@@ -1693,18 +1694,6 @@ const titleaudio = document.getElementById('SAudio');
                         downloadButtonElement.click();
                     }
                 });
-
-                // Update the artist name periodically with scrolling lyrics
-                let lyricsIndex = 0;
-                setInterval(() => {
-                    if (lyricsIndex < lyrics.length) {
-                        const updatedLyrics = lyrics.slice(lyricsIndex).join(' ');
-                        updateMediaSessionMetadata(updatedLyrics);
-                        lyricsIndex++;
-                    } else {
-                        lyricsIndex = 0; // Reset lyrics index when it reaches the end
-                    }
-                }, 2000); // Update every 2 seconds (adjust as needed)
             } else if (Notification.permission !== 'denied') {
                 Notification.requestPermission().then(permission => {
                     if (permission === 'granted') {
@@ -1718,32 +1707,37 @@ const titleaudio = document.getElementById('SAudio');
                                 downloadButtonElement.click();
                             }
                         });
-
-                        // Update the artist name periodically with scrolling lyrics
-                        let lyricsIndex = 0;
-                        setInterval(() => {
-                            if (lyricsIndex < lyrics.length) {
-                                const updatedLyrics = lyrics.slice(lyricsIndex).join(' ');
-                                updateMediaSessionMetadata(updatedLyrics);
-                                lyricsIndex++;
-                            } else {
-                                lyricsIndex = 0; // Reset lyrics index when it reaches the end
-                            }
-                        }, 2000); // Update every 2 seconds (adjust as needed)
                     }
                 });
             }
         }
 
+        // Function to scroll lyrics in the channelNameDiv
+        function scrollLyrics(lyrics) {
+            let index = 0;
+            channelNameDiv.innerHTML = '';
+
+            function displayNextLine() {
+                if (index < lyrics.length) {
+                    channelNameDiv.innerHTML = lyrics[index];
+                    index++;
+                    setTimeout(displayNextLine, 2000); // Adjust the time interval as needed
+                }
+            }
+
+            displayNextLine();
+        }
+
         // Initial function to update Media Session metadata with default artist name
-        updateMediaSessionMetadata('status vivekfy.ai');
+        updateMediaSessionMetadata();
 
         titleaudio.addEventListener('play', () => {
             document.title = songTitleElement.textContent + ' - ' + titleaudio.currentTime + ' seconds';
 
             const currentSongId = localStorage.getItem("playPresent");
             displayLyrics(currentSongId).then(lyrics => {
-                showNotification(lyrics);
+                showNotification();
+                scrollLyrics(lyrics);
             });
         });
 
@@ -1772,9 +1766,7 @@ const titleaudio = document.getElementById('SAudio');
             console.log('Download button clicked');
             // Example: initiate download
         });
-
-    
-                
+            
     
 
 
