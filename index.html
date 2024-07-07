@@ -23,7 +23,7 @@
   <script src="connect/player.js" defer></script>
 
 
-    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
     
@@ -85,21 +85,40 @@ if (window !== window.top) {
 
 	
 </style>
+
+
 <style>
-        #transcript {
+        #transcriptContainer {
             font-family: Arial, sans-serif;
-            white-space: pre-wrap;
             position: fixed;
             top: 0;
             width: 100%;
-            background-color: rgba(255, 255, 255, 0.8);
+            background-color: rgba(255, 255, 255, 0.0);
             z-index: 1000;
             padding: 5px;
+            overflow: hidden;
+        }
+        #transcript {
+            display: inline-block;
+            white-space: nowrap;
+            animation: typing 0s steps(1) forwards;
+            visibility: hidden;
+        }
+        .visible {
+            visibility: visible;
         }
         .hidden {
             visibility: hidden;
         }
-</style>
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+    </style>
+
+
+
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Khula:wght@400;600;700&family=Public+Sans:wght@100;300;400;600&display=swap');
 
@@ -1389,35 +1408,26 @@ function loadSong(song, ind) {
                         const transcriptText = data.transcripts[0].text;
                         const lines = transcriptText.split('\n');
 
-                        // Assuming an approximate total duration of the audio
-                        const totalDuration = 180; // Change this to the actual duration of the audio in seconds
-                        const linesPerSecond = lines.length / totalDuration;
-                        let currentTime = 0;
+                        let currentLineIndex = 0;
 
-                        lines.forEach((line, index) => {
-                            const div = document.createElement('div');
-                            div.textContent = line;
-                            div.classList.add('hidden');
-                            div.setAttribute('data-time', (currentTime).toFixed(2));
-                            transcriptContainer.appendChild(div);
-                            currentTime += 1 / linesPerSecond;
-                        });
+                        function showNextLine() {
+                            if (currentLineIndex < lines.length) {
+                                transcriptContainer.textContent = lines[currentLineIndex];
+                                transcriptContainer.style.animation = 'none';
+                                transcriptContainer.offsetHeight; // trigger reflow
+                                transcriptContainer.style.animation = 'typing ' + (lines[currentLineIndex].length / 10) + 's steps(' + lines[currentLineIndex].length + ') forwards';
 
-                        const audio = document.getElementById('SAudio'); // Assuming the audio element is present
-
-                        audio.addEventListener('timeupdate', () => {
-                            const currentTime = audio.currentTime;
-                            const divs = transcriptContainer.getElementsByTagName('div');
-                            for (let i = 0; i < divs.length; i++) {
-                                if (parseFloat(divs[i].getAttribute('data-time')) <= currentTime) {
-                                    divs[i].classList.remove('hidden');
-                                    divs[i].classList.add('visible');
-                                } else {
-                                    divs[i].classList.add('hidden');
-                                    divs[i].classList.remove('visible');
-                                }
+                                setTimeout(() => {
+                                    transcriptContainer.classList.add('hidden');
+                                    currentLineIndex++;
+                                    showNextLine();
+                                }, (lines[currentLineIndex].length / 10) * 1000 + 1000); // wait for animation to finish plus 1s delay
+                            } else {
+                                transcriptContainer.textContent = '';
                             }
-                        });
+                        }
+
+                        showNextLine();
                     });
             }
 
@@ -1425,8 +1435,7 @@ function loadSong(song, ind) {
             displayTranscript(id);
 
             play(id, indId);
-        }
-
+        } 
     
 
 
@@ -3472,7 +3481,9 @@ background: radial-gradient(circle, rgba(59,175,194,0.9557312232860621) 0%, rgba
       </h1>
       <span class="artist"></span>
 <div id="downloadButtonDiv"></div>
-    <div id="transcript"></div>
+    <div id="transcriptContainer">
+        <div id="transcript"></div>
+    </div>
 	    
     </div> <!-- /song-details -->
 
