@@ -1612,6 +1612,16 @@ const thumbnailElement = document.getElementById('SThumb');
 const nextButtonElement = document.getElementById('nextbutto'); // Updated ID for the next button
 const heartButtonElement = document.getElementById('VFYmp3v2'); // ID for the heart button
 const downloadButtonElement = document.getElementById('VFYmp3'); // ID for the download button
+const transcriptElement = document.getElementById('transcript'); // Element to display the lyrics
+
+let lyrics = [];
+
+// Function to fetch lyrics
+async function fetchLyrics(url) {
+    const response = await fetch(url);
+    const data = await response.json();
+    lyrics = data.lyrics;
+}
 
 // Function to update Media Session metadata
 function updateMediaSessionMetadata() {
@@ -1713,12 +1723,46 @@ function showNotification() {
     }
 }
 
+// Function to display and sync lyrics
+function displayAndSyncLyrics() {
+    let currentLine = 0;
+
+    // Clear the transcript element
+    transcriptElement.innerHTML = '';
+
+    // Display the lyrics
+    lyrics.forEach(line => {
+        const p = document.createElement('p');
+        p.textContent = line.text;
+        transcriptElement.appendChild(p);
+    });
+
+    // Sync the lyrics with the audio
+    const interval = setInterval(() => {
+        if (currentLine < lyrics.length && titleaudio.currentTime >= lyrics[currentLine].time) {
+            transcriptElement.children[currentLine].classList.add('highlight');
+            if (currentLine > 0) {
+                transcriptElement.children[currentLine - 1].classList.remove('highlight');
+            }
+            currentLine++;
+        }
+
+        if (currentLine >= lyrics.length) {
+            clearInterval(interval);
+        }
+    }, 1000);
+}
+
 // Update the Media Session metadata initially
 updateMediaSessionMetadata();
 
+// Fetch and display lyrics when the audio starts playing
 titleaudio.addEventListener('play', () => {
     document.title = songTitleElement.textContent + ' - ' + titleaudio.currentTime + ' seconds';
     showNotification();
+    fetchLyrics('path/to/lyrics.json').then(() => {
+        displayAndSyncLyrics();
+    });
 });
 
 titleaudio.addEventListener('pause', () => {
@@ -1731,6 +1775,9 @@ nextButtonElement.addEventListener('click', () => {
     console.log('Next song button clicked');
     // Example: titleaudio.src = 'path/to/next/song.mp3';
     // titleaudio.play();
+    fetchLyrics('path/to/next/lyrics.json').then(() => {
+        displayAndSyncLyrics();
+    });
 });
 
 // Add event listener for the heart button
@@ -1746,8 +1793,6 @@ downloadButtonElement.addEventListener('click', () => {
     console.log('Download button clicked');
     // Example: initiate download
 });
-
-
     
                 
     
