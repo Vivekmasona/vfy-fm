@@ -3459,8 +3459,8 @@ background: radial-gradient(circle, rgba(59,175,194,0.9557312232860621) 0%, rgba
       <span class="artist"></span>
 <div id="downloadButtonDiv"></div>
 
-	<div id="output-box"> 
-	<div class="marquee"id="transcript">	
+	<div id="output-box"> <center>
+	<div class="marquee"id="transcript"></center>	
     </div>
 	</div>
 	    
@@ -4450,32 +4450,7 @@ z-imdex:999999;
 </style>	
 
 
-    <style>
-        #transcript {
-            height: 40px;
-            overflow: hidden;
-            position: relative;
-            font-size: 20px;
-            text-align: center;
-        }
-        .line {
-            position: absolute;
-            white-space: nowrap;
-            opacity: 0;
-            animation: scrollUp 10s linear forwards; /* Adjust animation duration as needed */
-        }
-
-        @keyframes scrollUp {
-            0% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-100%);
-            }
-        }
-    </style>
+    
     
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -4547,12 +4522,12 @@ z-imdex:999999;
             height: 40px; /* Fixed height for the marquee */
             overflow: hidden; /* Hide overflow to create the scrolling effect */
             position: relative;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
+            background-color: transparent;
+            border: 0px solid #ccc;
         }
         .marquee {
             position: absolute;
-            white-space: nowrap;
+            white-space: ;
             animation: marquee 15s linear infinite; /* Adjust animation duration as needed */
         }
 
