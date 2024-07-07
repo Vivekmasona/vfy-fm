@@ -1399,8 +1399,8 @@ function play(id,Sid){
         //location.href= "https://vivekfy.fanclub.rocks/audio?url=https://youtu.be/"+id;
         //location.href= "https://vivekdl.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
     };
-	document.getElementById("lyrics").onclick = ()=>{
-        location.href= "https://youtube-transcriber-api.vercel.app/v1/transcripts?id="+id;
+	document.getElementById("Lyrics").onclick = ()=>{
+        location.href= "id="+id;
         //location.href= "https://vivekfy.fanclub.rocks/audio?url=https://youtu.be/"+id;
         //location.href= "https://vivekdl.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
     };
@@ -2910,6 +2910,7 @@ var offlineMsg = document.getElementById("offline-message");
 
 
 
+<div id="Lyrics"></div>
 
 
 
@@ -4408,6 +4409,48 @@ z-imdex:999999;
 
 
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const audio = document.getElementById('audio');
+            const transcriptContainer = document.getElementById('transcript');
+            const transcriptId = 'Lyrics'; // Replace this with the actual ID if needed
+            const apiUrl = `https://youtube-transcriber-api.vercel.app/v1/transcripts?${transcriptId}`;
+
+            // Fetch the transcript
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const transcriptText = data.transcripts[0].text;
+                    const words = transcriptText.split(' ');
+
+                    // Assuming an approximate total duration of the audio
+                    const totalDuration = 180; // Change this to the actual duration of the audio in seconds
+                    const wordsPerSecond = words.length / totalDuration;
+                    let currentTime = 0;
+
+                    words.forEach((word, index) => {
+                        const span = document.createElement('span');
+                        span.textContent = word + ' ';
+                        span.classList.add('hidden');
+                        span.setAttribute('data-time', (currentTime).toFixed(2));
+                        transcriptContainer.appendChild(span);
+                        currentTime += 1 / wordsPerSecond;
+                    });
+
+                    audio.addEventListener('timeupdate', () => {
+                        const currentTime = audio.currentTime;
+                        const spans = transcriptContainer.getElementsByTagName('span');
+                        for (let i = 0; i < spans.length; i++) {
+                            if (parseFloat(spans[i].getAttribute('data-time')) <= currentTime) {
+                                spans[i].classList.remove('hidden');
+                            } else {
+                                spans[i].classList.add('hidden');
+                            }
+                        }
+                    });
+                });
+        });
+    </script>
 
 
 
