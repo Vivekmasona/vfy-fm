@@ -4515,7 +4515,32 @@ z-imdex:999999;
     </script>
 
 
+<style>
+        #transcript {
+            height: 40px;
+            overflow: hidden;
+            position: relative;
+            font-size: 20px;
+            text-align: center;
+        }
+        .line {
+            position: absolute;
+            white-space: nowrap;
+            opacity: 0;
+            animation: scrollUp 10s linear forwards; /* Adjust animation duration as needed */
+        }
 
+        @keyframes scrollUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100%);
+            }
+        }
+    </style>
 
 	   <style>
         #output-box {
