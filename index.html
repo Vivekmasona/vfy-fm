@@ -1606,34 +1606,22 @@ volumeSlider.addEventListener('input', function () {
 
 
 
-
 const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle');
 const thumbnailElement = document.getElementById('SThumb');
 const nextButtonElement = document.getElementById('nextbutto'); // Updated ID for the next button
 const heartButtonElement = document.getElementById('VFYmp3v2'); // ID for the heart button
 const downloadButtonElement = document.getElementById('VFYmp3'); // ID for the download button
-const transcriptElement = document.getElementById('transcript'); // Element to display the lyrics
-
-let lyrics = [];
-
-// Function to fetch lyrics
-async function fetchLyrics(url) {
-    const response = await fetch(url);
-    const data = await response.json();
-    lyrics = data.lyrics;
-    displayAndSyncLyrics();
-}
 
 // Function to update Media Session metadata
-function updateMediaSessionMetadata(currentLyrics = '') {
+function updateMediaSessionMetadata() {
     const songTitle = songTitleElement.textContent;
     const thumbnailUrl = thumbnailElement.src;
 
     if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
             title: songTitle,
-            artist: currentLyrics || 'status vivekfy.ai',
+            artist: 'status vivekfy.ai',
             album: 'VivekFy',
             artwork: [
                 { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
@@ -1725,50 +1713,12 @@ function showNotification() {
     }
 }
 
-// Function to display and sync lyrics
-function displayAndSyncLyrics() {
-    let currentLine = 0;
-
-    // Clear the transcript element
-    transcriptElement.innerHTML = '';
-
-    // Display the lyrics
-    lyrics.forEach(line => {
-        const p = document.createElement('p');
-        p.textContent = line.text;
-        transcriptElement.appendChild(p);
-    });
-
-    // Sync the lyrics with the audio
-    const interval = setInterval(() => {
-        if (currentLine < lyrics.length && titleaudio.currentTime >= lyrics[currentLine].time) {
-            transcriptElement.children[currentLine].classList.add('highlight');
-            if (currentLine > 0) {
-                transcriptElement.children[currentLine - 1].classList.remove('highlight');
-            }
-
-            // Update Media Session metadata with current lyrics line
-            updateMediaSessionMetadata(lyrics[currentLine].text);
-
-            currentLine++;
-        }
-
-        if (currentLine >= lyrics.length) {
-            clearInterval(interval);
-        }
-    }, 1000);
-}
-
 // Update the Media Session metadata initially
 updateMediaSessionMetadata();
 
-// Fetch and display lyrics when the audio starts playing
 titleaudio.addEventListener('play', () => {
     document.title = songTitleElement.textContent + ' - ' + titleaudio.currentTime + ' seconds';
     showNotification();
-    fetchLyrics('path/to/lyrics.json').then(() => {
-        displayAndSyncLyrics();
-    });
 });
 
 titleaudio.addEventListener('pause', () => {
@@ -1781,9 +1731,6 @@ nextButtonElement.addEventListener('click', () => {
     console.log('Next song button clicked');
     // Example: titleaudio.src = 'path/to/next/song.mp3';
     // titleaudio.play();
-    fetchLyrics('path/to/next/lyrics.json').then(() => {
-        displayAndSyncLyrics();
-    });
 });
 
 // Add event listener for the heart button
@@ -1799,6 +1746,10 @@ downloadButtonElement.addEventListener('click', () => {
     console.log('Download button clicked');
     // Example: initiate download
 });
+
+
+    
+                
     
 
 
