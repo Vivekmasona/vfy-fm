@@ -1403,7 +1403,7 @@ function loadSong(song, ind) {
                             currentTime += 1 / linesPerSecond;
                         });
 
-                        const audio = document.getElementById('audio'); // Assuming the audio element is present
+                        const audio = document.getElementById('SAudio'); // Assuming the audio element is present
 
                         audio.addEventListener('timeupdate', () => {
                             const currentTime = audio.currentTime;
