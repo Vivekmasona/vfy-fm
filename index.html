@@ -1407,6 +1407,7 @@ function loadSong(song, ind) {
                     .then(data => {
                         const transcriptText = data.transcripts[0].text;
                         const lines = transcriptText.split('\n');
+                        const audioPlayer = document.getElementById('SAudio');
 
                         let currentLineIndex = 0;
 
@@ -1427,6 +1428,14 @@ function loadSong(song, ind) {
                             }
                         }
 
+                        audioPlayer.addEventListener('timeupdate', () => {
+                            const currentTime = audioPlayer.currentTime;
+                            const lineTime = parseFloat(lines[currentLineIndex].split(' ')[0]);
+                            if (currentTime >= lineTime) {
+                                showNextLine();
+                            }
+                        });
+
                         showNextLine();
                     });
             }
@@ -1435,7 +1444,7 @@ function loadSong(song, ind) {
             displayTranscript(id);
 
             play(id, indId);
-        } 
+        }
     
 
 
