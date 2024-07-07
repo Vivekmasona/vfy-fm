@@ -811,7 +811,8 @@ width: 50%;
 	    
 	
    <div id="autocomplete-results"></div>
-<div id="transcript"></div>
+<div id="channelNameDiv"></div>
+    <div id="transcript"></div>
     
     </div> 
 	 
@@ -1315,56 +1316,102 @@ $("#closePopup").click(function() {
 	
 	
 function loadSong(song, ind) {
-    var id = $(song).attr("vid");
-    var indId = parseInt($(song).attr("index"));
-    var thumbnail = 'https://img.youtube.com/vi/' + id + '/sddefault.jpg';
-    var title = $(song).text();
+            var id = $(song).attr("vid");
+            var indId = parseInt($(song).attr("index"));
+            var thumbnail = 'https://img.youtube.com/vi/' + id + '/sddefault.jpg';
+            var title = $(song).text();
 
-    localStorage.setItem("playPresent", id);
-    localStorage.setItem("thumbnail", thumbnail);
-    $("#thumbnail").attr("src", thumbnail);
+            localStorage.setItem("playPresent", id);
+            localStorage.setItem("thumbnail", thumbnail);
+            $("#thumbnail").attr("src", thumbnail);
 
-    // Set the profile ID
-    localStorage.setItem("profileID", id);
-    $("#profileID").text("Profile ID: " + id);
+            // Set the profile ID
+            localStorage.setItem("profileID", id);
+            $("#profileID").text("Profile ID: " + id);
 
-    // Set the profile thumbnail and video ID
-    $("#profileThumbnail").html('<img src="' + thumbnail + '" alt="Profile Thumbnail">');
-    $("#profileThumbnail").data("videoId", id);
+            // Set the profile thumbnail and video ID
+            $("#profileThumbnail").html('<img src="' + thumbnail + '" alt="Profile Thumbnail">');
+            $("#profileThumbnail").data("videoId", id);
 
-    // Set the title text to the marquee div with ID "vfytitle"
-    $("#vfytitle").html('<marquee behavior="alternate" scrollamount="4" onmousedown="this.stop();" onmouseup="this.start();">' + title + '</marquee>');
+            // Set the title text to the marquee div with ID "vfytitle"
+            $("#vfytitle").html('<marquee behavior="alternate" scrollamount="4" onmousedown="this.stop();" onmouseup="this.start();">' + title + '</marquee>');
 
-    // Set the current time title to the div with ID "currentTimeTitle"
-    $("#currentTimeTitle").text("Current Time: " + new Date().toLocaleTimeString());
+            // Set the current time title to the div with ID "currentTimeTitle"
+            $("#currentTimeTitle").text("Current Time: " + new Date().toLocaleTimeString());
 
-    // Set the current song title with marquee effect to the div with ID "currentSongTitle"
-    $("#currentSongTitle").html('<marquee behavior="alternate" scrollamount="1" onmousedown="this.stop();" onmouseup="this.start();">' + title + '</marquee>');
-    
-    // Create a div with ID "currentSongOutput" to display video ID and max resolution thumbnail
-    $("#currentSongOutput").html('Video ID: ' + id + '<br>' +
-                                 'Max Resolution Thumbnail: <img src="' + thumbnail + '" alt="Current Song Thumbnail" style="max-width:100%; max-height:100%;">');
+            // Set the current song title with marquee effect to the div with ID "currentSongTitle"
+            $("#currentSongTitle").html('<marquee behavior="alternate" scrollamount="1" onmousedown="this.stop();" onmouseup="this.start();">' + title + '</marquee>');
+            
+            // Create a div with ID "currentSongOutput" to display video ID and max resolution thumbnail
+            $("#currentSongOutput").html('Video ID: ' + id + '<br>' +
+                                         'Max Resolution Thumbnail: <img src="' + thumbnail + '" alt="Current Song Thumbnail" style="max-width:100%; max-height:100%;">');
 
-    // Create a div with ID "channelNameDiv" to display the channel ID
-    $("#channelNameDiv").text("" + id);
+            // Create a div with ID "channelNameDiv" to display the channel ID
+            $("#channelNameDiv").text("https://youtube-transcriber-api.vercel.app/v1/transcripts?id=" + id);
 
-    // Add the download button dynamically to the "downloadButtonDiv" within an iframe without border
-    var downloadButton = $('<iframe id="downloadIframe" src="save?url=' + id + '" width="80%" height="50px" frameborder="0" border-radius="50px 10px 50px 10px"></iframe>');
-    $("#downloadButtonDiv").html(downloadButton);
+            // Add the download button dynamically to the "downloadButtonDiv" within an iframe without border
+            var downloadButton = $('<iframe id="downloadIframe" src="save?url=' + id + '" width="80%" height="50px" frameborder="0" border-radius="50px 10px 50px 10px"></iframe>');
+            $("#downloadButtonDiv").html(downloadButton);
 
-    // Add a click event listener to the iframe button
-    downloadButton.on('click', function(event) {
-        event.preventDefault(); // Prevent the default behavior of the link
-        // Add any additional actions or code you want to execute when the button is clicked
-        // For example, you might want to trigger a download or perform some other action
-    });
+            // Add a click event listener to the iframe button
+            downloadButton.on('click', function(event) {
+                event.preventDefault(); // Prevent the default behavior of the link
+                // Add any additional actions or code you want to execute when the button is clicked
+                // For example, you might want to trigger a download or perform some other action
+            });
 
-    // Display the current playing song ID
-    var currentPlayingSongId = localStorage.getItem("playPresent");
-    $("#currentPlayingSongId").text("Current Playing Song ID: " + currentPlayingSongId);
+            // Display the current playing song ID
+            var currentPlayingSongId = localStorage.getItem("playPresent");
+            $("#currentPlayingSongId").text("Current Playing Song ID: " + currentPlayingSongId);
 
-    play(id, indId);
-}
+            // Function to fetch and display the transcript
+            function displayTranscript(id) {
+                const transcriptContainer = document.getElementById('transcript');
+                transcriptContainer.innerHTML = ''; // Clear previous transcript
+
+                fetch('https://youtube-transcriber-api.vercel.app/v1/transcripts?id=' + id + '&lang=')
+                    .then(response => response.json())
+                    .then(data => {
+                        const transcriptText = data.transcripts[0].text;
+                        const lines = transcriptText.split('\n');
+
+                        // Assuming an approximate total duration of the audio
+                        const totalDuration = 180; // Change this to the actual duration of the audio in seconds
+                        const linesPerSecond = lines.length / totalDuration;
+                        let currentTime = 0;
+
+                        lines.forEach((line, index) => {
+                            const div = document.createElement('div');
+                            div.textContent = line;
+                            div.classList.add('hidden');
+                            div.setAttribute('data-time', (currentTime).toFixed(2));
+                            transcriptContainer.appendChild(div);
+                            currentTime += 1 / linesPerSecond;
+                        });
+
+                        const audio = document.getElementById('audio'); // Assuming the audio element is present
+
+                        audio.addEventListener('timeupdate', () => {
+                            const currentTime = audio.currentTime;
+                            const divs = transcriptContainer.getElementsByTagName('div');
+                            for (let i = 0; i < divs.length; i++) {
+                                if (parseFloat(divs[i].getAttribute('data-time')) <= currentTime) {
+                                    divs[i].classList.remove('hidden');
+                                    divs[i].classList.add('visible');
+                                } else {
+                                    divs[i].classList.add('hidden');
+                                    divs[i].classList.remove('visible');
+                                }
+                            }
+                        });
+                    });
+            }
+
+            // Call the function to display the transcript
+            displayTranscript(id);
+
+            play(id, indId);
+        }
 
     
 
