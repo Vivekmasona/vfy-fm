@@ -811,7 +811,7 @@ width: 50%;
 	    
 	
    <div id="autocomplete-results"></div>
-<div id="idvfy"></div>
+
     
     </div> 
 	 
@@ -1396,11 +1396,6 @@ function play(id,Sid){
 
 	document.getElementById("VFYmp3v2").onclick = ()=>{
         location.href= "https://vivekfy.vercel.app/download/audio?url=https://youtu.be/"+id;
-        //location.href= "https://vivekfy.fanclub.rocks/audio?url=https://youtu.be/"+id;
-        //location.href= "https://vivekdl.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
-    };
-	document.getElementById("idvfy").onclick = ()=>{
-        location.href= "id;
         //location.href= "https://vivekfy.fanclub.rocks/audio?url=https://youtu.be/"+id;
         //location.href= "https://vivekdl.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
     };
@@ -2914,7 +2909,6 @@ var offlineMsg = document.getElementById("offline-message");
 
 
 
-
 	    
 	    
 
@@ -3417,7 +3411,6 @@ background: radial-gradient(circle, rgba(59,175,194,0.9557312232860621) 0%, rgba
       </h1>
       <span class="artist"></span>
 <div id="downloadButtonDiv"></div>
-<div id="transcript"></div>
 
 	    
     </div> <!-- /song-details -->
@@ -4410,48 +4403,7 @@ z-imdex:999999;
 
 
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const audio = document.getElementById('SAudio');
-            const transcriptContainer = document.getElementById('transcript');
-            const transcriptId = 'Lyrics'; // Replace this with the actual ID if needed
-            const apiUrl = `https://youtube-transcriber-api.vercel.app/v1/transcripts?${transcriptId}`;
 
-            // Fetch the transcript
-            fetch(apiUrl)
-                .then(response => response.json())
-                .then(data => {
-                    const transcriptText = data.transcripts[0].text;
-                    const words = transcriptText.split(' ');
-
-                    // Assuming an approximate total duration of the audio
-                    const totalDuration = 180; // Change this to the actual duration of the audio in seconds
-                    const wordsPerSecond = words.length / totalDuration;
-                    let currentTime = 0;
-
-                    words.forEach((word, index) => {
-                        const span = document.createElement('span');
-                        span.textContent = word + ' ';
-                        span.classList.add('hidden');
-                        span.setAttribute('data-time', (currentTime).toFixed(2));
-                        transcriptContainer.appendChild(span);
-                        currentTime += 1 / wordsPerSecond;
-                    });
-
-                    audio.addEventListener('timeupdate', () => {
-                        const currentTime = audio.currentTime;
-                        const spans = transcriptContainer.getElementsByTagName('span');
-                        for (let i = 0; i < spans.length; i++) {
-                            if (parseFloat(spans[i].getAttribute('data-time')) <= currentTime) {
-                                spans[i].classList.remove('hidden');
-                            } else {
-                                spans[i].classList.add('hidden');
-                            }
-                        }
-                    });
-                });
-        });
-    </script>
 
 
 
