@@ -3458,7 +3458,10 @@ background: radial-gradient(circle, rgba(59,175,194,0.9557312232860621) 0%, rgba
       </h1>
       <span class="artist"></span>
 <div id="downloadButtonDiv"></div>
+
+	<div id="output-box">    
     <div id="transcript"></div>
+	</div>
 	    
     </div> <!-- /song-details -->
 
@@ -4534,3 +4537,31 @@ z-imdex:999999;
                 .catch(error => console.error('Error fetching transcript:', error));
         });
     </script>
+
+
+
+
+	   <style>
+        #output-box {
+            height: 40px; /* Fixed height for the marquee */
+            overflow: hidden; /* Hide overflow to create the scrolling effect */
+            position: relative;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+        }
+        .marquee {
+            position: absolute;
+            white-space: nowrap;
+            animation: marquee 15s linear infinite; /* Adjust animation duration as needed */
+        }
+
+        @keyframes marquee {
+            0% {
+                transform: translateY(100%);
+            }
+            100% {
+                transform: translateY(-100%);
+            }
+        }
+    </style>
+    
