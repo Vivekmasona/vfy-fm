@@ -169,7 +169,9 @@
       background-color: rgba(255, 255, 255, 0.1);
     }
   </style>
-<div id="searchBox">
+
+      
+    <div id="searchBox">
   <input type="text" id="searchInput" placeholder="Vivekfy Song Store" />
   <button id="searchButton" onclick="searchSongs()"><i class="fas fa-search"></i></button>
 </div>
@@ -181,9 +183,9 @@
   <i id="prevIcon" class="fas fa-step-backward" onclick="playPreviousSong()"></i>
   <i id="playPauseIcon" class="fas fa-play" onclick="togglePlayPause()"></i>
   <i id="nextIcon" class="fas fa-step-forward" onclick="playNextSong()"></i>
-  <i id="repeatIcon" class="fas fa-repeat" onclick="toggleRepeat()"></i>
   <input type="range" id="seekBar" value="0" step="1" style="flex-grow: 1; background-color: #E74C3C;" /> <!-- Set seek bar color -->
   <i id="micIcon" class="fas fa-microphone"></i>
+  <i id="repeatIcon" class="fas fa-repeat" onclick="toggleRepeat()"></i>
 </div>
 
 <p id="currentSongTitle"></p>
@@ -194,7 +196,7 @@
   <i class="fas fa-list" onclick="toggleOverlayList()"></i>
 </div>
 
-<div id="overlayListContainer">
+<div id="overlayListContainer" style="display: none;">
   <!-- List of songs will be dynamically added here -->
 </div>
 
@@ -204,7 +206,6 @@
   var playPauseIcon = document.getElementById('playPauseIcon');
   var prevIcon = document.getElementById('prevIcon');
   var nextIcon = document.getElementById('nextIcon');
-  var repeatIcon = document.getElementById('repeatIcon');
   var micIcon = document.getElementById('micIcon');
   var currentSongTitle = document.getElementById('currentSongTitle');
   var posterImage = document.getElementById('poster');
@@ -212,15 +213,20 @@
   var watermarkDiv = document.getElementById('watermark');
   var searchInput = document.getElementById('searchInput');
   var searchResults = document.getElementById('searchResults');
+  var overlayListContainer = document.getElementById('overlayListContainer');
+  var repeatIcon = document.getElementById('repeatIcon');
   var isPlaying = false;
-  var isRepeat = false;
   var playlist = [];
   var currentSongIndex = 0;
+  var isRepeat = false;
 
   // Function to play the next song in the playlist
   function playNextSong() {
-    if (playlist.length > 0) {
-      currentSongIndex = (currentSongIndex + 1) % playlist.length; // Loop back to the start
+    if (playlist.length > 0 && currentSongIndex < playlist.length - 1) {
+      currentSongIndex++;
+      playSongAtIndex(currentSongIndex);
+    } else if (isRepeat) {
+      currentSongIndex = 0;
       playSongAtIndex(currentSongIndex);
     } else {
       console.log('No next song in the playlist.');
@@ -339,125 +345,101 @@
 
   // Event listener to play the next song when the current one ends
   audioPlayer.addEventListener('ended', function() {
-    if (isRepeat) {
-      playSongAtIndex(currentSongIndex); // Repeat the current song
-    } else {
-      playNextSong(); // Play the next song in the playlist
-    }
+    playNextSong();
   });
 
   // Event listener for seek bar changes
-  seekBar.addEventListener('input', function() {
-    audioPlayer.currentTime = seekBar.value;
-  });
-
-  // Event listener for mic icon click to toggle voice recognition
-  micIcon.addEventListener('click', function() {
-    if (recognition.isStarted) {
-      recognition.stop();
-    } else {
-      recognition.start();
-    }
-  });
-
-  // Function to search for songs based on input
-  function searchSongs() {
-    const searchTerm = searchInput.value.trim();
-    if (searchTerm !== '') {
-      // Make API request to your server with the search term as the query
-      fetch(`https://svn-vivekfy.vercel.app/search/songs?query=${encodeURIComponent(searchTerm)}`)
-        .then(response => response.json())
-        .then(data => {
-          // Update the playlist with the new songs
-          playlist = data?.data?.results || [];
-          currentSongIndex = 0;
-
-          // Play the first song in the playlist
-          playSongAtIndex(currentSongIndex);
-
-          // Display search results
-          displaySearchResults(playlist);
-        })
-        .catch(error => {
-          console.error('Error fetching song data:', error);
-        });
-    }
-  }
-
-  // Function to display search results
-  function displaySearchResults(results) {
-    searchResults.innerHTML = ''; // Clear previous results
-
-    results.forEach(song => {
-      const songElement = document.createElement('div');
-      songElement.style.display = 'flex';
-      songElement.style.alignItems = 'center';
-      songElement.style.padding = '10px';
-      songElement.style.cursor = 'pointer';
-
-      const poster = document.createElement('img');
-      poster.src = song.image[1]?.link; // Use "80x80" quality for poster
-      poster.alt = song.name;
-      poster.style.width = '80px';
-      poster.style.height = '80px';
-      poster.style.marginRight = '10px';
-
-      const songInfo = document.createElement('div');
-      const title = document.createElement('div');
-      title.textContent = song.name;
-      const artist = document.createElement('div');
-      artist.textContent = song.primaryArtists || 'Unknown Artist'; // Fetch primaryArtists from the JSON data
-      artist.style.fontSize = 'small';
-      artist.style.color = 'gray';
-
-      songInfo.appendChild(title);
-      songInfo.appendChild(artist);
-      songElement.appendChild(poster);
-      songElement.appendChild(songInfo);
-
-      // Event listener for playing the selected song from search results
-      songElement.addEventListener('click', function() {
-        currentSongIndex = results.indexOf(song);
-        playSongAtIndex(currentSongIndex);
-      });
-
-      searchResults.appendChild(songElement);
+    seekBar.addEventListener('input', function() {
+      audioPlayer.currentTime = seekBar.value;
     });
-  }
 
-  // Function to toggle repeat functionality
-  function toggleRepeat() {
-    isRepeat = !isRepeat;
-    repeatIcon.classList.toggle('active', isRepeat); // Add 'active' class when repeat is enabled
-  }
+    // Event listener for mic icon click to toggle voice recognition
+    micIcon.addEventListener('click', function() {
+      if (recognition.isStarted) {
+        recognition.stop();
+      } else {
+        recognition.start();
+      }
+    });
 
-  // Function to toggle overlay list
-  function toggleOverlayList() {
-    const overlayListContainer = document.getElementById('overlayListContainer');
-    overlayListContainer.classList.toggle('visible');
-  }
+    // Function to search for songs based on input
+    function searchSongs() {
+      const searchTerm = searchInput.value.trim();
+      if (searchTerm !== '') {
+        // Make API request to your server with the search term as the query
+        fetch(`https://svn-vivekfy.vercel.app/search/songs?query=${encodeURIComponent(searchTerm)}`)
+          .then(response => response.json())
+          .then(data => {
+            // Update the playlist with the new songs
+            playlist = data?.data?.results || [];
+            currentSongIndex = 0;
 
-  // Initialize with trending Hindi and Bhojpuri songs on page load
-  document.addEventListener('DOMContentLoaded', function() {
-    fetch('https://svn-vivekfy.vercel.app/trending/hindi_bhojpuri')
-      .then(response => response.json())
-      .then(data => {
-        // Update the playlist with trending songs
-        playlist = data?.data?.results || [];
-        currentSongIndex = 0;
+            // Play the first song in the playlist
+            playSongAtIndex(currentSongIndex);
 
-        // Play the first song in the playlist
-        playSongAtIndex(currentSongIndex);
+            // Display search results
+            displaySearchResults(playlist);
+          })
+          .catch(error => {
+            console.error('Error fetching song data:', error);
+          });
+      }
+    }
 
-        // Display search results
-        displaySearchResults(playlist);
-      })
-      .catch(error => {
-        console.error('Error fetching trending songs:', error);
+    // Function to display search results
+    function displaySearchResults(results) {
+      searchResults.innerHTML = ''; // Clear previous results
+
+      results.forEach(song => {
+        const songElement = document.createElement('div');
+        songElement.style.display = 'flex';
+        songElement.style.alignItems = 'center';
+        songElement.style.padding = '10px';
+        songElement.style.cursor = 'pointer';
+
+        const poster = document.createElement('img');
+        poster.src = song.image[1]?.link; // Use "80x80" quality for poster
+        poster.alt = song.name;
+        poster.style.width = '80px';
+        poster.style.height = '80px';
+        poster.style.marginRight = '10px';
+
+        const info = document.createElement('div');
+        const title = document.createElement('p');
+        title.textContent = song.name;
+        title.style.margin = '0';
+        const artist = document.createElement('p');
+        artist.textContent = song.primaryArtists || 'Unknown Artist';
+        artist.style.margin = '0';
+        artist.style.color = '#888';
+
+        info.appendChild(title);
+        info.appendChild(artist);
+
+        songElement.appendChild(poster);
+        songElement.appendChild(info);
+
+        songElement.addEventListener('click', () => {
+          currentSongIndex = results.indexOf(song);
+          playSongAtIndex(currentSongIndex);
+        });
+
+        searchResults.appendChild(songElement);
       });
-  });
+    }
+
+    // Function to toggle repeat mode
+    function toggleRepeat() {
+      isRepeat = !isRepeat;
+      repeatIcon.style.color = isRepeat ? '#E74C3C' : '#000'; // Change icon color when repeat is on
+    }
+
+    // Function to toggle overlay list visibility
+    function toggleOverlayList() {
+      overlayListContainer.style.display = overlayListContainer.style.display === 'none' ? 'block' : 'none';
+
+      if (overlayListContainer.style.display === 'block') {
+        displaySearchResults(playlist);
+      }
+    }
 </script>
-
-
- 
-          
