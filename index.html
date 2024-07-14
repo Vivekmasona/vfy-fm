@@ -1368,10 +1368,6 @@ function loadSong(song, ind) {
 
     
 
-
-
-
-
 function play(id, Sid) {
     // Construct the API endpoint URL
     const apiUrl = `https://vivekplay.vercel.app/api/info?url=https://youtu.be/${id}`;
@@ -1380,38 +1376,46 @@ function play(id, Sid) {
     fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
-            // Extract the format_id 140 URL from the response
+            // Find the format with format_id '140'
             const audioFormat = data.formats.find(format => format.format_id === '140');
-            const playbackUrl = audioFormat.url;
+            if (audioFormat) {
+                const playbackUrl = audioFormat.url;
 
-            // Update the image sources
-            document.getElementById("SThumb").src = `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
-            document.getElementById("Fimg").src = `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
+                // Update the image sources
+                document.getElementById("SThumb").src = `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
+                document.getElementById("Fimg").src = `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
 
-            // Update the onclick actions
-            document.getElementById("pahilagana").onclick = () => {
-                location.href = `https://vivekfy.fanclub.rocks/audio?url=https://youtu.be/${id}`;
-            };
-            document.getElementById("VFYmp3").onclick = () => {
-                location.href = `https://vivekfy.fanclub.rocks/audio?url=https://youtu.be/${id}`;
-            };
-            document.getElementById("VFYmp3v2").onclick = () => {
-                location.href = `https://vivekfy.vercel.app/download/audio?url=https://youtu.be/${id}`;
-            };
-            document.getElementById("vivekmasona").onclick = () => {
-                location.href = `https://vivekdl.000webhostapp.com/ytvid?url=https://youtu.be/${id}`;
-            };
+                // Update onclick actions
+                document.getElementById("pahilagana").onclick = () => {
+                    location.href = `https://vivekfy.fanclub.rocks/audio?url=https://youtu.be/${id}`;
+                };
+                document.getElementById("VFYmp3").onclick = () => {
+                    location.href = `https://vivekfy.fanclub.rocks/audio?url=https://youtu.be/${id}`;
+                };
+                document.getElementById("VFYmp3v2").onclick = () => {
+                    location.href = `https://vivekfy.vercel.app/download/audio?url=https://youtu.be/${id}`;
+                };
+                document.getElementById("vivekmasona").onclick = () => {
+                    location.href = `https://vivekdl.000webhostapp.com/ytvid?url=https://youtu.be/${id}`;
+                };
 
-            // Use the 140 format URL for playback
-            console.log("Playback URL:", playbackUrl);
-            // Implement your playback logic here
+                // Use the 140 format URL for playback
+                console.log("Playback URL:", playbackUrl);
+                // Implement your playback logic here using playbackUrl
+            } else {
+                console.error("Format 140 not found in the response.");
+                // Handle case where format 140 is not available
+            }
         })
         .catch(error => {
             console.error('Error fetching data:', error);
             // Handle errors here
         });
 }
-    
+
+
+
+
 var audio = document.getElementById("SAudio");
 
 // Function to play the next song
