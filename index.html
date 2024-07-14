@@ -1372,40 +1372,45 @@ function loadSong(song, ind) {
 
 
 
-function play(id,Sid){
-     //data = "https://vivekfy-api-v1.vercel.app/low-audio?url=https://youtu.be/"+id;
-      //data = "https://vivekfy-api.vercel.app/audio/"+id;
-      //data = "https://vivekfy.vercel.app/audio?url=https://youtu.be/"+id;
-     data = "https://vivekfy.fanclub.rocks/vercel?url=https://youtu.be/"+id;
-     // data = "https://vivekmasona.000webhostapp.com/Play?vfy=https://youtu.be/"+id;
-     //data = "https://audio.vivekmasona.repl.co/play?url=https://youtu.be/"+id;
-     //data = "https://myserver-dev-atmq.2.ie-1.fl0.io/audio?url=https://youtu.be/"+id;
-     //data = "https://audioserver-dev-cgen.2.sg-1.fl0.io/"+id;
-    document.getElementById("SThumb").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
-    document.getElementById("Fimg").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
-     document.getElementById("pahilagana").onclick = ()=>{
-       location.href= "https://vivekfy.fanclub.rocks/audio?url=https://youtu.be/"+id;
-        //location.href= "https://vivekfy.vercel.app/download/audio?url=https://youtu.be/"+id;
-        //location.href= "https://vivekfy-server.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
-    };
-	document.getElementById("VFYmp3").onclick = ()=>{
-        //location.href= "https://vivekfy-server.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
-        location.href= "https://vivekfy.fanclub.rocks/audio?url=https://youtu.be/"+id;
-        //location.href= "https://vivekdl.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
-    };
+function play(id, Sid) {
+    // Construct the API endpoint URL
+    const apiUrl = `https://vivekplay.vercel.app/api/info?url=https://youtu.be/${id}`;
 
-	document.getElementById("VFYmp3v2").onclick = ()=>{
-        location.href= "https://vivekfy.vercel.app/download/audio?url=https://youtu.be/"+id;
-        //location.href= "https://vivekfy.fanclub.rocks/audio?url=https://youtu.be/"+id;
-        //location.href= "https://vivekdl.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
-    };
-document.getElementById("vivekmasona").onclick = ()=>{
-        location.href= "https://vivekdl.000webhostapp.com/ytvid?url=https://youtu.be/"+id;
-        //location.href= "https://myserver-dev-akkd.2.sg-1.fl0.io/mp4?url=https://youtu.be/"+id;
-        //location.href= "https://vivekfy-api-v2.onrender.com/video?url=https://youtu.be/"+id;
-     //location.href= "https://vivekfy-obg6.onrender.com/download/video?url=https://youtu.be/"+id;
-        };
+    // Make a fetch request to the API
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            // Extract the format_id 140 URL from the response
+            const audioFormat = data.formats.find(format => format.format_id === '140');
+            const playbackUrl = audioFormat.url;
 
+            // Update the image sources
+            document.getElementById("SThumb").src = `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
+            document.getElementById("Fimg").src = `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
+
+            // Update the onclick actions
+            document.getElementById("pahilagana").onclick = () => {
+                location.href = `https://vivekfy.fanclub.rocks/audio?url=https://youtu.be/${id}`;
+            };
+            document.getElementById("VFYmp3").onclick = () => {
+                location.href = `https://vivekfy.fanclub.rocks/audio?url=https://youtu.be/${id}`;
+            };
+            document.getElementById("VFYmp3v2").onclick = () => {
+                location.href = `https://vivekfy.vercel.app/download/audio?url=https://youtu.be/${id}`;
+            };
+            document.getElementById("vivekmasona").onclick = () => {
+                location.href = `https://vivekdl.000webhostapp.com/ytvid?url=https://youtu.be/${id}`;
+            };
+
+            // Use the 140 format URL for playback
+            console.log("Playback URL:", playbackUrl);
+            // Implement your playback logic here
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            // Handle errors here
+        });
+}
     
 var audio = document.getElementById("SAudio");
 
