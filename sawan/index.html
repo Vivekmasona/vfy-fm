@@ -309,7 +309,7 @@
       console.log('Spoken Text:', spokenText);
 
       // Make API request to your server with the spoken text as the search query
-      fetch(`https://svn-vivekfy.vercel.app/search/songs?query=${encodeURIComponent(spokenText)}`)
+      fetch(`https://saavn.dev/api/search/songs?query=${encodeURIComponent(spokenText)}`)
         .then(response => response.json())
         .then(data => {
           // Update the playlist with the new songs
@@ -361,7 +361,7 @@
       const searchTerm = searchInput.value.trim();
       if (searchTerm !== '') {
         // Make API request to your server with the search term as the query
-        fetch(`https://svn-vivekfy.vercel.app/search/songs?query=${encodeURIComponent(searchTerm)}`)
+        fetch(`https://saavn.dev/api/search/songs?query=${encodeURIComponent(searchTerm)}`)
           .then(response => response.json())
           .then(data => {
             // Update the playlist with the new songs
