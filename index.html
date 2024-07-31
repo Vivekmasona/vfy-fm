@@ -1545,25 +1545,33 @@ volumeSlider.addEventListener('input', function () {
 
 
 
-function loadSong(element) {
-    var title = element.getAttribute('title');
-    var thumbUrl = element.getAttribute('src');
-    var channelTitle = element.getAttribute('data-channel'); // Use appropriate attribute for channel title
-    var videoDate = new Date(element.getAttribute('data-date')); // Use appropriate attribute for date
-
+function setupMediaSession(title, channelTitle, artwork) {
     if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
             title: title,
-            artist: channelTitle,
-            album: 'VFY',
+            artist: channelTitle,  // Use channel title as artist
+            album: 'VFY Album',
             artwork: [
-                { src: thumbUrl, sizes: '96x96', type: 'image/png' },
-                { src: thumbUrl, sizes: '128x128', type: 'image/png' },
-                { src: thumbUrl, sizes: '192x192', type: 'image/png' },
-                { src: thumbUrl, sizes: '256x256', type: 'image/png' },
-                { src: thumbUrl, sizes: '384x384', type: 'image/png' },
-                { src: thumbUrl, sizes: '512x512', type: 'image/png' },
+                { src: artwork, sizes: '96x96', type: 'image/png' },
+                { src: artwork, sizes: '128x128', type: 'image/png' },
+                { src: artwork, sizes: '192x192', type: 'image/png' },
+                { src: artwork, sizes: '256x256', type: 'image/png' },
+                { src: artwork, sizes: '384x384', type: 'image/png' },
+                { src: artwork, sizes: '512x512', type: 'image/png' }
             ]
+        });
+
+        navigator.mediaSession.setActionHandler('play', function() {
+            document.getElementById('SAudio').play();
+        });
+        navigator.mediaSession.setActionHandler('pause', function() {
+            document.getElementById('SAudio').pause();
+        });
+        navigator.mediaSession.setActionHandler('previoustrack', function() {
+            // Handle previous track action
+        });
+        navigator.mediaSession.setActionHandler('nexttrack', function() {
+            // Handle next track action
         });
     }
 }
