@@ -349,7 +349,7 @@
                     }).map(item => ({
                         name: item.snippet.title,
                         image: item.snippet.thumbnails.default.url,
-                        url: `https://vivekfy.vercel.app/audio?url=https://youtu.be/${item.id}`
+                        url: `https://vivekfy.vercel.app/redirect?url=https://youtu.be/${item.id}`
                     }));
 
                     if (songs.length > 0) {
@@ -410,7 +410,7 @@
                     return;
                 }
 
-                fetch('https://bittersweet-pleasant-scent.glitch.me/control', {
+                fetch('https://vivekbot.vercel.app/control', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -431,7 +431,7 @@
                     return;
                 }
 
-                fetch('https://bittersweet-pleasant-scent.glitch.me/update-url', {
+                fetch('https://vivekbot.vercel.app/update-url', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -455,7 +455,7 @@
                     formData.append('audio', audioFileInput.files[0]);
                     spinner.style.display = 'block'; // Show spinner
 
-                    fetch('https://daily-comet-family.glitch.me/upload', {
+                    fetch('https://vivekbot.vercel.app/upload', {
                         method: 'POST',
                         body: formData
                     })
