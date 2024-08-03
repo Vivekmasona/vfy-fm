@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Function to fetch current audio URL and play
             async function fetchAndUpdateAudioStatus() {
                 try {
-                    const urlResponse = await fetch('https://bittersweet-pleasant-scent.glitch.me/current-url/' + sessionId);
+                    const urlResponse = await fetch('https://mammoth-kindly-spruce.glitch.me/current-url/' + sessionId);
                     const data = await urlResponse.json();
 
                     if (data.success && data.sessionId === sessionId) {
