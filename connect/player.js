@@ -137,7 +137,7 @@
                 if ('mediaSession' in navigator) {
                     navigator.mediaSession.metadata = new MediaMetadata({
                         title: title,
-                        artist: 'Artist Name',
+                        artist: 'vivekfy remote',
                         album: 'Album Name',
                         artwork: [
                             { src: thumbnail, sizes: '512x512', type: 'image/png' }
