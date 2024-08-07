@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let isPlaying = false;
     let currentSeekValue = 0;
     let previousSeekValue = 0;
+    let playlist = [];
+    let currentIndex = -1;
 
     // Generate a session ID if not already present
     if (!sessionId) {
@@ -99,6 +101,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const data = await urlResponse.json();
 
             if (data.success && data.sessionId === sessionId) {
+                playlist = data.playlist;
+                currentIndex = data.currentIndex;
+
                 if (data.url !== audioPlayer.src) {
                     audioPlayer.src = data.url;
                     updateMediaSession(data.title, data.thumbnail, data.url);
@@ -120,15 +125,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         previousSeekValue = currentSeekValue;
                     }
                 } else if (data.action === 'next') {
-                    // Server provides URL for the next song
-                    audioPlayer.src = data.url;
-                    audioPlayer.play();
+                    playNextSong();
                 } else if (data.action === 'previous') {
-                    // Server provides URL for the previous song
-                    audioPlayer.src = data.url;
-                    audioPlayer.play();
+                    playPreviousSong();
                 } else if (data.action === 'loop') {
-                    // Loop logic
                     audioPlayer.loop = data.value === 'on';
                 }
             } else {
@@ -138,6 +138,37 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error fetching current URL:', error);
         }
     }
+
+    // Function to play the next song
+    function playNextSong() {
+        if (playlist.length > 0) {
+            currentIndex = (currentIndex + 1) % playlist.length;
+            const nextSong = playlist[currentIndex];
+            audioPlayer.src = nextSong.url;
+            updateMediaSession(nextSong.title, nextSong.thumbnail, nextSong.url);
+            audioPlayer.play();
+        }
+    }
+
+    // Function to play the previous song
+    function playPreviousSong() {
+        if (playlist.length > 0) {
+            currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
+            const previousSong = playlist[currentIndex];
+            audioPlayer.src = previousSong.url;
+            updateMediaSession(previousSong.title, previousSong.thumbnail, previousSong.url);
+            audioPlayer.play();
+        }
+    }
+
+    // Event listener to handle autoplay of the next song when current song ends
+    audioPlayer.addEventListener('ended', function() {
+        if (audioPlayer.loop) {
+            audioPlayer.play(); // Loop the current song if loop is enabled
+        } else {
+            playNextSong(); // Play the next song in the playlist
+        }
+    });
 
     // Fetch audio status every second
     setInterval(fetchAndUpdateAudioStatus, 1000);
