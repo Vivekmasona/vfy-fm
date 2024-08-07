@@ -119,6 +119,17 @@ document.addEventListener('DOMContentLoaded', function () {
                         audioPlayer.currentTime = (audioPlayer.duration * currentSeekValue) / 100;
                         previousSeekValue = currentSeekValue;
                     }
+                } else if (data.action === 'next') {
+                    // Server provides URL for the next song
+                    audioPlayer.src = data.url;
+                    audioPlayer.play();
+                } else if (data.action === 'previous') {
+                    // Server provides URL for the previous song
+                    audioPlayer.src = data.url;
+                    audioPlayer.play();
+                } else if (data.action === 'loop') {
+                    // Loop logic
+                    audioPlayer.loop = data.value === 'on';
                 }
             } else {
                 console.error('Error fetching current URL:', data.error);
