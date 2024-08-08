@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function () {
     let previousSeekValue = 0;
     let playlist = [];
     let currentIndex = -1;
-    let lastFetchedUrl = '';
 
     // Generate a session ID if not already present
     if (!sessionId) {
@@ -31,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Function to copy session ID to clipboard
     function copySessionId() {
         navigator.clipboard.writeText(sessionId).then(() => {
-            showTemporaryAlert('Session ID copied to clipboard');
+            alert('Session ID copied to clipboard');
         }).catch(err => {
             console.error('Could not copy session ID: ', err);
         });
@@ -47,19 +46,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Error sharing session ID:', err);
             });
         } else {
-            showTemporaryAlert('Web Share API not supported in this browser.');
+            alert('Web Share API not supported in this browser.');
         }
-    }
-
-    // Function to show temporary alert message
-    function showTemporaryAlert(message) {
-        const alertBox = document.createElement('div');
-        alertBox.textContent = message;
-        alertBox.classList.add('alert');
-        document.body.appendChild(alertBox);
-        setTimeout(() => {
-            document.body.removeChild(alertBox);
-        }, 500);
     }
 
     // Function to show buttons and hide session ID after 2 seconds
@@ -102,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
             sessionId = newSessionId.trim();
             localStorage.setItem('sessionId', sessionId);
             sessionIdElement.textContent = sessionId;
-            showTemporaryAlert('Session ID edited to: ' + sessionId);
+            alert('Session ID edited to: ' + sessionId);
         }
     });
 
@@ -116,32 +104,32 @@ document.addEventListener('DOMContentLoaded', function () {
                 playlist = data.playlist;
                 currentIndex = data.currentIndex;
 
-                if (data.url !== lastFetchedUrl) {
-                    lastFetchedUrl = data.url;
+                if (data.url !== audioPlayer.src) {
                     audioPlayer.src = data.url;
                     updateMediaSession(data.title, data.thumbnail, data.url);
-                    if (data.action === 'play') {
-                        audioPlayer.play();
-                    } else if (data.action === 'pause') {
-                        audioPlayer.pause();
-                    } else if (data.action === 'stop') {
-                        audioPlayer.pause();
-                        audioPlayer.currentTime = 0;
-                    } else if (data.action === 'volume') {
-                        audioPlayer.volume = data.value / 100;
-                    } else if (data.action === 'seek') {
-                        currentSeekValue = data.value;
-                        if (currentSeekValue !== previousSeekValue) {
-                            audioPlayer.currentTime = (audioPlayer.duration * currentSeekValue) / 100;
-                            previousSeekValue = currentSeekValue;
-                        }
-                    } else if (data.action === 'next') {
-                        playNextSong();
-                    } else if (data.action === 'previous') {
-                        playPreviousSong();
-                    } else if (data.action === 'loop') {
-                        audioPlayer.loop = data.value === 'on';
+                }
+                audioPlayer.volume = data.volume / 100;
+                if (data.action === 'play') {
+                    audioPlayer.play();
+                } else if (data.action === 'pause') {
+                    audioPlayer.pause();
+                } else if (data.action === 'stop') {
+                    audioPlayer.pause();
+                    audioPlayer.currentTime = 0;
+                } else if (data.action === 'volume') {
+                    audioPlayer.volume = data.value / 100;
+                } else if (data.action === 'seek') {
+                    currentSeekValue = data.value;
+                    if (currentSeekValue !== previousSeekValue) {
+                        audioPlayer.currentTime = (audioPlayer.duration * currentSeekValue) / 100;
+                        previousSeekValue = currentSeekValue;
                     }
+                } else if (data.action === 'next') {
+                    playNextSong();
+                } else if (data.action === 'previous') {
+                    playPreviousSong();
+                } else if (data.action === 'loop') {
+                    audioPlayer.loop = data.value === 'on';
                 }
             } else {
                 console.error('Error fetching current URL:', data.error);
@@ -175,8 +163,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Event listener to handle autoplay of the next song when current song ends
     audioPlayer.addEventListener('ended', function() {
-        if (!lastFetchedUrl || lastFetchedUrl !== audioPlayer.src) {
-            playNextSong();
+        if (audioPlayer.loop) {
+            audioPlayer.play(); // Loop the current song if loop is enabled
+        } else {
+            playNextSong(); // Play the next song in the playlist
         }
     });
 
@@ -212,12 +202,7 @@ document.addEventListener('DOMContentLoaded', function () {
             navigator.mediaSession.setActionHandler('seekforward', function() {
                 audioPlayer.currentTime = Math.min(audioPlayer.currentTime + 10, audioPlayer.duration);
             });
-            navigator.mediaSession.setActionHandler('previoustrack', function() {
-                playPreviousSong();
-            });
-            navigator.mediaSession.setActionHandler('nexttrack', function() {
-                playNextSong();
-            });
         }
     }
 });
+
