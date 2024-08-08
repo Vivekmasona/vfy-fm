@@ -202,6 +202,12 @@ document.addEventListener('DOMContentLoaded', function () {
             navigator.mediaSession.setActionHandler('seekforward', function() {
                 audioPlayer.currentTime = Math.min(audioPlayer.currentTime + 10, audioPlayer.duration);
             });
+            navigator.mediaSession.setActionHandler('previoustrack', function() {
+                playPreviousSong();
+            });
+            navigator.mediaSession.setActionHandler('nexttrack', function() {
+                playNextSong();
+            });
         }
     }
 });
