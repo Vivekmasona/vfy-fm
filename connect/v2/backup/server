@@ -1,0 +1,136 @@
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+
+const app = express();
+app.use(bodyParser.json());
+app.use(cors());
+
+let sessions = {};
+
+app.post('/control', (req, res) => {
+    const { action, value, sessionId } = req.body;
+
+    if (!sessions[sessionId]) {
+        sessions[sessionId] = { url: '', title: '', thumbnail: '', status: 'stop', volume: 100, action: null, value: null, lastSkipValue: null, lastSkipDirection: null, loop: false, playlist: [], currentIndex: -1 };
+    }
+
+    const session = sessions[sessionId];
+
+    switch (action) {
+        case 'play':
+        case 'pause':
+        case 'stop':
+            session.action = action;
+            session.value = value;
+            res.json({ status: 'Command received', action, value, sessionId });
+            break;
+
+        case 'volume':
+            session.volume = value;
+            session.action = action;
+            session.value = value;
+            res.json({ status: 'Volume adjusted', action, value, sessionId });
+            break;
+
+        case 'seek':
+            session.action = action;
+            session.value = value;
+            res.json({ status: 'Seek action processed', action, value, sessionId });
+            break;
+
+        case 'next':
+            if (session.playlist.length > 0) {
+                session.currentIndex = (session.currentIndex + 1) % session.playlist.length;
+                const nextSong = session.playlist[session.currentIndex];
+                session.url = nextSong.url;
+                session.title = nextSong.title;
+                session.thumbnail = nextSong.thumbnail;
+                session.action = action;
+                res.json({ status: 'Playing next song', url: session.url, title: session.title, thumbnail: session.thumbnail, sessionId });
+            } else {
+                res.json({ status: 'No songs in playlist', sessionId });
+            }
+            break;
+
+        case 'previous':
+            if (session.playlist.length > 0) {
+                session.currentIndex = (session.currentIndex - 1 + session.playlist.length) % session.playlist.length;
+                const previousSong = session.playlist[session.currentIndex];
+                session.url = previousSong.url;
+                session.title = previousSong.title;
+                session.thumbnail = previousSong.thumbnail;
+                session.action = action;
+                res.json({ status: 'Playing previous song', url: session.url, title: session.title, thumbnail: session.thumbnail, sessionId });
+            } else {
+                res.json({ status: 'No songs in playlist', sessionId });
+            }
+            break;
+
+        case 'loop':
+            session.loop = value === 'on';
+            session.action = action;
+            res.json({ status: `Loop ${session.loop ? 'enabled' : 'disabled'}`, action, value, sessionId });
+            break;
+
+        default:
+            res.json({ status: 'Unknown action', action, sessionId });
+    }
+});
+
+app.post('/update-url', (req, res) => {
+    const { url, title, thumbnail, sessionId } = req.body;
+
+    if (!sessions[sessionId]) {
+        sessions[sessionId] = { url: '', title: '', thumbnail: '', status: 'stop', volume: 100, action: null, value: null, lastSkipValue: null, lastSkipDirection: null, loop: false, playlist: [], currentIndex: -1 };
+    }
+
+    const session = sessions[sessionId];
+    session.url = url;
+    session.title = title;
+    session.thumbnail = thumbnail;
+
+    res.json({ status: 'URL, title, and thumbnail updated', sessionId });
+});
+
+app.post('/update-songs', (req, res) => {
+    const { songs, sessionId } = req.body;
+
+    if (!sessions[sessionId]) {
+        sessions[sessionId] = { url: '', title: '', thumbnail: '', status: 'stop', volume: 100, action: null, value: null, lastSkipValue: null, lastSkipDirection: null, loop: false, playlist: [], currentIndex: -1 };
+    }
+
+    const session = sessions[sessionId];
+    session.playlist = songs;
+    session.currentIndex = -1; // Reset index when updating playlist
+
+    res.json({ status: 'Playlist updated', sessionId });
+});
+
+app.get('/current-url/:sessionId', (req, res) => {
+    const { sessionId } = req.params;
+
+    if (!sessions[sessionId]) {
+        return res.status(400).json({ error: 'Invalid session ID' });
+    }
+
+    res.json({
+        success: true,
+        sessionId,
+        url: sessions[sessionId].url,
+        title: sessions[sessionId].title,
+        thumbnail: sessions[sessionId].thumbnail,
+        status: sessions[sessionId].status,
+        volume: sessions[sessionId].volume,
+        action: sessions[sessionId].action,
+        value: sessions[sessionId].value,
+        loop: sessions[sessionId].loop,
+        playlist: sessions[sessionId].playlist,
+        currentIndex: sessions[sessionId].currentIndex
+    });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
