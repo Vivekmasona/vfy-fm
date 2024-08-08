@@ -9,8 +9,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const shareSessionIdButton = document.getElementById('shareSessionIdButton');
     let sessionId = localStorage.getItem('sessionId');
     let isPlaying = false;
-    let currentSeekValue = 0;
-    let previousSeekValue = 0;
     let playlist = [];
     let currentIndex = -1;
 
@@ -30,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Function to copy session ID to clipboard
     function copySessionId() {
         navigator.clipboard.writeText(sessionId).then(() => {
-            alert('Session ID copied to clipboard');
+            showTemporaryAlert('Session ID copied to clipboard');
         }).catch(err => {
             console.error('Could not copy session ID: ', err);
         });
@@ -46,8 +44,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Error sharing session ID:', err);
             });
         } else {
-            alert('Web Share API not supported in this browser.');
+            showTemporaryAlert('Web Share API not supported in this browser.');
         }
+    }
+
+    // Function to show temporary alert message
+    function showTemporaryAlert(message) {
+        const alertBox = document.createElement('div');
+        alertBox.textContent = message;
+        alertBox.classList.add('alert');
+        document.body.appendChild(alertBox);
+        setTimeout(() => {
+            document.body.removeChild(alertBox);
+        }, 500);
     }
 
     // Function to show buttons and hide session ID after 2 seconds
@@ -90,12 +99,12 @@ document.addEventListener('DOMContentLoaded', function () {
             sessionId = newSessionId.trim();
             localStorage.setItem('sessionId', sessionId);
             sessionIdElement.textContent = sessionId;
-            alert('Session ID edited to: ' + sessionId);
+            showTemporaryAlert('Session ID edited to: ' + sessionId);
         }
     });
 
-    // Function to fetch current audio URL and play
-    async function fetchAndUpdateAudioStatus() {
+    // Function to fetch playlist data
+    async function fetchPlaylist() {
         try {
             const urlResponse = await fetch('https://forest-season-patella.glitch.me/current-url/' + sessionId);
             const data = await urlResponse.json();
@@ -103,39 +112,22 @@ document.addEventListener('DOMContentLoaded', function () {
             if (data.success && data.sessionId === sessionId) {
                 playlist = data.playlist;
                 currentIndex = data.currentIndex;
-
-                if (data.url !== audioPlayer.src) {
-                    audioPlayer.src = data.url;
-                    updateMediaSession(data.title, data.thumbnail, data.url);
-                }
-                audioPlayer.volume = data.volume / 100;
-                if (data.action === 'play') {
-                    audioPlayer.play();
-                } else if (data.action === 'pause') {
-                    audioPlayer.pause();
-                } else if (data.action === 'stop') {
-                    audioPlayer.pause();
-                    audioPlayer.currentTime = 0;
-                } else if (data.action === 'volume') {
-                    audioPlayer.volume = data.value / 100;
-                } else if (data.action === 'seek') {
-                    currentSeekValue = data.value;
-                    if (currentSeekValue !== previousSeekValue) {
-                        audioPlayer.currentTime = (audioPlayer.duration * currentSeekValue) / 100;
-                        previousSeekValue = currentSeekValue;
-                    }
-                } else if (data.action === 'next') {
-                    playNextSong();
-                } else if (data.action === 'previous') {
-                    playPreviousSong();
-                } else if (data.action === 'loop') {
-                    audioPlayer.loop = data.value === 'on';
-                }
+                playCurrentSong();
             } else {
-                console.error('Error fetching current URL:', data.error);
+                console.error('Error fetching playlist:', data.error);
             }
         } catch (error) {
-            console.error('Error fetching current URL:', error);
+            console.error('Error fetching playlist:', error);
+        }
+    }
+
+    // Function to play the current song
+    function playCurrentSong() {
+        if (playlist.length > 0 && currentIndex >= 0 && currentIndex < playlist.length) {
+            const currentSong = playlist[currentIndex];
+            audioPlayer.src = currentSong.url;
+            updateMediaSession(currentSong.title, currentSong.thumbnail, currentSong.url);
+            audioPlayer.play();
         }
     }
 
@@ -143,10 +135,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function playNextSong() {
         if (playlist.length > 0) {
             currentIndex = (currentIndex + 1) % playlist.length;
-            const nextSong = playlist[currentIndex];
-            audioPlayer.src = nextSong.url;
-            updateMediaSession(nextSong.title, nextSong.thumbnail, nextSong.url);
-            audioPlayer.play();
+            playCurrentSong();
         }
     }
 
@@ -154,24 +143,17 @@ document.addEventListener('DOMContentLoaded', function () {
     function playPreviousSong() {
         if (playlist.length > 0) {
             currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
-            const previousSong = playlist[currentIndex];
-            audioPlayer.src = previousSong.url;
-            updateMediaSession(previousSong.title, previousSong.thumbnail, previousSong.url);
-            audioPlayer.play();
+            playCurrentSong();
         }
     }
 
     // Event listener to handle autoplay of the next song when current song ends
     audioPlayer.addEventListener('ended', function() {
-        if (audioPlayer.loop) {
-            audioPlayer.play(); // Loop the current song if loop is enabled
-        } else {
-            playNextSong(); // Play the next song in the playlist
-        }
+        playNextSong();
     });
 
-    // Fetch audio status every second
-    setInterval(fetchAndUpdateAudioStatus, 1000);
+    // Fetch playlist data on load
+    fetchPlaylist();
 
     // Function to update Media Session API metadata
     function updateMediaSession(title, thumbnail, url) {
