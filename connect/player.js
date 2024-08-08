@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let previousSeekValue = 0;
     let playlist = [];
     let currentIndex = -1;
+    let lastFetchedUrl = '';
 
     // Generate a session ID if not already present
     if (!sessionId) {
@@ -115,32 +116,32 @@ document.addEventListener('DOMContentLoaded', function () {
                 playlist = data.playlist;
                 currentIndex = data.currentIndex;
 
-                if (data.url !== audioPlayer.src) {
+                if (data.url !== lastFetchedUrl) {
+                    lastFetchedUrl = data.url;
                     audioPlayer.src = data.url;
                     updateMediaSession(data.title, data.thumbnail, data.url);
-                }
-                audioPlayer.volume = data.volume / 100;
-                if (data.action === 'play') {
-                    audioPlayer.play();
-                } else if (data.action === 'pause') {
-                    audioPlayer.pause();
-                } else if (data.action === 'stop') {
-                    audioPlayer.pause();
-                    audioPlayer.currentTime = 0;
-                } else if (data.action === 'volume') {
-                    audioPlayer.volume = data.value / 100;
-                } else if (data.action === 'seek') {
-                    currentSeekValue = data.value;
-                    if (currentSeekValue !== previousSeekValue) {
-                        audioPlayer.currentTime = (audioPlayer.duration * currentSeekValue) / 100;
-                        previousSeekValue = currentSeekValue;
+                    if (data.action === 'play') {
+                        audioPlayer.play();
+                    } else if (data.action === 'pause') {
+                        audioPlayer.pause();
+                    } else if (data.action === 'stop') {
+                        audioPlayer.pause();
+                        audioPlayer.currentTime = 0;
+                    } else if (data.action === 'volume') {
+                        audioPlayer.volume = data.value / 100;
+                    } else if (data.action === 'seek') {
+                        currentSeekValue = data.value;
+                        if (currentSeekValue !== previousSeekValue) {
+                            audioPlayer.currentTime = (audioPlayer.duration * currentSeekValue) / 100;
+                            previousSeekValue = currentSeekValue;
+                        }
+                    } else if (data.action === 'next') {
+                        playNextSong();
+                    } else if (data.action === 'previous') {
+                        playPreviousSong();
+                    } else if (data.action === 'loop') {
+                        audioPlayer.loop = data.value === 'on';
                     }
-                } else if (data.action === 'next') {
-                    playNextSong();
-                } else if (data.action === 'previous') {
-                    playPreviousSong();
-                } else if (data.action === 'loop') {
-                    audioPlayer.loop = data.value === 'on';
                 }
             } else {
                 console.error('Error fetching current URL:', data.error);
@@ -174,7 +175,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Event listener to handle autoplay of the next song when current song ends
     audioPlayer.addEventListener('ended', function() {
-        playNextSong();
+        if (!lastFetchedUrl || lastFetchedUrl !== audioPlayer.src) {
+            playNextSong();
+        }
     });
 
     // Fetch audio status every second
