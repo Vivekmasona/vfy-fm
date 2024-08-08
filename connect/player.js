@@ -1,4 +1,4 @@
-    <script>
+
         document.addEventListener('DOMContentLoaded', function () {
             const audioPlayer = document.getElementById('audioPlayer');
             const playPauseButton = document.getElementById('playPauseButton');
@@ -248,5 +248,5 @@
                 }
             }
         });
-    </script>
+    
 
