@@ -272,6 +272,7 @@
         <input type="range" id="volumeSlider" min="0" max="100" value="50" step="1" />
         <input type="range" id="seekSlider" min="0" max="100" value="0" step="1" />
     </div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const sessionIdInput = document.getElementById('sessionIdInput');
@@ -381,28 +382,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 const viewCount = parseInt(item.statistics.viewCount);
                 return isLive && duration !== 'PT0S' && viewCount > 1000;
             }).map(item => ({
-                url: `https://vivekfy.vercel.app/stream?url=https://youtu.be/${item.id}`,
-                title: item.snippet.title,
-                thumbnail: item.snippet.thumbnails.default.url
+                name: item.snippet.title,
+                image: item.snippet.thumbnails.default.url,
+                url: `https://vivekfy.vercel.app/stream?url=https://youtu.be/${item.id}`
             }));
 
             if (songs.length > 0) {
-                // Send all song data to the server
-                await fetch('https://forest-season-patella.glitch.me/update-songs', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ songs, sessionId })
-                });
-
                 displaySongs(songs, 'youtube');
             } else {
                 showTemporaryAlert('No suitable YouTube videos found.');
             }
         } catch (error) {
             console.error('Error fetching YouTube songs:', error);
-            showTemporaryAlert('An error occurred while fetching YouTube songs.');
         }
     }
 
@@ -420,7 +411,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }));
 
             // Send all song data to the server
-            await fetch('https://forest-season-patella.glitch.me/update-url', {
+            await fetch('https://forest-season-patella.glitch.me/update-songs', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -436,8 +427,32 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    async function updatePlaylistOnServer(songData) {
+        if (!sessionId) {
+            showTemporaryAlert('Please connect to a session ID first.');
+            return;
+        }
+
+        try {
+            const response = await fetch('https://forest-season-patella.glitch.me/update-songs', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ songs: songData, sessionId })
+            });
+            const data = await response.json();
+            console.log('Playlist updated on the server:', data);
+            showTemporaryAlert('Playlist successfully updated on the server.');
+        } catch (error) {
+            console.error('Error updating playlist on server:', error);
+            showTemporaryAlert('Failed to update playlist. Please try again.');
+        }
+    }
+
     function displaySongs(songs, source) {
         playlistContainer.innerHTML = ''; // Clear previous results
+
         const songData = songs.map(song => ({
             url: song.url,
             title: song.name,
@@ -450,9 +465,9 @@ document.addEventListener('DOMContentLoaded', function () {
             let songTitle = song.name; // Default title
 
             if (source === 'youtube') {
-                imageUrl = song.thumbnail;
+                imageUrl = song.image;
                 songUrl = song.url;
-                songTitle = song.title;
+                songTitle = song.name;
             } else if (source === 'swan') {
                 imageUrl = song.image ? (song.image[2]?.link || song.image) : 'default_image_url.jpg';
                 songUrl = song.downloadUrl[1]?.link || '';
@@ -467,7 +482,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="songTitle">${songTitle}</div>
                     <div>${song.artist || ''}</div>
                 </div>`;
-            listItem.addEventListener('click', () => {
+            listItem.addEventListener('click', async () => {
+                // Update the playlist on the server before playing the song
+                await updatePlaylistOnServer(songData); 
+
                 currentSongIndex = index; // Update current song index
                 updateAudioUrl(songUrl, songTitle, imageUrl); // Pass the thumbnail URL
                 setTimeout(() => playButton.click(), 500); // Automatically click play button after 0.5 seconds
@@ -493,75 +511,66 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => console.log(data))
         .catch(error => {
             console.error('Error sending control command:', error);
-            showTemporaryAlert('Failed to send control command. Please try again later.');
+            showTemporaryAlert('Failed to send control command.');
         });
     }
 
     function updateAudioUrl(url, title, thumbnail) {
-        if (!sessionId) {
-            showTemporaryAlert('Please connect to a session ID first.');
-            return;
-        }
-
-        fetch('https://forest-season-patella.glitch.me/update-url', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ url, title, thumbnail, sessionId })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-audioPlayer.src = url;
-            audioPlayer.play();
-        })
-        .catch(error => {
-            console.error('Error updating audio URL:', error);
-            showTemporaryAlert('Failed to update audio URL. Please try again later.');
-        });
+        audioPlayer.src = url;
+        document.getElementById('currentSongTitle').textContent = title;
+        document.getElementById('currentThumbnail').src = thumbnail;
+        audioPlayer.play();
     }
 
-    audioPlayer.onended = () => {
-        if (!isLooping) {
-            currentSongIndex++;
-            if (currentSongIndex < playlistContainer.children.length) {
-                const nextSong = playlistContainer.children[currentSongIndex];
-                nextSong.click(); // Trigger the click event to play the next song
-            } else {
-                showTemporaryAlert('End of playlist.');
-            }
-        } else {
+    audioPlayer.addEventListener('ended', () => {
+        // If looping is enabled, restart the current song
+        if (isLooping) {
             audioPlayer.currentTime = 0;
             audioPlayer.play();
-        }
-    };
-
-    nextButton.onclick = () => {
-        currentSongIndex++;
-        if (currentSongIndex < playlistContainer.children.length) {
-            const nextSong = playlistContainer.children[currentSongIndex];
-            nextSong.click(); // Trigger the click event to play the next song
         } else {
-            showTemporaryAlert('No more songs in the playlist.');
+            playNextSong();
         }
-    };
+    });
 
-    previousButton.onclick = () => {
-        currentSongIndex--;
-        if (currentSongIndex >= 0) {
-            const previousSong = playlistContainer.children[currentSongIndex];
-            previousSong.click(); // Trigger the click event to play the previous song
-        } else {
-            showTemporaryAlert('No previous song in the playlist.');
-        }
-    };
+    function playNextSong() {
+        const playlistItems = document.querySelectorAll('.playlistItem');
+        if (playlistItems.length === 0) return; // No songs in the playlist
 
-    loopButton.onclick = () => {
+        currentSongIndex = (currentSongIndex + 1) % playlistItems.length; // Move to the next song
+        playlistItems[currentSongIndex].click(); // Simulate a click on the next song in the playlist
+    }
+
+    nextButton.addEventListener('click', playNextSong);
+
+    function playPreviousSong() {
+        const playlistItems = document.querySelectorAll('.playlistItem');
+        if (playlistItems.length === 0) return; // No songs in the playlist
+
+        currentSongIndex = (currentSongIndex - 1 + playlistItems.length) % playlistItems.length; // Move to the previous song
+        playlistItems[currentSongIndex].click(); // Simulate a click on the previous song in the playlist
+    }
+
+    previousButton.addEventListener('click', playPreviousSong);
+
+    loopButton.addEventListener('click', () => {
         isLooping = !isLooping;
         loopButton.classList.toggle('active', isLooping);
-        showTemporaryAlert(isLooping ? 'Looping enabled.' : 'Looping disabled.');
-    };
+    });
+
+    audioFileInput.addEventListener('change', function () {
+        const file = audioFileInput.files[0];
+        if (file) {
+            const fileUrl = URL.createObjectURL(file);
+            updateAudioUrl(fileUrl, file.name, 'default_thumbnail_url.jpg');
+        }
+    });
+
+    fakeButton.addEventListener('click', () => {
+        audioFileInput.click();
+    });
+
 });
 </script>
+
+
 </!doctype>
