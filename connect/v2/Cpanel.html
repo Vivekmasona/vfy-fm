@@ -272,8 +272,9 @@
         <input type="range" id="volumeSlider" min="0" max="100" value="50" step="1" />
         <input type="range" id="seekSlider" min="0" max="100" value="0" step="1" />
     </div>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
+
+     <script>
+document.addEventListener('DOMContentLoaded', function () {
     const sessionIdInput = document.getElementById('sessionIdInput');
     const connectButton = document.getElementById('connectButton');
     const playButton = document.getElementById('playButton');
@@ -381,18 +382,28 @@
                 const viewCount = parseInt(item.statistics.viewCount);
                 return isLive && duration !== 'PT0S' && viewCount > 1000;
             }).map(item => ({
-                name: item.snippet.title,
-                image: item.snippet.thumbnails.default.url,
-                url: `https://vivekfy.vercel.app/stream?url=https://youtu.be/${item.id}`
+                url: `https://vivekfy.vercel.app/stream?url=https://youtu.be/${item.id}`,
+                title: item.snippet.title,
+                thumbnail: item.snippet.thumbnails.default.url
             }));
 
             if (songs.length > 0) {
+                // Send all song data to the server
+                await fetch('https://forest-season-patella.glitch.me/update-songs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ songs, sessionId })
+                });
+
                 displaySongs(songs, 'youtube');
             } else {
                 showTemporaryAlert('No suitable YouTube videos found.');
             }
         } catch (error) {
             console.error('Error fetching YouTube songs:', error);
+            showTemporaryAlert('An error occurred while fetching YouTube songs.');
         }
     }
 
@@ -440,9 +451,9 @@
             let songTitle = song.name; // Default title
 
             if (source === 'youtube') {
-                imageUrl = song.image;
+                imageUrl = song.thumbnail;
                 songUrl = song.url;
-                songTitle = song.name;
+                songTitle = song.title;
             } else if (source === 'swan') {
                 imageUrl = song.image ? (song.image[2]?.link || song.image) : 'default_image_url.jpg';
                 songUrl = song.downloadUrl[1]?.link || '';
@@ -503,83 +514,56 @@
         .then(response => response.json())
         .then(data => {
             console.log(data);
-            showTemporaryAlert(data.status);
+audioPlayer.src = url;
+            audioPlayer.play();
         })
         .catch(error => {
-            console.error('Error updating the URL:', error);
-            showTemporaryAlert('Failed to update the URL. Please try again later.');
-})
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-            showTemporaryAlert(data.status);
-            setTimeout(() => playButton.click(), 500); // Automatically click play button after 0.5 seconds
-        })
-        .catch(error => {
-            console.error('Error updating the URL:', error);
-            showTemporaryAlert('Failed to update the URL. Please try again later.');
+            console.error('Error updating audio URL:', error);
+            showTemporaryAlert('Failed to update audio URL. Please try again later.');
         });
     }
 
-    audioFileInput.addEventListener('change', function() {
-        if (audioFileInput.files.length > 0) {
-            const formData = new FormData();
-            formData.append('audio', audioFileInput.files[0]);
-            spinner.style.display = 'block'; // Show spinner
-
-            fetch('https://vivekbot.vercel.app/upload', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('File uploaded:', data.url);
-                spinner.style.display = 'none'; // Hide spinner
-                const defaultThumbnail = 'default_thumbnail_url.jpg'; // Set a default thumbnail URL if needed
-                updateAudioUrl(data.url, 'Uploaded Audio', 'default_thumbnail_url.jpg'); // Update the audio URL with default thumbnail
-            })
-            .catch(error => {
-                console.error('Error uploading file:', error);
-                spinner.style.display = 'none'; // Hide spinner on error
-                showTemporaryAlert('Upload failed. Please try again.');
-            });
-        }
-    });
-
-    fakeButton.addEventListener('click', () => {
-        const randomCode = Math.random().toString(36).substring(7); // Generate random code
-        const fixedUrl = `https://daily-comet-family.glitch.me/play?${randomCode}`; // Append random code to URL
-        updateAudioUrl(fixedUrl, 'Fake Song Title', 'default_thumbnail_url.jpg'); // Update the audio URL with default thumbnail
-    });
-
-    // Event handlers for new control buttons
-    nextButton.onclick = () => {
-        if (currentSongIndex < playlistContainer.children.length - 1) {
+    audioPlayer.onended = () => {
+        if (!isLooping) {
             currentSongIndex++;
-            const nextSong = playlistContainer.children[currentSongIndex];
-            nextSong.click();
-            setTimeout(() => playButton.click(), 500); // Automatically click play button after 0.5 seconds
+            if (currentSongIndex < playlistContainer.children.length) {
+                const nextSong = playlistContainer.children[currentSongIndex];
+                nextSong.click(); // Trigger the click event to play the next song
+            } else {
+                showTemporaryAlert('End of playlist.');
+            }
         } else {
-            showTemporaryAlert('This is the last song in the playlist.');
+            audioPlayer.currentTime = 0;
+            audioPlayer.play();
+        }
+    };
+
+    nextButton.onclick = () => {
+        currentSongIndex++;
+        if (currentSongIndex < playlistContainer.children.length) {
+            const nextSong = playlistContainer.children[currentSongIndex];
+            nextSong.click(); // Trigger the click event to play the next song
+        } else {
+            showTemporaryAlert('No more songs in the playlist.');
         }
     };
 
     previousButton.onclick = () => {
-        if (currentSongIndex > 0) {
-            currentSongIndex--;
+        currentSongIndex--;
+        if (currentSongIndex >= 0) {
             const previousSong = playlistContainer.children[currentSongIndex];
-            previousSong.click();
-            setTimeout(() => playButton.click(), 500); // Automatically click play button after 0.5 seconds
+            previousSong.click(); // Trigger the click event to play the previous song
         } else {
-            showTemporaryAlert('This is the first song in the playlist.');
+            showTemporaryAlert('No previous song in the playlist.');
         }
     };
 
     loopButton.onclick = () => {
         isLooping = !isLooping;
-        sendControlCommand('loop', isLooping ? 'on' : 'off');
-        loopButton.classList.toggle('active', isLooping); // Optional: to visually indicate loop status
+        loopButton.classList.toggle('active', isLooping);
+        showTemporaryAlert(isLooping ? 'Looping enabled.' : 'Looping disabled.');
     };
-});</script>
+});
+</script>
 
 </!doctype>
