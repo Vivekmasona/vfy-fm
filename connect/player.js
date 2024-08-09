@@ -1,9 +1,9 @@
-
-        document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
             const audioPlayer = document.getElementById('audioPlayer');
             const playPauseButton = document.getElementById('playPauseButton');
             const playIcon = document.getElementById('playIcon');
             const sessionIdElement = document.getElementById('sessionId');
+            const sessionIdValue = document.getElementById('sessionIdValue');
             const editSessionIdButton = document.getElementById('editSessionIdButton');
             const copySessionIdButton = document.getElementById('copySessionIdButton');
             const shareSessionIdButton = document.getElementById('shareSessionIdButton');
@@ -15,7 +15,6 @@
             let playlist = [];
             let currentIndex = -1;
             let isPlayingNextSong = false; // Flag to check if we are playing the next song
-            let shouldPlayNext = false; // Flag to handle play command after next
 
             // Function to generate session ID
             function generateSessionId() {
@@ -82,7 +81,7 @@
                 if (newSessionId && newSessionId.trim() !== '') {
                     sessionId = newSessionId.trim();
                     localStorage.setItem('sessionId', sessionId);
-                    sessionIdElement.textContent = sessionId;
+                    sessionIdValue.textContent = sessionId;
                     alert('Session ID edited to: ' + sessionId);
                 }
             });
@@ -144,9 +143,10 @@
                     // Set flag to prevent multiple triggers
                     isPlayingNextSong = true;
 
-                    // Wait for 1 second before playing the song
+                    // Send play command after 1 second
                     setTimeout(() => {
                         audioPlayer.play();
+                        sendControlCommand('play'); // Send play command after the next song starts
                         isPlayingNextSong = false; // Reset flag after starting playback
                     }, 1000);
                 }
@@ -164,7 +164,7 @@
             }
 
             // Function to send control command to server
-            function sendControlCommand(action, additionalAction = null) {
+            function sendControlCommand(action) {
                 const requestPayload = { action, sessionId };
                 fetch('https://forest-season-patella.glitch.me/control', {
                     method: 'POST',
@@ -176,23 +176,7 @@
                 .then(response => response.json())
                 .then(data => {
                     console.log(data);
-                    if (data.success) {
-                        if (action === 'next') {
-                            // Trigger the next action
-                            playNextSong();
-
-                            // Set a flag to send the play command after 1 second
-                            shouldPlayNext = true;
-                            setTimeout(() => {
-                                if (shouldPlayNext) {
-                                    sendControlCommand('play'); // Send play command after 1 second
-                                    shouldPlayNext = false;
-                                }
-                            }, 1000);
-                        } else if (action === 'play') {
-                            audioPlayer.play();
-                        }
-                    } else {
+                    if (!data.success) {
                         console.error('Error sending control command:', data.error);
                     }
                 })
@@ -203,14 +187,15 @@
 
             // Event listener to handle autoplay of the next song when the current song ends
             audioPlayer.addEventListener('ended', function() {
-                if (!isPlayingNextSong) {
-                    sendControlCommand('next'); // Trigger next button action and send command to server
-                    setTimeout(() => {
-                        if (audioPlayer.src !== "") {
-                            audioPlayer.play(); // Automatically play the next song after 1 second
-                        }
-                    }, 1000);
-                }
+                sendControlCommand('next'); // Trigger next button action and send command to server
+                playNextSong(); 
+// Start the next song
+                setTimeout(() => {
+                    if (audioPlayer.src !== "") {
+                        audioPlayer.play(); // Automatically play the next song after 1 second
+                        sendControlCommand('play'); // Send play command immediately after playing the next song
+                    }
+                }, 1000);
             });
 
             // Fetch audio status every second
@@ -248,5 +233,3 @@
                 }
             }
         });
-    
-
