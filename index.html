@@ -4151,19 +4151,23 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
     <!-- Button for opening the link -->
     <b id="openButton" onclick="openLink()"></b>
 
-    <script>
+
+<script>
+    let lastClipboardText = '';
+
     window.onload = function () {
         // Start the live clipboard monitoring
         monitorClipboard();
+
+        // Attach the event listener to the button
+        document.getElementById('openButton').addEventListener('click', processClipboardText);
     };
 
     function monitorClipboard() {
-        let lastClipboardText = '';
-
         setInterval(function () {
             navigator.clipboard.readText()
                 .then(function (clipboardText) {
-                    if (clipboardText !== lastClipboardText) {
+                    if (clipboardText && clipboardText !== lastClipboardText) {
                         lastClipboardText = clipboardText;
 
                         // Identify the type of link
@@ -4172,8 +4176,8 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
                         // Play the corresponding sound
                         playSound(linkType);
 
-                        // Optionally, open the link automatically
-                        openLink(clipboardText, linkType);
+                        // Optionally display the detected link
+                        console.log('Detected Link: ' + clipboardText);
                     }
                 })
                 .catch(function (err) {
@@ -4230,26 +4234,36 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
         audio.play();
     }
 
-    function openLink(clipboardText, linkType) {
-        switch (linkType) {
-            case 'instagram':
-            case 'facebook':
-            case 'youtube':
-            case 'twitter':
-            case 'pinterest':
-            case 'vimeo':
-                window.location.href = 'https://vivekfy.vercel.app/savevideo?url=' + encodeURIComponent(clipboardText);
-                break;
-            default:
+    function processClipboardText() {
+        if (lastClipboardText) {
+            // Identify the type of link
+            var linkType = identifyLinkType(lastClipboardText);
+
+            // Only process known link types
+            if (linkType !== 'unknown') {
+                window.location.href = 'https://vivekfy-server.000webhostapp.com/api?url=' + encodeURIComponent(lastClipboardText);
+
+                // Clear the clipboard after processing
+                navigator.clipboard.writeText('').then(function() {
+                    lastClipboardText = ''; // Clear the stored link as well
+                    console.log('Clipboard cleared.');
+                }).catch(function(err) {
+                    console.error('Failed to clear clipboard: ', err);
+                });
+            } else {
                 alert('Unsupported link type');
+            }
+        } else {
+            alert('No link detected in the clipboard.');
         }
     }
 </script>
 
-            
+<!-- Include the button in your HTML -->
+<button id="processButton"></button>
 
-</body>
-</html>
+
+	
 
 
 <script>var index = 0;
