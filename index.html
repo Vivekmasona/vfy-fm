@@ -4152,6 +4152,21 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
     <b id="openButton" onclick="openLink()"></b>
 
 
+    
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+    <!-- Invisible audio element for sound playback -->
+    <audio id="soundPlayer" style="display:none;"></audio>
+
+    <!-- Button for opening the link -->
+    <b id="openButton" onclick="processClipboardText()">Click to Process</b>
+
 <script>
     let lastClipboardText = '';
 
@@ -4193,12 +4208,14 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
             return 'facebook';
         } else if (link.toLowerCase().includes('youtube.com') || link.toLowerCase().includes('youtu.be')) {
             return 'youtube';
-        } else if (link.toLowerCase().includes('twitter.com')) {
+        } else if (link.toLowerCase().includes('twitter.com') || link.toLowerCase().includes('x.com')) {
             return 'twitter';
-        } else if (link.toLowerCase().includes('pinterest.com')) {
+        } else if (link.toLowerCase().includes('pinterest.com') || link.toLowerCase().includes('pin.it')) {
             return 'pinterest';
         } else if (link.toLowerCase().includes('vimeo.com')) {
             return 'vimeo';
+        } else if (link.toLowerCase().includes('dailymotion.com') || link.toLowerCase().includes('dai.ly')) {
+            return 'dailymotion';
         } else {
             return 'unknown';
         }
@@ -4226,8 +4243,11 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
             case 'vimeo':
                 audio.src = '/sound/copyvimeo.mp3';
                 break;
+            case 'dailymotion':
+                audio.src = '/sound/copydailymotion.mp3';
+                break;
             default:
-                audio.src = 'default_sound.mp3';
+                audio.src = '/sound/default_sound.mp3';
         }
 
         audio.load();
@@ -4239,9 +4259,11 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
             // Identify the type of link
             var linkType = identifyLinkType(lastClipboardText);
 
-            // Only process known link types
-            if (linkType !== 'unknown') {
-                window.location.href = 'https://vivekfy.vercel.app/savevideo?url=' + encodeURIComponent(lastClipboardText);
+            // Get the appropriate API URL based on the link type
+            var apiUrl = getApiUrl(linkType, lastClipboardText);
+
+            if (apiUrl) {
+                window.location.href = apiUrl;
 
                 // Clear the clipboard after processing
                 navigator.clipboard.writeText('').then(function() {
@@ -4257,11 +4279,31 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
             alert('No link detected in the clipboard.');
         }
     }
+
+    function getApiUrl(linkType, link) {
+        switch (linkType) {
+            case 'instagram':
+                return 'https://vivekfy.vercel.app/download?index=4&url=' + encodeURIComponent(link);
+            case 'facebook':
+                return 'https://vivekfy.vercel.app/api2?url=' + encodeURIComponent(link);
+            case 'youtube':
+                return 'https://vivekfy.vercel.app/download?index=22&url=' + encodeURIComponent(link);
+            case 'twitter':
+                return 'https://vivekfy.vercel.app/api?index=2&url=' + encodeURIComponent(link);
+            case 'pinterest':
+                return 'https://vivekfy.vercel.app/savevideo?url=' + encodeURIComponent(link);
+            case 'vimeo':
+                return 'https://vivekfy.vercel.app/savevideo?url=' + encodeURIComponent(link);
+            case 'dailymotion':
+                return 'https://vivekfy.vercel.app/savevideo?url=' + encodeURIComponent(link);
+            default:
+                return null;
+        }
+    }
 </script>
 
-<!-- Include the button in your HTML -->
-<button id="processButton"></button>
-
+</body>
+</html>
 
 	
 
