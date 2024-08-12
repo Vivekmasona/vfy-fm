@@ -1941,12 +1941,10 @@ document.getElementById("stop").onclick = function() {
     <butto id="vivekmasona"></butto>
 <div id="togglebutto"></div>
    
-    
-<script>
+    <script>
     let recognition;
     let isVoiceRecognitionOn = false;
 
-    // Initialize SpeechRecognition
     function initializeRecognition() {
         recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         recognition.lang = 'en-US';
@@ -1957,7 +1955,6 @@ document.getElementById("stop").onclick = function() {
         recognition.onend = handleEnd;
     }
 
-    // Function to start voice recognition
     function startVoiceRecognition() {
         if (!isVoiceRecognitionOn) {
             initializeRecognition();
@@ -1966,7 +1963,6 @@ document.getElementById("stop").onclick = function() {
         }
     }
 
-    // Handle speech recognition results
     function handleResult(event) {
         const lastResult = event.results[event.results.length - 1][0].transcript;
 
@@ -1990,19 +1986,17 @@ document.getElementById("stop").onclick = function() {
         }
     }
 
-    // Handle recognition errors
     function handleError(event) {
         console.error('Speech recognition error detected: ', event.error);
     }
 
-    // Restart recognition if it ends unexpectedly
     function handleEnd() {
+        // Automatically restart recognition if it ends unexpectedly
         if (isVoiceRecognitionOn) {
             recognition.start();
         }
     }
 
-    // Function to play audio from a given URL
     function playAudio(audioURL) {
         const audio = new Audio(audioURL);
         audio.play();
@@ -2013,7 +2007,7 @@ document.getElementById("stop").onclick = function() {
         startVoiceRecognition();
     };
 
-    // Optionally, you can add a button to manually toggle recognition on or off
+    // Optionally, add a button to manually toggle recognition
     const togglebutto = document.getElementById('togglebutto');
     togglebutto.addEventListener('click', function () {
         if (isVoiceRecognitionOn) {
