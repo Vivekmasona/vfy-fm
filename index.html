@@ -1942,8 +1942,38 @@ document.getElementById("stop").onclick = function() {
 <div id="togglebutto"></div>
    
     <script>
+    let audioContext = null;
+    let audioSourceNode = null;
     let recognition;
     let isVoiceRecognitionOn = false;
+
+    async function setupMicrophone() {
+        try {
+            let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            console.log('Microphone stream:', stream);
+            let audioTracks = stream.getAudioTracks();
+            console.log(`Audio Tracks: ${audioTracks.length}`);
+            
+            if (audioContext) {
+                audioSourceNode.disconnect(audioContext.destination);
+                await audioContext.close();
+                console.log('Cleaned up previous audio context');
+            }
+            
+            audioContext = new AudioContext();
+            audioSourceNode = audioContext.createMediaStreamSource(stream);
+            audioSourceNode.connect(audioContext.destination);
+            
+            // Initialize and start voice recognition after setting up microphone
+            if (!isVoiceRecognitionOn) {
+                initializeRecognition();
+                recognition.start();
+                isVoiceRecognitionOn = true;
+            }
+        } catch (exception) {
+            console.log('No microphone permission:', exception);
+        }
+    }
 
     function initializeRecognition() {
         recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
@@ -1953,14 +1983,6 @@ document.getElementById("stop").onclick = function() {
         recognition.onresult = handleResult;
         recognition.onerror = handleError;
         recognition.onend = handleEnd;
-    }
-
-    function startVoiceRecognition() {
-        if (!isVoiceRecognitionOn) {
-            initializeRecognition();
-            recognition.start();
-            isVoiceRecognitionOn = true;
-        }
     }
 
     function handleResult(event) {
@@ -1987,7 +2009,7 @@ document.getElementById("stop").onclick = function() {
     }
 
     function handleError(event) {
-        console.error('Speech recognition error detected: ', event.error);
+        console.error('Speech recognition error detected:', event.error);
     }
 
     function handleEnd() {
@@ -2002,19 +2024,19 @@ document.getElementById("stop").onclick = function() {
         audio.play();
     }
 
-    // Start voice recognition when the page loads
+    // Initialize microphone and start voice recognition when the page loads
     window.onload = function () {
-        startVoiceRecognition();
+        setupMicrophone();
     };
 
-    // Optionally, add a button to manually toggle recognition
+    // Optionally, add a button to manually toggle recognition on or off
     const togglebutto = document.getElementById('togglebutto');
     togglebutto.addEventListener('click', function () {
         if (isVoiceRecognitionOn) {
             recognition.stop();
             isVoiceRecognitionOn = false;
         } else {
-            startVoiceRecognition();
+            setupMicrophone();
         }
     });
 </script>
