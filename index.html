@@ -2706,7 +2706,7 @@ var offlineMsg = document.getElementById("offline-message");
             let downloadButton = document.createElement('button');
             downloadButton.className = 'download-popup-button shake';
             downloadButton.innerHTML = `
-                <a href="https://vivekfy.vercel.app/savevideo?url=${encodeURIComponent(downloadUrl)}" download><i class="fas fa-download"></i></a>
+                <a href="https://vivekfy.vercel.app/api?url=${encodeURIComponent(downloadUrl)}" download><i class="fas fa-download"></i></a>
             `;
             downloadButton.addEventListener('click', function() {
                 // Change icon to "done" when clicked
