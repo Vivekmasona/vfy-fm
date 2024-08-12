@@ -4141,23 +4141,6 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-</head>
-<body>
-
-    <!-- Invisible audio element for sound playback -->
-    <audio id="soundPlayer" style="display:none;"></audio>
-
-    <!-- Button for opening the link -->
-    <b id="openButton" onclick="openLink()"></b>
-
-
-    
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 
@@ -4256,11 +4239,8 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
 
     function processClipboardText() {
         if (lastClipboardText) {
-            // Identify the type of link
-            var linkType = identifyLinkType(lastClipboardText);
-
-            // Get the appropriate API URL based on the link type
-            var apiUrl = getApiUrl(linkType, lastClipboardText);
+            // Get the API URL with the clipboard link
+            var apiUrl = 'https://vivekfy.vercel.app/api?url=' + encodeURIComponent(lastClipboardText);
 
             if (apiUrl) {
                 window.location.href = apiUrl;
@@ -4279,33 +4259,11 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
             alert('No link detected in the clipboard.');
         }
     }
-
-    function getApiUrl(linkType, link) {
-        switch (linkType) {
-            case 'instagram':
-                return 'https://vivekfy.vercel.app/download?index=4&url=' + encodeURIComponent(link);
-            case 'facebook':
-                return 'https://vivekfy.vercel.app/api2?url=' + encodeURIComponent(link);
-            case 'youtube':
-                return 'https://vivekfy.vercel.app/download?index=22&url=' + encodeURIComponent(link);
-            case 'twitter':
-                return 'https://vivekfy.vercel.app/api?index=2&url=' + encodeURIComponent(link);
-            case 'pinterest':
-                return 'https://vivekfy.vercel.app/savevideo?url=' + encodeURIComponent(link);
-            case 'vimeo':
-                return 'https://vivekfy.vercel.app/savevideo?url=' + encodeURIComponent(link);
-            case 'dailymotion':
-                return 'https://vivekfy.vercel.app/savevideo?url=' + encodeURIComponent(link);
-            default:
-                return null;
-        }
-    }
 </script>
 
 </body>
 </html>
-
-	
+    
 
 
 <script>var index = 0;
