@@ -1941,48 +1941,45 @@ document.getElementById("stop").onclick = function() {
     <butto id="vivekmasona"></butto>
 <div id="togglebutto"></div>
    
-    <script>
+
+
+<script>
     let audioContext = null;
     let audioSourceNode = null;
     let recognition;
-    let isVoiceRecognitionOn = false;
 
-    async function setupMicrophone() {
+    async function setupMicrophoneAndRecognition() {
         try {
+            // Get user media with audio
             let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             console.log('Microphone stream:', stream);
-            let audioTracks = stream.getAudioTracks();
-            console.log(`Audio Tracks: ${audioTracks.length}`);
             
+            // Clean up previous audio context if it exists
             if (audioContext) {
                 audioSourceNode.disconnect(audioContext.destination);
                 await audioContext.close();
                 console.log('Cleaned up previous audio context');
             }
-            
+
+            // Create a new audio context and connect the microphone stream
             audioContext = new AudioContext();
             audioSourceNode = audioContext.createMediaStreamSource(stream);
             audioSourceNode.connect(audioContext.destination);
-            
-            // Initialize and start voice recognition after setting up microphone
-            if (!isVoiceRecognitionOn) {
-                initializeRecognition();
-                recognition.start();
-                isVoiceRecognitionOn = true;
-            }
-        } catch (exception) {
-            console.log('No microphone permission:', exception);
-        }
-    }
 
-    function initializeRecognition() {
-        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'en-US';
-        recognition.interimResults = false;
-        recognition.continuous = true; // Keep recognition continuous
-        recognition.onresult = handleResult;
-        recognition.onerror = handleError;
-        recognition.onend = handleEnd;
+            // Initialize SpeechRecognition
+            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.continuous = true; // Ensure continuous listening
+            recognition.onresult = handleResult;
+            recognition.onerror = handleError;
+            recognition.onend = handleEnd;
+
+            // Start voice recognition
+            recognition.start();
+        } catch (exception) {
+            console.log('No microphone permission or error:', exception);
+        }
     }
 
     function handleResult(event) {
@@ -1993,7 +1990,7 @@ document.getElementById("stop").onclick = function() {
         // Check if the voice command matches any predefined commands
         if (['mp3', 'download mp3', 'download song', 'save mp3', 'mp3 download', 'download this song', 'audio', 'audio download', 'save audio'].includes(lastResult.toLowerCase())) {
             const butto1 = document.getElementById('pahilagana');
-            butto1.click();
+            if (butto1) butto1.click();
             playAudio('/sound/saveaudio.mp3'); // Replace with the appropriate audio URL
             commandMatched = true;
         }
@@ -2001,10 +1998,11 @@ document.getElementById("stop").onclick = function() {
         // If no command matched, type the spoken word in the search box and trigger search button click
         if (!commandMatched) {
             const searchBox = document.getElementById('search-basic');
-            searchBox.value = lastResult;
-
             const searchButton = document.getElementById('search-btn');
-            searchButton.click(); // Trigger search button click
+            if (searchBox && searchButton) {
+                searchBox.value = lastResult;
+                searchButton.click(); // Trigger search button click
+            }
         }
     }
 
@@ -2014,9 +2012,7 @@ document.getElementById("stop").onclick = function() {
 
     function handleEnd() {
         // Automatically restart recognition if it ends unexpectedly
-        if (isVoiceRecognitionOn) {
-            recognition.start();
-        }
+        recognition.start();
     }
 
     function playAudio(audioURL) {
@@ -2024,22 +2020,14 @@ document.getElementById("stop").onclick = function() {
         audio.play();
     }
 
-    // Initialize microphone and start voice recognition when the page loads
+    // Start the microphone and speech recognition setup when the page loads
     window.onload = function () {
-        setupMicrophone();
+        setupMicrophoneAndRecognition();
     };
-
-    // Optionally, add a button to manually toggle recognition on or off
-    const togglebutto = document.getElementById('togglebutto');
-    togglebutto.addEventListener('click', function () {
-        if (isVoiceRecognitionOn) {
-            recognition.stop();
-            isVoiceRecognitionOn = false;
-        } else {
-            setupMicrophone();
-        }
-    });
 </script>
+
+
+	
 
 <b id="VFYmp3v2"></b>            
 <div id="AdVideo"></div>            
