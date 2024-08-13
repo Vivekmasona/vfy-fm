@@ -4368,35 +4368,41 @@ body{
 
 
 
-    
-                <h4 id="brandName" style="cursor: pointer; text-decoration: underline;"></h4>
-            
+    <h4 id="brandName" style="cursor: pointer; text-decoration: underline;"></h4>
 
-    <!-- Add your scripts here -->
-        <script src="https://wurfl.io/wurfl.js"></script>
+<!-- Add your scripts here -->
+<script src="https://wurfl.io/wurfl.js"></script>
 
-    <script>
-        // Wait for the document to be ready
-        $(document).ready(function () {
-            // Get the user's complete device name from WURFL library
-            var completeDeviceName = WURFL.complete_device_name;
+<script>
+    // Wait for the document to be ready
+    $(document).ready(function () {
+        // Get the user's complete device name from WURFL library
+        var completeDeviceName = WURFL.complete_device_name;
 
-            // Extract brand name
-            var brandName = completeDeviceName.split(" ")[0];
+        // Extract brand name
+        var brandName = completeDeviceName.split(" ")[0];
 
-            // Display the brand name
-            var brandNameElement = document.getElementById('brandName');
-            brandNameElement.innerText = brandName;
+        // Display the brand name
+        var brandNameElement = document.getElementById('brandName');
+        brandNameElement.innerText = brandName;
 
-            // Add click event listener to the brand name
-            brandNameElement.addEventListener('click', function () {
-                // Use Web Speech API to speak the complete device name
-                var speechSynthesis = window.speechSynthesis;
-                var speechUtterance = new SpeechSynthesisUtterance(completeDeviceName);
-                speechSynthesis.speak(speechUtterance);
-            });
+        // Add click event listener to the brand name
+        brandNameElement.addEventListener('click', function () {
+            // Use Web Speech API to speak the complete device name
+            var speechSynthesis = window.speechSynthesis;
+            var speechUtterance = new SpeechSynthesisUtterance(completeDeviceName);
+            speechSynthesis.speak(speechUtterance);
+
+            // Alternatively, use your custom TTS API
+            // Uncomment the lines below to use your TTS API
+            /*
+            var ttsUrl = 'https://vivekfy.vercel.app/tts/v2?text=' + encodeURIComponent(completeDeviceName);
+            var audio = new Audio(ttsUrl);
+            audio.play();
+            */
         });
-    </script>
+    });
+</script>
 
 
 
