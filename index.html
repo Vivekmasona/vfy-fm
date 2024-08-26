@@ -1607,14 +1607,24 @@ function showNotification() {
         icon: thumbnailUrl,
         actions: [
             {
-                action: 'next',
-                title: 'Next Song',
-                icon: 'path/to/next-icon.png' // Provide the path to your next icon
+                action: 'seekbackward',
+                title: 'Rewind',
+                icon: 'path/to/seek-back-icon.png' // Provide the path to your seek back icon
+            },
+            {
+                action: 'seekforward',
+                title: 'Fast Forward',
+                icon: 'path/to/seek-forward-icon.png' // Provide the path to your seek forward icon
             },
             {
                 action: 'heart',
                 title: 'Favorite',
                 icon: 'path/to/heart-icon.png' // Provide the path to your heart icon
+            },
+            {
+                action: 'next',
+                title: 'Next Song',
+                icon: 'path/to/next-icon.png' // Provide the path to your next icon
             },
             {
                 action: 'download',
@@ -1633,6 +1643,10 @@ function showNotification() {
                 heartButtonElement.click();
             } else if (event.action === 'download') {
                 downloadButtonElement.click();
+            } else if (event.action === 'seekbackward') {
+                titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
+            } else if (event.action === 'seekforward') {
+                titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
             }
         });
     } else if (Notification.permission !== 'denied') {
@@ -1646,6 +1660,10 @@ function showNotification() {
                         heartButtonElement.click();
                     } else if (event.action === 'download') {
                         downloadButtonElement.click();
+                    } else if (event.action === 'seekbackward') {
+                        titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
+                    } else if (event.action === 'seekforward') {
+                        titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
                     }
                 });
             }
@@ -1686,9 +1704,6 @@ downloadButtonElement.addEventListener('click', () => {
     console.log('Download button clicked');
     // Example: initiate download
 });
-
-
-    
                 
     
 
@@ -4420,6 +4435,7 @@ z-imdex:999999;
   left: 0px;
 }
 </style>	
+
 
 
 
