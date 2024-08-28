@@ -1549,9 +1549,11 @@ volumeSlider.addEventListener('input', function () {
 const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle');
 const thumbnailElement = document.getElementById('SThumb');
-const nextButtonElement = document.getElementById('nextbutto'); // Updated ID for the next button
-const heartButtonElement = document.getElementById('VFYmp3v2'); // ID for the heart button
-const downloadButtonElement = document.getElementById('VFYmp3'); // ID for the download button
+const nextButtonElement = document.getElementById('nextbutto');
+const heartButtonElement = document.getElementById('VFYmp3v2');
+const downloadButtonElement = document.getElementById('VFYmp3');
+
+let currentNotification = null;
 
 // Function to update Media Session metadata
 function updateMediaSessionMetadata() {
@@ -1573,7 +1575,6 @@ function updateMediaSessionMetadata() {
             ]
         });
 
-        // Set action handlers
         navigator.mediaSession.setActionHandler('play', () => {
             titleaudio.play();
         });
@@ -1597,115 +1598,90 @@ function updateMediaSessionMetadata() {
     }
 }
 
-// Function to show notification with "next song", "heart", and "download" buttons
-function showNotification() {
+// Function to show notification with dynamic icon based on the play/pause state
+function showNotification(isPlaying) {
     const songTitle = songTitleElement.textContent;
     const thumbnailUrl = thumbnailElement.src;
+    const colorOverlay = isPlaying ? 'overlay-play.png' : 'overlay-pause.png'; // Replace with your own image files
 
     const options = {
-        body: 'Audio is playing',
+        body: 'Audio is ' + (isPlaying ? 'playing' : 'paused'),
         icon: thumbnailUrl,
         actions: [
-            {
-                action: 'seekbackward',
-                title: 'Rewind',
-                icon: 'path/to/seek-back-icon.png' // Provide the path to your seek back icon
-            },
-            {
-                action: 'seekforward',
-                title: 'Fast Forward',
-                icon: 'path/to/seek-forward-icon.png' // Provide the path to your seek forward icon
-            },
-            {
-                action: 'heart',
-                title: 'Favorite',
-                icon: 'path/to/heart-icon.png' // Provide the path to your heart icon
-            },
-            {
-                action: 'next',
-                title: 'Next Song',
-                icon: 'path/to/next-icon.png' // Provide the path to your next icon
-            },
-            {
-                action: 'download',
-                title: 'Download',
-                icon: 'path/to/download-icon.png' // Provide the path to your download icon
-            }
-        ]
+            { action: 'seekbackward', title: 'Rewind', icon: 'path/to/seek-back-icon.png' },
+            { action: 'seekforward', title: 'Fast Forward', icon: 'path/to/seek-forward-icon.png' },
+            { action: 'heart', title: 'Favorite', icon: 'path/to/heart-icon.png' },
+            { action: 'next', title: 'Next Song', icon: 'path/to/next-icon.png' },
+            { action: 'download', title: 'Download', icon: 'path/to/download-icon.png' }
+        ],
+        badge: isPlaying ? 'path/to/badge-playing.png' : 'path/to/badge-paused.png' // Add badge to differentiate states
     };
 
     if (Notification.permission === 'granted') {
-        const notification = new Notification(songTitle, options);
-        notification.addEventListener('click', (event) => {
-            if (event.action === 'next') {
-                nextButtonElement.click();
-            } else if (event.action === 'heart') {
-                heartButtonElement.click();
-            } else if (event.action === 'download') {
-                downloadButtonElement.click();
-            } else if (event.action === 'seekbackward') {
-                titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
-            } else if (event.action === 'seekforward') {
-                titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
-            }
+        // Close the previous notification if it exists
+        if (currentNotification) {
+            currentNotification.close();
+        }
+
+        currentNotification = new Notification(songTitle, options);
+        currentNotification.addEventListener('click', (event) => {
+            handleNotificationAction(event);
         });
     } else if (Notification.permission !== 'denied') {
         Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
-                const notification = new Notification(songTitle, options);
-                notification.addEventListener('click', (event) => {
-                    if (event.action === 'next') {
-                        nextButtonElement.click();
-                    } else if (event.action === 'heart') {
-                        heartButtonElement.click();
-                    } else if (event.action === 'download') {
-                        downloadButtonElement.click();
-                    } else if (event.action === 'seekbackward') {
-                        titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
-                    } else if (event.action === 'seekforward') {
-                        titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
-                    }
+                currentNotification = new Notification(songTitle, options);
+                currentNotification.addEventListener('click', (event) => {
+                    handleNotificationAction(event);
                 });
             }
         });
     }
 }
 
+// Function to handle notification actions
+function handleNotificationAction(event) {
+    if (event.action === 'next') {
+        nextButtonElement.click();
+    } else if (event.action === 'heart') {
+        heartButtonElement.click();
+    } else if (event.action === 'download') {
+        downloadButtonElement.click();
+    } else if (event.action === 'seekbackward') {
+        titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
+    } else if (event.action === 'seekforward') {
+        titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
+    }
+}
+
 // Update the Media Session metadata initially
 updateMediaSessionMetadata();
 
+// Event listeners for play and pause to show dynamic notification
 titleaudio.addEventListener('play', () => {
     document.title = songTitleElement.textContent + ' - ' + titleaudio.currentTime + ' seconds';
-    showNotification();
+    showNotification(true);
 });
 
 titleaudio.addEventListener('pause', () => {
     document.title = 'VIVEKFY-AI';
+    showNotification(false);
 });
 
 // Add event listener for the next button
 nextButtonElement.addEventListener('click', () => {
-    // Your logic to play the next song
     console.log('Next song button clicked');
-    // Example: titleaudio.src = 'path/to/next/song.mp3';
-    // titleaudio.play();
 });
 
 // Add event listener for the heart button
 heartButtonElement.addEventListener('click', () => {
-    // Your logic for the heart button
     console.log('Heart button clicked');
-    // Example: mark the song as favorite
 });
 
 // Add event listener for the download button
 downloadButtonElement.addEventListener('click', () => {
-    // Your logic for the download button
     console.log('Download button clicked');
-    // Example: initiate download
 });
-                
-    
 
 
 
@@ -4435,3 +4411,4 @@ z-imdex:999999;
   left: 0px;
 }
 </style>	
+
