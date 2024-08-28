@@ -325,6 +325,15 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
 
 
 
+    <div id="thumbnailContainer" style="position: relative; width: 100px; height: 100px;">
+        <img id="SThumb" src="thumbnail.jpg" style="width: 100%; height: 100%;">
+        <img id="visualizerGif" src="https://i.ibb.co/LpVz8GJ/64a6b0e0740e455bda54f399-Waveform.gif" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none;">
+    </div>
+    
+    
+
+
+
 
 
 
@@ -1545,15 +1554,13 @@ volumeSlider.addEventListener('input', function () {
 
 
 
-
 const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle');
 const thumbnailElement = document.getElementById('SThumb');
+const visualizerGif = document.getElementById('visualizerGif');
 const nextButtonElement = document.getElementById('nextbutto');
 const heartButtonElement = document.getElementById('VFYmp3v2');
 const downloadButtonElement = document.getElementById('VFYmp3');
-
-let currentNotification = null;
 
 // Function to update Media Session metadata
 function updateMediaSessionMetadata() {
@@ -1575,6 +1582,7 @@ function updateMediaSessionMetadata() {
             ]
         });
 
+        // Set action handlers
         navigator.mediaSession.setActionHandler('play', () => {
             titleaudio.play();
         });
@@ -1598,89 +1606,100 @@ function updateMediaSessionMetadata() {
     }
 }
 
-// Function to show notification with dynamic icon based on the play/pause state
+// Function to show notification with "next song", "heart", and "download" buttons
 function showNotification(isPlaying) {
     const songTitle = songTitleElement.textContent;
     const thumbnailUrl = thumbnailElement.src;
-    const colorOverlay = isPlaying ? 'overlay-play.png' : 'overlay-pause.png'; // Replace with your own image files
+    const gifUrl = 'https://i.ibb.co/LpVz8GJ/64a6b0e0740e455bda54f399-Waveform.gif'; // GIF URL
 
     const options = {
         body: 'Audio is ' + (isPlaying ? 'playing' : 'paused'),
-        icon: thumbnailUrl,
+        icon: isPlaying ? gifUrl : thumbnailUrl, // Use GIF if playing, else thumbnail
         actions: [
-            { action: 'seekbackward', title: 'Rewind', icon: 'path/to/seek-back-icon.png' },
-            { action: 'seekforward', title: 'Fast Forward', icon: 'path/to/seek-forward-icon.png' },
-            { action: 'heart', title: 'Favorite', icon: 'path/to/heart-icon.png' },
-            { action: 'next', title: 'Next Song', icon: 'path/to/next-icon.png' },
-            { action: 'download', title: 'Download', icon: 'path/to/download-icon.png' }
-        ],
-        badge: isPlaying ? 'path/to/badge-playing.png' : 'path/to/badge-paused.png' // Add badge to differentiate states
+            {
+                action: 'seekbackward',
+                title: 'Rewind',
+                icon: 'path/to/seek-back-icon.png'
+            },
+            {
+                action: 'seekforward',
+                title: 'Fast Forward',
+                icon: 'path/to/seek-forward-icon.png'
+            },
+            {
+                action: 'heart',
+                title: 'Favorite',
+                icon: 'path/to/heart-icon.png'
+            },
+            {
+                action: 'next',
+                title: 'Next Song',
+                icon: 'path/to/next-icon.png'
+            },
+            {
+                action: 'download',
+                title: 'Download',
+                icon: 'path/to/download-icon.png'
+            }
+        ]
     };
 
     if (Notification.permission === 'granted') {
-        // Close the previous notification if it exists
-        if (currentNotification) {
-            currentNotification.close();
-        }
-
-        currentNotification = new Notification(songTitle, options);
-        currentNotification.addEventListener('click', (event) => {
-            handleNotificationAction(event);
+        const notification = new Notification(songTitle, options);
+        notification.addEventListener('click', (event) => {
+            if (event.action === 'next') {
+                nextButtonElement.click();
+            } else if (event.action === 'heart') {
+                heartButtonElement.click();
+            } else if (event.action === 'download') {
+                downloadButtonElement.click();
+            } else if (event.action === 'seekbackward') {
+                titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
+            } else if (event.action === 'seekforward') {
+                titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
+            }
         });
     } else if (Notification.permission !== 'denied') {
         Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
-                currentNotification = new Notification(songTitle, options);
-                currentNotification.addEventListener('click', (event) => {
-                    handleNotificationAction(event);
-                });
+                showNotification(isPlaying); // Recursively call to show the notification
             }
         });
-    }
-}
-
-// Function to handle notification actions
-function handleNotificationAction(event) {
-    if (event.action === 'next') {
-        nextButtonElement.click();
-    } else if (event.action === 'heart') {
-        heartButtonElement.click();
-    } else if (event.action === 'download') {
-        downloadButtonElement.click();
-    } else if (event.action === 'seekbackward') {
-        titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
-    } else if (event.action === 'seekforward') {
-        titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
     }
 }
 
 // Update the Media Session metadata initially
 updateMediaSessionMetadata();
 
-// Event listeners for play and pause to show dynamic notification
 titleaudio.addEventListener('play', () => {
+    visualizerGif.style.display = 'block'; // Show GIF when audio plays
     document.title = songTitleElement.textContent + ' - ' + titleaudio.currentTime + ' seconds';
-    showNotification(true);
+    showNotification(true); // Show playing notification
 });
 
 titleaudio.addEventListener('pause', () => {
+    visualizerGif.style.display = 'none'; // Hide GIF when audio pauses
     document.title = 'VIVEKFY-AI';
-    showNotification(false);
+    showNotification(false); // Show paused notification
 });
 
 // Add event listener for the next button
 nextButtonElement.addEventListener('click', () => {
     console.log('Next song button clicked');
+    // Example: titleaudio.src = 'path/to/next/song.mp3';
+    // titleaudio.play();
 });
 
 // Add event listener for the heart button
 heartButtonElement.addEventListener('click', () => {
     console.log('Heart button clicked');
+    // Example: mark the song as favorite
 });
 
 // Add event listener for the download button
 downloadButtonElement.addEventListener('click', () => {
     console.log('Download button clicked');
+    // Example: initiate download
 });
 
 
