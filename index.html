@@ -2796,26 +2796,29 @@ var offlineMsg = document.getElementById("offline-message");
             });
         }
 
-        // Function to create playlist song element
+        // Function to create playlist song element with specified HTML structure
         function createPlaylistSongElement(videoId, title, thumbnailUrl, channelTitle, videoDate, index) {
-            let output =
-                '<b onclick="loadSong(this)" index="' + index + '" class="list" vid="' + videoId + '">' +
-                '<div class="video">' +
-                '<img src="' + thumbnailUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + index + '" vid="' + videoId + '">' +
-                '<section>' +
-                '<img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">' +
-                '<div>' +
-                '<p>V F Y ' + title + '</p>' +
-                '<small class="video-info">' + channelTitle + '</small>' +
-                '<small class="video-info"> VFY </small>' +
-                '<small class="video-info"> Ai </small>' +
-                '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +
-                '</div>' +
-                '</section>' +
-                '</div>' +
-                '</b>';
             let songElement = document.createElement('div');
-            songElement.innerHTML = output;
+            songElement.className = "row";
+
+            songElement.innerHTML = `
+                <div id="videos">
+                    <div id="song-container">
+                        <b onclick="loadSong(this)" class="list" vid="${videoId}">
+                            <div class="video">
+                                <img src="${thumbnailUrl}" alt="${title}" class="video-thumbnail" vid="${videoId}">
+                                <section>
+                                    <div>
+                                        <p>${title}</p>
+                                        <small class="video-info">${channelTitle}</small>
+                                        <small class="video-info">Release Date: ${videoDate.toDateString()}</small>
+                                    </div>
+                                </section>
+                            </div>
+                        </b>
+                    </div>
+                </div>
+            `;
 
             // Add long press to delete functionality
             songElement.querySelector('.video-thumbnail').addEventListener('contextmenu', function(event) {
@@ -2846,11 +2849,9 @@ var offlineMsg = document.getElementById("offline-message");
                     <div class="video">
                         <img src="https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg" alt="${title}" class="video-thumbnail" vid="${videoId}">
                         <section>
-                            <section>
-                                <div>
-                                    <p>${title}</p>
-                                </div>
-                            </section>
+                            <div>
+                                <p>${title}</p>
+                            </div>
                         </section>
                     </div>
                 </b>`;
@@ -2876,48 +2877,53 @@ var offlineMsg = document.getElementById("offline-message");
             return songElement;
         }
 
-        // Function to delete song from local storage and DOM
+        // Function to delete a song from the list and local storage
         function deleteSong(videoId, index) {
-            let savedSongs = JSON.parse(localStorage.getItem('savedSongs')) || [];
-            savedSongs = savedSongs.filter(song => song.videoId !== videoId);
-            localStorage.setItem('savedSongs', JSON.stringify(savedSongs));
-            document.querySelector(`#song-element-${index}`).remove();
-        }
-
-        // Function to load song
-        function loadSong(element) {
-            let videoId = element.getAttribute('vid');
-            // Add your logic here to load and play the song using the videoId
-            // Example: load the song in an iframe or video player
-            document.querySelector('#video-player').src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-
-            // Update the currently playing song in local storage
-            localStorage.setItem('currentSong', JSON.stringify({ videoId, index: element.getAttribute('index') }));
-        }
-
-        // Function to play the next song in the list
-        function playNextSong() {
-            let currentSong = JSON.parse(localStorage.getItem('currentSong'));
-            if (currentSong) {
-                let nextIndex = parseInt(currentSong.index) + 1;
-                if (nextIndex < songList.length) {
-                    let nextSongElement = document.querySelector(`#song-element-${nextIndex}`);
-                    if (nextSongElement) {
-                        nextSongElement.click();
-                    }
+            let confirmation = confirm("Do you want to delete this song?");
+            if (confirmation) {
+                // Remove song from UI
+                let songElement = document.getElementById(`song-element-${index}`);
+                if (songElement) {
+                    songElement.remove();
                 }
+
+                // Remove song from local storage
+                let savedSongs = JSON.parse(localStorage.getItem('savedSongs')) || [];
+                savedSongs = savedSongs.filter(song => song.videoId !== videoId);
+                localStorage.setItem('savedSongs', JSON.stringify(savedSongs));
+
+                // Remove song from the current list
+                songList = songList.filter(song => song.videoId !== videoId);
             }
         }
 
-        // Automatically play the next song when the current one ends
-        document.querySelector('#video-player').addEventListener('ended', playNextSong);
+        // Function to load song when clicked
+        function loadSong(element) {
+            let videoId = element.getAttribute('vid');
+            if (videoId) {
+                let playerUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                let playerElement = document.getElementById('video-player');
+                playerElement.src = playerUrl;
 
-        function chhupa() {
-            document.querySelector('#loadingvkm1m').style.display = "none";
+                // Update active song style
+                let activeElement = document.querySelector('.list.active');
+                if (activeElement) {
+                    activeElement.classList.remove('active');
+                }
+                element.classList.add('active');
+            }
         }
+
+        // Function to hide certain UI elements
+        function chhupa() {
+            let loaderElement = document.querySelector('.loader');
+            if (loaderElement) {
+                loaderElement.style.display = 'none';
+            }
+        }
+
     });
 </script>
-                 
 
 
 
@@ -4435,6 +4441,7 @@ z-imdex:999999;
   left: 0px;
 }
 </style>	
+
 
 
 
