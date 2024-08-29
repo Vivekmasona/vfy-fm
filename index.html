@@ -1738,7 +1738,6 @@ function convertTimeToSeconds(time) {
 }
 
 
-
 var playVideoButton = document.getElementById("playVideobutto");
 var overlayBox = null; // Initialize overlayBox to null
 
@@ -1808,9 +1807,14 @@ playVideoButton.addEventListener("click", function() {
         pipButton.style.left = "5%";
         pipButton.style.transform = "translate(-5%, -5%)";
         pipButton.addEventListener("click", function() {
-            video.requestPictureInPicture();
-            // Hide the overlay box when entering PiP mode
-            overlayBox.style.display = "none";
+            video.requestPictureInPicture()
+                .then(() => {
+                    // Hide the overlay box when entering PiP mode
+                    overlayBox.style.display = "none";
+                })
+                .catch(error => {
+                    console.error('Failed to enter PiP mode:', error);
+                });
         });
 
         overlayBox.appendChild(pipButton);
@@ -1820,6 +1824,10 @@ playVideoButton.addEventListener("click", function() {
     video.addEventListener('loadedmetadata', function() {
         if (video.requestPictureInPicture) {
             video.requestPictureInPicture()
+                .then(() => {
+                    // Hide the overlay box when entering PiP mode automatically
+                    overlayBox.style.display = "none";
+                })
                 .catch(error => {
                     console.error('Failed to enter PiP mode:', error);
                 });
