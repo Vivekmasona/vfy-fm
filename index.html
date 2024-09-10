@@ -1369,58 +1369,53 @@ function loadSong(song, ind) {
 
     
 
-
-
-
-
-function play(id,Sid){
-     //data = "https://vivekfy-api-v1.vercel.app/low-audio?url=https://youtu.be/"+id;
-      //data = "https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/"+id;
-      data = "https://vivekfy.vercel.app/vivekfy?url=https://youtu.be/"+id;
-     //data = "https://big-eight-march.glitch.me?url=https://youtu.be/"+id;
-     // data = "https://vivekmasona.000webhostapp.com/Play?vfy=https://youtu.be/"+id;
-     //data = "https://audio.vivekmasona.repl.co/play?url=https://youtu.be/"+id;
-     //data = "https://myserver-dev-atmq.2.ie-1.fl0.io/audio?url=https://youtu.be/"+id;
-     //data = "https://audioserver-dev-cgen.2.sg-1.fl0.io/"+id;
-    document.getElementById("SThumb").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
-    document.getElementById("Fimg").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
-     document.getElementById("pahilagana").onclick = ()=>{
-       location.href= "https://vivekfy.vercel.app/dl?url=https://youtu.be/"+id;
-        //location.href= "https://vivekfy.vercel.app/download/audio?url=https://youtu.be/"+id;
-        //location.href= "https://vivekfy-server.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
-    };
-	document.getElementById("VFYmp3").onclick = ()=>{
-        //location.href= "https://vivekfy-server.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
-        location.href= "https://vivekfy.vercel.app/audio-dl?url=https://youtu.be/"+id;
-        //location.href= "https://vivekdl.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
-    };
-
-	document.getElementById("VFYmp3v2").onclick = ()=>{
-        location.href= "https://vivekfy.vercel.app/audio-dl?url=https://youtu.be/"+id;
-        //location.href= "https://vivekfy.fanclub.rocks/audio?url=https://youtu.be/"+id;
-        //location.href= "https://vivekdl.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
-    };
-document.getElementById("vivekmasona").onclick = ()=>{
-        location.href= "https://vivekfy.vercel.app/api?url=https://youtu.be/"+id;
-        //location.href= "https://myserver-dev-akkd.2.sg-1.fl0.io/mp4?url=https://youtu.be/"+id;
-        //location.href= "https://vivekfy-api-v2.onrender.com/video?url=https://youtu.be/"+id;
-     //location.href= "https://vivekfy-obg6.onrender.com/download/video?url=https://youtu.be/"+id;
-        };
-
-    
 var audio = document.getElementById("SAudio");
+var nextAudio = new Audio(); // Create a new audio element for preloading
+
+// Function to play the current song
+function play(id, Sid) {
+    var data = "https://vivekfy.vercel.app/vivekfy?url=https://youtu.be/" + id;
+    
+    // Set the thumbnail for the current song
+    document.getElementById("SThumb").src = "https://i.ytimg.com/vi/" + id + "/mqdefault.jpg";
+    document.getElementById("Fimg").src = "https://i.ytimg.com/vi/" + id + "/mqdefault.jpg";
+
+    // Load the current audio
+    audio.src = data;
+    audio.play();
+
+    // Preload the next song
+    preloadNextSong(Sid);
+}
+
+// Preload the next song
+function preloadNextSong(Sid) {
+    var nextSongIndex = Sid + 1;
+    var playlistItems = document.getElementsByClassName("list");
+
+    if (nextSongIndex < playlistItems.length) {
+        var nextSong = playlistItems[nextSongIndex];
+        var nextVideoId = $(nextSong).attr("vid");
+
+        // Set the next audio's src but don't play it yet
+        nextAudio.src = "https://vivekfy.vercel.app/vivekfy?url=https://youtu.be/" + nextVideoId;
+        nextAudio.load(); // Preload the next song
+
+        console.log("Next song preloaded: " + nextVideoId);
+    } else {
+        console.log('End of playlist');
+    }
+}
 
 // Function to play the next song
 function playNextSong() {
-    var nextSongIndex = Sid + 1; // Calculate the index of the next song
+    var nextSongIndex = Sid + 1;
     var playlistItems = document.getElementsByClassName("list");
 
-    
-	
-
     if (nextSongIndex < playlistItems.length) {
-        playlistItems[nextSongIndex].click(); // Play the next song
-        audio.play(); // Play the audio
+        // Play the preloaded next song
+        audio.src = nextAudio.src;
+        audio.play();
 
         // Update the profile thumbnail and video ID for the next song
         var nextSong = playlistItems[nextSongIndex];
@@ -1430,28 +1425,30 @@ function playNextSong() {
         $("#profileThumbnail").data("videoId", nextVideoId);
 
         console.log('Automatically went to the next song and started playing.');
+        
+        // Preload the next song in the playlist
+        preloadNextSong(nextSongIndex);
     } else {
         console.log('End of playlist');
-        // You may want to handle what happens when it's the end of the playlist.
     }
 }
 
-function playPause() {
-   var audio = document.getElementById("SAudio");
-
-   if (audio.paused) {
-      audio.play();
-   } else {
-      audio.pause();
-   }
-}
-
-	
-
 // Listen for the 'ended' event
 audio.addEventListener("ended", function() {
-    playNextSong();
+    playNextSong(); // Play the next song when the current one ends
 });
+
+function playPause() {
+    if (audio.paused) {
+        audio.play();
+    } else {
+        audio.pause();
+    }
+}
+
+
+
+
 
 // Listen for the 'error' event
 var alternativeAudioSources = [
@@ -4449,5 +4446,6 @@ z-imdex:999999;
   left: 0px;
 }
 </style>	
+
 
 
