@@ -1367,97 +1367,91 @@ function loadSong(song, ind) {
     play(id, indId);
 }
 
-function play(id, Sid) {
-    // Song URL setup
-    var data = "https://vivekfy.vercel.app/vivekfy?url=https://youtu.be/" + id;
+    
 
-    // Update thumbnail images
-    document.getElementById("SThumb").src = "https://i.ytimg.com/vi/" + id + "/mqdefault.jpg";
-    document.getElementById("Fimg").src = "https://i.ytimg.com/vi/" + id + "/mqdefault.jpg";
 
-    // Button actions
-    document.getElementById("pahilagana").onclick = function() {
-        location.href = "https://vivekfy.vercel.app/dl?url=https://youtu.be/" + id;
+
+
+
+function play(id,Sid){
+     //data = "https://vivekfy-api-v1.vercel.app/low-audio?url=https://youtu.be/"+id;
+      //data = "https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/"+id;
+      data = "https://vivekfy.vercel.app/vivekfy?url=https://youtu.be/"+id;
+     //data = "https://big-eight-march.glitch.me?url=https://youtu.be/"+id;
+     // data = "https://vivekmasona.000webhostapp.com/Play?vfy=https://youtu.be/"+id;
+     //data = "https://audio.vivekmasona.repl.co/play?url=https://youtu.be/"+id;
+     //data = "https://myserver-dev-atmq.2.ie-1.fl0.io/audio?url=https://youtu.be/"+id;
+     //data = "https://audioserver-dev-cgen.2.sg-1.fl0.io/"+id;
+    document.getElementById("SThumb").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
+    document.getElementById("Fimg").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
+     document.getElementById("pahilagana").onclick = ()=>{
+       location.href= "https://vivekfy.vercel.app/dl?url=https://youtu.be/"+id;
+        //location.href= "https://vivekfy.vercel.app/download/audio?url=https://youtu.be/"+id;
+        //location.href= "https://vivekfy-server.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
     };
-    document.getElementById("VFYmp3").onclick = function() {
-        location.href = "https://vivekfy.vercel.app/audio-dl?url=https://youtu.be/" + id;
-    };
-    document.getElementById("VFYmp3v2").onclick = function() {
-        location.href = "https://vivekfy.vercel.app/audio-dl?url=https://youtu.be/" + id;
-    };
-    document.getElementById("vivekmasona").onclick = function() {
-        location.href = "https://vivekfy.vercel.app/api?url=https://youtu.be/" + id;
+	document.getElementById("VFYmp3").onclick = ()=>{
+        //location.href= "https://vivekfy-server.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
+        location.href= "https://vivekfy.vercel.app/audio-dl?url=https://youtu.be/"+id;
+        //location.href= "https://vivekdl.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
     };
 
-    // Play current song
-    var audio = document.getElementById("SAudio");
-    audio.src = data;
-    audio.play();
+	document.getElementById("VFYmp3v2").onclick = ()=>{
+        location.href= "https://vivekfy.vercel.app/audio-dl?url=https://youtu.be/"+id;
+        //location.href= "https://vivekfy.fanclub.rocks/audio?url=https://youtu.be/"+id;
+        //location.href= "https://vivekdl.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
+    };
+document.getElementById("vivekmasona").onclick = ()=>{
+        location.href= "https://vivekfy.vercel.app/api?url=https://youtu.be/"+id;
+        //location.href= "https://myserver-dev-akkd.2.sg-1.fl0.io/mp4?url=https://youtu.be/"+id;
+        //location.href= "https://vivekfy-api-v2.onrender.com/video?url=https://youtu.be/"+id;
+     //location.href= "https://vivekfy-obg6.onrender.com/download/video?url=https://youtu.be/"+id;
+        };
 
-    // Preload the next song (without interrupting search)
-    preloadNextSong(Sid);
-
-    // Listen for 'ended' event to auto-play next song
-    audio.addEventListener("ended", function() {
-        playNextSong(Sid);
-    });
-}
-
-// Function to preload the next song
-function preloadNextSong(Sid) {
-    var nextSongIndex = Sid + 1;
-    var playlistItems = document.getElementsByClassName("list");
-
-    if (nextSongIndex < playlistItems.length) {
-        var nextSong = playlistItems[nextSongIndex];
-        var nextVideoId = nextSong.getAttribute("vid");
-
-        // Preload the next song's audio
-        var nextAudio = new Audio();
-        nextAudio.src = "https://vivekfy.vercel.app/vivekfy?url=https://youtu.be/" + nextVideoId;
-        nextAudio.load(); // Preload next audio
-
-        console.log("Next song preloaded: " + nextVideoId);
-    } else {
-        console.log("End of playlist, no next song to preload.");
-    }
-}
+    
+var audio = document.getElementById("SAudio");
 
 // Function to play the next song
-function playNextSong(Sid) {
-    var nextSongIndex = Sid + 1;
+function playNextSong() {
+    var nextSongIndex = Sid + 1; // Calculate the index of the next song
     var playlistItems = document.getElementsByClassName("list");
 
+    
+	
+
     if (nextSongIndex < playlistItems.length) {
+        playlistItems[nextSongIndex].click(); // Play the next song
+        audio.play(); // Play the audio
+
+        // Update the profile thumbnail and video ID for the next song
         var nextSong = playlistItems[nextSongIndex];
-        var nextVideoId = nextSong.getAttribute("vid");
+        var nextThumbnail = $(nextSong).children('img').attr("src");
+        var nextVideoId = $(nextSong).attr("vid");
+        $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');
+        $("#profileThumbnail").data("videoId", nextVideoId);
 
-        // Trigger click to play the next song
-        nextSong.click();
-
-        console.log('Playing next song: ' + nextVideoId);
-
-        // Preload the next song after this one
-        preloadNextSong(nextSongIndex);
+        console.log('Automatically went to the next song and started playing.');
     } else {
         console.log('End of playlist');
+        // You may want to handle what happens when it's the end of the playlist.
     }
 }
 
-// Function to play or pause the audio
 function playPause() {
-    var audio = document.getElementById("SAudio");
+   var audio = document.getElementById("SAudio");
 
-    if (audio.paused) {
-        audio.play();
-    } else {
-        audio.pause();
-    }
+   if (audio.paused) {
+      audio.play();
+   } else {
+      audio.pause();
+   }
 }
 
-	    
- 
+	
 
+// Listen for the 'ended' event
+audio.addEventListener("ended", function() {
+    playNextSong();
+});
 
 // Listen for the 'error' event
 var alternativeAudioSources = [
