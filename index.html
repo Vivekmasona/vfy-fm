@@ -1369,48 +1369,53 @@ function loadSong(song, ind) {
 
 function play(id, Sid) {
     // Song URL setup
-    data = "https://vivekfy.vercel.app/vivekfy?url=https://youtu.be/" + id;
-    
+    var data = "https://vivekfy.vercel.app/vivekfy?url=https://youtu.be/" + id;
+
     // Update thumbnail images
     document.getElementById("SThumb").src = "https://i.ytimg.com/vi/" + id + "/mqdefault.jpg";
     document.getElementById("Fimg").src = "https://i.ytimg.com/vi/" + id + "/mqdefault.jpg";
-    
+
     // Button actions
-    document.getElementById("pahilagana").onclick = () => {
+    document.getElementById("pahilagana").onclick = function() {
         location.href = "https://vivekfy.vercel.app/dl?url=https://youtu.be/" + id;
     };
-    document.getElementById("VFYmp3").onclick = () => {
+    document.getElementById("VFYmp3").onclick = function() {
         location.href = "https://vivekfy.vercel.app/audio-dl?url=https://youtu.be/" + id;
     };
-    document.getElementById("VFYmp3v2").onclick = () => {
+    document.getElementById("VFYmp3v2").onclick = function() {
         location.href = "https://vivekfy.vercel.app/audio-dl?url=https://youtu.be/" + id;
     };
-    document.getElementById("vivekmasona").onclick = () => {
+    document.getElementById("vivekmasona").onclick = function() {
         location.href = "https://vivekfy.vercel.app/api?url=https://youtu.be/" + id;
     };
-    
+
     // Play current song
     var audio = document.getElementById("SAudio");
     audio.src = data;
     audio.play();
-    
-    // Preload the next song
+
+    // Preload the next song (without interrupting search)
     preloadNextSong(Sid);
+
+    // Listen for 'ended' event to auto-play next song
+    audio.addEventListener("ended", function() {
+        playNextSong(Sid);
+    });
 }
 
-// Modified Code: Function to preload the next song
+// Function to preload the next song
 function preloadNextSong(Sid) {
-    var nextSongIndex = Sid + 1; // Calculate the index of the next song
+    var nextSongIndex = Sid + 1;
     var playlistItems = document.getElementsByClassName("list");
 
     if (nextSongIndex < playlistItems.length) {
         var nextSong = playlistItems[nextSongIndex];
-        var nextVideoId = $(nextSong).attr("vid");
+        var nextVideoId = nextSong.getAttribute("vid");
 
         // Preload the next song's audio
         var nextAudio = new Audio();
         nextAudio.src = "https://vivekfy.vercel.app/vivekfy?url=https://youtu.be/" + nextVideoId;
-        nextAudio.load(); // Preload the next audio file
+        nextAudio.load(); // Preload next audio
 
         console.log("Next song preloaded: " + nextVideoId);
     } else {
@@ -1419,22 +1424,18 @@ function preloadNextSong(Sid) {
 }
 
 // Function to play the next song
-function playNextSong() {
-    var nextSongIndex = Sid + 1; // Calculate the index of the next song
+function playNextSong(Sid) {
+    var nextSongIndex = Sid + 1;
     var playlistItems = document.getElementsByClassName("list");
 
     if (nextSongIndex < playlistItems.length) {
-        playlistItems[nextSongIndex].click(); // Trigger click event to play the next song
-        audio.play(); // Play the audio
-
-        // Update the profile thumbnail and video ID for the next song
         var nextSong = playlistItems[nextSongIndex];
-        var nextThumbnail = $(nextSong).children('img').attr("src");
-        var nextVideoId = $(nextSong).attr("vid");
-        $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');
-        $("#profileThumbnail").data("videoId", nextVideoId);
+        var nextVideoId = nextSong.getAttribute("vid");
 
-        console.log('Automatically went to the next song and started playing.');
+        // Trigger click to play the next song
+        nextSong.click();
+
+        console.log('Playing next song: ' + nextVideoId);
 
         // Preload the next song after this one
         preloadNextSong(nextSongIndex);
@@ -1443,21 +1444,18 @@ function playNextSong() {
     }
 }
 
-// Function to play or pause audio
+// Function to play or pause the audio
 function playPause() {
-   var audio = document.getElementById("SAudio");
+    var audio = document.getElementById("SAudio");
 
-   if (audio.paused) {
-      audio.play();
-   } else {
-      audio.pause();
-   }
+    if (audio.paused) {
+        audio.play();
+    } else {
+        audio.pause();
+    }
 }
 
-// Listen for the 'ended' event to automatically play the next song
-audio.addEventListener("ended", function() {
-    playNextSong();
-});    
+	    
  
 
 
