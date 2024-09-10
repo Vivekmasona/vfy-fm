@@ -1367,42 +1367,38 @@ function loadSong(song, ind) {
     play(id, indId);
 }
 
-    
 function play(id, Sid) {
-    // Current song URL
+    // Song URL setup
     data = "https://vivekfy.vercel.app/vivekfy?url=https://youtu.be/" + id;
-
-    // Update thumbnails for the current song
+    
+    // Update thumbnail images
     document.getElementById("SThumb").src = "https://i.ytimg.com/vi/" + id + "/mqdefault.jpg";
     document.getElementById("Fimg").src = "https://i.ytimg.com/vi/" + id + "/mqdefault.jpg";
-
-    // Set download and other button functionalities
-    document.getElementById("pahilagana").onclick = function() {
+    
+    // Button actions
+    document.getElementById("pahilagana").onclick = () => {
         location.href = "https://vivekfy.vercel.app/dl?url=https://youtu.be/" + id;
     };
-
-    document.getElementById("VFYmp3").onclick = function() {
+    document.getElementById("VFYmp3").onclick = () => {
         location.href = "https://vivekfy.vercel.app/audio-dl?url=https://youtu.be/" + id;
     };
-
-    document.getElementById("VFYmp3v2").onclick = function() {
+    document.getElementById("VFYmp3v2").onclick = () => {
         location.href = "https://vivekfy.vercel.app/audio-dl?url=https://youtu.be/" + id;
     };
-
-    document.getElementById("vivekmasona").onclick = function() {
+    document.getElementById("vivekmasona").onclick = () => {
         location.href = "https://vivekfy.vercel.app/api?url=https://youtu.be/" + id;
     };
-
+    
     // Play current song
     var audio = document.getElementById("SAudio");
     audio.src = data;
     audio.play();
-
-    // Preload next song
+    
+    // Preload the next song
     preloadNextSong(Sid);
 }
 
-// Function to preload the next song in the playlist
+// Modified Code: Function to preload the next song
 function preloadNextSong(Sid) {
     var nextSongIndex = Sid + 1; // Calculate the index of the next song
     var playlistItems = document.getElementsByClassName("list");
@@ -1411,59 +1407,58 @@ function preloadNextSong(Sid) {
         var nextSong = playlistItems[nextSongIndex];
         var nextVideoId = $(nextSong).attr("vid");
 
-        // Preload the next song without playing it
+        // Preload the next song's audio
         var nextAudio = new Audio();
         nextAudio.src = "https://vivekfy.vercel.app/vivekfy?url=https://youtu.be/" + nextVideoId;
-        nextAudio.load(); // Preload the next song
+        nextAudio.load(); // Preload the next audio file
 
         console.log("Next song preloaded: " + nextVideoId);
     } else {
-        console.log("End of playlist");
+        console.log("End of playlist, no next song to preload.");
     }
 }
 
 // Function to play the next song
 function playNextSong() {
-    var nextSongIndex = Sid + 1;
+    var nextSongIndex = Sid + 1; // Calculate the index of the next song
     var playlistItems = document.getElementsByClassName("list");
 
     if (nextSongIndex < playlistItems.length) {
+        playlistItems[nextSongIndex].click(); // Trigger click event to play the next song
+        audio.play(); // Play the audio
+
+        // Update the profile thumbnail and video ID for the next song
         var nextSong = playlistItems[nextSongIndex];
         var nextThumbnail = $(nextSong).children('img').attr("src");
         var nextVideoId = $(nextSong).attr("vid");
-
-        // Update the audio source to the preloaded next song
-        audio.src = "https://vivekfy.vercel.app/vivekfy?url=https://youtu.be/" + nextVideoId;
-        audio.play();
-
-        // Update profile thumbnail and data
         $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');
         $("#profileThumbnail").data("videoId", nextVideoId);
 
-        console.log("Automatically went to the next song and started playing.");
-        
+        console.log('Automatically went to the next song and started playing.');
+
         // Preload the next song after this one
         preloadNextSong(nextSongIndex);
     } else {
-        console.log("End of playlist");
+        console.log('End of playlist');
     }
 }
 
-// Listen for the 'ended' event to play the next song automatically
+// Function to play or pause audio
+function playPause() {
+   var audio = document.getElementById("SAudio");
+
+   if (audio.paused) {
+      audio.play();
+   } else {
+      audio.pause();
+   }
+}
+
+// Listen for the 'ended' event to automatically play the next song
 audio.addEventListener("ended", function() {
     playNextSong();
-});
-
-function playPause() {
-    var audio = document.getElementById("SAudio");
-
-    if (audio.paused) {
-        audio.play();
-    } else {
-        audio.pause();
-    }
-}
-
+});    
+ 
 
 
 // Listen for the 'error' event
