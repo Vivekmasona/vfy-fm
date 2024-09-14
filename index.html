@@ -1599,7 +1599,7 @@ pipControls.appendChild(pipNextButton);
 const pipDownloadButton = document.createElement('button');
 pipDownloadButton.id = 'pipDownload';
 pipDownloadButton.textContent = 'Download';
-pipControls.appendChild(pipDownloadButton');
+pipControls.appendChild(pipDownloadButton);
 
 // Function to update PiP overlay
 function updatePiPOverlay() {
@@ -1609,13 +1609,8 @@ function updatePiPOverlay() {
     pipThumbnail.src = thumbnailUrl;
     pipOverlay.style.display = 'block';
 
-    // Ensure buttons are functional
-    pipPlayButton.onclick = () => {
-        titleaudio.play().catch(error => console.error('Error playing audio:', error));
-    };
-    pipPauseButton.onclick = () => {
-        titleaudio.pause();
-    };
+    pipPlayButton.onclick = () => titleaudio.play().catch(error => console.error('Error playing audio:', error));
+    pipPauseButton.onclick = () => titleaudio.pause();
     pipNextButton.onclick = () => nextButtonElement.click();
     pipDownloadButton.onclick = () => downloadButtonElement.click();
 }
@@ -1627,19 +1622,33 @@ function handlePlay() {
     updatePiPOverlay();
 }
 
-// Event listeners for audio play and pause
-titleaudio.addEventListener('play', handlePlay);
-titleaudio.addEventListener('pause', () => {
+// Function to handle audio pause
+function handlePause() {
     document.title = 'VIVEKFY-AI';
     pipOverlay.style.display = 'none';
-});
+}
 
 // Update the Media Session metadata initially
 updateMediaSessionMetadata();
 
+// Event listeners for audio play and pause
+titleaudio.addEventListener('play', handlePlay);
+titleaudio.addEventListener('pause', handlePause);
 
-    
-    
+// Add event listener for the next button
+nextButtonElement.addEventListener('click', () => {
+    console.log('Next song button clicked');
+});
+
+// Add event listener for the heart button
+heartButtonElement.addEventListener('click', () => {
+    console.log('Heart button clicked');
+});
+
+// Add event listener for the download button
+downloadButtonElement.addEventListener('click', () => {
+    console.log('Download button clicked');
+});
 
 
 	
