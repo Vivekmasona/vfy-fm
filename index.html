@@ -1544,15 +1544,14 @@ volumeSlider.addEventListener('input', function () {
 });
 
 
-   
-const titleaudio = document.getElementById('SAudio');
+   const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle');
 const thumbnailElement = document.getElementById('SThumb');
 const nextButtonElement = document.getElementById('nextbutto');
 const heartButtonElement = document.getElementById('VFYmp3v2');
 const downloadButtonElement = document.getElementById('VFYmp3');
-const pipButtonElement = document.getElementById('pipButton'); // PiP button element
 
+// Variable to keep track of the current notification
 let currentNotification = null;
 
 // Function to update Media Session metadata
@@ -1636,6 +1635,7 @@ function showNotification() {
         ]
     };
 
+    // Close the previous notification if it exists
     if (currentNotification) {
         currentNotification.close();
     }
@@ -1677,28 +1677,12 @@ function showNotification() {
     }
 }
 
-// Function to request PiP mode
-async function requestPiP() {
-    try {
-        if (document.pictureInPictureElement) {
-            await document.exitPictureInPicture();
-            pipButtonElement.textContent = 'Enter PiP';
-        } else {
-            await titleaudio.requestPictureInPicture();
-            pipButtonElement.textContent = 'Exit PiP';
-        }
-    } catch (error) {
-        console.error('Error entering PiP mode:', error);
-    }
-}
-
 // Update the Media Session metadata initially
 updateMediaSessionMetadata();
 
 titleaudio.addEventListener('play', () => {
     document.title = songTitleElement.textContent + ' - ' + titleaudio.currentTime + ' seconds';
     showNotification();
-    requestPiP(); // Attempt to enter PiP mode when the song starts playing
 });
 
 titleaudio.addEventListener('pause', () => {
@@ -1718,10 +1702,7 @@ heartButtonElement.addEventListener('click', () => {
 // Add event listener for the download button
 downloadButtonElement.addEventListener('click', () => {
     console.log('Download button clicked');
-});
-
-// Add event listener for the PiP button (if needed)
-pipButtonElement.addEventListener('click', requestPiP);
+});                      
 
 
 
