@@ -1599,38 +1599,43 @@ pipControls.appendChild(pipNextButton);
 const pipDownloadButton = document.createElement('button');
 pipDownloadButton.id = 'pipDownload';
 pipDownloadButton.textContent = 'Download';
-pipControls.appendChild(pipDownloadButton);
+pipControls.appendChild(pipDownloadButton');
 
 // Function to update PiP overlay
 function updatePiPOverlay() {
     const songTitle = songTitleElement.textContent;
     const thumbnailUrl = thumbnailElement.src;
-    
-    pipThumbnail.src = thumbnailUrl;
 
-    pipPlayButton.onclick = () => titleaudio.play();
-    pipPauseButton.onclick = () => titleaudio.pause();
+    pipThumbnail.src = thumbnailUrl;
+    pipOverlay.style.display = 'block';
+
+    // Ensure buttons are functional
+    pipPlayButton.onclick = () => {
+        titleaudio.play().catch(error => console.error('Error playing audio:', error));
+    };
+    pipPauseButton.onclick = () => {
+        titleaudio.pause();
+    };
     pipNextButton.onclick = () => nextButtonElement.click();
     pipDownloadButton.onclick = () => downloadButtonElement.click();
-
-    pipOverlay.style.display = 'block';
 }
 
-// Event listeners for audio play and pause
-titleaudio.addEventListener('play', () => {
+// Function to handle audio play
+function handlePlay() {
     document.title = songTitleElement.textContent + ' - ' + titleaudio.currentTime + ' seconds';
     showNotification();
     updatePiPOverlay();
-});
+}
 
+// Event listeners for audio play and pause
+titleaudio.addEventListener('play', handlePlay);
 titleaudio.addEventListener('pause', () => {
     document.title = 'VIVEKFY-AI';
     pipOverlay.style.display = 'none';
 });
 
 // Update the Media Session metadata initially
-updateMediaSessionMetadata();        
-
+updateMediaSessionMetadata();
 
 
     
