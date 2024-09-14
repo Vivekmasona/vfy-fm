@@ -1544,8 +1544,6 @@ volumeSlider.addEventListener('input', function () {
 });
 
 
-   
-
 const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle');
 const thumbnailElement = document.getElementById('SThumb');
@@ -1553,9 +1551,9 @@ const nextButtonElement = document.getElementById('nextbutto');
 const heartButtonElement = document.getElementById('VFYmp3v2');
 const downloadButtonElement = document.getElementById('VFYmp3');
 
-// Create an overlay for PiP
+// Create an overlay for PiP with ID 'pip2'
 const pipOverlay = document.createElement('div');
-pipOverlay.id = 'pipOverlay';
+pipOverlay.id = 'pip2';
 pipOverlay.style.position = 'fixed';
 pipOverlay.style.bottom = '10px';
 pipOverlay.style.right = '10px';
@@ -1648,7 +1646,8 @@ heartButtonElement.addEventListener('click', () => {
 // Add event listener for the download button
 downloadButtonElement.addEventListener('click', () => {
     console.log('Download button clicked');
-});
+});   
+
 
 
 	
