@@ -1544,166 +1544,97 @@ volumeSlider.addEventListener('input', function () {
 });
 
 
-   const titleaudio = document.getElementById('SAudio');
+   
+
+const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle');
 const thumbnailElement = document.getElementById('SThumb');
 const nextButtonElement = document.getElementById('nextbutto');
 const heartButtonElement = document.getElementById('VFYmp3v2');
 const downloadButtonElement = document.getElementById('VFYmp3');
 
-// Variable to keep track of the current notification
-let currentNotification = null;
+// Create an overlay for PiP
+const pipOverlay = document.createElement('div');
+pipOverlay.id = 'pipOverlay';
+pipOverlay.style.position = 'fixed';
+pipOverlay.style.bottom = '10px';
+pipOverlay.style.right = '10px';
+pipOverlay.style.width = '150px';
+pipOverlay.style.height = '150px';
+pipOverlay.style.border = '2px solid #000';
+pipOverlay.style.backgroundColor = '#fff';
+pipOverlay.style.boxShadow = '0 0 10px rgba(0,0,0,0.5)';
+pipOverlay.style.display = 'none';
+pipOverlay.style.zIndex = '1000';
+document.body.appendChild(pipOverlay);
 
-// Function to update Media Session metadata
-function updateMediaSessionMetadata() {
+// Create thumbnail and buttons inside the overlay
+const pipThumbnail = document.createElement('img');
+pipThumbnail.id = 'pipThumbnail';
+pipThumbnail.style.width = '100%';
+pipThumbnail.style.height = 'auto';
+pipOverlay.appendChild(pipThumbnail);
+
+const pipControls = document.createElement('div');
+pipControls.id = 'pipControls';
+pipControls.style.textAlign = 'center';
+pipControls.style.marginTop = '10px';
+pipOverlay.appendChild(pipControls);
+
+const pipPlayButton = document.createElement('button');
+pipPlayButton.id = 'pipPlay';
+pipPlayButton.textContent = 'Play';
+pipControls.appendChild(pipPlayButton);
+
+const pipPauseButton = document.createElement('button');
+pipPauseButton.id = 'pipPause';
+pipPauseButton.textContent = 'Pause';
+pipControls.appendChild(pipPauseButton);
+
+const pipNextButton = document.createElement('button');
+pipNextButton.id = 'pipNext';
+pipNextButton.textContent = 'Next';
+pipControls.appendChild(pipNextButton);
+
+const pipDownloadButton = document.createElement('button');
+pipDownloadButton.id = 'pipDownload';
+pipDownloadButton.textContent = 'Download';
+pipControls.appendChild(pipDownloadButton);
+
+// Function to update PiP overlay
+function updatePiPOverlay() {
     const songTitle = songTitleElement.textContent;
     const thumbnailUrl = thumbnailElement.src;
+    
+    pipThumbnail.src = thumbnailUrl;
 
-    if ('mediaSession' in navigator) {
-        navigator.mediaSession.metadata = new MediaMetadata({
-            title: songTitle,
-            artist: 'status vivekfy.ai',
-            album: 'VivekFy',
-            artwork: [
-                { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '192x192', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '256x256', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
-            ]
-        });
+    pipPlayButton.onclick = () => titleaudio.play();
+    pipPauseButton.onclick = () => titleaudio.pause();
+    pipNextButton.onclick = () => nextButtonElement.click();
+    pipDownloadButton.onclick = () => downloadButtonElement.click();
 
-        // Set action handlers
-        navigator.mediaSession.setActionHandler('play', () => {
-            titleaudio.play();
-        });
-        navigator.mediaSession.setActionHandler('pause', () => {
-            titleaudio.pause();
-        });
-        navigator.mediaSession.setActionHandler('nexttrack', () => {
-            nextButtonElement.click();
-        });
-        navigator.mediaSession.setActionHandler('previoustrack', () => {
-            heartButtonElement.click();
-        });
-        navigator.mediaSession.setActionHandler('seekbackward', () => {
-            titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
-        });
-        navigator.mediaSession.setActionHandler('seekforward', () => {
-            titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
-        });
-    } else {
-        console.log('The Media Session API is not supported in this browser.');
-    }
+    pipOverlay.style.display = 'block';
 }
 
-// Function to show notification with updated thumbnail
-function showNotification() {
-    const songTitle = songTitleElement.textContent;
-    const thumbnailUrl = thumbnailElement.src;
-
-    const options = {
-        body: 'Audio is playing',
-        icon: thumbnailUrl,
-        actions: [
-            {
-                action: 'seekbackward',
-                title: 'Rewind',
-                icon: 'path/to/seek-back-icon.png'
-            },
-            {
-                action: 'seekforward',
-                title: 'Fast Forward',
-                icon: 'path/to/seek-forward-icon.png'
-            },
-            {
-                action: 'heart',
-                title: 'Favorite',
-                icon: 'path/to/heart-icon.png'
-            },
-            {
-                action: 'next',
-                title: 'Next Song',
-                icon: 'path/to/next-icon.png'
-            },
-            {
-                action: 'download',
-                title: 'Download',
-                icon: 'path/to/download-icon.png'
-            }
-        ]
-    };
-
-    // Close the previous notification if it exists
-    if (currentNotification) {
-        currentNotification.close();
-    }
-
-    if (Notification.permission === 'granted') {
-        currentNotification = new Notification(songTitle, options);
-        currentNotification.addEventListener('click', (event) => {
-            if (event.action === 'next') {
-                nextButtonElement.click();
-            } else if (event.action === 'heart') {
-                heartButtonElement.click();
-            } else if (event.action === 'download') {
-                downloadButtonElement.click();
-            } else if (event.action === 'seekbackward') {
-                titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
-            } else if (event.action === 'seekforward') {
-                titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
-            }
-        });
-    } else if (Notification.permission !== 'denied') {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                currentNotification = new Notification(songTitle, options);
-                currentNotification.addEventListener('click', (event) => {
-                    if (event.action === 'next') {
-                        nextButtonElement.click();
-                    } else if (event.action === 'heart') {
-                        heartButtonElement.click();
-                    } else if (event.action === 'download') {
-                        downloadButtonElement.click();
-                    } else if (event.action === 'seekbackward') {
-                        titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
-                    } else if (event.action === 'seekforward') {
-                        titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
-                    }
-                });
-            }
-        });
-    }
-}
-
-// Update the Media Session metadata initially
-updateMediaSessionMetadata();
-
+// Event listeners for audio play and pause
 titleaudio.addEventListener('play', () => {
     document.title = songTitleElement.textContent + ' - ' + titleaudio.currentTime + ' seconds';
     showNotification();
+    updatePiPOverlay();
 });
 
 titleaudio.addEventListener('pause', () => {
     document.title = 'VIVEKFY-AI';
+    pipOverlay.style.display = 'none';
 });
 
-// Add event listener for the next button
-nextButtonElement.addEventListener('click', () => {
-    console.log('Next song button clicked');
-});
+// Update the Media Session metadata initially
+updateMediaSessionMetadata();        
 
-// Add event listener for the heart button
-heartButtonElement.addEventListener('click', () => {
-    console.log('Heart button clicked');
-});
 
-// Add event listener for the download button
-downloadButtonElement.addEventListener('click', () => {
-    console.log('Download button clicked');
-});                      
 
+    
+    
 
 
 	
