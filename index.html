@@ -2702,7 +2702,7 @@ var offlineMsg = document.getElementById("offline-message");
 
         // Function to fetch YouTube playlist using API
         function fetchPlaylist(playlistId) {
-            fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=AIzaSyAs_tSQYJXX9axDYXkYGe9RZmt1p-XRFWo`)
+            fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=AIzaSyBemcQ7KH8CvxN0kKjGK-nhfuBzzTy4KEk`)
             .then(response => response.json())
             .then(data => {
                 let songsContainer = document.querySelector('#song-container');
