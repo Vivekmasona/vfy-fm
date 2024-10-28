@@ -1146,30 +1146,42 @@ $(document).ready(function() {
     search(decodeURIComponent(hash)); // Pass the song name to the search function
   }
 });
-$(document).ready(function() {
-  // Get the path from the URL and remove any leading slashes
-  const path = window.location.pathname; // This gets the full path
-  const songName = path.substring(path.lastIndexOf('/') + 1); // Get the part after the last slash
 
-  if (songName) {
-    // If a song name is present in the URL path, set it in the search bar
-    $(".search-bar").val(decodeURIComponent(songName));
-    // Trigger the search function with the song name
-    search(decodeURIComponent(songName)); // Pass the song name to the search function
-  }
-});	
-
-$(document).on('swipeleft', '.ui-page', function(event){    
-    if(event.handled !== true) // This will prevent event triggering more then once
-    {    
+$(document).on('swipeleft', '.ui-page', function(event) {
+    // Check if the event has already been handled to prevent multiple triggers
+    if (event.handled !== true) {
+        // Find the next page using the jQuery Mobile structure
         var nextpage = $.mobile.activePage.next('[data-role="page"]');
-        // swipe using id of next page if exists
+
+        // If there is a next page, navigate to it
         if (nextpage.length > 0) {
-            $.mobile.changePage(nextpage, {transition: "slide", reverse: false}, true, true);
+            $.mobile.changePage(nextpage, { 
+                transition: "slide",  // Use a sliding transition
+                reverse: false        // Navigate forward (not backward)
+            }, true, true);
+        }
+        
+        // Mark the event as handled to prevent further triggers
+        event.handled = true;
+    }
+    
+    return false;  // Prevent default action and stop event propagation
+});
+
+// Optional: You may also want to handle swipe right for navigation back
+$(document).on('swiperight', '.ui-page', function(event) {
+    if (event.handled !== true) {
+        var prevpage = $.mobile.activePage.prev('[data-role="page"]');
+        if (prevpage.length > 0) {
+            $.mobile.changePage(prevpage, { 
+                transition: "slide",  
+                reverse: true // Navigate backward
+            }, true, true);
         }
         event.handled = true;
     }
-    return false;         
+    
+    return false; 
 });
 
 
