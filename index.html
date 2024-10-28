@@ -1146,7 +1146,18 @@ $(document).ready(function() {
     search(decodeURIComponent(hash)); // Pass the song name to the search function
   }
 });
-	
+$(document).ready(function() {
+  // Get the path from the URL and remove any leading slashes
+  const path = window.location.pathname; // This gets the full path
+  const songName = path.substring(path.lastIndexOf('/') + 1); // Get the part after the last slash
+
+  if (songName) {
+    // If a song name is present in the URL path, set it in the search bar
+    $(".search-bar").val(decodeURIComponent(songName));
+    // Trigger the search function with the song name
+    search(decodeURIComponent(songName)); // Pass the song name to the search function
+  }
+});	
 
 $(document).on('swipeleft', '.ui-page', function(event){    
     if(event.handled !== true) // This will prevent event triggering more then once
