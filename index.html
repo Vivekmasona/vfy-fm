@@ -813,7 +813,8 @@ width: 50%;
 	
    <div id="autocomplete-results"></div>
 
-    
+    <div id="list1"></div>
+<div id="list2"></div>
     </div> 
 	 
    </div>
@@ -1298,8 +1299,11 @@ function getOutput(item, i) {
     '</div>' +
     '</b>';
 
+// Render output in both divs
+//document.getElementById("list1").innerHTML += output;
+document.getElementById("list2").innerHTML += output;
+
 return output;
-}
 
 
 
