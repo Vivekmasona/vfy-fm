@@ -1136,14 +1136,14 @@ $(document).ready(function() {
   }
 });
 $(document).ready(function() {
-  // Get the path from the URL and remove any leading slashes
-  const path = window.location.pathname.substring(1); 
+  // Get the hash from the URL (after #)
+  const hash = window.location.hash.substring(1); 
 
-  if (path) {
-    // If a song name is present in the URL path, set it in the search bar
-    $(".search-bar").val(decodeURIComponent(path));
+  if (hash) {
+    // If a song name is present in the hash, set it in the search bar
+    $(".search-bar").val(decodeURIComponent(hash));
     // Trigger the search function with the song name
-    search(decodeURIComponent(path)); // Pass the song name to the search function
+    search(decodeURIComponent(hash)); // Pass the song name to the search function
   }
 });
 	
