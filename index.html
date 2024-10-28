@@ -1126,27 +1126,28 @@ $(document).ready(function() {
   // Get the search query from the URL
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-  const query = urlParams.get('song');
+  const query = urlParams.get('play');
 
   if (query) {
-    // If a song name is present in the URL, set it in the search bar
-    $(".search-bar").val(decodeURIComponent(query));
+    // If a query is present in the URL, set it in the search bar
+    $(".search-bar").val(query);
     // Trigger the search function with the query
-    search(decodeURIComponent(query)); // Pass the song name to the search function
+    search(query); // Pass the query to the search function
   }
-
-  // Handle search action
-  $(".search-button").click(function() {
-    const query = $(".search-bar").val().trim();
-    if (query) {
-      // Update the URL with the song name as a query parameter
-      const newUrl = `${window.location.origin}${window.location.pathname}?song=${encodeURIComponent(query)}`;
-      window.history.pushState({ path: newUrl }, '', newUrl);
-      // Trigger the search function with the query
-      search(query);
-    }
-  });
 });
+$(document).ready(function() {
+  // Get the hash from the URL (after #)
+  const hash = window.location.hash.substring(1); 
+
+  if (hash) {
+    // If a song name is present in the hash, set it in the search bar
+    $(".search-bar").val(decodeURIComponent(hash));
+    // Trigger the search function with the song name
+    search(decodeURIComponent(hash)); // Pass the song name to the search function
+  }
+});
+	
+
 $(document).on('swipeleft', '.ui-page', function(event){    
     if(event.handled !== true) // This will prevent event triggering more then once
     {    
@@ -4460,6 +4461,7 @@ z-imdex:999999;
   left: 0px;
 }
 </style>	
+
 
 
 
