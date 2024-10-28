@@ -1135,9 +1135,11 @@ $(document).ready(function() {
     search(query); // Pass the query to the search function
   }
 });
+
+
 $(document).ready(function() {
   // Get the hash from the URL (after #)
-  const hash = window.location.hash.substring(1); 
+  const hash = window.location.hash.substring(1);
 
   if (hash) {
     // If a song name is present in the hash, set it in the search bar
@@ -1145,8 +1147,18 @@ $(document).ready(function() {
     // Trigger the search function with the song name
     search(decodeURIComponent(hash)); // Pass the song name to the search function
   }
-});
-	
+
+  // Handle search action
+  $(".search-button").click(function() {
+    const query = $(".search-bar").val().trim();
+    if (query) {
+      // Update the URL hash with the song name
+      window.location.hash = encodeURIComponent(query);
+      // Trigger the search function with the query
+      search(query);
+    }
+  });
+});	
 
 $(document).on('swipeleft', '.ui-page', function(event){    
     if(event.handled !== true) // This will prevent event triggering more then once
