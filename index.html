@@ -148,15 +148,28 @@ z-index:99999;
   border-radius: 50%;
   padding: .4rem;
 }
+@keyframes glow {
+  0% { box-shadow: inset 3px 2px 5px rgba(255, 255, 255, 0.5), 0 0 10px rgba(104, 139, 255, 0.5), 0 0 20px rgba(104, 139, 255, 0.3), 0 0 30px rgba(104, 139, 255, 0.2); }
+  25% { box-shadow: inset 3px 2px 5px rgba(255, 255, 255, 0.5), 0 0 10px rgba(255, 99, 71, 0.5), 0 0 20px rgba(255, 99, 71, 0.3), 0 0 30px rgba(255, 99, 71, 0.2); }
+  50% { box-shadow: inset 3px 2px 5px rgba(255, 255, 255, 0.5), 0 0 10px rgba(255, 182, 193, 0.5), 0 0 20px rgba(255, 182, 193, 0.3), 0 0 30px rgba(255, 182, 193, 0.2); }
+  75% { box-shadow: inset 3px 2px 5px rgba(255, 255, 255, 0.5), 0 0 10px rgba(173, 216, 230, 0.5), 0 0 20px rgba(173, 216, 230, 0.3), 0 0 30px rgba(173, 216, 230, 0.2); }
+  100% { box-shadow: inset 3px 2px 5px rgba(255, 255, 255, 0.5), 0 0 10px rgba(104, 139, 255, 0.5), 0 0 20px rgba(104, 139, 255, 0.3), 0 0 30px rgba(104, 139, 255, 0.2); }
+}
+
+@keyframes rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 .button {
-z-index:99999;
+  z-index: 99999;
   height: 50px;
   width: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 15%;
-  box-shadow:  inset 3px 2px 5px 0 rgba(255,255,255, .5), rgba(104, 139, 255, 0.1) 7px 3px 10px, rgba(0,0,0, 0.1) 7px 5px 10px
+  animation: glow 5s infinite, rotate 2s linear infinite;
 }
 
 .button:hover {
