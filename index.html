@@ -4496,7 +4496,7 @@ z-imdex:999999;
 
     async function fetchHitsSongs() {
         // Updated query for Chhath Geet songs
-        const query = 'Bhojpuri hindi songs';
+        const query = 'Bhojpuri x hindi';
         
         const searchResponse = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&regionCode=IN&type=video&q=${query}&maxResults=15&videoSyndicated=true&videoCategoryId=10&key=${API_KEY}`);
         
@@ -4525,7 +4525,7 @@ z-imdex:999999;
         const filteredVideos = searchData.items.filter((item, index) => {
             const duration = videoData.items[index].contentDetails.duration;
             const durationInSeconds = parseISO8601Duration(duration);
-            return durationInSeconds >= 120 && durationInSeconds <= 240; // 2 to 4 minutes
+            return durationInSeconds >= 60 && durationInSeconds <= 480; // 2 to 4 minutes
         });
 
         return filteredVideos;
