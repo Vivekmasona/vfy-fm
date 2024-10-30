@@ -333,6 +333,7 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
 
     <script>
     let backButtonClicked = false; // Track back button state
+    let timeoutId; // Store timeout ID to clear it later
 
     document.getElementById("hide").addEventListener("click", function() {
         // Your hide functionality here
@@ -346,11 +347,13 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
             backButtonClicked = true; // Set the state to true after the first click
 
             // Reset the state after 2 seconds
-            setTimeout(function() {
+            timeoutId = setTimeout(function() {
                 backButtonClicked = false; // Reset state
             }, 2000);
         } else {
-            document.getElementById("hide").click(); // Trigger hide on subsequent back button presses
+            clearTimeout(timeoutId); // Clear the timeout if clicked again within 2 seconds
+            document.getElementById("hide").click(); // Trigger hide on the second back button press
+            backButtonClicked = false; // Reset the state immediately for further clicks
         }
 
         // Push state back to maintain the same state
