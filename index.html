@@ -332,32 +332,35 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
     <b id="hide"></b>
 
 <script>
-    let doubleClickTimeout; // Store timeout ID for double click
+    let backButtonClickCount = 0; // Track the number of back button clicks
+    let doubleClickTimeout; // Store timeout ID for double-click detection
 
     document.getElementById("hide").addEventListener("click", function() {
         console.log("Hide button triggered!");
         // Your hide functionality here
     });
 
-    // Handle phone back button press for double click
+    // Handle phone back button press
     window.addEventListener("popstate", function(event) {
-        if (doubleClickTimeout) {
-            // If timeout exists, it's the second click within 1 second
-            clearTimeout(doubleClickTimeout); // Clear the timeout
-            document.getElementById("hide").click(); // Trigger hide button
-            doubleClickTimeout = null; // Reset
-        } else {
-            // Set timeout for 1 second to detect double click
+        backButtonClickCount++; // Increment click count on each back button press
+
+        if (backButtonClickCount === 1) {
+            // Start 1-second timer on the first click
             doubleClickTimeout = setTimeout(function() {
-                doubleClickTimeout = null; // Reset after 1 second
+                backButtonClickCount = 0; // Reset click count if no double-click
             }, 1000);
+        } else if (backButtonClickCount === 2) {
+            // Double-click detected within 1 second
+            clearTimeout(doubleClickTimeout); // Clear the timer
+            document.getElementById("hide").click(); // Trigger hide button
+            backButtonClickCount = 0; // Reset click count for future clicks
         }
 
-        // Push state back to maintain the same state
+        // Push state back to maintain the same state in history
         history.pushState({}, "");
     });
 
-    // Push state to history initially
+    // Push initial state to history
     history.pushState({}, "");
 </script>
 
