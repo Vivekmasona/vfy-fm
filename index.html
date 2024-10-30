@@ -4559,12 +4559,16 @@ z-imdex:999999;
         '</div>' +
         '</b>';
 
-    // Check if maxresdefault image is available
+    // Preload maxresdefault image and switch only if it loads successfully
     const img = new Image();
-    img.src = maxresThumbnailUrl;
     img.onload = function() {
         document.getElementById(`thumbnail-${videoId}`).src = maxresThumbnailUrl;
     };
+    img.onerror = function() {
+        // If maxresdefault doesn't load, mqdefault will remain as the thumbnail
+        console.warn(`Failed to load high-resolution thumbnail for videoId: ${videoId}`);
+    };
+    img.src = maxresThumbnailUrl;
 
     return output;
 }
