@@ -4498,7 +4498,7 @@ z-imdex:999999;
         // Updated query for Chhath Geet songs
         const query = 'Bhojpuri x hindi';
         
-        const searchResponse = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&regionCode=IN&type=video&q=${query}&maxResults=15&videoSyndicated=true&videoCategoryId=10&key=${API_KEY}`);
+        const searchResponse = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&regionCode=IN&type=video&q=${query}&maxResults=25&videoSyndicated=true&videoCategoryId=10&key=${API_KEY}`);
         
         if (!searchResponse.ok) {
             throw new Error('Network response was not ok');
