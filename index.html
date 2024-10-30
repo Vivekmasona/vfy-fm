@@ -3843,6 +3843,12 @@ $(document).ready(function () {
   <script>
     var fullscreen = false;
 
+    // Trigger fullscreen on page load
+    window.onload = function() {
+      enterFullScreen();
+      fullscreen = true;
+    };
+
     // Toggle button click event
     document.getElementById('toggleButton').addEventListener('click', function() {
       if (fullscreen) {
@@ -3887,8 +3893,7 @@ $(document).ready(function () {
       document.getElementById('fullscreenIcon').style.display = 'inline';
       document.getElementById('exitFullscreenIcon').style.display = 'none';
     }
-  </script>
-
+</script>
 
 
 
