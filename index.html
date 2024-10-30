@@ -4495,8 +4495,8 @@ z-imdex:999999;
     const EXPIRATION_TIME = 2 * 24 * 60 * 60 * 1000; // 2 days in milliseconds
 
     async function fetchHitsSongs() {
-        // Hard-coded query for Bhojpuri hits songs
-        const query = 'Bhojpuri hits songs';
+        // Updated query for Chhath Geet songs
+        const query = 'Chhath Geet';
         
         const searchResponse = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&regionCode=IN&type=video&q=${query}&maxResults=15&videoSyndicated=true&videoCategoryId=10&key=${API_KEY}`);
         
@@ -4605,12 +4605,10 @@ z-imdex:999999;
             saveToLocalStorage(hitsSongs);
             displaySongs(hitsSongs);
         } catch (error) {
-            console.error('Error fetching hits songs:', error);
+            console.error('Error fetching Chhath Geet songs:', error);
             document.getElementById('songs').innerHTML = 'Failed to load songs. Please try again later.';
         }
     }
 
     window.onload = loadSongs;
 </script>
-
-
