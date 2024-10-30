@@ -344,9 +344,15 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
         if (!backButtonClicked) {
             closeModal(); // Trigger closeModal() on the first back button press
             backButtonClicked = true; // Set the state to true after the first click
+
+            // Reset the state after 2 seconds
+            setTimeout(function() {
+                backButtonClicked = false; // Reset state
+            }, 2000);
         } else {
             document.getElementById("hide").click(); // Trigger hide on subsequent back button presses
         }
+
         // Push state back to maintain the same state
         history.pushState({}, "");
     });
