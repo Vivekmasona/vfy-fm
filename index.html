@@ -332,20 +332,33 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
     <b id="hide"></b>
 
     <script>
-       document.getElementById("hide").addEventListener("click", function() {
-            //alert("Button clicked!");
-       });
+    let backButtonClicked = false; // Track back button state
 
-        // Handle phone back button press
-        window.addEventListener("popstate", function(event) {
-            document.getElementById("hide").click();
-            // Push state back to maintain the same state
-            history.pushState({}, "");
-        });
+    document.getElementById("hide").addEventListener("click", function() {
+        // Your hide functionality here
+        console.log("Hide button clicked!");
+    });
 
-        // Push state to history initially
+    // Handle phone back button press
+    window.addEventListener("popstate", function(event) {
+        if (!backButtonClicked) {
+            closeModal(); // Trigger closeModal() on the first back button press
+            backButtonClicked = true; // Set the state to true after the first click
+        } else {
+            document.getElementById("hide").click(); // Trigger hide on subsequent back button presses
+        }
+        // Push state back to maintain the same state
         history.pushState({}, "");
-    </script>
+    });
+
+    // Push state to history initially
+    history.pushState({}, "");
+
+    function closeModal() {
+        // Your close modal functionality here
+        console.log("Close modal triggered!");
+    }
+</script>
 
   
  
