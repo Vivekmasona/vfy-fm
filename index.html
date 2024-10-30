@@ -4539,26 +4539,28 @@ z-imdex:999999;
     }
 
     function createPlaylistSongElement(videoId, title, channelTitle, videoDate, index) {
-        const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+    const mqThumbnailUrl = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+    const maxresThumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 
-        let output =
-            '<b onclick="loadSong(this)" index="' + index + '" class="list" vid="' + videoId + '">' +
-            '<div class="video">' +
-            '<img src="' + thumbnailUrl + '" alt="' + title + '" class="video-thumbnail">' +
-            '<section>' +
-            '<img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">' +
-            '<div>' +
-            '<p>V F Y ' + title + '</p>' +
-            '<small class="video-info">' + channelTitle + '</small>' +
-            '<small class="video-info"> VFY </small>' +
-            '<small class="video-info"> Ai </small>' +
-            '<small class="video-info">Release Date: ' + new Date(videoDate).toDateString() + '</small>' +
-            '</div>' +
-            '</section>' +
-            '</div>' +
-            '</b>';
-        return output;
-    }
+    let output =
+        '<b onclick="loadSong(this)" index="' + index + '" class="list" vid="' + videoId + '">' +
+        '<div class="video">' +
+        `<img src="${maxresThumbnailUrl}" alt="${title}" class="video-thumbnail" onerror="this.onerror=null; this.src='${mqThumbnailUrl}';">` +
+        '<section>' +
+        '<img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">' +
+        '<div>' +
+        '<p>V F Y ' + title + '</p>' +
+        '<small class="video-info">' + channelTitle + '</small>' +
+        '<small class="video-info"> VFY </small>' +
+        '<small class="video-info"> Ai </small>' +
+        '<small class="video-info">Release Date: ' + new Date(videoDate).toDateString() + '</small>' +
+        '</div>' +
+        '</section>' +
+        '</div>' +
+        '</b>';
+    return output;
+}
+    
 
     function displaySongs(songs) {
         const songsContainer = document.getElementById('songs');
