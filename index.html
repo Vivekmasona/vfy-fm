@@ -332,33 +332,20 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
     <b id="hide"></b>
 
     <script>
-    let backButtonClicked = false; // Track back button state
+       document.getElementById("hide").addEventListener("click", function() {
+            //alert("Button clicked!");
+       });
 
-    document.getElementById("hide").addEventListener("click", function() {
-        // Your hide functionality here
-        console.log("Hide button clicked!");
-    });
+        // Handle phone back button press
+        window.addEventListener("popstate", function(event) {
+            document.getElementById("hide").click();
+            // Push state back to maintain the same state
+            history.pushState({}, "");
+        });
 
-    // Handle phone back button press
-    window.addEventListener("popstate", function(event) {
-        if (!backButtonClicked) {
-            closeModal(); // Trigger closeModal() on the first back button press
-            backButtonClicked = true; // Set the state to true after the first click
-        } else {
-            document.getElementById("hide").click(); // Trigger hide on subsequent back button presses
-        }
-        // Push state back to maintain the same state
+        // Push state to history initially
         history.pushState({}, "");
-    });
-
-    // Push state to history initially
-    history.pushState({}, "");
-
-    function closeModal() {
-        // Your close modal functionality here
-        console.log("Close modal triggered!");
-    }
-</script>
+    </script>
 
   
  
@@ -4630,4 +4617,5 @@ z-imdex:999999;
 
     window.onload = loadSongs;
 </script>
+
 
