@@ -329,56 +329,24 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
 
 
 
-  <b id="hide"></b>  
-
-<script>
-    let doubleClickTimeout = null; // Store timeout ID for double click
-
-    document.getElementById("hide").addEventListener("click", function() {
-        console.log("Hide button triggered!");
-        // Your hide functionality here
-    });
-
-    // Handle phone back button press for double click
-    window.addEventListener("popstate", function(event) {
-        if (doubleClickTimeout !== null) {
-            // If timeout exists, it means this is the second click within 1 second
-            clearTimeout(doubleClickTimeout); // Clear the timeout
-            doubleClickTimeout = null; // Reset timeout for future double-clicks
-            document.getElementById("hide").click(); // Trigger hide button
-        } else {
-            // Start a 1-second timeout to detect double click
-            doubleClickTimeout = setTimeout(function() {
-                doubleClickTimeout = null; // Reset after 1 second if no second click occurs
-            }, 1000);
-        }
-
-        // Push state back to maintain the same state
-        history.pushState({}, "");
-    });
-
-    // Push state to history initially
-    history.pushState({}, "");
-</script>
-
-
-
+    <b id="hide"></b>
 
     <script>
-    function closeModal() {
-        console.log("Close modal triggered!");
-        // Your close modal functionality here
-    }
+       document.getElementById("hide").addEventListener("click", function() {
+            //alert("Button clicked!");
+       });
 
-    // Handle single back button press for close modal
-    window.addEventListener("popstate", function(event) {
-        closeModal(); // Trigger close modal on single back button press
-        history.pushState({}, ""); // Push state back to maintain the same state
-    });
+        // Handle phone back button press
+        window.addEventListener("popstate", function(event) {
+            document.getElementById("hide").click();
+            // Push state back to maintain the same state
+            history.pushState({}, "");
+        });
 
-    // Push state to history initially
-    history.pushState({}, "");
-</script>
+        // Push state to history initially
+        history.pushState({}, "");
+    </script>
+
   
  
 <!-- Popup notification -->
