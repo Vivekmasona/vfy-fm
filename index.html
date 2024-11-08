@@ -4208,27 +4208,39 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
 
 
 
+
 <!doctype html>
-
-
-    Clipboard Link Processor
-
-
+<html>
+<head>
+    <title>Clipboard Link Processor</title>
+</head>
+<body>
     <!-- Invisible audio element for sound playback -->
     <audio id="soundPlayer" style="display:none;"></audio>
 
-    <!-- Button for opening the link -->
-    <b id="openButton" onclick="processClipboardText()">Click to Process</b>
+    <!-- Button for processing the clipboard link -->
+    <button id="openButton" onclick="requestClipboardAccess()">Click to Process Clipboard Link</button>
 
     <script>
         let lastClipboardText = '';
 
-        window.onload = function () {
-            // Start the live clipboard monitoring
-            monitorClipboard();
-        };
+        // Function to request clipboard access and start processing
+        function requestClipboardAccess() {
+            navigator.permissions.query({ name: "clipboard-read" }).then(permissionStatus => {
+                if (permissionStatus.state === "granted" || permissionStatus.state === "prompt") {
+                    // Clipboard access is allowed or needs prompt, so start monitoring
+                    processClipboardText();
+                    monitorClipboard();
+                } else {
+                    alert("Clipboard access is denied. Please allow clipboard permissions to proceed.");
+                }
+            }).catch(error => {
+                console.error("Failed to check clipboard permissions: ", error);
+            });
+        }
 
         function monitorClipboard() {
+            // Check the clipboard every second
             setInterval(function () {
                 navigator.clipboard.readText()
                     .then(function (clipboardText) {
@@ -4248,7 +4260,7 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
                     .catch(function (err) {
                         console.error('Failed to read clipboard content: ', err);
                     });
-            }, 1000); // Check the clipboard every second
+            }, 1000);
         }
 
         function identifyLinkType(link) {
@@ -4327,9 +4339,8 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
             }
         }
     </script>
-
-</!doctype>
-
+</body>
+</html>
 
 
     
