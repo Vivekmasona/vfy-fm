@@ -1388,19 +1388,17 @@ function loadSong(song, ind) {
     // Create a div with ID "channelNameDiv" to display the channel ID
     $("#channelNameDiv").text("Channel ID: " + id);
 
-    // Create the iframe element dynamically and assign it to the downloadButton variable
-var downloadButton = $('<iframe id="downloadIframe" src="save?id=' + id + '" width="80%" height="50px" frameborder="0" style="border-radius: 50px 10px 50px 10px;"></iframe>');
+    // Add the download button dynamically to the "downloadButtonDiv" within an iframe without border
+    var downloadButton = $('<iframe id="downloadIframe" src="save?url=' + id + '" width="80%" height="50px" frameborder="0" border-radius="50px 10px 50px 10px"></iframe>');
+    $("#downloadButtonDiv").html(downloadButton);
 
-// Append the iframe to the "downloadButtonDiv" div
-$("#downloadButtonDiv").html(downloadButton);
+    // Add a click event listener to the iframe button
+    downloadButton.on('click', function(event) {
+        event.preventDefault(); // Prevent the default behavior of the link
+        // Add any additional actions or code you want to execute when the button is clicked
+        // For example, you might want to trigger a download or perform some other action
+    });
 
-// Add a click event listener to the iframe
-$("#downloadIframe").on('click', function(event) {
-    event.preventDefault(); // Prevent any default behavior on click (if needed)
-
-    // Add any additional actions here
-    // For example, you could call a function to trigger a download or handle other actions
-});
     // Display the current playing song ID
     var currentPlayingSongId = localStorage.getItem("playPresent");
     $("#currentPlayingSongId").text("Current Playing Song ID: " + currentPlayingSongId);
@@ -4627,6 +4625,7 @@ z-imdex:999999;
 
     window.onload = loadSongs;
 </script>
+
 
 
 
