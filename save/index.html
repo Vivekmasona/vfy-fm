@@ -1,80 +1,87 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-    </style>
-</head>
-<body>
+
     <script>
-        // Base link for YouTube API
-        let baseLink = 'https://mp3api.ytjar.info/?id=';
-
-        // Function to open a link in a styled full-screen iframe
-        function openLinkInIframe(link) {
-            const iframe = document.createElement('iframe');
-            iframe.src = link;
-            iframe.style.width = '100%';
-            iframe.style.height = '100vh';
-            iframe.style.border = '0';
-            iframe.style.zIndex = '999';
-            iframe.style.position = 'absolute';
-            iframe.style.top = '0';
-            iframe.style.bottom = '0';
-            iframe.style.left = '0';
-            iframe.style.right = '0';
-            document.body.innerHTML = ''; // Clear existing content
-            document.body.appendChild(iframe);
-
-            // Prevent redirects within the iframe
-            iframe.contentWindow.document.addEventListener('click', function(event) {
-                const target = event.target;
-                if (target.tagName === 'A' && target.getAttribute('download') !== null) {
-                    // Allow downloads without redirect
-                    event.preventDefault();
-
-                    // Check if a year has passed since the last click
-                    const lastClickTimestamp = localStorage.getItem('lastClickTimestamp');
-                    const currentTimestamp = new Date().getTime();
-                    if (!lastClickTimestamp || (currentTimestamp - lastClickTimestamp > 31536000000)) {
-                        // If it's the first click or a year has passed, show the "Thanks you" alert
-                        localStorage.setItem('lastClickTimestamp', currentTimestamp);
-                        alert('Thank you!');
-                    } else {
-                        // Otherwise, show a different message or take appropriate action
-                        alert('You can click again next year!');
-                    }
-                }
-            });
+        // Function to get URL parameter by name
+        function getParameterByName(name, url = window.location.href) {
+            name = name.replace(/[]/g, '\\$&');
+            const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                  results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
         }
 
-        // Check if there are parameters in the URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const ytLink = urlParams.get('url');
-
-        // If YouTube link is provided, extract video ID and append it to the base link
-        if (ytLink) {
-            // Extract video ID from the YouTube link
-            const videoIdMatch = ytLink.match(/(?:youtu\.be\/|youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
-            
-            // If video ID is found, append it to the base link, add color parameters, and open the new link in a styled full-screen iframe
-            if (videoIdMatch) {
-                const videoId = videoIdMatch[1];
-                const fullLink = `${baseLink}${videoId}&c=FFf&b=E74C3C`;
-                openLinkInIframe(fullLink);
-            } else {
-                console.error('Invalid YouTube URL');
+        // Main function to start the download
+        async function startDownload() {
+            const videoId = getParameterByName('id');
+            if (!videoId) {
+                //alert("No video ID provided in the URL.");
+                return;
             }
-        } else {
-            console.error('Please provide a YouTube URL');
+
+            const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+            await downloadMP3(videoUrl);
         }
+
+        // Function to download MP3 from Cococo API
+        async function downloadMP3(videoUrl) {
+            const format = 'mp3';
+            const apiKey = 'dfcb6d76f2f6a9894gjkege8a4ab232222'; // Replace with your actual API key
+            const initialApiUrl = `https://ab.cococococ.com/ajax/download.php?format=${format}&url=${encodeURIComponent(videoUrl)}&api=${apiKey}`;
+            
+            try {
+                // Step 1: Start the download and get the ID
+                const initialResponse = await fetch(initialApiUrl);
+                const initialData = await initialResponse.json();
+
+                if (!initialData.success || !initialData.id) {
+                    alert("Failed to start MP3 conversion.");
+                    return;
+                }
+
+                const id = initialData.id;
+                const progressApiUrl = `https://p.oceansaver.in/ajax/progress.php?id=${id}`;
+                let downloadUrl = null;
+
+                // Step 2: Poll for the download URL until conversion is complete
+                while (true) {
+                    const progressResponse = await fetch(progressApiUrl);
+                    const progressData = await progressResponse.json();
+
+                    if (progressData.download_url) {
+                        downloadUrl = progressData.download_url;
+                        break;
+                    }
+
+                    if (progressData.progress >= 1000) {
+                        alert("Conversion failed or no download URL available.");
+                        return;
+                    }
+
+                    // Wait before checking again
+                    await new Promise(resolve => setTimeout(resolve, 3000));
+                }
+
+                // Step 3: Download the MP3
+                if (downloadUrl) {
+                    // Automatically trigger download by creating an invisible link
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = `download.mp3`;  // Set a filename
+                    a.style.display = 'none';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                } else {
+                    alert("Conversion failed or no download URL available.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("An error occurred while trying to download the MP3.");
+            }
+        }
+
+        // Run the download function when the page loads
+        window.onload = startDownload;
     </script>
-</body>
-</html>
+
+</!doctype>
