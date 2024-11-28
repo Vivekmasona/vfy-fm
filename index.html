@@ -2621,30 +2621,31 @@ main {
 }</style>
 
 
-
 <script>
-    var offlineMsg = document.getElementById("offline-message");
-    var audioElement = document.getElementById("SAudio");
+        // Offline Message and Audio Element
+        const offlineMsg = document.getElementById("offline-message");
+        const audioElement = document.getElementById("SAudio");
 
-    function _showOfflineMessage() {
-        document.getElementsByTagName("html")[0].setAttribute("offline", true);
-        offlineMsg.setAttribute("aria-hidden", "false");
-        if (audioElement && !audioElement.paused) {
-            audioElement.pause(); // Pause the song if it is playing
+        function _showOfflineMessage() {
+            // Show offline message
+            offlineMsg.style.display = "block";
+
+            // Pause audio if playing
+            if (audioElement && !audioElement.paused) {
+                audioElement.pause();
+            }
         }
-        setTimeout(function () {
-            offlineMsg.focus();
-        }, 400);
-    }
 
-    function _hideOfflineMessage() {
-        document.getElementsByTagName("html")[0].setAttribute("offline", false);
-        offlineMsg.setAttribute("aria-hidden", "true");
-    }
+        function _hideOfflineMessage() {
+            // Hide offline message
+            offlineMsg.style.display = "none";
+        }
 
-    window.addEventListener("offline", _showOfflineMessage, false);
-    window.addEventListener("online", _hideOfflineMessage, false);
-</script>
+        // Listen for offline and online events
+        window.addEventListener("offline", _showOfflineMessage, false);
+        window.addEventListener("online", _hideOfflineMessage, false);
+    </script>
+
 
 <b href="#" onmousedown="op.play()">
 <div aria-hidden="true" tabindex="-1" id="offline-message">
