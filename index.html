@@ -2621,31 +2621,34 @@ main {
 }</style>
 
 
+
 <script>
-var offlineMsg = document.getElementById("offline-message");
+    var offlineMsg = document.getElementById("offline-message");
+    var audioElement = document.getElementById("SAudio");
 
-		function _showOfflineMessage(){
-			document.getElementsByTagName("html")[0].setAttribute("offline",true);
-			offlineMsg.setAttribute("aria-hidden","false");
-			setTimeout(function(){
-				offlineMsg.focus();
-			},400);
-		}
+    function _showOfflineMessage() {
+        document.getElementsByTagName("html")[0].setAttribute("offline", true);
+        offlineMsg.setAttribute("aria-hidden", "false");
+        if (audioElement && !audioElement.paused) {
+            audioElement.pause(); // Pause the song if it is playing
+        }
+        setTimeout(function () {
+            offlineMsg.focus();
+        }, 400);
+    }
 
-		function _hideOfflineMessage(){
-			document.getElementsByTagName("html")[0].setAttribute("offline",false);
-			offlineMsg.setAttribute("aria-hidden","true");
-		}
+    function _hideOfflineMessage() {
+        document.getElementsByTagName("html")[0].setAttribute("offline", false);
+        offlineMsg.setAttribute("aria-hidden", "true");
+    }
 
-		window.addEventListener("offline", _showOfflineMessage, false);
-
-		window.addEventListener("online", _hideOfflineMessage, false);</script></b>
-
+    window.addEventListener("offline", _showOfflineMessage, false);
+    window.addEventListener("online", _hideOfflineMessage, false);
+</script>
 
 <b href="#" onmousedown="op.play()">
 <div aria-hidden="true" tabindex="-1" id="offline-message">
-    <iframe src="/offline" style="position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999; "></iframe>  
- 
+    <iframe src="/offline" style="position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;"></iframe>  
 </div></b>
 
 
