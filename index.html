@@ -1414,10 +1414,10 @@ function loadSong(song, ind) {
 
 function play(id,Sid){
     //data = "https://inv-us2-c.nadeko.net/latest_version?id="+id+"&itag=140&check=local=true";
-     data = "https://inv-eu2-c.nadeko.net/latest_version?id="+id+"&itag=140&check=";
+     //data = "https://inv-eu2-c.nadeko.net/latest_version?id="+id+"&itag=140&check=";
       //data = "https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/"+id;
       //data = "https://vivekfy.vercel.app/api-play?url=https://youtu.be/"+id;
-     //data = "https://big-eight-march.glitch.me?url=https://youtu.be/"+id;
+     data = "https://vivekfy.vercel.app/backend?url=https://youtu.be/"+id;
      // data = "https://vivekmasona.000webhostapp.com/Play?vfy=https://youtu.be/"+id;
      //data = "https://inv-ca1-c.nadeko.net/latest_version?id="+id+"&itag=250&local=true";
      //data = "https://myserver-dev-atmq.2.ie-1.fl0.io/audio?url=https://youtu.be/"+id;
@@ -1495,7 +1495,7 @@ audio.addEventListener("ended", function() {
 
 // Listen for the 'error' event
 var alternativeAudioSources = [
-"https://vivekfy.vercel.app/api-play?url=https://youtu.be/" + id,
+"https://vivekfy.vercel.app/backend?url=https://youtu.be/" + id,
 "https://inv-us2-c.nadeko.net/latest_version?id="+id+"&itag=140&check=local=true",
 "https://inv-ca1-c.nadeko.net/latest_version?id="+id+"&itag=250&local=true",   
 "https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/" + id,
