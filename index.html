@@ -4210,138 +4210,137 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
 
 
 
-<!doctype html>
-<html>
+                             
+
+  <!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Clipboard Link Processor</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
+
     <!-- Invisible audio element for sound playback -->
     <audio id="soundPlayer" style="display:none;"></audio>
 
-    <!-- Button for processing the clipboard link -->
-    <button id="openButton" onclick="requestClipboardAccess()">Click to Process Clipboard Link</button>
+    <!-- Button for opening the link -->
+    <b id="openButton" onclick="processClipboardText()">Click to Process</b>
 
-    <script>
-        let lastClipboardText = '';
+<script>
+    let lastClipboardText = '';
 
-        // Function to request clipboard access and start processing
-        function requestClipboardAccess() {
-            navigator.permissions.query({ name: "clipboard-read" }).then(permissionStatus => {
-                if (permissionStatus.state === "granted" || permissionStatus.state === "prompt") {
-                    // Clipboard access is allowed or needs prompt, so start monitoring
-                    processClipboardText();
-                    monitorClipboard();
-                } else {
-                    alert("Clipboard access is denied. Please allow clipboard permissions to proceed.");
-                }
-            }).catch(error => {
-                console.error("Failed to check clipboard permissions: ", error);
-            });
+    window.onload = function () {
+        // Start the live clipboard monitoring
+        monitorClipboard();
+
+        // Attach the event listener to the button
+        document.getElementById('openButton').addEventListener('click', processClipboardText);
+    };
+
+    function monitorClipboard() {
+        setInterval(function () {
+            navigator.clipboard.readText()
+                .then(function (clipboardText) {
+                    if (clipboardText && clipboardText !== lastClipboardText) {
+                        lastClipboardText = clipboardText;
+
+                        // Identify the type of link
+                        var linkType = identifyLinkType(clipboardText);
+
+                        // Play the corresponding sound
+                        playSound(linkType);
+
+                        // Optionally display the detected link
+                        console.log('Detected Link: ' + clipboardText);
+                    }
+                })
+                .catch(function (err) {
+                    console.error('Failed to read clipboard content: ', err);
+                });
+        }, 1000); // Check the clipboard every second
+    }
+
+    function identifyLinkType(link) {
+        if (link.toLowerCase().includes('instagram')) {
+            return 'instagram';
+        } else if (link.toLowerCase().includes('facebook') || link.toLowerCase().includes('fb')) {
+            return 'facebook';
+        } else if (link.toLowerCase().includes('youtube.com') || link.toLowerCase().includes('youtu.be')) {
+            return 'youtube';
+        } else if (link.toLowerCase().includes('twitter.com') || link.toLowerCase().includes('x.com')) {
+            return 'twitter';
+        } else if (link.toLowerCase().includes('pinterest.com') || link.toLowerCase().includes('pin.it')) {
+            return 'pinterest';
+        } else if (link.toLowerCase().includes('vimeo.com')) {
+            return 'vimeo';
+        } else if (link.toLowerCase().includes('dailymotion.com') || link.toLowerCase().includes('dai.ly')) {
+            return 'dailymotion';
+        } else {
+            return 'unknown';
+        }
+    }
+
+    function playSound(linkType) {
+        var audio = document.getElementById('soundPlayer');
+
+        switch (linkType) {
+            case 'instagram':
+                audio.src = '/sound/copyinstagram.mp3';
+                break;
+            case 'facebook':
+                audio.src = '/sound/copyfacebook.mp3';
+                break;
+            case 'youtube':
+                audio.src = '/sound/copyyoutube.mp3';
+                break;
+            case 'twitter':
+                audio.src = '/sound/copytwitter.mp3';
+                break;
+            case 'pinterest':
+                audio.src = '/sound/copypinterest.mp3';
+                break;
+            case 'vimeo':
+                audio.src = '/sound/copyvimeo.mp3';
+                break;
+            case 'dailymotion':
+                audio.src = '/sound/copydailymotion.mp3';
+                break;
+            default:
+                audio.src = '/sound/default_sound.mp3';
         }
 
-        function monitorClipboard() {
-            // Check the clipboard every second
-            setInterval(function () {
-                navigator.clipboard.readText()
-                    .then(function (clipboardText) {
-                        if (clipboardText && clipboardText !== lastClipboardText) {
-                            lastClipboardText = clipboardText;
+        audio.load();
+        audio.play();
+    }
 
-                            // Identify the type of link
-                            var linkType = identifyLinkType(clipboardText);
+    function processClipboardText() {
+        if (lastClipboardText) {
+            // Get the API URL with the clipboard link
+            var apiUrl = 'https://vivekfy.vercel.app/api?url=' + encodeURIComponent(lastClipboardText);
 
-                            // Play the corresponding sound
-                            playSound(linkType);
+            if (apiUrl) {
+                window.location.href = apiUrl;
 
-                            // Optionally display the detected link
-                            console.log('Detected Link: ' + clipboardText);
-                        }
-                    })
-                    .catch(function (err) {
-                        console.error('Failed to read clipboard content: ', err);
-                    });
-            }, 1000);
-        }
-
-        function identifyLinkType(link) {
-            if (link.toLowerCase().includes('instagram')) {
-                return 'instagram';
-            } else if (link.toLowerCase().includes('facebook') || link.toLowerCase().includes('fb')) {
-                return 'facebook';
-            } else if (link.toLowerCase().includes('youtube.com') || link.toLowerCase().includes('youtu.be')) {
-                return 'youtube';
-            } else if (link.toLowerCase().includes('twitter.com') || link.toLowerCase().includes('x.com')) {
-                return 'twitter';
-            } else if (link.toLowerCase().includes('pinterest.com') || link.toLowerCase().includes('pin.it')) {
-                return 'pinterest';
-            } else if (link.toLowerCase().includes('vimeo.com')) {
-                return 'vimeo';
-            } else if (link.toLowerCase().includes('dailymotion.com') || link.toLowerCase().includes('dai.ly')) {
-                return 'dailymotion';
+                // Clear the clipboard after processing
+                navigator.clipboard.writeText('').then(function() {
+                    lastClipboardText = ''; // Clear the stored link as well
+                    console.log('Clipboard cleared.');
+                }).catch(function(err) {
+                    console.error('Failed to clear clipboard: ', err);
+                });
             } else {
-                return 'unknown';
+                alert('Unsupported link type');
             }
+        } else {
+            alert('No link detected in the clipboard.');
         }
+    }
+</script>
 
-        function playSound(linkType) {
-            var audio = document.getElementById('soundPlayer');
-
-            switch (linkType) {
-                case 'instagram':
-                    audio.src = '/sound/copyinstagram.mp3';
-                    break;
-                case 'facebook':
-                    audio.src = '/sound/copyfacebook.mp3';
-                    break;
-                case 'youtube':
-                    audio.src = '/sound/copyyoutube.mp3';
-                    break;
-                case 'twitter':
-                    audio.src = '/sound/copytwitter.mp3';
-                    break;
-                case 'pinterest':
-                    audio.src = '/sound/copypinterest.mp3';
-                    break;
-                case 'vimeo':
-                    audio.src = '/sound/copyvimeo.mp3';
-                    break;
-                case 'dailymotion':
-                    audio.src = '/sound/copydailymotion.mp3';
-                    break;
-                default:
-                    audio.src = '/sound/default_sound.mp3';
-            }
-
-            audio.load();
-            audio.play();
-        }
-
-        function processClipboardText() {
-            if (lastClipboardText) {
-                // Get the API URL with the clipboard link
-                var apiUrl = 'https://vivekfy.vercel.app/api?url=' + encodeURIComponent(lastClipboardText);
-
-                if (apiUrl) {
-                    window.location.href = apiUrl;
-
-                    // Clear the clipboard after processing
-                    navigator.clipboard.writeText('').then(function() {
-                        lastClipboardText = ''; // Clear the stored link as well
-                        console.log('Clipboard cleared.');
-                    }).catch(function(err) {
-                        console.error('Failed to clear clipboard: ', err);
-                    });
-                } else {
-                    alert('Unsupported link type');
-                }
-            } else {
-                alert('vFy No link detected in the clipboard.');
-            }
-        }
-    </script>
 </body>
 </html>
+          
+        
 
 
     
