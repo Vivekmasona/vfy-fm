@@ -1,6 +1,6 @@
 const audio = document.getElementById('SAudio');
-const overlay = document.getElementById('loadingOverlay');
-const secondsDisplay = document.getElementById('seconds');
+const overlay = document.getElementById('loadingOverlay1');
+const secondsDisplay = document.getElementById('seconds1');
 let seconds = 0;
 let interval;
 
