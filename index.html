@@ -693,56 +693,64 @@ width: 50%;
 
 }
 
-/* Container for Videos */
 #videos {
+  padding: 20px;
+  margin: 0 auto;
+  display: grid;
+  gap: 25px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.video {
+  background-color: #252525;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  align-items: center;
+  
+}
+
+.video-thumbnail {
+  border-radius: 4px;
+  margin-bottom: 10px;
+  width: 99%;
+  max-width: 100%;
+  box-shadow: 0 1px 1px #252525;
+  transition: transform 0.3s ease-in-out; /* Add smooth transition effect */
+  filter: grayscale(0%); /* Convert thumbnail to black and white initially */
+}
+
+.video-thumbnail:hover {
+  transform: scale(0.98); /* Adjust the scale value for your desired zoom level */
+  filter: grayscale(100%); /* Convert thumbnail to black and white initially */
+}
+
+
+
+
+.video-details {
   padding: 10px;
-  width: 100%;
-  max-width: 600px;
-  margin: auto;
+  width: 90%; /* Set the width to 90% */
+  max-width: 100%; /* Ensure it doesn't exceed the container width */
+  margin: 0 auto; /* Center the details */
 }
 
-/* Video Box */
-.video {
-  position: relative;
-  overflow: hidden;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s;
+.video-title {
+  font-size: 1.2em;
+  margin-bottom: 5px;
+  width: 100%; /* Ensure the title takes the full width within the details */
 }
 
-.video:hover {
-  transform: scale(1.03);
-}
+.video-info {
+  font-size: 0.7em;
+  width: 50%; /* Ensure the info takes the full width within the details */
 
-/* Thumbnail Image */
-.video-thumbnail img {
-  width: 100%;
-  height: auto;
-  display: block;
-  border-radius: 10px;
-}
-
-/* Title Overlay */
-.title-overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 10px;
-  color: #fff;
-  font-size: 1.1em;
-  font-weight: bold;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
 }
 
 
 
-	
+
+
+		
 </style>
 
 
@@ -4644,6 +4652,7 @@ z-imdex:999999;
 
     window.onload = loadSongs;
 </script>
+
 
 
 
