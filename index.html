@@ -693,6 +693,7 @@ width: 50%;
 
 }
 
+
 /* Main Container */
 #videos {
   padding: 10px;
@@ -719,8 +720,8 @@ width: 50%;
 .video-thumbnail {
   position: relative;
   width: 100%;
-  max-width: 500px;
-  height: 280px;
+  max-width: 600px;
+  height: 340px;
   overflow: hidden;
   border-radius: 15px;
   box-shadow: 0 15px 25px rgba(0, 0, 0, 0.5);
@@ -728,7 +729,7 @@ width: 50%;
 }
 
 .video-thumbnail:hover {
-  transform: scale(1.05);
+  transform: scale(1.03);
 }
 
 /* Thumbnail Image */
@@ -739,80 +740,29 @@ width: 50%;
   border-radius: 15px;
 }
 
-/* Gradient Overlay */
-.gradient-overlay {
+/* Title Overlay */
+.title-overlay {
   position: absolute;
-  top: 0;
+  bottom: 0;
   left: 0;
   width: 100%;
-  height: 100%;
-  border-radius: 15px;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.7));
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* Play Button */
-.play-button {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(145deg, #ffffff, #dddddd);
-  border-radius: 50%;
+  height: 50%; /* Half of the thumbnail */
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s, box-shadow 0.3s;
-  z-index: 2;
-  cursor: pointer;
+  align-items: flex-end;
+  padding: 15px;
+  box-sizing: border-box;
 }
 
-.play-button:hover {
-  transform: scale(1.1);
-  box-shadow: 0 15px 20px rgba(0, 0, 0, 0.5);
-}
-
-.play-button::before {
-  content: '';
-  border-style: solid;
-  border-width: 12px 0 12px 20px;
-  border-color: transparent transparent transparent #333;
-  display: block;
-  transform: translateX(2px);
-}
-
-/* Video Details */
-.video-details {
-  position: absolute;
-  bottom: 15px;
-  left: 15px;
-  z-index: 3;
-  color: #fff;
-  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
-  transform: translateZ(0);
-  transition: transform 0.3s;
-}
-
+/* Video Title */
 .video-title {
+  color: #fff;
   font-size: 1.4em;
   font-weight: bold;
-}
-
-.video-info {
-  font-size: 0.9em;
-  color: #ccc;
-}
-
-/* 3D Effect */
-.video-thumbnail:hover .video-details {
-  transform: translateY(-5px) translateZ(10px);
-  transition: transform 0.3s ease;
-}
-		
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+}		
 </style>
 
 
