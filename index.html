@@ -1778,7 +1778,8 @@ playVideoButton.addEventListener("click", function() {
     overlayBox = document.createElement("div");
     overlayBox.id = "overlayBox";
     overlayBox.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
-    overlayBox.style.position = "fixed";
+    
+    overlayBox.style.zIndex = "999999";
     overlayBox.style.top = "50%";
     overlayBox.style.left = "50%";
     overlayBox.style.transform = "translate(-50%, -50%)";
