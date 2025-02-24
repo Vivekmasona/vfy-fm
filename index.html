@@ -4612,25 +4612,47 @@ z-imdex:999999;
     function createPlaylistSongElement(videoId, title, channelTitle, videoDate, index) {
         const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
 
-        let output =
-            '<b onclick="loadSong(this)" index="' + index + '" class="list" vid="' + videoId + '">' +
-            '<div class="video">' +
-            '<img src="' + thumbnailUrl + '" alt="' + title + '" class="video-thumbnail">' +
-            '<section>' +
-            '<img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">' +
-            '<div>' +
-            '<p>V F Y ' + title + '</p>' +
-            '<small class="video-info">' + channelTitle + '</small>' +
-            '<small class="video-info"> VFY </small>' +
-            '<small class="video-info"> Ai </small>' +
-            '<small class="video-info">Release Date: ' + new Date(videoDate).toDateString() + '</small>' +
-            '</div>' +
-            '</section>' +
-            '</div>' +
-            '</b>';
-        return output;
-    }
+      //  let output =
+           // '<b onclick="loadSong(this)" index="' + index + '" class="list" vid="' + videoId + '">' +
+            //'<div class="video">' +
+           // '<img src="' + thumbnailUrl + '" alt="' + title + '" class="video-thumbnail">' +
+           // '<section>' +
+            //'<img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">' +
+            //'<div>' +
+            //'<p>V F Y ' + title + '</p>' +
+           // '<small class="video-info">' + channelTitle + '</small>' +
+           // '<small class="video-info"> VFY </small>' +
+            //'<small class="video-info"> Ai </small>' +
+           // '<small class="video-info">Release Date: ' + new Date(videoDate).toDateString() + '</small>' +
+           // '</div>' +
+            //'</section>' +
+           // '</div>' +
+           // '</b>';
+        //return output;
+   // }
 
+var output =  
+    '<b onclick="loadSong(this)" index="' + i + '" class="list" vid="' + id + '">' +  
+    '<div class="video">' +  
+    '<img src="' + thumbUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + i + '" vid="' + id + '">' +  
+    '<section>' +  
+    '<img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">' +  
+    '<div>' +  
+    '<p>V F Y ' + title + '</p>' +  
+    '<small class="video-info">' + channelTitle + '</small>' +  
+    '<small class="video-info"> VFY </small>' +  
+    '<small class="video-info"> Ai </small>' +  
+    '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +  
+    '</div>' +  
+    '</section>' +  
+    '</div>' +  
+    '</b>';  
+  
+return output;  
+}  
+  
+
+	
     function displaySongs(songs) {
         const songsContainer = document.getElementById('songs');
         songsContainer.innerHTML = '';
