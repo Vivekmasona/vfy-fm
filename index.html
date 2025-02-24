@@ -1304,6 +1304,11 @@ $.get(
 }
 
 
+
+
+
+	
+
 function getOutput(item, i) {
   var id = item.id.videoId;
   var title = item.snippet.title;
@@ -1320,21 +1325,29 @@ function getOutput(item, i) {
 
 	
   var output =
-    '<b onclick="loadSong(this)" index="' + i + '" class="list" vid="' + id + '">' +
-    '<div class="video">' +
-    '<img src="' + thumbUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + i + '" vid="' + id + '">' +
-    '<section>' +
-    '<img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">' +
-    '<div>' +
-    '<p>V F Y ' + title + '</p>' +
-    '<small class="video-info">' + channelTitle + '</small>' +
-    '<small class="video-info"> VFY </small>' +
-    '<small class="video-info"> Ai </small>' +
-    '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +
-    '</div>' +
-    '</section>' +
-    '</div>' +
-    '</b>';
+
+//Build our output:
+  var output =
+  '<ul data-role="listview" data-inset="true" id="myList">' +
+      '<li><a onclick="loadSong(this)" class="list" vid="'+id+'"><img src="'+thumb+'" alt="">'+title+'</a></li>' +
+  '</ul>';
+
+	  
+  //  '<b onclick="loadSong(this)" index="' + i + '" class="list" vid="' + id + '">' +
+  //  '<div class="video">' +
+  //  '<img src="' + thumbUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + i + '" vid="' + id + '">' +
+   // '<section>' +
+  //  '<img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">' +
+   // '<div>' +
+  //  '<p>V F Y ' + title + '</p>' +
+   // '<small class="video-info">' + channelTitle + '</small>' +
+   // '<small class="video-info"> VFY </small>' +
+  //  '<small class="video-info"> Ai </small>' +
+   // '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +
+   // '</div>' +
+  //  '</section>' +
+  //  '</div>' +
+  //  '</b>';
 
 return output;
 }
