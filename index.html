@@ -696,27 +696,24 @@ width: 50%;
 
 
 
-
-
-
-
 #videos {
   padding: 10px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 20px; /* Space between list tabs */
+  gap: 15px; /* Space between list items */
 }
 
 .video {
   display: flex;
   align-items: center;
-  gap: 15px;
-  padding: 15px;
   background: linear-gradient(145deg, #444, #222);
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  padding: 5px 10px;
+  height: 100px; /* Same as thumbnail height */
 }
 
 .video:hover {
@@ -726,8 +723,8 @@ width: 50%;
 
 .video-thumbnail {
   position: relative;
-  width: 120px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   flex-shrink: 0;
   border-radius: 10px;
   overflow: hidden;
@@ -763,8 +760,8 @@ width: 50%;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   background: rgba(255, 255, 255, 0.8);
   border-radius: 50%;
   display: flex;
@@ -784,7 +781,7 @@ width: 50%;
 .play-button::before {
   content: '';
   border-style: solid;
-  border-width: 10px 0 10px 16px;
+  border-width: 8px 0 8px 14px;
   border-color: transparent transparent transparent #333;
   display: block;
   transform: translateX(2px);
@@ -793,18 +790,22 @@ width: 50%;
 .video-details {
   flex-grow: 1;
   color: #fff;
+  margin-left: 10px; /* 10px gap between thumbnail and title */
+  overflow: hidden;
 }
 
 .video-title {
   font-size: 1.1em;
   font-weight: bold;
-  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.video-info {
-  font-size: 0.85em;
-  color: #ccc;
-}  
+
+
+
+  
 
 
 
