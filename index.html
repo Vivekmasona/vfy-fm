@@ -695,25 +695,25 @@ width: 50%;
 
 
 
-
 #videos {
   padding: 10px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 15px; /* Space between list items */
+  gap: 15px; /* Space between tabs */
 }
 
 .video {
+  background: linear-gradient(145deg, #333, #1c1c1c);
   display: flex;
   align-items: center;
-  background: linear-gradient(145deg, #444, #222);
+  width: 100%;
+  padding: 15px;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
   overflow: hidden;
-  padding: 5px 10px;
-  height: 100px; /* Same as thumbnail height */
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .video:hover {
@@ -722,63 +722,47 @@ width: 50%;
 }
 
 .video-thumbnail {
-  position: relative;
   width: 100px;
   height: 100px;
-  flex-shrink: 0;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
-  transition: transform 0.3s ease;
-}
-
-.video-thumbnail img {
-  width: 100%;
-  height: 100%;
   object-fit: cover;
-  border-radius: 10px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
 }
 
-.video-thumbnail:hover {
-  transform: scale(1.05);
-}
-
-.video-thumbnail::after {
+.video-thumbnail::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  right: 0;
+  bottom: 0;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5));
-  border-radius: 10px;
-  pointer-events: none;
 }
 
-.play-button {
+.video-thumbnail .play-button {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 30px;
   height: 30px;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.7);
   border-radius: 50%;
   display: flex;
+z-index: 999999;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  transition: background 0.3s, transform 0.3s;
-  cursor: pointer;
-  z-index: 2;
+  transition: background 0.3s;
 }
 
-.play-button:hover {
+.video-thumbnail .play-button:hover {
   background: rgba(255, 255, 255, 1);
-  transform: scale(1.1);
 }
 
-.play-button::before {
+.video-thumbnail .play-button::before {
   content: '';
   border-style: solid;
   border-width: 8px 0 8px 14px;
@@ -789,24 +773,22 @@ width: 50%;
 
 .video-details {
   flex-grow: 1;
+  margin-left: 20px;
   color: #fff;
-  margin-left: 10px; /* 10px gap between thumbnail and title */
-  overflow: hidden;
+  position: relative;
 }
 
 .video-title {
   font-size: 1.1em;
   font-weight: bold;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  margin-bottom: 5px;
 }
 
-
-
-
+.video-info {
+  font-size: 0.85em;
+  color: #ccc;
+}
   
-
 
 
 
@@ -4713,6 +4695,7 @@ z-imdex:999999;
 
     window.onload = loadSongs;
 </script>
+
 
 
 
