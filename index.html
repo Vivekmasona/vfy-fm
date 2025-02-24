@@ -823,17 +823,7 @@ border-radius: 15px;
 <!-- Display the current video ID and time -->
 
 
-  <script>document.getElementById('search-btn').addEventListener('click', function() {
-  // Puri page height ka 20% calculate karna
-  const scrollAmount = window.innerHeight * 0.4;
-  
-  // Page ko 20% scroll karna
-  window.scrollBy({
-    top: scrollAmount,
-    behavior: 'smooth'
-  });
-});
-  </script>
+
 
 
 	    
@@ -4636,7 +4626,24 @@ z-imdex:999999;
         }
 
         window.onload = loadSongs;
-    </script>
+   
+
+
+  document.getElementById('search-btn').addEventListener('click', function() {
+  // Puri page height ka 20% calculate karna
+  const scrollAmount = window.innerHeight * 0.4;
+  
+  // Page ko 20% scroll karna
+  window.scrollBy({
+    top: scrollAmount,
+    behavior: 'smooth'
+  });
+});
+  
+
+
+
+</script>
 
 
 
