@@ -1238,7 +1238,7 @@ $(document).ready(function(){
 
     // Toggle button click event
     $("#hide").click(function(){
-        $("#homepage-content").empty(); // Clear the response content
+        $("#homepage-content").empty(); // Clear the homepage content
         $("#manualContent").show(); // Show the manual content
         $("#hide").prop("disabled", true); // Disable toggle button again
     });
@@ -1246,18 +1246,22 @@ $(document).ready(function(){
     // Function to handle response
     function handleResponse() {
         $("#hide").prop("disabled", false); // Enable toggle button
+        $("#homepage-content").hide(); // Hide homepage content
     }
 
-    // Example function to simulate receiving response
-    function receiveResponse() {
-        // Simulate receiving response after some delay (for demonstration)
-        setTimeout(function(){
-            handleResponse(); // Call handleResponse function
-        }, 10); // Change delay as needed
-    }
-
-    // Call receiveResponse function to simulate receiving response
-    receiveResponse();
+    // Search button click event
+    $("#search-btn").click(function(){
+        var query = $("#search-box").val().trim();
+        if (query !== "") {
+            // Simulate receiving search results
+            setTimeout(function(){
+                // Example search result (replace with your AJAX call or logic)
+                var searchResults = "<ul><li>Result 1 for '"+ query +"'</li><li>Result 2 for '"+ query +"'</li></ul>";
+                $("#search-results").html(searchResults); // Display search results
+                handleResponse(); // Call handleResponse function
+            }, 500); // Simulate delay
+        }
+    });
 });
 
 
