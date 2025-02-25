@@ -4749,8 +4749,15 @@ document.getElementById('search-btn').addEventListener('click', function() {
 </script>
 
 
-
-<style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session ID Container</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
         /* Reset default margin and padding */
         * {
             margin: 0;
@@ -4758,143 +4765,118 @@ document.getElementById('search-btn').addEventListener('click', function() {
             box-sizing: border-box;
         }
 
-        /* Body Background */
         body {
             font-family: Arial, sans-serif;
             background: linear-gradient(45deg, #1e3c72, #2a5298);
-            min-height: 200vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
 
-        /* Fixed Control Button */
-        .control-button {
-            position: fixed;
-            top: 40%;
-            right: 20px;
-            width: 60px;
-            height: 60px;
+        /* Session Info Container */
+        #sessionInfoContainer {
             background: linear-gradient(145deg, #ff416c, #ff4b2b);
-            border-radius: 50%;
+            border-radius: 10px;
+            padding: 15px 20px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            color: #fff;
-            font-size: 28px;
             display: flex;
-            justify-content: center;
             align-items: center;
-            cursor: pointer;
-            transition: transform 0.3s;
-            z-index: 9999;
-        }
-
-        .control-button:hover {
-            transform: scale(1.1);
-        }
-
-        /* Icon Menu */
-        .icon-menu {
-            position: fixed;
-            top: 40%;
-            right: 90px;
-            display: flex;
-            flex-direction: column;
             gap: 15px;
-            z-index: 9998;
-            opacity: 0;
-            transform: translateX(20px);
-            transition: opacity 0.3s, transform 0.3s;
-        }
-
-        .icon-menu.active {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .icon-menu i {
-            font-size: 25px;
             color: #fff;
+        }
+
+        /* WiFi Icon */
+        .wifiIcon {
+            font-size: 24px;
+        }
+
+        /* Session ID */
+        #sessionId {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: text;
+            user-select: text;
+        }
+
+        /* Buttons */
+        button {
             background: linear-gradient(145deg, #ff416c, #ff4b2b);
+            border: none;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 35px;
+            height: 35px;
+            color: #fff;
+            font-size: 18px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
             transition: transform 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
 
-        .icon-menu i:hover {
+        button:hover {
             transform: scale(1.2);
         }
 
-        /* Hidden Trigger Buttons */
-        .hidden-trigger {
-            display: none;
+        button:active {
+            transform: scale(0.9);
+        }
+
+        /* Editable Session ID */
+        #sessionId[contenteditable="true"] {
+            outline: 2px dashed #fff;
+            background: rgba(255, 255, 255, 0.2);
         }
     </style>
 </head>
 <body>
 
-    <!-- Control Button -->
-    <div class="control-button" onclick="toggleMenu()">
-        <i class="fas fa-cogs"></i>
+    <div id="sessionInfoContainer">
+        <i class="wifiIcon fas fa-wifi"></i>
+        <span id="sessionId">ABC12345</span>
+        <button id="copySessionIdButton" title="Copy Session ID"><i class="fas fa-copy"></i></button>
+        <button id="editSessionIdButton" title="Edit Session ID"><i class="fas fa-edit"></i></button>
+        <button id="shareSessionIdButton" title="Share Session ID"><i class="fas fa-share-alt"></i></button>
     </div>
-
-    <!-- Icon Menu -->
-    <div class="icon-menu" id="iconMenu">
-        <i class="fas fa-music" data-original="fa-music" data-target="button1"></i>
-        <i class="fas fa-video" data-original="fa-video" data-target="button2"></i>
-        <i class="fas fa-image" data-original="fa-image" data-target="button3"></i>
-        <i class="fas fa-cog" data-original="fa-cog" data-target="button4"></i>
-    </div>
-
-    <!-- Hidden Buttons (You can place them anywhere on your page) -->
-    <button class="hidden-trigger" id="sessionId" onclick="console.log('Button 1 Clicked')">Hidden Button 1</button>
-    <button class="hidden-trigger" id="copySessionIdButton" onclick="console.log('Button 2 Clicked')">Hidden Button 2</button>
-    <button class="hidden-trigger" id="button3" onclick="console.log('Button 3 Clicked')">Hidden Button 3</button>
-    <button class="hidden-trigger" id="button4" onclick="console.log('Button 4 Clicked')">Hidden Button 4</button>
 
     <script>
-        // Toggle the icon menu
-        function toggleMenu() {
-            document.getElementById('iconMenu').classList.toggle('active');
-        }
-
-        // Attach event listeners to each icon
-        document.querySelectorAll('.icon-menu i').forEach(icon => {
-            icon.addEventListener('click', function() {
-                const originalClass = this.getAttribute('data-original');
-                const targetId = this.getAttribute('data-target');
-                
-                // Change the icon to a checkmark
-                this.classList.remove(originalClass);
-                this.classList.add('fa-check');
-
-                // Trigger the hidden button click
-                if (targetId) {
-                    document.getElementById(targetId).click();
-                }
-
-                // Revert back to original icon after 2 seconds
-                setTimeout(() => {
-                    this.classList.remove('fa-check');
-                    this.classList.add(originalClass);
-                }, 2000);
+        // Copy Session ID
+        document.getElementById('copySessionIdButton').addEventListener('click', function() {
+            const sessionId = document.getElementById('sessionId').innerText;
+            navigator.clipboard.writeText(sessionId).then(() => {
+                console.log('Session ID copied to clipboard');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
             });
         });
+
+        // Edit Session ID
+        document.getElementById('editSessionIdButton').addEventListener('click', function() {
+            const sessionIdElement = document.getElementById('sessionId');
+            const isEditable = sessionIdElement.getAttribute('contenteditable') === 'true';
+            sessionIdElement.setAttribute('contenteditable', !isEditable);
+            sessionIdElement.focus();
+        });
+
+        // Share Session ID
+        document.getElementById('shareSessionIdButton').addEventListener('click', function() {
+            const sessionId = document.getElementById('sessionId').innerText;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Session ID',
+                    text: `Join my session using this ID: ${sessionId}`,
+                }).then(() => {
+                    console.log('Session ID shared successfully');
+                }).catch(err => {
+                    console.error('Error sharing:', err);
+                });
+            } else {
+                alert('Web Share API not supported on this browser.');
+            }
+        });
     </script>
-
-
-
-<div id="sessionInfoContainer">
-        <i class="wifiIcon fas fa-wifi"></i>
-        <span id="sessionId"></span>
-        <button id="copySessionIdButton"><i class="fas fa-copy"></i></button>
-        <button id="editSessionIdButton"><i class="fas fa-edit"></i></button>
-	
-        <button id="shareSessionIdButton"><i class="fas fa-share-alt"></i></button>
-    </div>
-</div>
-
-
-
-
+</body>
+</html>
