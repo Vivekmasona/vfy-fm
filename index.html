@@ -870,9 +870,9 @@ border-radius: 15px;
 
 
 	<!-- Favorite List ke liye Alag Div -->
-<div id="fav-songs">
-    <h3>Favorites</h3>
-    <ul></ul>
+<div id="favorite-list">
+    <h2>Favorite Songs</h2>
+    <ul id="fav-songs"></ul>
 </div>
     
 
@@ -1101,66 +1101,65 @@ color:#FF5733;
     
 <script>
 
-// Save Favorite Song
-function saveFavorite(index, vid, title, thumbUrl) {
+// Function to Save Song in Local Storage
+function saveFavorite(index, title, thumbUrl) {
     let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    const song = { index, title, thumbUrl };
 
-    // Check if the song is already saved using vid
-    if (!favorites.some(song => song.vid === vid)) {
-        favorites.push({ index, vid, title, thumbUrl });
+    // Agar song pehle se exist nahi karta to save karo
+    if (!favorites.some(fav => fav.index === index)) {
+        favorites.push(song);
         localStorage.setItem('favorites', JSON.stringify(favorites));
         alert('Song saved to favorites!');
+        displayFavorites(); // Update favorite list display
     } else {
         alert('Song already in favorites!');
     }
-
-    // Update Favorite List
-    displayFavorites();
 }
 
-// Remove Favorite Song
-function removeFavorite(vid) {
-    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    favorites = favorites.filter(song => song.vid !== vid);
-    localStorage.setItem('favorites', JSON.stringify(favorites));
-    alert('Song removed from favorites!');
-
-    // Update Favorite List
-    displayFavorites();
-}
-
-// Display Favorites List
+// Function to Display Favorite Songs as Clickable List
 function displayFavorites() {
-    const favContainer = document.querySelector('#fav-songs ul');
+    const favContainer = document.getElementById('fav-songs');
     const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 
     favContainer.innerHTML = '';
     favorites.forEach(song => {
         const li = document.createElement('li');
         li.innerHTML = `
-            <b onclick="loadSongFromFavorites('${song.vid}')" class="list" style="position:relative;">
-                <img src="${song.thumbUrl}" alt="${song.title}" class="video-thumbnail">
-                <p>${song.title}</p>
-                <i class="fas fa-trash remove-icon" onclick="event.stopPropagation(); removeFavorite('${song.vid}')"></i>
+            <b onclick="loadSongIndex(${song.index})" class="list">
+                <div class="video">
+                    <img src="${song.thumbUrl}" alt="${song.title}" class="video-thumbnail">
+                    <section>
+                        <div>
+                            <p>${song.title}</p>
+                            <button onclick="event.stopPropagation(); removeFavorite(${song.index})">Remove</button>
+                        </div>
+                    </section>
+                </div>
             </b>
         `;
         favContainer.appendChild(li);
     });
 }
 
-// Load Song from Favorites
-function loadSongFromFavorites(vid) {
-    const songElement = document.querySelector(`.list[vid="${vid}"]`);
+// Function to Load Song by Index (Ye function aapke existing loadSong se link karega)
+function loadSongIndex(index) {
+    const songElement = document.querySelector(`[index="${index}"]`);
     if (songElement) {
         loadSong(songElement);
-    } else {
-        alert('Song not found!');
     }
 }
 
-// Page load hone par favorite list ko display karo
-document.addEventListener('DOMContentLoaded', displayFavorites);
+// Function to Remove Favorite Song
+function removeFavorite(index) {
+    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    favorites = favorites.filter(song => song.index !== index);
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    displayFavorites(); // Update favorite list display
+}
 
+// Page Load hone par Favorite List ko Display karo
+displayFavorites();
 	
 </script>
 
@@ -1379,107 +1378,27 @@ function getOutput(item, i) {
 
 
 	
-  // Trending List Generation (No Change Here)
-function generateTrendingList(songs) {
-    let output = '';
-    songs.forEach((song, i) => {
-        output +=
-            '<b onclick="loadSong(this)" index="' + i + '" class="list" vid="' + song.id + '" style="position:relative;">' +
-            '<div class="video">' +
-            // Save Button - Top Left Corner
-            '<i class="fas fa-bookmark save-icon" onclick="event.stopPropagation(); saveFavorite(' + i + ', \'' + song.id + '\', \'' + song.title + '\', \'' + song.thumbUrl + '\')"></i>' +
-            '<img src="' + song.thumbUrl + '" alt="' + song.title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + i + '" vid="' + song.id + '">' +
-            '<section>' +
-            '<img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">' +
-            '<div>' +
-            '<p>V F Y ' + song.title + '</p>' +
-            '<small class="video-info">' + song.channelTitle + '</small>' +
-            '<small class="video-info"> VFY </small>' +
-            '<small class="video-info"> Ai </small>' +
-            '<small class="video-info">Release Date: ' + new Date(song.videoDate).toDateString() + '</small>' +
-            '</div>' +
-            '</section>' +
-            '</div>' +
-            '</b>';
-    });
-    document.getElementById('trendingList').innerHTML = output;
-}
+  var output =
+    '<b onclick="loadSong(this)" index="' + i + '" class="list" vid="' + id + '" style="position:relative;">' +
+    '<div class="video">' +
+    '<i class="fas fa-bookmark save-icon" onclick="event.stopPropagation(); saveFavorite(' + i + ', \'' + title + '\', \'' + thumbUrl + '\')"></i>' +
+    '<img src="' + thumbUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + i + '" vid="' + id + '">' +
+    '<section>' +
+    '<img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">' +
+    '<div>' +
+    '<p>V F Y ' + title + '</p>' +
+    '<small class="video-info">' + channelTitle + '</small>' +
+    '<small class="video-info"> VFY </small>' +
+    '<small class="video-info"> Ai </small>' +
+    '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +
+    '</div>' +
+    '</section>' +
+    '</div>' +
+    '</b>';
 
-// Save Song to Favorites
-function saveFavorite(index, vid, title, thumbUrl) {
-    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+return output;
+	}
 
-    // Check if the song is already saved using vid
-    if (!favorites.some(song => song.vid === vid)) {
-        favorites.push({ index, vid, title, thumbUrl });
-        localStorage.setItem('favorites', JSON.stringify(favorites));
-        alert('Song saved to favorites!');
-    } else {
-        alert('Song already in favorites!');
-    }
-
-    // Update Favorite List
-    displayFavorites();
-}
-
-// Display Favorite Songs List
-function displayFavorites() {
-    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    let output = '';
-
-    favorites.forEach((song) => {
-        output +=
-            '<b onclick="loadSongFromFavorites(\'' + song.vid + '\')" class="list" vid="' + song.vid + '" style="position:relative;">' +
-            '<div class="video">' +
-            // Remove Button - Top Left Corner
-            '<i class="fas fa-trash delete-icon" onclick="event.stopPropagation(); removeFavorite(\'' + song.vid + '\')"></i>' +
-            '<img src="' + song.thumbUrl + '" alt="' + song.title + '" class="video-thumbnail">' +
-            '<section>' +
-            '<p>Favorite: ' + song.title + '</p>' +
-            '</section>' +
-            '</div>' +
-            '</b>';
-    });
-
-    document.getElementById('favoritesList').innerHTML = output;
-}
-
-// Load Song from Trending List
-function loadSong(element) {
-    const vid = element.getAttribute('vid');
-    console.log('Playing Trending Song:', vid);
-    alert('Playing Trending Song: ' + vid);
-    // Add your audio player logic here to play the song
-}
-
-// Load Song from Favorites
-function loadSongFromFavorites(vid) {
-    console.log('Trying to play Favorite Song:', vid);
-    const songElement = document.querySelector('.list[vid="' + vid + '"]');
-    console.log('Located Element:', songElement);
-
-    if (songElement) {
-        loadSong(songElement);
-    } else {
-        alert('Song not found!');
-    }
-}
-
-// Remove Song from Favorites
-function removeFavorite(vid) {
-    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    favorites = favorites.filter(song => song.vid !== vid);
-    localStorage.setItem('favorites', JSON.stringify(favorites));
-    alert('Song removed from favorites!');
-
-    // Update Favorite List
-    displayFavorites();
-}
-
-// Load Favorites on Page Load
-window.onload = function () {
-    displayFavorites();
-};
 
 
 
@@ -4813,6 +4732,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
 });
   
 </script>
+
 
 
 
