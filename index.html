@@ -1100,11 +1100,10 @@ color:#FF5733;
     </style>
     
 <script>
-
 // Function to Save Song in Local Storage
-function saveFavorite(index, title, thumbUrl) {
+function saveFavorite(index, title, thumbUrl, id) {
     let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    const song = { index, title, thumbUrl };
+    const song = { index, title, thumbUrl, id };
 
     // Agar song pehle se exist nahi karta to save karo
     if (!favorites.some(fav => fav.index === index)) {
@@ -1132,6 +1131,7 @@ function displayFavorites() {
                     <section>
                         <div>
                             <p>${song.title}</p>
+                            <small class="video-info">Video ID: ${song.id}</small>
                             <button onclick="event.stopPropagation(); removeFavorite(${song.index})">Remove</button>
                         </div>
                     </section>
@@ -1160,7 +1160,7 @@ function removeFavorite(index) {
 
 // Page Load hone par Favorite List ko Display karo
 displayFavorites();
-	
+
 </script>
 
 
@@ -1381,7 +1381,7 @@ function getOutput(item, i) {
   var output =
     '<b onclick="loadSong(this)" index="' + i + '" class="list" vid="' + id + '" style="position:relative;">' +
     '<div class="video">' +
-    '<i class="fas fa-bookmark save-icon" onclick="event.stopPropagation(); saveFavorite(' + i + ', \'' + title + '\', \'' + thumbUrl + '\')"></i>' +
+    '<i class="fas fa-bookmark save-icon" onclick="event.stopPropagation(); saveFavorite(' + i + ', \'' + title + '\', \'' + thumbUrl + '\', \'' + id + '\')"></i>' + // Added video ID as a parameter
     '<img src="' + thumbUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + i + '" vid="' + id + '">' +
     '<section>' +
     '<img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">' +
