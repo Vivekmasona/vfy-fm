@@ -1100,13 +1100,16 @@ color:#FF5733;
     </style>
     
 <script>
+
+
+
 // Function to Save Song in Local Storage
 function saveFavorite(index, title, thumbUrl, id) {
     let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
     const song = { index, title, thumbUrl, id };
 
     // Agar song pehle se exist nahi karta to save karo
-    if (!favorites.some(fav => fav.index === index)) {
+    if (!favorites.some(fav => fav.id === id)) { // Use video ID to check uniqueness
         favorites.push(song);
         localStorage.setItem('favorites', JSON.stringify(favorites));
         alert('Song saved to favorites!');
@@ -1125,7 +1128,7 @@ function displayFavorites() {
     favorites.forEach(song => {
         const li = document.createElement('li');
         li.innerHTML = `
-            <b onclick="loadSongIndex(${song.index})" class="list">
+            <b onclick="loadSongIndex(${song.index}, '${song.id}')" class="list">
                 <div class="video">
                     <img src="${song.thumbUrl}" alt="${song.title}" class="video-thumbnail">
                     <section>
@@ -1142,12 +1145,23 @@ function displayFavorites() {
     });
 }
 
-// Function to Load Song by Index (Ye function aapke existing loadSong se link karega)
-function loadSongIndex(index) {
-    const songElement = document.querySelector(`[index="${index}"]`);
+// Function to Load Song by Index and ID
+function loadSongIndex(index, id) {
+    // Find the song element using index and id
+    const songElement = document.querySelector(`[index="${index}"][vid="${id}"]`);
     if (songElement) {
-        loadSong(songElement);
+        loadSong(songElement); // Call the existing loadSong with the full element
+    } else {
+        alert('Song not found!');
     }
+}
+
+// Function to Load Song (Update this if needed)
+function loadSong(element) {
+    const index = element.getAttribute('index');
+    const id = element.getAttribute('vid');
+    console.log('Playing song with Index:', index, 'and Video ID:', id);
+    // Your existing logic to play the song goes here
 }
 
 // Function to Remove Favorite Song
@@ -1160,6 +1174,8 @@ function removeFavorite(index) {
 
 // Page Load hone par Favorite List ko Display karo
 displayFavorites();
+
+
 
 </script>
 
