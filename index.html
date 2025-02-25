@@ -797,58 +797,6 @@ border-radius: 15px;
 .save-icon:hover {
     color: #f39c12;
 }
-
-.remove-icon {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    font-size: 24px;
-    color: #fff;
-    background: rgba(255, 0, 0, 0.7);
-    border-radius: 50%;
-    padding: 5px;
-    cursor: pointer;
-    z-index: 10;
-    transition: color 0.3s;
-}
-
-.remove-icon:hover {
-    color: #e74c3c;
-}
-
-#fav-songs {
-    margin-top: 20px;
-    padding: 10px;
-    background: #f9f9f9;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-#fav-songs h3 {
-    margin-top: 0;
-}
-
-#fav-songs ul {
-    list-style: none;
-    padding: 0;
-}
-
-#fav-songs li {
-    margin-bottom: 10px;
-}
-
-#fav-songs li .video-thumbnail {
-    width: 100px;
-    height: auto;
-    border-radius: 5px;
-    margin-right: 10px;
-}
-
-#fav-songs li p {
-    display: inline-block;
-    vertical-align: top;
-    max-width: 70%;
-}
 		
 </style>
 
@@ -1153,65 +1101,65 @@ color:#FF5733;
     
 <script>
 
-// Save Favorite Song
+// Function to Save Song in Local Storage
 function saveFavorite(index, title, thumbUrl) {
     let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    
-    // Agar pehle se save nahi hai to save karo
-    if (!favorites.some(song => song.index === index)) {
-        favorites.push({ index, title, thumbUrl });
+    const song = { index, title, thumbUrl };
+
+    // Agar song pehle se exist nahi karta to save karo
+    if (!favorites.some(fav => fav.index === index)) {
+        favorites.push(song);
         localStorage.setItem('favorites', JSON.stringify(favorites));
         alert('Song saved to favorites!');
+        displayFavorites(); // Update favorite list display
     } else {
         alert('Song already in favorites!');
     }
-
-    // Update Favorite List
-    displayFavorites();
 }
 
-// Remove Favorite Song
-function removeFavorite(index) {
-    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    favorites = favorites.filter(song => song.index !== index);
-    localStorage.setItem('favorites', JSON.stringify(favorites));
-    alert('Song removed from favorites!');
-
-    // Update Favorite List
-    displayFavorites();
-}
-
-// Display Favorites List
+// Function to Display Favorite Songs as Clickable List
 function displayFavorites() {
-    const favContainer = document.querySelector('#fav-songs ul');
+    const favContainer = document.getElementById('fav-songs');
     const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 
     favContainer.innerHTML = '';
     favorites.forEach(song => {
         const li = document.createElement('li');
         li.innerHTML = `
-            <b onclick="loadSongIndex(${song.index})" class="list" style="position:relative;">
-                <img src="${song.thumbUrl}" alt="${song.title}" class="video-thumbnail">
-                <p>${song.title}</p>
-                <i class="fas fa-trash remove-icon" onclick="event.stopPropagation(); removeFavorite(${song.index})"></i>
+            <b onclick="loadSongIndex(${song.index})" class="list">
+                <div class="video">
+                    <img src="${song.thumbUrl}" alt="${song.title}" class="video-thumbnail">
+                    <section>
+                        <div>
+                            <p>${song.title}</p>
+                            <button onclick="event.stopPropagation(); removeFavorite(${song.index})">Remove</button>
+                        </div>
+                    </section>
+                </div>
             </b>
         `;
         favContainer.appendChild(li);
     });
 }
 
-// Song ko index ke through play karne ka function
+// Function to Load Song by Index (Ye function aapke existing loadSong se link karega)
 function loadSongIndex(index) {
-    const songElement = document.querySelector(`.list[index="${index}"]`);
+    const songElement = document.querySelector(`[index="${index}"]`);
     if (songElement) {
         loadSong(songElement);
     }
 }
 
-// Page load hone par favorite list ko display karo
-document.addEventListener('DOMContentLoaded', displayFavorites);
+// Function to Remove Favorite Song
+function removeFavorite(index) {
+    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    favorites = favorites.filter(song => song.index !== index);
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    displayFavorites(); // Update favorite list display
+}
 
-
+// Page Load hone par Favorite List ko Display karo
+displayFavorites();
 	
 </script>
 
