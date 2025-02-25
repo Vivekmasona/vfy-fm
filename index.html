@@ -298,25 +298,7 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
 
 
 
-<div id="audioPlayerContainer">
-    <svg id="playPauseButton" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24">
-        <path id="playIcon" d="M8 5v14l11-7z"></path>
-    </svg>
-    <svg id="topButton" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24">
-        <path d="M6 6h12v12H6z"></path></b>
-    </svg>
-    
-    <div id="sessionInfoContainer">
-        <i class="wifiIcon fas fa-wifi"></i>
-        <span id="sessionId"></span>
-        <button id="copySessionIdButton"><i class="fas fa-copy"></i></button>
-        <button id="editSessionIdButton"><i class="fas fa-edit"></i></button>
-	
-        <button id="shareSessionIdButton"><i class="fas fa-share-alt"></i></button>
-    </div>
-</div>
 
-<audio id="audioPlayer"></audio>
 
 
 
@@ -4749,16 +4731,17 @@ document.getElementById('search-btn').addEventListener('click', function() {
 </script>
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Session ID Container</title>
+    <title>Audio Player with Session ID</title>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Reset default margin and padding */
+        /* Basic Reset */
         * {
             margin: 0;
             padding: 0;
@@ -4771,112 +4754,155 @@ document.getElementById('search-btn').addEventListener('click', function() {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-        }
-
-        /* Session Info Container */
-        #sessionInfoContainer {
-            background: linear-gradient(145deg, #ff416c, #ff4b2b);
-            border-radius: 10px;
-            padding: 15px 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-            gap: 15px;
+            height: 100vh;
             color: #fff;
         }
 
-        /* WiFi Icon */
-        .wifiIcon {
-            font-size: 24px;
+        /* Audio Player Container */
+        #audioPlayerContainer {
+            background: #2c3e50;
+            border-radius: 10px;
+            padding: 20px;
+            width: 300px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
         }
 
-        /* Session ID */
-        #sessionId {
-            background: rgba(255, 255, 255, 0.1);
+        /* SVG Buttons */
+        svg {
+            cursor: pointer;
+            fill: #fff;
+            width: 40px;
+            height: 40px;
+            transition: transform 0.3s;
+        }
+
+        svg:hover {
+            transform: scale(1.1);
+        }
+
+        #playPauseButton {
+            margin-bottom: 10px;
+        }
+
+        /* Session Info */
+        #sessionInfoContainer {
+            margin-top: 15px;
+        }
+
+        #sessionInfoContainer span {
+            display: inline-block;
+            margin: 0 5px;
             padding: 5px 10px;
+            background: #34495e;
             border-radius: 5px;
-            cursor: text;
-            user-select: text;
+            user-select: none;
         }
 
         /* Buttons */
-        button {
-            background: linear-gradient(145deg, #ff416c, #ff4b2b);
+        #sessionInfoContainer button {
+            background: transparent;
             border: none;
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
             color: #fff;
-            font-size: 18px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             cursor: pointer;
-            transition: transform 0.3s;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            margin-left: 5px;
         }
 
-        button:hover {
-            transform: scale(1.2);
-        }
-
-        button:active {
-            transform: scale(0.9);
-        }
-
-        /* Editable Session ID */
-        #sessionId[contenteditable="true"] {
-            outline: 2px dashed #fff;
-            background: rgba(255, 255, 255, 0.2);
+        #sessionInfoContainer button:hover {
+            color: #3498db;
         }
     </style>
 </head>
 <body>
 
-    <div id="sessionInfoContainer">
-        <i class="wifiIcon fas fa-wifi"></i>
-        <span id="sessionId">ABC12345</span>
-        <button id="copySessionIdButton" title="Copy Session ID"><i class="fas fa-copy"></i></button>
-        <button id="editSessionIdButton" title="Edit Session ID"><i class="fas fa-edit"></i></button>
-        <button id="shareSessionIdButton" title="Share Session ID"><i class="fas fa-share-alt"></i></button>
+    <!-- Audio Player Container -->
+    <div id="audioPlayerContainer">
+        <!-- Play/Pause Button -->
+        <svg id="playPauseButton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path id="playIcon" d="M8 5v14l11-7z"></path>
+        </svg>
+
+        <!-- Top Button (Optional Functionality) -->
+        <svg id="topButton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M6 6h12v12H6z"></path>
+        </svg>
+
+        <!-- Session Info -->
+        <div id="sessionInfoContainer">
+            <i class="wifiIcon fas fa-wifi"></i>
+            <span id="sessionId"></span>
+            <button id="copySessionIdButton"><i class="fas fa-copy"></i></button>
+            <button id="editSessionIdButton"><i class="fas fa-edit"></i></button>
+            <button id="shareSessionIdButton"><i class="fas fa-share-alt"></i></button>
+        </div>
     </div>
 
+    <!-- Audio Player Element -->
+    <audio id="audioPlayer" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+
     <script>
-        // Copy Session ID
-        document.getElementById('copySessionIdButton').addEventListener('click', function() {
-            const sessionId = document.getElementById('sessionId').innerText;
-            navigator.clipboard.writeText(sessionId).then(() => {
-                console.log('Session ID copied to clipboard');
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-            });
+        // Audio Player and Button Elements
+        const audioPlayer = document.getElementById('audioPlayer');
+        const playPauseButton = document.getElementById('playPauseButton');
+        const playIcon = document.getElementById('playIcon');
+        const sessionId = document.getElementById('sessionId');
+        const copySessionIdButton = document.getElementById('copySessionIdButton');
+        const editSessionIdButton = document.getElementById('editSessionIdButton');
+        const shareSessionIdButton = document.getElementById('shareSessionIdButton');
+
+        // Generate Random Session ID
+        function generateSessionId() {
+            return Math.random().toString(36).substring(2, 10).toUpperCase();
+        }
+
+        // Set Initial Session ID
+        sessionId.textContent = generateSessionId();
+
+        // Play/Pause Toggle
+        playPauseButton.addEventListener('click', () => {
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+                playIcon.setAttribute('d', 'M6 4h4v16H6zm8 0h4v16h-4z'); // Pause Icon
+            } else {
+                audioPlayer.pause();
+                playIcon.setAttribute('d', 'M8 5v14l11-7z'); // Play Icon
+            }
+        });
+
+        // Copy Session ID to Clipboard
+        copySessionIdButton.addEventListener('click', () => {
+            navigator.clipboard.writeText(sessionId.textContent)
+                .then(() => {
+                    copySessionIdButton.querySelector('i').classList.replace('fa-copy', 'fa-check');
+                    setTimeout(() => {
+                        copySessionIdButton.querySelector('i').classList.replace('fa-check', 'fa-copy');
+                    }, 2000);
+                });
         });
 
         // Edit Session ID
-        document.getElementById('editSessionIdButton').addEventListener('click', function() {
-            const sessionIdElement = document.getElementById('sessionId');
-            const isEditable = sessionIdElement.getAttribute('contenteditable') === 'true';
-            sessionIdElement.setAttribute('contenteditable', !isEditable);
-            sessionIdElement.focus();
+        editSessionIdButton.addEventListener('click', () => {
+            const newId = prompt("Edit Session ID:", sessionId.textContent);
+            if (newId) {
+                sessionId.textContent = newId;
+            }
         });
 
         // Share Session ID
-        document.getElementById('shareSessionIdButton').addEventListener('click', function() {
-            const sessionId = document.getElementById('sessionId').innerText;
+        shareSessionIdButton.addEventListener('click', () => {
+            const shareData = {
+                title: 'Session ID',
+                text: `Join my session using this ID: ${sessionId.textContent}`,
+                url: window.location.href
+            };
+
             if (navigator.share) {
-                navigator.share({
-                    title: 'Session ID',
-                    text: `Join my session using this ID: ${sessionId}`,
-                }).then(() => {
-                    console.log('Session ID shared successfully');
-                }).catch(err => {
-                    console.error('Error sharing:', err);
-                });
+                navigator.share(shareData).catch(console.error);
             } else {
-                alert('Web Share API not supported on this browser.');
+                alert('Sharing is not supported on this browser.');
             }
         });
     </script>
+
 </body>
 </html>
