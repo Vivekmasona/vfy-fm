@@ -1101,7 +1101,8 @@ color:#FF5733;
     
 <script>
 
- // Function to Save Song in Local Storage with Video ID
+
+// Function to Save Song in Local Storage with Video ID
 function saveFavorite(index, title, thumbUrl, vid) {
     let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
     const song = { index, title, thumbUrl, vid };
@@ -1132,7 +1133,7 @@ function displayFavorites() {
                     <section>
                         <div>
                             <p>${song.title}</p>
-                            <button onclick="event.stopPropagation(); removeFavorite(${song.index})">Remove</button>
+                            <button onclick="event.stopPropagation(); removeFavorite('${song.vid}')">Remove</button>
                         </div>
                     </section>
                 </div>
@@ -1144,7 +1145,7 @@ function displayFavorites() {
 
 // Function to Load Song by Video ID
 function loadSongByVid(vid) {
-    const songElement = document.querySelector(`[data-vid="${vid}"]`);
+    const songElement = document.querySelector(`[vid="${vid}"]`);
     if (songElement) {
         loadSong(songElement);
     } else {
@@ -1153,16 +1154,16 @@ function loadSongByVid(vid) {
 }
 
 // Function to Remove Favorite Song
-function removeFavorite(index) {
+function removeFavorite(vid) {
     let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    favorites = favorites.filter(song => song.index !== index);
+    favorites = favorites.filter(song => song.vid !== vid);
     localStorage.setItem('favorites', JSON.stringify(favorites));
     displayFavorites(); // Update favorite list display
 }
 
 // Page Load hone par Favorite List ko Display karo
 window.addEventListener('load', displayFavorites);
-
+	
 	
 </script>
 
@@ -1388,10 +1389,10 @@ function getOutput(item, i) {
 
 	
   var output =
-    '<b onclick="loadSong(this)" index="' + i + '" class="list" data-vid="' + id + '" style="position:relative;">' +
+    '<b onclick="loadSong(this)" index="' + i + '" class="list" style="position:relative;">' +
     '<div class="video">' +
     '<i class="fas fa-bookmark save-icon" onclick="event.stopPropagation(); saveFavorite(' + i + ', \'' + title + '\', \'' + thumbUrl + '\', \'' + id + '\')"></i>' +
-    '<img src="' + thumbUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + i + '" data-vid="' + id + '">' +
+    '<img src="' + thumbUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + i + '">' +
     '<section>' +
     '<img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">' +
     '<div>' +
