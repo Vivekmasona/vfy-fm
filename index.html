@@ -1101,12 +1101,9 @@ color:#FF5733;
     
 <script>
 
-// Function to Save Song in Local Storage with Extracted Video ID
-function saveFavorite(index, title, thumbUrl) {
+ // Function to Save Song in Local Storage with Video ID
+function saveFavorite(index, title, thumbUrl, vid) {
     let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-
-    // Extract Video ID from Thumbnail URL (Last 11 characters)
-    const vid = thumbUrl.slice(-15, -4);  // 11 characters before '.jpg' or '.webp'
     const song = { index, title, thumbUrl, vid };
 
     // Agar song pehle se exist nahi karta to save karo
@@ -1147,7 +1144,7 @@ function displayFavorites() {
 
 // Function to Load Song by Video ID
 function loadSongByVid(vid) {
-    const songElement = document.querySelector(`[vid="${vid}"]`);
+    const songElement = document.querySelector(`[data-vid="${vid}"]`);
     if (songElement) {
         loadSong(songElement);
     } else {
@@ -1170,6 +1167,12 @@ window.addEventListener('load', displayFavorites);
 </script>
 
 
+
+
+
+
+
+	
 <!-- Your webpage content goes here -->
 
 <footer class="fixed-footer" >
@@ -1385,10 +1388,10 @@ function getOutput(item, i) {
 
 	
   var output =
-    '<b onclick="loadSong(this)" index="' + i + '" class="list" vid="' + id + '" style="position:relative;">' +
+    '<b onclick="loadSong(this)" index="' + i + '" class="list" data-vid="' + id + '" style="position:relative;">' +
     '<div class="video">' +
-    '<i class="fas fa-bookmark save-icon" onclick="event.stopPropagation(); saveFavorite(' + i + ', \'' + title + '\', \'' + thumbUrl + '\')"></i>' +
-    '<img src="' + thumbUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + i + '" vid="' + id + '">' +
+    '<i class="fas fa-bookmark save-icon" onclick="event.stopPropagation(); saveFavorite(' + i + ', \'' + title + '\', \'' + thumbUrl + '\', \'' + id + '\')"></i>' +
+    '<img src="' + thumbUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + i + '" data-vid="' + id + '">' +
     '<section>' +
     '<img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">' +
     '<div>' +
