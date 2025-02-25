@@ -4749,24 +4749,43 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    
+        
+
+
+
+
+
+
+
+
+	
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fixed Stylish Control Button</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(45deg, #1e3c72, #2a5298);
-            overflow: hidden;
+        /* Reset default margin and padding */
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
-        /* Control Button */
+        /* Body Background */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
+        }
+
+        /* Fixed Control Button */
         .control-button {
             position: fixed;
-            bottom: 20px;
+            top: 40%;
             right: 20px;
             width: 60px;
             height: 60px;
@@ -4780,23 +4799,30 @@ document.getElementById('search-btn').addEventListener('click', function() {
             align-items: center;
             cursor: pointer;
             transition: transform 0.3s;
-            z-index: 100;
+            z-index: 9999;
         }
 
         .control-button:hover {
             transform: scale(1.1);
         }
 
-        /* Hidden Icons */
+        /* Icon Menu */
         .icon-menu {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            top: 40%;
+            right: 90px;
             display: flex;
             flex-direction: column;
-            align-items: center;
             gap: 15px;
-            z-index: 99;
+            z-index: 9998;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        .icon-menu.active {
+            opacity: 1;
+            transform: translateX(0);
         }
 
         .icon-menu i {
@@ -4810,14 +4836,6 @@ document.getElementById('search-btn').addEventListener('click', function() {
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: transform 0.3s, opacity 0.3s;
-            opacity: 0;
-            transform: translateY(30px);
-        }
-
-        .icon-menu.active i {
-            opacity: 1;
-            transform: translateY(0);
         }
 
         /* Pop-ups */
@@ -4834,7 +4852,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
             text-align: center;
             width: 80%;
             max-width: 400px;
-            z-index: 999;
+            z-index: 9999;
         }
 
         .popup h2 {
@@ -4871,8 +4889,8 @@ document.getElementById('search-btn').addEventListener('click', function() {
             }
         }
     </style>
-
-
+</head>
+<body>
 
     <!-- Control Button -->
     <div class="control-button" onclick="toggleMenu()">
@@ -4892,10 +4910,11 @@ document.getElementById('search-btn').addEventListener('click', function() {
         <h2>Music</h2>
         <p>Enjoy your favorite tunes!</p>
 
-	    <div id="favorite-list">
+<div id="favorite-list">
     
     <ul id="fav-songs"></ul>
 </div>
+	    
         <button onclick="closePopup()">Close</button>
     </div>
     <div class="popup" id="popup2">
@@ -4935,10 +4954,5 @@ document.getElementById('search-btn').addEventListener('click', function() {
         }
     </script>
 
-
-</!doctype>
-
-
-
-
-
+</body>
+</html>
