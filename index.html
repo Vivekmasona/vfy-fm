@@ -870,9 +870,9 @@ border-radius: 15px;
 
 
 	<!-- Favorite List ke liye Alag Div -->
-<div id="favorite-list">
-    <h2>Favorite Songs</h2>
-    <ul id="fav-songs"></ul>
+<div id="fav-songs">
+    <h3>Favorites</h3>
+    <ul></ul>
 </div>
     
 
@@ -1101,65 +1101,64 @@ color:#FF5733;
     
 <script>
 
-// Function to Save Song in Local Storage
+// Save Favorite Song
 function saveFavorite(index, title, thumbUrl) {
     let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    const song = { index, title, thumbUrl };
-
-    // Agar song pehle se exist nahi karta to save karo
-    if (!favorites.some(fav => fav.index === index)) {
-        favorites.push(song);
+    
+    // Agar pehle se save nahi hai to save karo
+    if (!favorites.some(song => song.index === index)) {
+        favorites.push({ index, title, thumbUrl });
         localStorage.setItem('favorites', JSON.stringify(favorites));
         alert('Song saved to favorites!');
-        displayFavorites(); // Update favorite list display
     } else {
         alert('Song already in favorites!');
     }
+
+    // Update Favorite List
+    displayFavorites();
 }
 
-// Function to Display Favorite Songs as Clickable List
+// Remove Favorite Song
+function removeFavorite(index) {
+    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    favorites = favorites.filter(song => song.index !== index);
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    alert('Song removed from favorites!');
+
+    // Update Favorite List
+    displayFavorites();
+}
+
+// Display Favorites List
 function displayFavorites() {
-    const favContainer = document.getElementById('fav-songs');
+    const favContainer = document.querySelector('#fav-songs ul');
     const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 
     favContainer.innerHTML = '';
     favorites.forEach(song => {
         const li = document.createElement('li');
         li.innerHTML = `
-            <b onclick="loadSongIndex(${song.index})" class="list">
-                <div class="video">
-                    <img src="${song.thumbUrl}" alt="${song.title}" class="video-thumbnail">
-                    <section>
-                        <div>
-                            <p>${song.title}</p>
-                            <button onclick="event.stopPropagation(); removeFavorite(${song.index})">Remove</button>
-                        </div>
-                    </section>
-                </div>
+            <b onclick="loadSongIndex(${song.index})" class="list" style="position:relative;">
+                <img src="${song.thumbUrl}" alt="${song.title}" class="video-thumbnail">
+                <p>${song.title}</p>
+                <i class="fas fa-trash remove-icon" onclick="event.stopPropagation(); removeFavorite(${song.index})"></i>
             </b>
         `;
         favContainer.appendChild(li);
     });
 }
 
-// Function to Load Song by Index (Ye function aapke existing loadSong se link karega)
+// Song ko index ke through play karne ka function
 function loadSongIndex(index) {
-    const songElement = document.querySelector(`[index="${index}"]`);
+    const songElement = document.querySelector(`.list[index="${index}"]`);
     if (songElement) {
         loadSong(songElement);
     }
 }
 
-// Function to Remove Favorite Song
-function removeFavorite(index) {
-    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    favorites = favorites.filter(song => song.index !== index);
-    localStorage.setItem('favorites', JSON.stringify(favorites));
-    displayFavorites(); // Update favorite list display
-}
+// Page load hone par favorite list ko display karo
+document.addEventListener('DOMContentLoaded', displayFavorites);
 
-// Page Load hone par Favorite List ko Display karo
-displayFavorites();
 	
 </script>
 
@@ -1381,7 +1380,10 @@ function getOutput(item, i) {
   var output =
     '<b onclick="loadSong(this)" index="' + i + '" class="list" vid="' + id + '" style="position:relative;">' +
     '<div class="video">' +
+    // Save Button - Left Corner
     '<i class="fas fa-bookmark save-icon" onclick="event.stopPropagation(); saveFavorite(' + i + ', \'' + title + '\', \'' + thumbUrl + '\')"></i>' +
+    // Remove Button - Right Corner
+    '<i class="fas fa-trash remove-icon" onclick="event.stopPropagation(); removeFavorite(' + i + ')"></i>' +
     '<img src="' + thumbUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + i + '" vid="' + id + '">' +
     '<section>' +
     '<img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">' +
