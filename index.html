@@ -824,15 +824,16 @@ border-radius: 15px;
 
 .delete-btn {
     position: absolute;
-    bottom: 5px;
+    bottom: 85%;
     left: 5px;
     background: rgba(0, 0, 0, 0.5);
-    color: red;
+    color: #E74C3C;
     border: none;
-    border-radius: 50%;
+    border-radius: 10%;
     padding: 5px;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 28px;
+    z-index: 999999:
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1182,9 +1183,9 @@ function displayFavorites() {
                             <small class="video-info">Video ID: ${song.id}</small>
                         </div>
                     </section>
-                    <button class="delete-btn" onclick="event.stopPropagation(); removeFavorite('${song.id}')">
+                    <b class="delete-btn" onclick="event.stopPropagation(); removeFavorite('${song.id}')">
                         <i class="fas fa-trash"></i>
-                    </button>
+                    </b>
                 </div>
             </b>
         `;
