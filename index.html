@@ -1108,8 +1108,8 @@ function saveFavorite(index, title, thumbUrl, id) {
     let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
     const song = { index, title, thumbUrl, id };
 
-    // Agar song pehle se exist nahi karta to save karo
-    if (!favorites.some(fav => fav.id === id)) { // Use video ID to check uniqueness
+    // Check if song with this video ID is already saved
+    if (!favorites.some(fav => fav.id === id)) {
         favorites.push(song);
         localStorage.setItem('favorites', JSON.stringify(favorites));
         alert('Song saved to favorites!');
@@ -1128,14 +1128,14 @@ function displayFavorites() {
     favorites.forEach(song => {
         const li = document.createElement('li');
         li.innerHTML = `
-            <b onclick="loadSongIndex(${song.index}, '${song.id}')" class="list">
+            <b onclick="loadFavoriteSong('${song.id}')" class="list" vid="${song.id}">
                 <div class="video">
                     <img src="${song.thumbUrl}" alt="${song.title}" class="video-thumbnail">
                     <section>
                         <div>
                             <p>${song.title}</p>
                             <small class="video-info">Video ID: ${song.id}</small>
-                            <button onclick="event.stopPropagation(); removeFavorite(${song.index})">Remove</button>
+                            <button onclick="event.stopPropagation(); removeFavorite('${song.id}')">Remove</button>
                         </div>
                     </section>
                 </div>
@@ -1145,10 +1145,10 @@ function displayFavorites() {
     });
 }
 
-// Function to Load Song by Index and ID
-function loadSongIndex(index, id) {
-    // Find the song element using index and id
-    const songElement = document.querySelector(`[index="${index}"][vid="${id}"]`);
+// Function to Load Song by Video ID
+function loadFavoriteSong(id) {
+    // Find the song element using the video ID
+    const songElement = document.querySelector(`[vid="${id}"]`);
     if (songElement) {
         loadSong(songElement); // Call the existing loadSong with the full element
     } else {
@@ -1158,16 +1158,15 @@ function loadSongIndex(index, id) {
 
 // Function to Load Song (Update this if needed)
 function loadSong(element) {
-    const index = element.getAttribute('index');
     const id = element.getAttribute('vid');
-    console.log('Playing song with Index:', index, 'and Video ID:', id);
+    console.log('Playing song with Video ID:', id);
     // Your existing logic to play the song goes here
 }
 
-// Function to Remove Favorite Song
-function removeFavorite(index) {
+// Function to Remove Favorite Song by Video ID
+function removeFavorite(id) {
     let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    favorites = favorites.filter(song => song.index !== index);
+    favorites = favorites.filter(song => song.id !== id);
     localStorage.setItem('favorites', JSON.stringify(favorites));
     displayFavorites(); // Update favorite list display
 }
