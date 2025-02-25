@@ -870,7 +870,10 @@ border-radius: 15px;
 
 
 	<!-- Favorite List ke liye Alag Div -->
-
+<div id="favorite-list">
+    <h2>Favorite Songs</h2>
+    <ul id="fav-songs"></ul>
+</div>
     
 
 <div id="manualContent">
@@ -4747,18 +4750,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-
-
-    
-    <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fixed Stylish Control Button</title>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
+<style>
         /* Reset default margin and padding */
         * {
             margin: 0;
@@ -4847,19 +4839,19 @@ document.getElementById('search-btn').addEventListener('click', function() {
         <i class="fas fa-cogs"></i>
     </div>
 
-    <!-- Hidden Icons -->
+    <!-- Icon Menu -->
     <div class="icon-menu" id="iconMenu">
-        <i class="fas fa-music" data-target="button1"></i>
-        <i class="fas fa-video" data-target="button2"></i>
-        <i class="fas fa-image" data-target="button3"></i>
-        <i class="fas fa-cog" data-target="button4"></i>
+        <i class="fas fa-music" data-original="fa-music" data-target="button1"></i>
+        <i class="fas fa-video" data-original="fa-video" data-target="button2"></i>
+        <i class="fas fa-image" data-original="fa-image" data-target="button3"></i>
+        <i class="fas fa-cog" data-original="fa-cog" data-target="button4"></i>
     </div>
 
-    <!-- Hidden Trigger Buttons (These will be clicked when icons are clicked) -->
-    <button class="hidden-trigger" id="button1" onclick="alert('Music Button Clicked!')">Hidden Button 1</button>
-    <button class="hidden-trigger" id="button2" onclick="alert('Video Button Clicked!')">Hidden Button 2</button>
-    <button class="hidden-trigger" id="button3" onclick="alert('Gallery Button Clicked!')">Hidden Button 3</button>
-    <button class="hidden-trigger" id="button4" onclick="alert('Settings Button Clicked!')">Hidden Button 4</button>
+    <!-- Hidden Buttons (You can place them anywhere on your page) -->
+    <button class="hidden-trigger" id="sessionId" onclick="console.log('Button 1 Clicked')">Hidden Button 1</button>
+    <button class="hidden-trigger" id="copySessionIdButton" onclick="console.log('Button 2 Clicked')">Hidden Button 2</button>
+    <button class="hidden-trigger" id="button3" onclick="console.log('Button 3 Clicked')">Hidden Button 3</button>
+    <button class="hidden-trigger" id="button4" onclick="console.log('Button 4 Clicked')">Hidden Button 4</button>
 
     <script>
         // Toggle the icon menu
@@ -4870,23 +4862,39 @@ document.getElementById('search-btn').addEventListener('click', function() {
         // Attach event listeners to each icon
         document.querySelectorAll('.icon-menu i').forEach(icon => {
             icon.addEventListener('click', function() {
+                const originalClass = this.getAttribute('data-original');
                 const targetId = this.getAttribute('data-target');
+                
+                // Change the icon to a checkmark
+                this.classList.remove(originalClass);
+                this.classList.add('fa-check');
+
+                // Trigger the hidden button click
                 if (targetId) {
                     document.getElementById(targetId).click();
                 }
+
+                // Revert back to original icon after 2 seconds
+                setTimeout(() => {
+                    this.classList.remove('fa-check');
+                    this.classList.add(originalClass);
+                }, 2000);
             });
         });
     </script>
 
-</body>
-</html>    
 
 
-
-
-
-
-
-
+<div id="sessionInfoContainer">
+        <i class="wifiIcon fas fa-wifi"></i>
+        <span id="sessionId"></span>
+        <button id="copySessionIdButton"><i class="fas fa-copy"></i></button>
+        <button id="editSessionIdButton"><i class="fas fa-edit"></i></button>
 	
-                        /
+        <button id="shareSessionIdButton"><i class="fas fa-share-alt"></i></button>
+    </div>
+</div>
+
+
+
+
