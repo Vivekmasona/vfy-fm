@@ -1374,14 +1374,13 @@ function getOutput(item, i) {
     '<small class="video-info"> VFY </small>' +
     '<small class="video-info"> Ai </small>' +
     '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +
-    '<button onclick="saveFavorite(' + i + ', \'' + title + '\', \'' + thumbUrl + '\')">Save</button>' +
+    '<button onclick="event.stopPropagation(); saveFavorite(' + i + ', \'' + title + '\', \'' + thumbUrl + '\')">Save</button>' +
     '</div>' +
     '</section>' +
     '</div>' +
     '</b>';
 
 return output;
-}
 
 
 
