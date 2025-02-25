@@ -814,6 +814,34 @@ border-radius: 15px;
 .save-icon:hover {
     color: #ffff00;
 }
+
+.video-thumbnail {
+    width: 100%;
+    height: auto;
+    display: block;
+    position: relative;
+}
+
+.delete-btn {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    background: rgba(0, 0, 0, 0.5);
+    color: red;
+    border: none;
+    border-radius: 50%;
+    padding: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-btn:hover {
+    background: rgba(0, 0, 0, 0.7);
+}
+
 		
 </style>
 
@@ -1145,16 +1173,18 @@ function displayFavorites() {
     favorites.forEach(song => {
         const li = document.createElement('li');
         li.innerHTML = `
-            <b onclick="loadFavoriteSong('${song.id}')" class="list" vid="${song.id}">
+            <b onclick="loadFavoriteSong('${song.id}')" class="list" vid="${song.id}" style="position: relative;">
                 <div class="video">
                     <img src="${song.thumbUrl}" alt="${song.title}" class="video-thumbnail">
                     <section>
                         <div>
                             <p>${song.title}</p>
                             <small class="video-info">Video ID: ${song.id}</small>
-                            <button onclick="event.stopPropagation(); removeFavorite('${song.id}')">Remove</button>
                         </div>
                     </section>
+                    <button class="delete-btn" onclick="event.stopPropagation(); removeFavorite('${song.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </div>
             </b>
         `;
