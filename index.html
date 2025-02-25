@@ -1098,8 +1098,8 @@ color:#FF5733;
 
 
     </style>
-	<script>
-   
+    
+<script>
 
 // Function to Save Song in Local Storage with Video ID
 function saveFavorite(index, title, thumbUrl, vid) {
@@ -1162,7 +1162,6 @@ function removeFavorite(index) {
 
 // Page Load hone par Favorite List ko Display karo
 window.addEventListener('load', displayFavorites);
-
 	
 </script>
 
@@ -1381,10 +1380,10 @@ function getOutput(item, i) {
 
 
 	
-var output =
+  var output =
     '<b onclick="loadSong(this)" index="' + i + '" class="list" vid="' + id + '" style="position:relative;">' +
     '<div class="video">' +
-    '<i class="fas fa-bookmark save-icon" onclick="event.stopPropagation(); saveFavorite(' + i + ', \'' + title + '\', \'' + thumbUrl + '\', \'' + id + '\')"></i>' +
+    '<i class="fas fa-bookmark save-icon" onclick="event.stopPropagation(); saveFavorite(' + i + ', \'' + title + '\', \'' + thumbUrl + '\')"></i>' +
     '<img src="' + thumbUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + i + '" vid="' + id + '">' +
     '<section>' +
     '<img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">' +
@@ -1400,6 +1399,7 @@ var output =
     '</b>';
 
 return output;
+	}
 
 
 
