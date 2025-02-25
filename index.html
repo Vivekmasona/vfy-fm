@@ -1379,30 +1379,107 @@ function getOutput(item, i) {
 
 
 	
-  var output =
-    '<b onclick="loadSong(this)" index="' + i + '" class="list" vid="' + id + '" style="position:relative;">' +
-    '<div class="video">' +
-    // Save Button - Left Corner
-    '<i class="fas fa-bookmark save-icon" onclick="event.stopPropagation(); saveFavorite(' + i + ', \'' + id + '\', \'' + title + '\', \'' + thumbUrl + '\')"></i>' +
-    // Remove Button - Right Corner
-    '<i class="fas fa-trash remove-icon" onclick="event.stopPropagation(); removeFavorite(\'' + id + '\')"></i>' +
-    '<img src="' + thumbUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + i + '" vid="' + id + '">' +
-    '<section>' +
-    '<img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">' +
-    '<div>' +
-    '<p>V F Y ' + title + '</p>' +
-    '<small class="video-info">' + channelTitle + '</small>' +
-    '<small class="video-info"> VFY </small>' +
-    '<small class="video-info"> Ai </small>' +
-    '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +
-    '</div>' +
-    '</section>' +
-    '</div>' +
-    '</b>';
+  // Trending List Generation (No Change Here)
+function generateTrendingList(songs) {
+    let output = '';
+    songs.forEach((song, i) => {
+        output +=
+            '<b onclick="loadSong(this)" index="' + i + '" class="list" vid="' + song.id + '" style="position:relative;">' +
+            '<div class="video">' +
+            // Save Button - Top Left Corner
+            '<i class="fas fa-bookmark save-icon" onclick="event.stopPropagation(); saveFavorite(' + i + ', \'' + song.id + '\', \'' + song.title + '\', \'' + song.thumbUrl + '\')"></i>' +
+            '<img src="' + song.thumbUrl + '" alt="' + song.title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + i + '" vid="' + song.id + '">' +
+            '<section>' +
+            '<img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">' +
+            '<div>' +
+            '<p>V F Y ' + song.title + '</p>' +
+            '<small class="video-info">' + song.channelTitle + '</small>' +
+            '<small class="video-info"> VFY </small>' +
+            '<small class="video-info"> Ai </small>' +
+            '<small class="video-info">Release Date: ' + new Date(song.videoDate).toDateString() + '</small>' +
+            '</div>' +
+            '</section>' +
+            '</div>' +
+            '</b>';
+    });
+    document.getElementById('trendingList').innerHTML = output;
+}
 
-return output;
-	}
+// Save Song to Favorites
+function saveFavorite(index, vid, title, thumbUrl) {
+    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 
+    // Check if the song is already saved using vid
+    if (!favorites.some(song => song.vid === vid)) {
+        favorites.push({ index, vid, title, thumbUrl });
+        localStorage.setItem('favorites', JSON.stringify(favorites));
+        alert('Song saved to favorites!');
+    } else {
+        alert('Song already in favorites!');
+    }
+
+    // Update Favorite List
+    displayFavorites();
+}
+
+// Display Favorite Songs List
+function displayFavorites() {
+    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    let output = '';
+
+    favorites.forEach((song) => {
+        output +=
+            '<b onclick="loadSongFromFavorites(\'' + song.vid + '\')" class="list" vid="' + song.vid + '" style="position:relative;">' +
+            '<div class="video">' +
+            // Remove Button - Top Left Corner
+            '<i class="fas fa-trash delete-icon" onclick="event.stopPropagation(); removeFavorite(\'' + song.vid + '\')"></i>' +
+            '<img src="' + song.thumbUrl + '" alt="' + song.title + '" class="video-thumbnail">' +
+            '<section>' +
+            '<p>Favorite: ' + song.title + '</p>' +
+            '</section>' +
+            '</div>' +
+            '</b>';
+    });
+
+    document.getElementById('favoritesList').innerHTML = output;
+}
+
+// Load Song from Trending List
+function loadSong(element) {
+    const vid = element.getAttribute('vid');
+    console.log('Playing Trending Song:', vid);
+    alert('Playing Trending Song: ' + vid);
+    // Add your audio player logic here to play the song
+}
+
+// Load Song from Favorites
+function loadSongFromFavorites(vid) {
+    console.log('Trying to play Favorite Song:', vid);
+    const songElement = document.querySelector('.list[vid="' + vid + '"]');
+    console.log('Located Element:', songElement);
+
+    if (songElement) {
+        loadSong(songElement);
+    } else {
+        alert('Song not found!');
+    }
+}
+
+// Remove Song from Favorites
+function removeFavorite(vid) {
+    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    favorites = favorites.filter(song => song.vid !== vid);
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    alert('Song removed from favorites!');
+
+    // Update Favorite List
+    displayFavorites();
+}
+
+// Load Favorites on Page Load
+window.onload = function () {
+    displayFavorites();
+};
 
 
 
