@@ -4750,16 +4750,6 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
     
-        
-
-
-
-
-
-
-
-
-	
     <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -4780,6 +4770,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
         body {
             font-family: Arial, sans-serif;
             background: linear-gradient(45deg, #1e3c72, #2a5298);
+            min-height: 200vh;
         }
 
         /* Fixed Control Button */
@@ -4836,57 +4827,16 @@ document.getElementById('search-btn').addEventListener('click', function() {
             justify-content: center;
             align-items: center;
             cursor: pointer;
+            transition: transform 0.3s;
         }
 
-        /* Pop-ups */
-        .popup {
+        .icon-menu i:hover {
+            transform: scale(1.2);
+        }
+
+        /* Hidden Trigger Buttons */
+        .hidden-trigger {
             display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            text-align: center;
-            width: 80%;
-            max-width: 400px;
-            z-index: 9999;
-        }
-
-        .popup h2 {
-            margin: 0;
-            padding-bottom: 10px;
-            color: #333;
-            font-size: 1.5em;
-        }
-
-        .popup p {
-            color: #555;
-            font-size: 1em;
-        }
-
-        .popup button {
-            padding: 8px 15px;
-            background: #ff416c;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-            margin-top: 10px;
-        }
-
-        .popup button:hover {
-            background: #ff4b2b;
-        }
-
-        /* Responsive Design */
-        @media screen and (max-width: 600px) {
-            .popup {
-                width: 90%;
-            }
         }
     </style>
 </head>
@@ -4899,39 +4849,17 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
     <!-- Hidden Icons -->
     <div class="icon-menu" id="iconMenu">
-        <i class="fas fa-music" onclick="openPopup(1)"></i>
-        <i class="fas fa-video" onclick="openPopup(2)"></i>
-        <i class="fas fa-image" onclick="openPopup(3)"></i>
-        <i class="fas fa-cog" onclick="openPopup(4)"></i>
+        <i class="fas fa-music" data-target="button1"></i>
+        <i class="fas fa-video" data-target="button2"></i>
+        <i class="fas fa-image" data-target="button3"></i>
+        <i class="fas fa-cog" data-target="button4"></i>
     </div>
 
-    <!-- Pop-ups -->
-    <div class="popup" id="popup1">
-        <h2>Music</h2>
-        <p>Enjoy your favorite tunes!</p>
-
-<div id="favorite-list">
-    
-    <ul id="fav-songs"></ul>
-</div>
-	    
-        <button onclick="closePopup()">Close</button>
-    </div>
-    <div class="popup" id="popup2">
-        <h2>Video</h2>
-        <p>Watch your favorite videos!</p>
-        <button onclick="closePopup()">Close</button>
-    </div>
-    <div class="popup" id="popup3">
-        <h2>Gallery</h2>
-        <p>Browse your image gallery!</p>
-        <button onclick="closePopup()">Close</button>
-    </div>
-    <div class="popup" id="popup4">
-        <h2>Settings</h2>
-        <p>Customize your preferences!</p>
-        <button onclick="closePopup()">Close</button>
-    </div>
+    <!-- Hidden Trigger Buttons (These will be clicked when icons are clicked) -->
+    <button class="hidden-trigger" id="button1" onclick="alert('Music Button Clicked!')">Hidden Button 1</button>
+    <button class="hidden-trigger" id="button2" onclick="alert('Video Button Clicked!')">Hidden Button 2</button>
+    <button class="hidden-trigger" id="button3" onclick="alert('Gallery Button Clicked!')">Hidden Button 3</button>
+    <button class="hidden-trigger" id="button4" onclick="alert('Settings Button Clicked!')">Hidden Button 4</button>
 
     <script>
         // Toggle the icon menu
@@ -4939,20 +4867,26 @@ document.getElementById('search-btn').addEventListener('click', function() {
             document.getElementById('iconMenu').classList.toggle('active');
         }
 
-        // Open specific pop-up
-        function openPopup(num) {
-            closePopup();
-            document.getElementById(`popup${num}`).style.display = 'block';
-        }
-
-        // Close all pop-ups
-        function closePopup() {
-            document.querySelectorAll('.popup').forEach(popup => {
-                popup.style.display = 'none';
+        // Attach event listeners to each icon
+        document.querySelectorAll('.icon-menu i').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                if (targetId) {
+                    document.getElementById(targetId).click();
+                }
             });
-            document.getElementById('iconMenu').classList.remove('active');
-        }
+        });
     </script>
 
 </body>
-</html>
+</html>    
+
+
+
+
+
+
+
+
+	
+                        /
