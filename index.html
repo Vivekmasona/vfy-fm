@@ -1101,9 +1101,12 @@ color:#FF5733;
     
 <script>
 
-// Function to Save Song in Local Storage with Video ID
-function saveFavorite(index, title, thumbUrl, vid) {
+// Function to Save Song in Local Storage with Extracted Video ID
+function saveFavorite(index, title, thumbUrl) {
     let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+
+    // Extract Video ID from Thumbnail URL (Last 11 characters)
+    const vid = thumbUrl.slice(-15, -4);  // 11 characters before '.jpg' or '.webp'
     const song = { index, title, thumbUrl, vid };
 
     // Agar song pehle se exist nahi karta to save karo
@@ -1162,6 +1165,7 @@ function removeFavorite(index) {
 
 // Page Load hone par Favorite List ko Display karo
 window.addEventListener('load', displayFavorites);
+
 	
 </script>
 
