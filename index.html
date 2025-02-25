@@ -1101,65 +1101,7 @@ color:#FF5733;
     
 <script>
 
-// Function to Save Song in Local Storage
-function saveFavorite(index, title, thumbUrl) {
-    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    const song = { index, title, thumbUrl };
 
-    // Agar song pehle se exist nahi karta to save karo
-    if (!favorites.some(fav => fav.index === index)) {
-        favorites.push(song);
-        localStorage.setItem('favorites', JSON.stringify(favorites));
-        alert('Song saved to favorites!');
-        displayFavorites(); // Update favorite list display
-    } else {
-        alert('Song already in favorites!');
-    }
-}
-
-// Function to Display Favorite Songs as Clickable List
-function displayFavorites() {
-    const favContainer = document.getElementById('fav-songs');
-    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-
-    favContainer.innerHTML = '';
-    favorites.forEach(song => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-            <b onclick="loadSongIndex(${song.index})" class="list">
-                <div class="video">
-                    <img src="${song.thumbUrl}" alt="${song.title}" class="video-thumbnail">
-                    <section>
-                        <div>
-                            <p>${song.title}</p>
-                            <button onclick="event.stopPropagation(); removeFavorite(${song.index})">Remove</button>
-                        </div>
-                    </section>
-                </div>
-            </b>
-        `;
-        favContainer.appendChild(li);
-    });
-}
-
-// Function to Load Song by Index (Ye function aapke existing loadSong se link karega)
-function loadSongIndex(index) {
-    const songElement = document.querySelector(`[index="${index}"]`);
-    if (songElement) {
-        loadSong(songElement);
-    }
-}
-
-// Function to Remove Favorite Song
-function removeFavorite(index) {
-    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    favorites = favorites.filter(song => song.index !== index);
-    localStorage.setItem('favorites', JSON.stringify(favorites));
-    displayFavorites(); // Update favorite list display
-}
-
-// Page Load hone par Favorite List ko Display karo
-displayFavorites();
 	
 </script>
 
@@ -1378,26 +1320,97 @@ function getOutput(item, i) {
 
 
 	
-  var output =
-    '<b onclick="loadSong(this)" index="' + i + '" class="list" vid="' + id + '" style="position:relative;">' +
-    '<div class="video">' +
-    '<i class="fas fa-bookmark save-icon" onclick="event.stopPropagation(); saveFavorite(' + i + ', \'' + title + '\', \'' + thumbUrl + '\')"></i>' +
-    '<img src="' + thumbUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + i + '" vid="' + id + '">' +
-    '<section>' +
-    '<img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">' +
-    '<div>' +
-    '<p>V F Y ' + title + '</p>' +
-    '<small class="video-info">' + channelTitle + '</small>' +
-    '<small class="video-info"> VFY </small>' +
-    '<small class="video-info"> Ai </small>' +
-    '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +
-    '</div>' +
-    '</section>' +
-    '</div>' +
-    '</b>';
+  // Function to Save Song in Local Storage with Video ID
+function saveFavorite(index, title, thumbUrl, vid) {
+    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    const song = { index, title, thumbUrl, vid };
 
-return output;
-	}
+    // Agar video ID pehle se exist nahi karta to save karo
+    if (!favorites.some(fav => fav.vid === vid)) {
+        favorites.push(song);
+        localStorage.setItem('favorites', JSON.stringify(favorites));
+        alert('Song saved to favorites!');
+        displayFavorites(); // Update favorite list display
+    } else {
+        alert('Song already in favorites!');
+    }
+}
+
+// Function to Display Favorite Songs as Clickable List
+function displayFavorites() {
+    const favContainer = document.getElementById('fav-songs');
+    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+
+    favContainer.innerHTML = '';
+    favorites.forEach(song => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <b onclick="loadSongByVid('${song.vid}')" class="list">
+                <div class="video">
+                    <img src="${song.thumbUrl}" alt="${song.title}" class="video-thumbnail">
+                    <section>
+                        <div>
+                            <p>${song.title}</p>
+                            <button onclick="event.stopPropagation(); removeFavorite('${song.vid}')">Remove</button>
+                        </div>
+                    </section>
+                </div>
+            </b>
+        `;
+        favContainer.appendChild(li);
+    });
+}
+
+// Function to Load Song by Video ID
+function loadSongByVid(vid) {
+    const songElement = document.querySelector(`[vid="${vid}"]`);
+    if (songElement) {
+        loadSong(songElement); // Existing loadSong function ko call karega
+    } else {
+        alert('Song not found!');
+    }
+}
+
+// Function to Remove Favorite Song
+function removeFavorite(vid) {
+    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    favorites = favorites.filter(song => song.vid !== vid);
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    displayFavorites(); // Update favorite list display
+}
+
+// Function to Generate Song List
+function generateSongList(i, id, title, thumbUrl, channelTitle, videoDate) {
+    var output =
+        '<b onclick="loadSong(this)" index="' + i + '" class="list" vid="' + id + '" style="position:relative;">' +
+        '<div class="video">' +
+        '<i class="fas fa-bookmark save-icon" onclick="event.stopPropagation(); saveFavorite(' + i + ', \'' + title + '\', \'' + thumbUrl + '\', \'' + id + '\')"></i>' +
+        '<img src="' + thumbUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + i + '" vid="' + id + '">' +
+        '<section>' +
+        '<img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">' +
+        '<div>' +
+        '<p>V F Y ' + title + '</p>' +
+        '<small class="video-info">' + channelTitle + '</small>' +
+        '<small class="video-info"> VFY </small>' +
+        '<small class="video-info"> Ai </small>' +
+        '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +
+        '</div>' +
+        '</section>' +
+        '</div>' +
+        '</b>';
+
+    return output;
+}
+
+// Page Load hone par Favorite List ko Display karo
+document.addEventListener('DOMContentLoaded', displayFavorites);
+
+// Function to Load Song (Aapke existing loadSong function se link karega)
+function loadSong(element) {
+    const vid = element.getAttribute('vid');
+    alert('Playing Video ID: ' + vid);
+    // Yaha pe aapka existing play function ya audio player ka logic lagayein
+}
 
 
 
