@@ -853,7 +853,11 @@ border-radius: 15px;
     <div id="spacer"></div>
 
 
-	
+	<!-- Favorite List ke liye Alag Div -->
+<div id="favorite-list">
+    <h2>Favorite Songs</h2>
+    <ul id="fav-songs"></ul>
+</div>
     
 
 <div id="manualContent">
@@ -1079,7 +1083,54 @@ color:#FF5733;
 
     </style>
     
+<script>
 
+// Function to Save Song in Local Storage
+function saveFavorite(index, title, thumbUrl) {
+    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    const song = { index, title, thumbUrl };
+    
+    // Agar song pehle se exist nhi krta to save kro
+    if (!favorites.some(fav => fav.index === index)) {
+        favorites.push(song);
+        localStorage.setItem('favorites', JSON.stringify(favorites));
+        alert('Song saved to favorites!');
+        displayFavorites(); // Update favorite list display
+    } else {
+        alert('Song already in favorites!');
+    }
+}
+
+// Function to Display Favorite Songs
+function displayFavorites() {
+    const favContainer = document.getElementById('fav-songs');
+    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    
+    favContainer.innerHTML = '';
+    favorites.forEach(song => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <img src="${song.thumbUrl}" alt="${song.title}" class="video-thumbnail">
+            <span>${song.title}</span>
+            <button onclick="removeFavorite(${song.index})">Remove</button>
+        `;
+        favContainer.appendChild(li);
+    });
+}
+
+// Function to Remove Favorite Song
+function removeFavorite(index) {
+    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    favorites = favorites.filter(song => song.index !== index);
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    displayFavorites(); // Update favorite list display
+}
+
+// Call this function when page loads to display saved favorites
+displayFavorites();
+
+	
+</script>
 
 
 <!-- Your webpage content goes here -->
@@ -1308,6 +1359,7 @@ function getOutput(item, i) {
     '<small class="video-info"> VFY </small>' +
     '<small class="video-info"> Ai </small>' +
     '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +
+    '<button onclick="saveFavorite(' + i + ', \'' + title + '\', \'' + thumbUrl + '\')">Save</button>' +
     '</div>' +
     '</section>' +
     '</div>' +
