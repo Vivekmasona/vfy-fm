@@ -21,7 +21,7 @@
 <script src="trending/td.js" defer></script>
 <link rel="stylesheet" href="massage/ms.css" />
   <script src="massage/ms.js" defer></script>
-<link rel="stylesheet" href="connectt/player.css" />
+<link rel="stylesheet" href="connect/player.css" />
   <script src="connect/player.js" defer></script>
 
 
@@ -298,7 +298,25 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
 
 
 
+<div id="audioPlayerContainer">
+    <svg id="playPauseButton" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24">
+        <path id="playIcon" d="M8 5v14l11-7z"></path>
+    </svg>
+    <svg id="topButton" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24">
+        <path d="M6 6h12v12H6z"></path></b>
+    </svg>
+    
+    <div id="sessionInfoContainer">
+        <i class="wifiIcon fas fa-wifi"></i>
+        <span id="sessionId"></span>
+        <button id="copySessionIdButton"><i class="fas fa-copy"></i></button>
+        <button id="editSessionIdButton"><i class="fas fa-edit"></i></button>
+	
+        <button id="shareSessionIdButton"><i class="fas fa-share-alt"></i></button>
+    </div>
+</div>
 
+<audio id="audioPlayer"></audio>
 
 
 
@@ -4732,177 +4750,11 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Player with Session ID</title>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        /* Basic Reset */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(45deg, #1e3c72, #2a5298);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            color: #fff;
-        }
 
-        /* Audio Player Container */
-        #audioPlayerContainer {
-            background: #2c3e50;
-            border-radius: 10px;
-            padding: 20px;
-            width: 300px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            text-align: center;
-        }
 
-        /* SVG Buttons */
-        svg {
-            cursor: pointer;
-            fill: #fff;
-            width: 40px;
-            height: 40px;
-            transition: transform 0.3s;
-        }
 
-        svg:hover {
-            transform: scale(1.1);
-        }
 
-        #playPauseButton {
-            margin-bottom: 10px;
-        }
 
-        /* Session Info */
-        #sessionInfoContainer {
-            margin-top: 15px;
-        }
 
-        #sessionInfoContainer span {
-            display: inline-block;
-            margin: 0 5px;
-            padding: 5px 10px;
-            background: #34495e;
-            border-radius: 5px;
-            user-select: none;
-        }
 
-        /* Buttons */
-        #sessionInfoContainer button {
-            background: transparent;
-            border: none;
-            color: #fff;
-            cursor: pointer;
-            margin-left: 5px;
-        }
-
-        #sessionInfoContainer button:hover {
-            color: #3498db;
-        }
-    </style>
-</head>
-<body>
-
-    <!-- Audio Player Container -->
-    <div id="audioPlayerContainer">
-        <!-- Play/Pause Button -->
-        <svg id="playPauseButton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path id="playIcon" d="M8 5v14l11-7z"></path>
-        </svg>
-
-        <!-- Top Button (Optional Functionality) -->
-        <svg id="topButton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M6 6h12v12H6z"></path>
-        </svg>
-
-        <!-- Session Info -->
-        <div id="sessionInfoContainer">
-            <i class="wifiIcon fas fa-wifi"></i>
-            <span id="sessionId"></span>
-            <button id="copySessionIdButton"><i class="fas fa-copy"></i></button>
-            <button id="editSessionIdButton"><i class="fas fa-edit"></i></button>
-            <button id="shareSessionIdButton"><i class="fas fa-share-alt"></i></button>
-        </div>
-    </div>
-
-    <!-- Audio Player Element -->
-    <audio id="audioPlayer" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
-
-    <script>
-        // Audio Player and Button Elements
-        const audioPlayer = document.getElementById('audioPlayer');
-        const playPauseButton = document.getElementById('playPauseButton');
-        const playIcon = document.getElementById('playIcon');
-        const sessionId = document.getElementById('sessionId');
-        const copySessionIdButton = document.getElementById('copySessionIdButton');
-        const editSessionIdButton = document.getElementById('editSessionIdButton');
-        const shareSessionIdButton = document.getElementById('shareSessionIdButton');
-
-        // Generate Random Session ID
-        function generateSessionId() {
-            return Math.random().toString(36).substring(2, 10).toUpperCase();
-        }
-
-        // Set Initial Session ID
-        sessionId.textContent = generateSessionId();
-
-        // Play/Pause Toggle
-        playPauseButton.addEventListener('click', () => {
-            if (audioPlayer.paused) {
-                audioPlayer.play();
-                playIcon.setAttribute('d', 'M6 4h4v16H6zm8 0h4v16h-4z'); // Pause Icon
-            } else {
-                audioPlayer.pause();
-                playIcon.setAttribute('d', 'M8 5v14l11-7z'); // Play Icon
-            }
-        });
-
-        // Copy Session ID to Clipboard
-        copySessionIdButton.addEventListener('click', () => {
-            navigator.clipboard.writeText(sessionId.textContent)
-                .then(() => {
-                    copySessionIdButton.querySelector('i').classList.replace('fa-copy', 'fa-check');
-                    setTimeout(() => {
-                        copySessionIdButton.querySelector('i').classList.replace('fa-check', 'fa-copy');
-                    }, 2000);
-                });
-        });
-
-        // Edit Session ID
-        editSessionIdButton.addEventListener('click', () => {
-            const newId = prompt("Edit Session ID:", sessionId.textContent);
-            if (newId) {
-                sessionId.textContent = newId;
-            }
-        });
-
-        // Share Session ID
-        shareSessionIdButton.addEventListener('click', () => {
-            const shareData = {
-                title: 'Session ID',
-                text: `Join my session using this ID: ${sessionId.textContent}`,
-                url: window.location.href
-            };
-
-            if (navigator.share) {
-                navigator.share(shareData).catch(console.error);
-            } else {
-                alert('Sharing is not supported on this browser.');
-            }
-        });
-    </script>
-
-</body>
-</html>
