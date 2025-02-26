@@ -919,8 +919,8 @@ border-radius: 15px;
      <input type="search"  name="search" onclick="startDictation()"  id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">search</button></sr>
 	<!-- Call Button -->
-    <button id="callButton"><i class="fas fa-phone"></i></button>
-    
+    <button id="callButton" class="call-btn call"><i class="fas fa-phone"></i> Call</button>  
+
 	
    <div id="autocomplete-results"></div>
 
@@ -4722,50 +4722,36 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-  
-  
-
-
-
-
-
-	
-
-
-
-    <!-- Ringtone Audio -->
-    <audio id="ringtone" src="https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/ms.mp3" loop></audio>
-
-
-
-
-
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html>
 <head>
-    <title>WebRTC Audio Call</title>
+    <title>Stylish Incoming Call Popup</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
         }
-
         /* Incoming Call Popup Styles */
         #incomingCall {
             display: none;
+		z-index:999999;
             position: fixed;
             top: 10px;
             left: 50%;
             transform: translateX(-50%);
-            background: #fff;
+            background: #000;
             width: 40%;
             height: 25px;
             line-height: 25px;
             border-radius: 15px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
             text-align: center;
+            overflow: hidden;
         }
-
+        #incomingCall p {
+            display: inline;
+            margin-right: 10px;
+            font-size: 8px;
+        }
         .call-btn {
             border: none;
             background: transparent;
@@ -4773,156 +4759,186 @@ document.getElementById('search-btn').addEventListener('click', function() {
             font-size: 18px;
             margin: 0 5px;
         }
-
         .call-btn.accept {
             color: green;
         }
-
         .call-btn.reject, .call-btn.end {
             color: red;
+        }
+        #callTimer {
+            display: inline;
+            font-size: 14px;
+            margin-left: 10px;
         }
     </style>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-<body>
-    <h2>WebRTC Call</h2>
-    <p id="callStatus">Not Connected</p>
-    
-    <!-- Call Button -->
-    <button id="startCall" class="call-btn accept">
-        <i class="fas fa-phone"></i> Start Call
-    </button>
 
-    <!-- Incoming Call Popup -->
-    <div id="incomingCall">
-        <p>Incoming Call...</p>
-        <button id="acceptCall" class="call-btn accept">
-            <i class="fas fa-phone"></i>
-        </button>
-        <button id="rejectCall" class="call-btn reject">
-            <i class="fas fa-phone-slash"></i>
-        </button>
-    </div>
 
-    <!-- End Call Button -->
-    <button id="endCall" class="call-btn end" style="display:none;">
-        <i class="fas fa-phone-slash"></i> End Call
-    </button>
 
-    <!-- Socket.io -->
-    <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
-    <script>  
-        const socket = io("https://vfycall.onrender.com/");  // Change this to your server URL
+
+  
+
+
+
+
+
+<p id="callStatus">Not Connected</p>  
+  
+<!-- Call Button -->
+
+<!-- Incoming Call Popup -->  
+<div id="incomingCall" style="display:none;">   
+    <button id="acceptCall" class="call-btn accept"><i class="fas fa-phone"></i></button>  
+    <p id="callTimer">00:00</p>        
+    <button id="rejectCall" class="call-btn reject"><i class="fas fa-phone-slash"></i></button>  
+    <button id="endCall" class="call-btn end" style="display:none;"><i class="fas fa-phone-slash"></i></button>  
+</div>  
+
+<!-- Ringtone Audio -->  
+<audio id="ringtone" src="ringtone.mp3" loop></audio>  
+
+<!-- Socket.io -->  
+<script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>  
+<script>    
+    const socket = io("https://vfycall.onrender.com/");  
+        
+    let localStream;    
+    let peerConnection;    
+    const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };    
+    let roomID;    
+    let callTimer;    
+    let callStartTime;    
+
+    // Detect sessionId from localStorage  
+    roomID = localStorage.getItem('sessionId');  
+    if (roomID) {  
+        socket.emit('join-room', roomID);    
+        alert(`Automatically Joined Room: ${roomID}`);    
+    } else {  
+        alert('Session ID not found. Please check if it is saved correctly.');  
+    }  
+
+    // Call Button Functionality  
+    document.getElementById('callButton').onclick = async () => {
+        if (!roomID) {
+            alert('Session ID not found. Cannot initiate call.');
+            return;
+        }
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: true });    
+        peerConnection = new RTCPeerConnection(config);    
+        peerConnection.addTrack(localStream.getTracks()[0], localStream);    
+
+        peerConnection.ontrack = (event) => {    
+            const remoteAudio = new Audio();    
+            remoteAudio.srcObject = event.streams[0];    
+            remoteAudio.play();    
+        };    
+
+        peerConnection.onicecandidate = (event) => {    
+            if (event.candidate) {    
+                socket.emit('candidate', { candidate: event.candidate, roomID });    
+            }    
+        };
+
+        socket.emit('make-call', roomID);    
+        document.getElementById('callStatus').innerText = 'Calling...';
+    };
+
+    // Incoming Call Popup    
+    socket.on('incoming-call', ({ from }) => {    
+        document.getElementById('incomingCall').style.display = 'block';    
           
-        let localStream;  
-        let peerConnection;  
-        const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };  
-        let roomID;  
+        // Play ringtone  
+        const ringtone = document.getElementById('ringtone');  
+        ringtone.play();  
 
-        // Detect sessionId from localStorage
-        roomID = localStorage.getItem('sessionId');
-        if (roomID) {
-            socket.emit('join-room', roomID);  
-            alert(`Joined Room: ${roomID}`);  
-        } else {
-            alert('Session ID not found.');
-        }
+        // Accept Call    
+        document.getElementById('acceptCall').onclick = async () => {    
+            document.getElementById('acceptCall').style.display = 'none';    
+            document.getElementById('rejectCall').style.display = 'none';    
+            document.getElementById('endCall').style.display = 'inline';    
+            ringtone.pause();  
+            ringtone.currentTime = 0;  
+            socket.emit('call-accepted', { to: from });    
 
-        // Start Call Button
-        document.getElementById('startCall').onclick = async () => {
-            localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            peerConnection = new RTCPeerConnection(config);
+            // Initialize Media    
+            localStream = await navigator.mediaDevices.getUserMedia({ audio: true });    
+            peerConnection = new RTCPeerConnection(config);    
+            peerConnection.addTrack(localStream.getTracks()[0], localStream);    
 
-            peerConnection.addTrack(localStream.getTracks()[0], localStream);
+            peerConnection.ontrack = (event) => {    
+                const remoteAudio = new Audio();    
+                remoteAudio.srcObject = event.streams[0];    
+                remoteAudio.play();    
+            };    
 
-            peerConnection.ontrack = (event) => {
-                const remoteAudio = new Audio();
-                remoteAudio.srcObject = event.streams[0];
-                remoteAudio.play();
-            };
+            peerConnection.onicecandidate = (event) => {    
+                if (event.candidate) {    
+                    socket.emit('candidate', { candidate: event.candidate, roomID });    
+                }    
+            };    
 
-            peerConnection.onicecandidate = (event) => {
-                if (event.candidate) {
-                    socket.emit('candidate', { candidate: event.candidate, roomID });
-                }
-            };
+            document.getElementById('callStatus').innerText = 'Connected';    
+            startCallTimer();    
+        };    
 
-            const offer = await peerConnection.createOffer();
-            await peerConnection.setLocalDescription(offer);
-            socket.emit('call', { offer, roomID });
-            document.getElementById('callStatus').innerText = 'Calling...';
-            document.getElementById('startCall').style.display = 'none';
-            document.getElementById('endCall').style.display = 'inline';
-        };
+        // Reject Call    
+        document.getElementById('rejectCall').onclick = () => {    
+            socket.emit('call-rejected', { to: from });    
+            document.getElementById('incomingCall').style.display = 'none';    
+            ringtone.pause();  
+            ringtone.currentTime = 0;  
+            document.getElementById('callStatus').innerText = 'Call Rejected';    
+        };    
+    });    
 
-        // Listen for Incoming Call
-        socket.on('incoming-call', ({ from }) => {
-            document.getElementById('incomingCall').style.display = 'block';
+    // End Call    
+    document.getElementById('endCall').onclick = () => {    
+        socket.emit('end-call', roomID);    
+        endCall();    
+    };    
 
-            document.getElementById('acceptCall').onclick = async () => {
-                document.getElementById('incomingCall').style.display = 'none';
-                localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                peerConnection = new RTCPeerConnection(config);
+    socket.on('call-ended', () => {    
+        endCall();    
+    });    
 
-                peerConnection.addTrack(localStream.getTracks()[0], localStream);
+    function endCall() {    
+        if (peerConnection) peerConnection.close();    
+        peerConnection = null;    
+        document.getElementById('callStatus').innerText = 'Call Ended';    
+        document.getElementById('incomingCall').style.display = 'none';  
+        document.getElementById('acceptCall').style.display = 'inline';  
+        document.getElementById('rejectCall').style.display = 'inline';  
+        document.getElementById('endCall').style.display = 'none';  
+        stopCallTimer();    
+    }    
 
-                peerConnection.ontrack = (event) => {
-                    const remoteAudio = new Audio();
-                    remoteAudio.srcObject = event.streams[0];
-                    remoteAudio.play();
-                };
+    function startCallTimer() {    
+        callStartTime = new Date();    
+        callTimer = setInterval(() => {    
+            const now = new Date();    
+            const elapsed = Math.floor((now - callStartTime) / 1000);    
+            const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');    
+            const seconds = String(elapsed % 60).padStart(2, '0');    
+            document.getElementById('callTimer').innerText = `${minutes}:${seconds}`;    
+        }, 1000);    
+    }    
 
-                peerConnection.onicecandidate = (event) => {
-                    if (event.candidate) {
-                        socket.emit('candidate', { candidate: event.candidate, roomID });
-                    }
-                };
+    function stopCallTimer() {    
+        clearInterval(callTimer);    
+        document.getElementById('callTimer').innerText = '00:00';    
+    }    
+</script>
 
-                socket.emit('call-accepted', { to: from });
-                document.getElementById('callStatus').innerText = 'Connected';
-                document.getElementById('endCall').style.display = 'inline';
-            };
+<!-- Ringtone Audio -->
+    <audio id="ringtone" src="https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/ms.mp3" loop></audio>
 
-            document.getElementById('rejectCall').onclick = () => {
-                socket.emit('call-rejected', { to: from });
-                document.getElementById('incomingCall').style.display = 'none';
-                document.getElementById('callStatus').innerText = 'Call Rejected';
-            };
-        });
 
-        // Receive Offer
-        socket.on('offer', async (offer) => {
-            peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-            const answer = await peerConnection.createAnswer();
-            await peerConnection.setLocalDescription(answer);
-            socket.emit('answer', { answer, roomID });
-        });
 
-        // Receive Answer
-        socket.on('answer', (answer) => {
-            peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-        });
-
-        // End Call
-        document.getElementById('endCall').onclick = () => {
-            socket.emit('end-call', roomID);
-            endCall();
-        };
-
-        socket.on('call-ended', () => {
-            endCall();
-        });
-
-        function endCall() {
-            if (peerConnection) peerConnection.close();
-            peerConnection = null;
-            document.getElementById('callStatus').innerText = 'Call Ended';
-            document.getElementById('endCall').style.display = 'none';
-            document.getElementById('startCall').style.display = 'inline';
-        }
-    </script>
-</body>
-</html>
 
 	
+
+
+
+        
