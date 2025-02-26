@@ -922,6 +922,28 @@ border-radius: 15px;
 	
    <div id="autocomplete-results"></div>
 
+
+    <input type="text" id="roomID" placeholder="Enter Room ID" />  
+    <button id="joinRoom">Join Room</button>  
+    <button id="callUser" disabled>Call</button>  
+    <button id="endCall" style="display:none;">End Call</button>  
+  
+    <div id="incomingCall" style="display:none;">  
+        <p>Incoming Call...</p>  
+        <button id="acceptCall">Accept</button>  
+        <button id="rejectCall">Reject</button>  
+    </div>  
+  
+    <h3>Call Status: <span id="callStatus">Not Connected</span></h3>  
+    <h3>Call Time: <span id="callTimer">00:00</span></h3>  
+    
+    <!-- Ringtone Audio Element -->
+    <audio id="ringtone" src="https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/ms.mp3" preload="auto"></audio>
+    <!-- Replace the src with your ringtone URL -->
+
+
+	    
+
     
     </div> 
 	 
@@ -4713,70 +4735,9 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-<!doctype html>  
+
   
   
-    WebRTC Audio Call System  
-    <h2>WebRTC Audio Call System</h2>  
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />  
-    <style>  
-        body {  
-            font-family: Arial, sans-serif;  
-            text-align: center;  
-            padding: 20px;  
-        }  
-        input[type="text"], button {  
-            padding: 10px;  
-            margin: 5px;  
-            font-size: 1rem;  
-        }  
-        #incomingCallPopup {  
-            position: fixed;  
-            top: -100px;  
-            left: 50%;  
-            transform: translateX(-50%);  
-            width: 250px;  
-            background: #fff;  
-            border-radius: 20px;  
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);  
-            text-align: center;  
-            padding: 10px;  
-            transition: top 0.5s;  
-        }  
-        #incomingCallPopup.active {  
-            top: 20px;  
-        }  
-        .call-btn {  
-            border: none;  
-            border-radius: 50%;  
-            padding: 10px;  
-            color: #fff;  
-            cursor: pointer;  
-            margin: 5px;  
-        }  
-        .accept-btn { background: #4CAF50; }  
-        .reject-btn { background: #F44336; }  
-        .end-btn { background: #FF9800; }  
-    </style>  
-  
-  
-    <input type="text" id="roomID" placeholder="Enter Room ID" />  
-    <button id="joinRoom">Join Room</button>  
-    <button id="callUser" disabled>Call</button>  
-    <button id="endCall" style="display:none;">End Call</button>  
-  
-    <div id="incomingCall" style="display:none;">  
-        <p>Incoming Call...</p>  
-        <button id="acceptCall">Accept</button>  
-        <button id="rejectCall">Reject</button>  
-    </div>  
-  
-    <h3>Call Status: <span id="callStatus">Not Connected</span></h3>  
-    <h3>Call Time: <span id="callTimer">00:00</span></h3>  
-    
-    <!-- Ringtone Audio Element -->
-    <audio id="ringtone" src="https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/ms.mp3" preload="auto"></audio>
-    <!-- Replace the src with your ringtone URL -->
 
 
 
