@@ -4735,24 +4735,42 @@ document.getElementById('search-btn').addEventListener('click', function() {
     <audio id="ringtone" src="https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/ms.mp3" loop></audio>
 
 
-
-<!DOCTYPE html>
+        <!DOCTYPE html>
 <html>
 <head>
-    <title>Stylish Incoming Call Popup</title>
+    <title>Stylish Call Interface</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        /* Call Button */
+        #callButton {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: green;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         /* Incoming Call Popup Styles */
         #incomingCall {
             display: none;
-		z-index:999999;
             position: fixed;
             top: 10px;
             left: 50%;
             transform: translateX(-50%);
-            background: #000;
+            background: #fff;
             width: 40%;
             height: 25px;
             line-height: 25px;
@@ -4764,7 +4782,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
         #incomingCall p {
             display: inline;
             margin-right: 10px;
-            font-size: 8px;
+            font-size: 14px;
         }
         .call-btn {
             border: none;
@@ -4794,14 +4812,15 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
     <!-- Incoming Call Popup -->
     <div id="incomingCall">
-        
-        
-<button id="acceptCall" class="call-btn accept"><i class="fas fa-phone"></i></button>
-<p id="callTimer">00:00</p>
-	    
-<button id="rejectCall" class="call-btn reject"><i class="fas fa-phone-slash"></i></button>
-<button id="endCall" class="call-btn end" style="display:none;"><i class="fas fa-phone-slash"></i></button>
+        <p>Incoming Call...</p>
+        <p id="callTimer">00:00</p>
+        <button id="acceptCall" class="call-btn accept"><i class="fas fa-phone"></i></button>
+        <button id="rejectCall" class="call-btn reject"><i class="fas fa-phone-slash"></i></button>
+        <button id="endCall" class="call-btn end" style="display:none;"><i class="fas fa-phone-slash"></i></button>
     </div>
+
+    <!-- Call Button -->
+    <button id="callButton"><i class="fas fa-phone"></i></button>
 
     <!-- Ringtone Audio -->
     <audio id="ringtone" src="ringtone.mp3" loop></audio>
@@ -4827,7 +4846,35 @@ document.getElementById('search-btn').addEventListener('click', function() {
             alert('Session ID not found. Please check if it is saved correctly.');
         }
   
-        // Incoming Call Popup  
+        // Call Button to Start Call
+        document.getElementById('callButton').onclick = async () => {
+            document.getElementById('callButton').style.display = 'none';
+            document.getElementById('incomingCall').style.display = 'block';
+            document.getElementById('endCall').style.display = 'inline';
+            document.getElementById('acceptCall').style.display = 'none';
+            document.getElementById('rejectCall').style.display = 'none';
+            
+            localStream = await navigator.mediaDevices.getUserMedia({ audio: true });  
+            peerConnection = new RTCPeerConnection(config);  
+            peerConnection.addTrack(localStream.getTracks()[0], localStream);  
+  
+            peerConnection.ontrack = (event) => {  
+                const remoteAudio = new Audio();  
+                remoteAudio.srcObject = event.streams[0];  
+                remoteAudio.play();  
+            };  
+  
+            peerConnection.onicecandidate = (event) => {  
+                if (event.candidate) {  
+                    socket.emit('candidate', { candidate: event.candidate, roomID });  
+                }  
+            };  
+  
+            document.getElementById('callStatus').innerText = 'Calling...';  
+            socket.emit('start-call', roomID);  
+            startCallTimer();  
+        };
+  
         socket.on('incoming-call', ({ from }) => {  
             document.getElementById('incomingCall').style.display = 'block';  
             
@@ -4836,31 +4883,13 @@ document.getElementById('search-btn').addEventListener('click', function() {
             ringtone.play();
   
             // Accept Call  
-            document.getElementById('acceptCall').onclick = async () => {  
-                document.getElementById('acceptCall').style.display = 'none';  
-                document.getElementById('rejectCall').style.display = 'none';  
-                document.getElementById('endCall').style.display = 'inline';  
+            document.getElementById('acceptCall').onclick = () => {  
                 ringtone.pause();
                 ringtone.currentTime = 0;
+                document.getElementById('acceptCall').style.display = 'none';
+                document.getElementById('rejectCall').style.display = 'none';
+                document.getElementById('endCall').style.display = 'inline';
                 socket.emit('call-accepted', { to: from });  
-  
-                // Initialize Media  
-                localStream = await navigator.mediaDevices.getUserMedia({ audio: true });  
-                peerConnection = new RTCPeerConnection(config);  
-                peerConnection.addTrack(localStream.getTracks()[0], localStream);  
-  
-                peerConnection.ontrack = (event) => {  
-                    const remoteAudio = new Audio();  
-                    remoteAudio.srcObject = event.streams[0];  
-                    remoteAudio.play();  
-                };  
-  
-                peerConnection.onicecandidate = (event) => {  
-                    if (event.candidate) {  
-                        socket.emit('candidate', { candidate: event.candidate, roomID });  
-                    }  
-                };  
-  
                 document.getElementById('callStatus').innerText = 'Connected';  
                 startCallTimer();  
             };  
@@ -4881,18 +4910,12 @@ document.getElementById('search-btn').addEventListener('click', function() {
             endCall();  
         };  
   
-        socket.on('call-ended', () => {  
-            endCall();  
-        });  
-  
         function endCall() {  
             if (peerConnection) peerConnection.close();  
             peerConnection = null;  
             document.getElementById('callStatus').innerText = 'Call Ended';  
             document.getElementById('incomingCall').style.display = 'none';
-            document.getElementById('acceptCall').style.display = 'inline';
-            document.getElementById('rejectCall').style.display = 'inline';
-            document.getElementById('endCall').style.display = 'none';
+            document.getElementById('callButton').style.display = 'block';
             stopCallTimer();  
         }  
   
@@ -4906,11 +4929,6 @@ document.getElementById('search-btn').addEventListener('click', function() {
                 document.getElementById('callTimer').innerText = `${minutes}:${seconds}`;  
             }, 1000);  
         }  
-  
-        function stopCallTimer() {  
-            clearInterval(callTimer);  
-            document.getElementById('callTimer').innerText = '00:00';  
-        }  
     </script>  
 </body>
-</html>
+</html>            
