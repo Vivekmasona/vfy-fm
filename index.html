@@ -1552,11 +1552,11 @@ function loadSong(song, ind) {
 
 
 function play(id,Sid){
-    //data = "https://inv-us2-c.nadeko.net/latest_version?id="+id+"&itag=140&check=local=true";
+    data = "https://vivekfy-audio.onrender.com/play?url=https://youtu.be/"+id;
     //data = "https://vivekfy.vercel.app/hack?url=https://vkrdownloader.xyz/download.php?vkr=https://youtu.be/"+id+"&redirect=1";
       //data = "https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/"+id;
       //data = "https://vivekfy.vercel.app/api-play?url=https://youtu.be/"+id;
-    data = "https://vivekfy.vercel.app/vfy?id="+id;
+    //data = "https://vivekfy.vercel.app/vfy?id="+id;
       //data = "https://vivekfy-audio.onrender.com/play?url=https://youtu.be/"+id;
      //data = "https://inv-ca1-c.nadeko.net/latest_version?id="+id+"&itag=250&local=true";
      //data = "https://myserver-dev-atmq.2.ie-1.fl0.io/audio?url=https://youtu.be/"+id;
@@ -1634,11 +1634,11 @@ audio.addEventListener("ended", function() {
 
 // Listen for the 'error' event
 var alternativeAudioSources = [
-"https://vivekfy.vercel.app/vfy?id=" + id,
+//"https://vivekfy.vercel.app/vfy?id=" + id,
 "https://vivekfy.vercel.app/api-play?url=https://youtu.be/" + id,
-"https://thirsty-editha-vivekfy-6cef7b64.koyeb.app/play?url=https://youtu.be/" + id,	
+"https://vivekfy-audio.onrender.com/play?url=https://youtu.be/" + id,	
 "https://thirsty-editha-vivekfy-6cef7b64.koyeb.app/play?url=https://youtu.be/" + id,
-"https://vivekfy-v2.onrender.com/stream_audio?url=https://youtu.be/" + id,   
+//"https://vivekfy-v2.onrender.com/stream_audio?url=https://youtu.be/" + id,   
 "https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/" + id,
 "https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + id,
     
@@ -1652,7 +1652,7 @@ audio.addEventListener("error", function () {
         audio.load();
         audio.play();
         currentAlternativeIndex = (currentAlternativeIndex + 1) % alternativeAudioSources.length;
-    }, 5000);
+    }, 1000);
 });
 
 
