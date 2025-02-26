@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Function to fetch messages from the server and display them
             async function fetchAndDisplayMessages() {
                 try {
-                    const response = await fetch('https://e88acd8b-7a0f-42e0-b933-504ff9636c62-00-2331m38h2jm4.picard.replit.dev:3000/messages');
+                    const response = await fetch('https://vfymsg.vercel.app/messages');
                     const data = await response.json();
                     console.log(data); // Log the response from the server
 
