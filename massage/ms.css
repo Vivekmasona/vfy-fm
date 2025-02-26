@@ -1,42 +1,29 @@
+
 /* Styles for the popup */
-.popupms {
-    display: block; /* Pehle display none tha, ab block kar diya */
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.5); /* Scale effect ke saath */
-    background-color: #333;
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 10px;
-    border: 2px solid #fff;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-    z-index: 9999;
-    opacity: 0; /* Initial opacity 0 rakhi hai */
-    transition: all 0.3s ease; /* Smooth transition */
-}
+        .popupms {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 2px solid #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 9999;
+        }
 
-/* Popup ko show karne ke liye */
-.popupms.show {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1); /* Full size ke saath show hoga */
-}
+        .popupms img {
+            width: 50px;
+            height: 50px;
+            border-radius: 5%;
+            border: 2px solid #000;
+            vertical-align: middle;
+        }
 
-/* Popup ko hide karne ke liye */
-.popupms.hide {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.5); /* Zoom out effect ke saath hide hoga */
-}
-
-.popupms img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 2px solid orange;
-    vertical-align: middle;
-}
-
-.popupms span {
-    margin-left: 10px;
-    vertical-align: middle;
-}
+        .popupms span {
+            margin-left: 10px;
+            vertical-align: middle;
+        }
