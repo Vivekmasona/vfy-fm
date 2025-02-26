@@ -4729,26 +4729,55 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 	
 
+
+
+    <!-- Ringtone Audio -->
+    <audio id="ringtone" src="https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/ms.mp3" loop></audio>
+
+
+
+
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Auto Room Join</title>
+    <title>Auto Room Join with Call Popup</title>
+    <style>
+        #incomingCall {
+            display: none;
+            position: fixed;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            padding: 20px;
+            border: 2px solid #000;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        #incomingCall button {
+            margin: 5px;
+        }
+        #callTimer {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
     <h2>WebRTC Call</h2>
     <p id="callStatus">Not Connected</p>
-    <p id="callTimer">00:00</p>
-    <button id="callUser" disabled>Call User</button>
-    <button id="endCall" style="display:none;">End Call</button>
 
-    <div id="incomingCall" style="display:none;">
+    <!-- Incoming Call Popup -->
+    <div id="incomingCall">
         <p>Incoming Call...</p>
+        <p id="callTimer">00:00</p>
         <button id="acceptCall">Accept</button>
         <button id="rejectCall">Reject</button>
+        <button id="endCall" style="display:none;">End Call</button>
     </div>
 
     <!-- Ringtone Audio -->
-    <audio id="ringtone" src="https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/ms.mp3" loop></audio>
+    <audio id="ringtone" src="ringtone.mp3" loop></audio>
 
     <!-- Socket.io -->
     <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
@@ -4766,17 +4795,10 @@ document.getElementById('search-btn').addEventListener('click', function() {
         roomID = localStorage.getItem('sessionId');
         if (roomID) {
             socket.emit('join-room', roomID);  
-            document.getElementById('callUser').disabled = false;  
             alert(`Automatically Joined Room: ${roomID}`);  
         } else {
             alert('Session ID not found. Please check if it is saved correctly.');
         }
-  
-        // Call User  
-        document.getElementById('callUser').addEventListener('click', async () => {  
-            socket.emit('call-request', { roomID });  
-            document.getElementById('callStatus').innerText = 'Calling...';  
-        });  
   
         // Incoming Call Popup  
         socket.on('incoming-call', ({ from }) => {  
@@ -4787,8 +4809,10 @@ document.getElementById('search-btn').addEventListener('click', function() {
             ringtone.play();
   
             // Accept Call  
-            document.getElementById('acceptCall').addEventListener('click', async () => {  
-                document.getElementById('incomingCall').style.display = 'none';  
+            document.getElementById('acceptCall').onclick = async () => {  
+                document.getElementById('acceptCall').style.display = 'none';  
+                document.getElementById('rejectCall').style.display = 'none';  
+                document.getElementById('endCall').style.display = 'inline';  
                 ringtone.pause();
                 ringtone.currentTime = 0;
                 socket.emit('call-accepted', { to: from });  
@@ -4811,25 +4835,24 @@ document.getElementById('search-btn').addEventListener('click', function() {
                 };  
   
                 document.getElementById('callStatus').innerText = 'Connected';  
-                document.getElementById('endCall').style.display = 'inline';  
                 startCallTimer();  
-            });  
+            };  
   
             // Reject Call  
-            document.getElementById('rejectCall').addEventListener('click', () => {  
+            document.getElementById('rejectCall').onclick = () => {  
                 socket.emit('call-rejected', { to: from });  
                 document.getElementById('incomingCall').style.display = 'none';  
                 ringtone.pause();
                 ringtone.currentTime = 0;
                 document.getElementById('callStatus').innerText = 'Call Rejected';  
-            });  
+            };  
         });  
   
         // End Call  
-        document.getElementById('endCall').addEventListener('click', () => {  
+        document.getElementById('endCall').onclick = () => {  
             socket.emit('end-call', roomID);  
             endCall();  
-        });  
+        };  
   
         socket.on('call-ended', () => {  
             endCall();  
@@ -4839,7 +4862,10 @@ document.getElementById('search-btn').addEventListener('click', function() {
             if (peerConnection) peerConnection.close();  
             peerConnection = null;  
             document.getElementById('callStatus').innerText = 'Call Ended';  
-            document.getElementById('endCall').style.display = 'none';  
+            document.getElementById('incomingCall').style.display = 'none';
+            document.getElementById('acceptCall').style.display = 'inline';
+            document.getElementById('rejectCall').style.display = 'inline';
+            document.getElementById('endCall').style.display = 'none';
             stopCallTimer();  
         }  
   
@@ -4861,3 +4887,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
     </script>  
 </body>
 </html>
+
+
+
+	
