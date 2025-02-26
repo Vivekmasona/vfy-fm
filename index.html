@@ -1,118 +1,89 @@
 <!doctype html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f9;
+            text-align: center;
+            padding: 20px;
+            color: #333;
+        }
 
-<style>
-    body {
-    font-family: Arial, sans-serif;
-    background: #f4f4f9;
-    text-align: center;
-    padding: 20px;
-    color: #333;
-}
+        /* Incoming Call Popup Styles */
+        #incomingCall {
+            display: none;
+            z-index: 999999;
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            width: 250px;
+            height: 50px;
+            line-height: 50px;
+            border-radius: 25px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            color: #fff;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+        }
 
-/* Incoming Call Popup Styles */
-#incomingCall {
-    display: none;
-    z-index: 999999;
-    position: fixed;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8);
-    width: 250px;
-    height: 40px;
-    line-height: 40px;
-    border-radius: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    text-align: center;
-    overflow: hidden;
-    color: #fff;
-    font-size: 14px;
-}
+        .call-btn {
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 20px;
+            transition: transform 0.2s;
+        }
 
-#incomingCall p {
-    display: inline;
-    margin-right: 10px;
-    font-size: 12px;
-}
+        .call-btn:active {
+            transform: scale(0.9);
+        }
 
-.call-btn {
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    font-size: 20px;
-    margin: 0 5px;
-    transition: transform 0.2s;
-}
+        .call-btn.accept {
+            color: #4CAF50;
+        }
 
-.call-btn:active {
-    transform: scale(0.9);
-}
+        .call-btn.reject {
+            color: #F44336;
+        }
 
-.call-btn.accept {
-    color: #4CAF50;
-}
+        .call-btn.end {
+            color: #F44336;
+            display: none;
+        }
 
-.call-btn.reject, 
-.call-btn.end {
-    color: #F44336;
-}
-
-/* Call Timer */
-#callTimer {
-    display: inline;
-    font-size: 16px;
-    margin-left: 10px;
-    color: #ffeb3b;
-}
-
-/* General Button Styles */
-button {
-    padding: 10px 20px;
-    margin: 10px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: background 0.3s, transform 0.2s;
-}
-
-button:active {
-    transform: scale(0.95);
-}
-
-#callUser {
-    background: #2196F3;
-    color: #fff;
-}
-
-#callUser:disabled {
-    background: #b3e5fc;
-    cursor: not-allowed;
-}
-
-#endCall {
-    background: #FF9800;
-    color: #fff;
-    display: none;
-}
-</style>
+        #callTimer {
+            color: #ffeb3b;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
     <h2>WebRTC Audio Call System</h2>
     <button id="callUser" disabled>Call</button>
     <button id="endCall" style="display:none;">End Call</button>
 
     <div id="incomingCall">
-        <p>Incoming Call...</p>
-        <button id="acceptCall" class="call-btn accept-btn">Accept</button>
-        <button id="rejectCall" class="call-btn reject-btn">Reject</button>
+        <span>Incoming Call...</span>
+        <span id="callTimer">00:00</span>
+        <button id="acceptCall" class="call-btn accept"><i class="fas fa-phone"></i></button>
+        <button id="rejectCall" class="call-btn reject"><i class="fas fa-phone-slash"></i></button>
+        <button id="endCallPopup" class="call-btn end"><i class="fas fa-phone-slash"></i></button>
     </div>
 
     <h3>Call Status: <span id="callStatus">Not Connected</span></h3>
-    <h3>Call Time: <span id="callTimer">00:00</span></h3>
 
     <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
     <script>
-        const socket = io("https://vfycall.onrender.com/");  // Change this to your Glitch server URL
+        const socket = io("https://vfycall.onrender.com/");
 
         let localStream;
         let peerConnection;
@@ -121,7 +92,6 @@ button:active {
         let callTimer;
         let callStartTime;
 
-        // Automatically join room if sessionId is found in localStorage
         window.addEventListener('load', () => {
             roomID = localStorage.getItem('sessionId');
             if (roomID) {
@@ -133,22 +103,15 @@ button:active {
             }
         });
 
-        // Call User
-        document.getElementById('callUser').addEventListener('click', async () => {
-            socket.emit('call-request', { roomID });
-            document.getElementById('callStatus').innerText = 'Calling...';
-        });
-
-        // Incoming Call Popup
         socket.on('incoming-call', ({ from }) => {
-            document.getElementById('incomingCall').style.display = 'block';
+            document.getElementById('incomingCall').style.display = 'flex';
 
-            // Accept Call
             document.getElementById('acceptCall').addEventListener('click', async () => {
-                document.getElementById('incomingCall').style.display = 'none';
+                document.getElementById('acceptCall').style.display = 'none';
+                document.getElementById('rejectCall').style.display = 'none';
+                document.getElementById('endCallPopup').style.display = 'inline';
                 socket.emit('call-accepted', { to: from });
 
-                // Initialize Media
                 localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 peerConnection = new RTCPeerConnection(config);
                 peerConnection.addTrack(localStream.getTracks()[0], localStream);
@@ -166,11 +129,9 @@ button:active {
                 };
 
                 document.getElementById('callStatus').innerText = 'Connected';
-                document.getElementById('endCall').style.display = 'inline';
                 startCallTimer();
             });
 
-            // Reject Call
             document.getElementById('rejectCall').addEventListener('click', () => {
                 socket.emit('call-rejected', { to: from });
                 document.getElementById('incomingCall').style.display = 'none';
@@ -178,7 +139,6 @@ button:active {
             });
         });
 
-        // Call Accepted
         socket.on('call-accepted', async () => {
             localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
             peerConnection = new RTCPeerConnection(config);
@@ -201,30 +161,11 @@ button:active {
             socket.emit('offer', { offer, roomID });
 
             document.getElementById('callStatus').innerText = 'Connected';
-            document.getElementById('endCall').style.display = 'inline';
+            document.getElementById('incomingCall').style.display = 'flex';
             startCallTimer();
         });
 
-        // Handle Offer
-        socket.on('offer', async ({ offer }) => {
-            await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-            const answer = await peerConnection.createAnswer();
-            await peerConnection.setLocalDescription(answer);
-            socket.emit('answer', { answer, roomID });
-        });
-
-        // Handle Answer
-        socket.on('answer', async ({ answer }) => {
-            await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-        });
-
-        // Handle ICE Candidate
-        socket.on('candidate', ({ candidate }) => {
-            peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-        });
-
-        // End Call
-        document.getElementById('endCall').addEventListener('click', () => {
+        document.getElementById('endCallPopup').addEventListener('click', () => {
             socket.emit('end-call', roomID);
             endCall();
         });
@@ -237,7 +178,8 @@ button:active {
             if (peerConnection) peerConnection.close();
             peerConnection = null;
             document.getElementById('callStatus').innerText = 'Call Ended';
-            document.getElementById('endCall').style.display = 'none';
+            document.getElementById('endCallPopup').style.display = 'none';
+            document.getElementById('incomingCall').style.display = 'none';
             stopCallTimer();
         }
 
@@ -257,6 +199,5 @@ button:active {
             document.getElementById('callTimer').innerText = '00:00';
         }
     </script>
-
-</!doctype>
-
+</body>
+</html>
