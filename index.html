@@ -923,7 +923,19 @@ border-radius: 15px;
    <div id="autocomplete-results"></div>
 
 
-    
+    <input type="text" id="roomID" placeholder="Enter Room ID" />  
+    <button id="joinRoom">Join Room</button>  
+    <button id="callUser" disabled>Call</button>  
+    <button id="endCall" style="display:none;">End Call</button>  
+  
+    <div id="incomingCall" style="display:none;">  
+        <p>Incoming Call...</p>  
+        <button id="acceptCall">Accept</button>  
+        <button id="rejectCall">Reject</button>  
+    </div>  
+  
+    <h3>Call Status: <span id="callStatus">Not Connected</span></h3>  
+    <h3>Call Time: <span id="callTimer">00:00</span></h3>  
     
 
 	    
