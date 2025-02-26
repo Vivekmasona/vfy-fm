@@ -4819,32 +4819,34 @@ document.getElementById('search-btn').addEventListener('click', function() {
     <audio id="ringtone" src="ringtone.mp3" loop></audio>
 
     
-<script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>  
+    <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>  
 <script>  
-    const socket = io("https://vfycall.onrender.com/");  // Change this to your server URL  
-      
+    const socket = io("https://vfycall.onrender.com/");  // Update with your server URL
+
     let localStream;  
     let peerConnection;  
     const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };  
-    let roomID;  
+    let roomID = localStorage.getItem('roomID');  // Get Room ID from localStorage  
     let callTimer;  
     let callStartTime;  
 
-    // Automatically Detect and Join Room
-    roomID = localStorage.getItem('sessionId');
-    if (roomID) {
-        socket.emit('join-room', roomID);  
-        alert(`Automatically Joined Room: ${roomID}`);  
-    } else {
-        alert('Session ID not found. Please check if it is saved correctly.');
-    }
-  
+    // Check Room ID on Load
+    window.addEventListener('load', () => {  
+        if (roomID) {  
+            socket.emit('join-room', roomID);  
+            document.getElementById('callUser').disabled = false;  
+            alert(`Joined Room: ${roomID}`);  
+        } else {
+            alert('No Room ID Found!');
+        }
+    });  
+
     // Call User  
     document.getElementById('callUser').addEventListener('click', async () => {  
         socket.emit('call-request', { roomID });  
         document.getElementById('callStatus').innerText = 'Calling...';  
     });  
-  
+
     // Incoming Call Popup  
     socket.on('incoming-call', ({ from }) => {  
         document.getElementById('incomingCall').style.display = 'block';  
@@ -4883,7 +4885,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
             document.getElementById('callStatus').innerText = 'Call Rejected';  
         };  
     });  
-  
+
     // Call Accepted  
     socket.on('call-accepted', async () => {  
         localStream = await navigator.mediaDevices.getUserMedia({ audio: true });  
@@ -4963,4 +4965,3 @@ document.getElementById('search-btn').addEventListener('click', function() {
         document.getElementById('callTimer').innerText = '00:00';  
     }  
 </script>
-	
