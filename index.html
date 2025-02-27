@@ -929,18 +929,7 @@ border-radius: 15px;
    <div id="autocomplete-results"></div>
 
 
-   <div id="controls">
-    <button id="callUser" disabled>Call User</button>
-    <button id="endCall" style="display: none;">End Call</button>
-    <span id="callStatus">Not Connected</span>
-    <span id="callTimer">00:00</span>
-</div>
 
-<div id="incomingCall" style="display: none;">
-    <p>Incoming Call...</p>
-    <button id="acceptCall">Accept</button>
-    <button id="rejectCall">Reject</button>
-</div>
  
     
 
@@ -4736,7 +4725,18 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
+<div id="controls">
+    <button id="callUser" disabled>Call User</button>
+    <button id="endCall" style="display: none;">End Call</button>
+    <span id="callStatus">Not Connected</span>
+    <span id="callTimer">00:00</span>
+</div>
 
+<div id="incomingCall" style="display: none;">
+    <p>Incoming Call...</p>
+    <button id="acceptCall">Accept</button>
+    <button id="rejectCall">Reject</button>
+</div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
    
@@ -4910,4 +4910,6 @@ function stopCallTimer() {
     clearInterval(callTimer);
     callTimerElement.innerText = '00:00';
 }</script>
+
+
     
