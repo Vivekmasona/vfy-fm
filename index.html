@@ -1,76 +1,70 @@
 
 
 <style>
-body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: #f0f0f0;
-}
 
-#controls {
-    text-align: center;
-    padding: 20px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-button {
-    background: #4CAF50;
-    color: white;
-    border: none;
+    
+  /* Incoming Call Popup */
+#incomingCall {
+    display: none;
+    z-index: 9999;
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
     padding: 10px 20px;
-    margin: 5px;
-    border-radius: 4px;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    color: #fff;
+    font-size: 14px;
+    transition: opacity 0.3s ease;
+}
+
+.call-btn {
+    border: none;
+    background: transparent;
     cursor: pointer;
     font-size: 16px;
+    color: #fff;
+    margin: 5px;
+    padding: 5px 10px;
+    border-radius: 5px;
     transition: background 0.3s;
 }
 
-button:disabled {
-    background: #ccc;
-    cursor: not-allowed;
+.call-btn.accept {
+    color: #4CAF50;
 }
 
-button:hover:not(:disabled) {
-    background: #45a049;
+.call-btn.reject {
+    color: #F44336;
 }
 
-#callStatus {
-    display: block;
-    margin-top: 10px;
-    font-weight: bold;
+.call-btn.end {
+    color: #F44336;
 }
 
-#incomingCall {
-    text-align: center;
-    background: #ffeb3b;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-#incomingCall button {
-    background: #2196F3;
-    margin: 10px;
-}
+.call-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}  
+    
 
 </style>
-<div id="controls">
-    <button id="callUser" disabled>Call User</button>
-    <button id="endCall" style="display: none;">End Call</button>
-    <span id="callStatus">Not Connected</span>
-    <span id="callTimer">00:00</span>
+
+
+
+<div id="incomingCall">
+    <p id="callText">Incoming Call...</p>
+    <button class="call-btn accept" id="acceptCall"><i class="fas fa-phone"></i> Accept</button>
+    <button class="call-btn reject" id="rejectCall"><i class="fas fa-phone-slash"></i> Reject</button>
+    <span id="callTimer" style="display: none;">00:00</span>
+    <button class="call-btn end" id="endCall" style="display: none;"><i class="fas fa-phone-slash"></i> End</button>
 </div>
 
-<div id="incomingCall" style="display: none;">
-    <p>Incoming Call...</p>
-    <button id="acceptCall">Accept</button>
-    <button id="rejectCall">Reject</button>
-</div>
+
+
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
    
