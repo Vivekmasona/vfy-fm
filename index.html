@@ -302,9 +302,9 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
     <svg id="playPauseButton" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24">
         <path id="playIcon" d="M8 5v14l11-7z"></path>
     </svg>
-    <svg id="topButton" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24">
-        <path d="M6 6h12v12H6z"></path></b>
-    </svg>
+    
+	
+	
     
     <div id="sessionInfoContainer">
        
@@ -334,9 +334,7 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
 
 <div id="controls">
     <button id="callUser" disabled></button>
-    
-    
-</div>
+    </div>
 
 
 
@@ -1119,8 +1117,7 @@ border-radius: 15px;
 
 
 <vfy id="showAutoClose">  
-<span id="callStatus"></span>
- <span id="callTimer"></span>
+
 <a href="#" id="pahilagana" class="float1"></a>
 <a href="#" id="vivekmasona" class="float1"></a>
 </vfy>
@@ -1282,7 +1279,11 @@ displayFavorites();
  <div class="play-button">
  <b  id="play"> <i class="fa fa-play" aria-hidden="true"></i></b>
 </i></div>
-<div class="song-title">V F Y - M U S I C - AI
+<div class="song-title">
+
+<span id="callStatus"></span>
+ <span id="callTimer"></span>
+	
 <span onclick="openModal()" id="vfytitle" style="width: auto; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
 </div> 
 <div id="mybutton">
@@ -2729,7 +2730,6 @@ function searchbreakupSongs() {
 }		
 	
 </script>
-
 
 
 
