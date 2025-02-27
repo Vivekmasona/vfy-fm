@@ -64,53 +64,19 @@
             margin-left: 10px;
             color: #ffeb3b;
         }
-
-        /* General Button Styles */
-        button {
-            padding: 10px 20px;
-            margin: 10px;
-            font-size: 1rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: background 0.3s, transform 0.2s;
-        }
-
-        button:active {
-            transform: scale(0.95);
-        }
-
-        #callUser {
-            background: #2196F3;
-            color: #fff;
-        }
-
-        #callUser:disabled {
-            background: #b3e5fc;
-            cursor: not-allowed;
-        }
-
-        #endCall {
-            background: #FF9800;
-            color: #fff;
-            display: none;
-        }
     </style>
 </head>
 <body>
     <h2>WebRTC Audio Call System</h2>
-    <button id="callUser" disabled>Call</button>
-    <button id="endCall" style="display:none;">End Call</button>
+
+    <h3>Call Status: <span id="callStatus">Not Connected</span></h3>
+    <h3>Call Time: <span id="callTimer">00:00</span></h3>
 
     <div id="incomingCall">
         <p>Incoming Call...</p>
         <button id="acceptCall" class="call-btn accept">Accept</button>
         <button id="rejectCall" class="call-btn reject">Reject</button>
     </div>
-
-    <h3>Call Status: <span id="callStatus">Not Connected</span></h3>
-    <h3>Call Time: <span id="callTimer">00:00</span></h3>
 
     <!-- Ringtone Audio -->
     <audio id="ringtone" src="https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/ms.mp3" loop></audio>
@@ -132,16 +98,10 @@
             roomID = localStorage.getItem('sessionId');
             if (roomID) {
                 socket.emit('join-room', roomID);
-                document.getElementById('callUser').disabled = false;
                 alert(`Automatically Joined Room: ${roomID}`);
             } else {
                 alert('Session ID not found. Please check if it is saved correctly.');
             }
-        });
-
-        document.getElementById('callUser').addEventListener('click', () => {
-            socket.emit('call-request', { roomID });
-            document.getElementById('callStatus').innerText = 'Calling...';
         });
 
         socket.on('incoming-call', ({ from }) => {
@@ -170,7 +130,6 @@
                 };
 
                 document.getElementById('callStatus').innerText = 'Connected';
-                document.getElementById('endCall').style.display = 'inline';
                 startCallTimer();
             });
 
@@ -182,11 +141,6 @@
             });
         });
 
-        document.getElementById('endCall').addEventListener('click', () => {
-            socket.emit('end-call', roomID);
-            endCall();
-        });
-
         socket.on('call-ended', () => {
             endCall();
         });
@@ -195,7 +149,6 @@
             if (peerConnection) peerConnection.close();
             peerConnection = null;
             document.getElementById('callStatus').innerText = 'Call Ended';
-            document.getElementById('endCall').style.display = 'none';
             document.getElementById('incomingCall').style.display = 'none';
             stopCallTimer();
         }
