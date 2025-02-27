@@ -1,7 +1,6 @@
-<!doctype html>
 
-<style>
-    body {
+
+<style>body {
     font-family: Arial, sans-serif;
     background: #f4f4f9;
     text-align: center;
@@ -17,22 +16,24 @@
     top: 10px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8);
-    width: 250px;
-    height: 40px;
-    line-height: 40px;
-    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.9);
+    width: auto;
+    min-width: 250px;
+    height: 50px;
+    line-height: 50px;
+    border-radius: 25px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     text-align: center;
     overflow: hidden;
     color: #fff;
     font-size: 14px;
+    padding: 0 15px;
 }
 
 #incomingCall p {
-    display: inline;
+    display: inline-block;
     margin-right: 10px;
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .call-btn {
@@ -52,69 +53,39 @@
     color: #4CAF50;
 }
 
-.call-btn.reject, 
-.call-btn.end {
+.call-btn.reject {
     color: #F44336;
+}
+
+.call-btn.end {
+    color: #FF9800;
+    display: none;
 }
 
 /* Call Timer */
 #callTimer {
-    display: inline;
+    display: none;
     font-size: 16px;
     margin-left: 10px;
     color: #ffeb3b;
-}
+}</style>
 
-/* General Button Styles */
-button {
-    padding: 10px 20px;
-    margin: 10px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: background 0.3s, transform 0.2s;
-}
-
-button:active {
-    transform: scale(0.95);
-}
-
-#callUser {
-    background: #2196F3;
-    color: #fff;
-}
-
-#callUser:disabled {
-    background: #b3e5fc;
-    cursor: not-allowed;
-}
-
-#endCall {
-    background: #FF9800;
-    color: #fff;
-    display: none;
-}
-</style>
-    <h2>WebRTC Audio Call System</h2>
-    <button id="callUser" disabled>Call</button>
-    <button id="endCall" style="display:none;">End Call</button>
-
-    <div id="incomingCall">
-        <p>Incoming Call...</p>
-        <button id="acceptCall" class="call-btn accept-btn">Accept</button>
-        <button id="rejectCall" class="call-btn reject-btn">Reject</button>
-    </div>
-
-    <h3>Call Status: <span id="callStatus">Not Connected</span></h3>
-    <h3>Call Time: <span id="callTimer">00:00</span></h3>
-
-    <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
-    <script>
-
-
-const socket = io("https://vfycall.onrender.com/");
+<div id="incomingCall">
+    <p>Incoming Call...</p>
+    <span id="callTimer">00:00</span>
+    <button class="call-btn accept" id="acceptCall">
+        <i class="fas fa-phone"></i>
+    </button>
+    <button class="call-btn reject" id="rejectCall">
+        <i class="fas fa-phone-slash"></i>
+    </button>
+    <button class="call-btn end" id="endCall">
+        <i class="fas fa-phone-slash"></i>
+    </button>
+</div>
+<script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
+   
+<script>const socket = io("https://vfycall.onrender.com/");
 
 let localStream;
 let peerConnection;
@@ -126,6 +97,13 @@ let callStartTime;
 // Ringtone for Incoming Call
 const ringtone = new Audio("https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/ms.mp3");
 ringtone.loop = true;
+
+// Get Popup Elements
+const incomingCallPopup = document.getElementById('incomingCall');
+const callTimerElement = document.getElementById('callTimer');
+const acceptCallButton = document.getElementById('acceptCall');
+const rejectCallButton = document.getElementById('rejectCall');
+const endCallButton = document.getElementById('endCall');
 
 // Automatically join room if sessionId is found in localStorage
 window.addEventListener('load', () => {
@@ -147,15 +125,21 @@ document.getElementById('callUser').addEventListener('click', async () => {
 
 // Incoming Call Popup
 socket.on('incoming-call', ({ from }) => {
-    document.getElementById('incomingCall').style.display = 'block';
+    incomingCallPopup.style.display = 'block';
+    callTimerElement.style.display = 'none';
+    acceptCallButton.style.display = 'inline';
+    rejectCallButton.style.display = 'inline';
+    endCallButton.style.display = 'none';
     ringtone.play();
+    document.getElementById('callStatus').innerText = 'Incoming Call...';
 
     // Accept Call
-    document.getElementById('acceptCall').addEventListener('click', async () => {
+    acceptCallButton.onclick = async () => {
         ringtone.pause();
         ringtone.currentTime = 0;
-        document.getElementById('incomingCall').style.display = 'none';
         socket.emit('call-accepted', { to: from });
+        incomingCallPopup.style.display = 'none';
+        document.getElementById('callStatus').innerText = 'Connecting...';
 
         // Initialize Media
         localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -175,18 +159,19 @@ socket.on('incoming-call', ({ from }) => {
         };
 
         document.getElementById('callStatus').innerText = 'Connected';
-        document.getElementById('endCall').style.display = 'inline';
+        endCallButton.style.display = 'inline';
+        callTimerElement.style.display = 'inline';
         startCallTimer();
-    });
+    };
 
     // Reject Call
-    document.getElementById('rejectCall').addEventListener('click', () => {
+    rejectCallButton.onclick = () => {
         ringtone.pause();
         ringtone.currentTime = 0;
         socket.emit('call-rejected', { to: from });
-        document.getElementById('incomingCall').style.display = 'none';
+        incomingCallPopup.style.display = 'none';
         document.getElementById('callStatus').innerText = 'Call Rejected';
-    });
+    };
 });
 
 // Call Accepted
@@ -212,7 +197,8 @@ socket.on('call-accepted', async () => {
     socket.emit('offer', { offer, roomID });
 
     document.getElementById('callStatus').innerText = 'Connected';
-    document.getElementById('endCall').style.display = 'inline';
+    endCallButton.style.display = 'inline';
+    callTimerElement.style.display = 'inline';
     startCallTimer();
 });
 
@@ -235,7 +221,7 @@ socket.on('candidate', ({ candidate }) => {
 });
 
 // End Call
-document.getElementById('endCall').addEventListener('click', () => {
+endCallButton.addEventListener('click', () => {
     socket.emit('end-call', roomID);
     endCall();
 });
@@ -248,7 +234,8 @@ function endCall() {
     if (peerConnection) peerConnection.close();
     peerConnection = null;
     document.getElementById('callStatus').innerText = 'Call Ended';
-    document.getElementById('endCall').style.display = 'none';
+    endCallButton.style.display = 'none';
+    incomingCallPopup.style.display = 'none';
     stopCallTimer();
 }
 
@@ -260,13 +247,11 @@ function startCallTimer() {
         const elapsed = Math.floor((now - callStartTime) / 1000);
         const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
         const seconds = String(elapsed % 60).padStart(2, '0');
-        document.getElementById('callTimer').innerText = `${minutes}:${seconds}`;
+        callTimerElement.innerText = `${minutes}:${seconds}`;
     }, 1000);
 }
 
 function stopCallTimer() {
     clearInterval(callTimer);
-    document.getElementById('callTimer').innerText = '00:00';
-}
-
-</script>
+    callTimerElement.innerText = '00:00';
+}</script>
