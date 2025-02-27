@@ -307,8 +307,11 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
     </svg>
     
     <div id="sessionInfoContainer">
-        <i id="callUser" class="wifiIcon fas fa-phone-alt"></i>
-        <span id="sessionId"></span>
+        <b id="callUser" disabled>
+    <i class="fas fa-phone-alt"></i> 
+</b>
+	    
+<span id="sessionId"></span>
         <button id="copySessionIdButton"><i class="fas fa-copy"></i></button>
         <button id="editSessionIdButton"><i class="fas fa-edit"></i></button>
 	
@@ -4727,8 +4730,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 <div id="controls">
-    <button id="callUser" disabled>Call User</button>
-    <button id="endCall" style="display: none;">End Call</button>
+      < button id="endCall" style="display: none;">End Call</button>
     <span id="callStatus">Not Connected</span>
     <span id="callTimer">00:00</span>
 </div>
