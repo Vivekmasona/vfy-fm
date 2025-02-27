@@ -309,13 +309,14 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
     <div id="sessionInfoContainer">
        
 	    
-	    <b id="callUser" disabled>
-    <i class="fas fa-phone-plus"></i> 
-</b> <span id="callTimer"></span>    
-	<b id="endCall" style="display: none;">
-  <i class="fas fa-phone-slash"></i></b>   
-
-	
+	    
+<b id="callUser" onclick="toggleCall()">
+    <i class="fas fa-phone-alt"></i> 
+</b> 
+<span id="callTimer"></span>    
+<b id="endCall" style="display: none;">
+    <i class="fas fa-phone-slash"></i>
+</b>	
 
 
 	    
@@ -329,7 +330,48 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
 
 <audio id="audioPlayer"></audio>
 
+<script>
 
+let callActive = false;
+let timerInterval;
+
+function toggleCall() {
+    const callUser = document.getElementById('callUser');
+    const endCall = document.getElementById('endCall');
+    const callTimer = document.getElementById('callTimer');
+
+    if (!callActive) {
+        // Call Start
+        callActive = true;
+        callUser.style.display = 'none';
+        endCall.style.display = 'inline-block';
+        startTimer();
+    } else {
+        // Call End
+        callActive = false;
+        endCall.style.display = 'none';
+        callUser.style.display = 'inline-block';
+        stopTimer();
+        callTimer.innerHTML = '';
+    }
+}
+
+function startTimer() {
+    const callTimer = document.getElementById('callTimer');
+    let seconds = 0;
+    timerInterval = setInterval(() => {
+        seconds++;
+        let mins = Math.floor(seconds / 60);
+        let secs = seconds % 60;
+        callTimer.innerHTML = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }, 1000);
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+}
+	
+</script>
 
 
 <div id="controls">
