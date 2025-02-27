@@ -1,238 +1,235 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VFY Call</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: #f0f0f0;
-        }
 
-        #controls {
-            text-align: center;
-            padding: 20px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
 
-        button {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            margin: 5px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s;
-        }
+<style>
+#incomingCall {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40%;
+    height: 25px;
+    background: #ffeb3b;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+}
 
-        button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
+#incomingCall p {
+    margin: 0;
+    font-size: 14px;
+    flex: 1;
+    text-align: center;
+}
 
-        button:hover:not(:disabled) {
-            background: #45a049;
-        }
+#incomingCall button {
+    background: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 2px 10px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.3s;
+}
 
-        #callStatus {
-            display: block;
-            margin-top: 10px;
-            font-weight: bold;
-        }
+#incomingCall button:hover {
+    background: #1976D2;
+}
 
-        /* Incoming Call Popup */
-        #incomingCall {
-            position: fixed;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40%;
-            padding: 15px;
-            background: #ffeb3b;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
+#callTimer {
+    font-size: 12px;
+    margin-left: 10px;
+    color: #555;
+}
 
-        #incomingCall button {
-            background: #2196F3;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background 0.3s;
-            height: 25px;
-        }
+</style>
+<div id="controls">
+    <button id="callUser" disabled>Call User</button>
+    <button id="endCall" style="display: none;">End Call</button>
+    <span id="callStatus">Not Connected</span>
+    <span id="callTimer">00:00</span>
+</div>
 
-        #incomingCall button:hover {
-            background: #1e88e5;
-        }
+<div id="incomingCall" style="display: none;">
+    <p>Incoming Call...</p>
+    <button id="acceptCall">Accept</button>
+    <button id="rejectCall">Reject</button>
+</div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
+   
+<script>const socket = io("https://vfycall.onrender.com/");
 
-        #callTimerPopup {
-            font-weight: bold;
-            margin: 0 10px;
-        }
+let localStream;
+let peerConnection;
+const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+let roomID;
+let callTimer;
+let callStartTime;
 
-        #phoneIcon {
-            font-size: 25px;
-            color: #4CAF50;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-    </style>
-</head>
-<body>
-    <div id="controls">
-        <button id="callUser" disabled>Call User</button>
-        <button id="endCall" style="display: none;">End Call</button>
-        <span id="callStatus">Not Connected</span>
-        <span id="callTimer">00:00</span>
-    </div>
+// Ringtone for Incoming Call
+const ringtone = new Audio("https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/ms.mp3");
+ringtone.loop = true;
 
-    <div id="incomingCall" style="display: none;">
-        <i id="phoneIcon" class="fas fa-phone"></i>
-        <button id="acceptCall">Accept</button>
-        <span id="callTimerPopup">00:00</span>
-        <button id="rejectCall">Reject</button>
-    </div>
+// Get Popup Elements
+const incomingCallPopup = document.getElementById('incomingCall');
+const callTimerElement = document.getElementById('callTimer');
+const acceptCallButton = document.getElementById('acceptCall');
+const rejectCallButton = document.getElementById('rejectCall');
+const endCallButton = document.getElementById('endCall');
 
-    <script>
-        const socket = io("https://vfycall.onrender.com/");
-        let localStream;
-        let peerConnection;
-        const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
-        let roomID;
-        let callTimer;
-        let callStartTime;
+// Automatically join room if sessionId is found in localStorage
+window.addEventListener('load', () => {
+    roomID = localStorage.getItem('sessionId');
+    if (roomID) {
+        socket.emit('join-room', roomID);
+        document.getElementById('callUser').disabled = false;
+        alert(`Automatically Joined Room: ${roomID}`);
+    } else {
+        alert('Session ID not found. Please check if it is saved correctly.');
+    }
+});
 
-        // Ringtone for Incoming Call
-        const ringtone = new Audio("https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/ms.mp3");
-        ringtone.loop = true;
+// Call User
+document.getElementById('callUser').addEventListener('click', async () => {
+    socket.emit('call-request', { roomID });
+    document.getElementById('callStatus').innerText = 'Calling...';
+});
 
-        // Get Popup Elements
-        const incomingCallPopup = document.getElementById('incomingCall');
-        const callTimerElement = document.getElementById('callTimer');
-        const callTimerPopup = document.getElementById('callTimerPopup');
-        const acceptCallButton = document.getElementById('acceptCall');
-        const rejectCallButton = document.getElementById('rejectCall');
-        const endCallButton = document.getElementById('endCall');
+// Incoming Call Popup
+socket.on('incoming-call', ({ from }) => {
+    incomingCallPopup.style.display = 'block';
+    callTimerElement.style.display = 'none';
+    acceptCallButton.style.display = 'inline';
+    rejectCallButton.style.display = 'inline';
+    endCallButton.style.display = 'none';
+    ringtone.play();
+    document.getElementById('callStatus').innerText = 'Incoming Call...';
 
-        // Automatically join room if sessionId is found in localStorage
-        window.addEventListener('load', () => {
-            roomID = localStorage.getItem('sessionId');
-            if (roomID) {
-                socket.emit('join-room', roomID);
-                document.getElementById('callUser').disabled = false;
-                alert(`Automatically Joined Room: ${roomID}`);
-            } else {
-                alert('Session ID not found. Please check if it is saved correctly.');
+    // Accept Call
+    acceptCallButton.onclick = async () => {
+        ringtone.pause();
+        ringtone.currentTime = 0;
+        socket.emit('call-accepted', { to: from });
+        incomingCallPopup.style.display = 'none';
+        document.getElementById('callStatus').innerText = 'Connecting...';
+
+        // Initialize Media
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        peerConnection = new RTCPeerConnection(config);
+        peerConnection.addTrack(localStream.getTracks()[0], localStream);
+
+        peerConnection.ontrack = (event) => {
+            const remoteAudio = new Audio();
+            remoteAudio.srcObject = event.streams[0];
+            remoteAudio.play();
+        };
+
+        peerConnection.onicecandidate = (event) => {
+            if (event.candidate) {
+                socket.emit('candidate', { candidate: event.candidate, roomID });
             }
-        });
-
-        // Call User
-        document.getElementById('callUser').addEventListener('click', () => {
-            socket.emit('call-request', { roomID });
-            document.getElementById('callStatus').innerText = 'Calling...';
-        });
-
-        // Incoming Call Popup
-        socket.on('incoming-call', ({ from }) => {
-            incomingCallPopup.style.display = 'flex';
-            startIncomingCallTimer();
-            ringtone.play();
-            document.getElementById('callStatus').innerText = 'Incoming Call...';
-        });
-
-        // Accept Call
-        acceptCallButton.onclick = async () => {
-            ringtone.pause();
-            ringtone.currentTime = 0;
-            socket.emit('call-accepted', { roomID });
-            incomingCallPopup.style.display = 'none';
-            stopIncomingCallTimer();
         };
 
-        // Reject Call
-        rejectCallButton.onclick = () => {
-            ringtone.pause();
-            ringtone.currentTime = 0;
-            socket.emit('call-rejected', { roomID });
-            incomingCallPopup.style.display = 'none';
-            stopIncomingCallTimer();
-        };
+        document.getElementById('callStatus').innerText = 'Connected';
+        endCallButton.style.display = 'inline';
+        callTimerElement.style.display = 'inline';
+        startCallTimer();
+    };
 
-        // Call Accepted
-        socket.on('call-accepted', async () => {
-            document.getElementById('callStatus').innerText = 'Connected';
-            endCallButton.style.display = 'inline';
-            callTimerElement.style.display = 'inline';
-            startCallTimer();
-        });
+    // Reject Call
+    rejectCallButton.onclick = () => {
+        ringtone.pause();
+        ringtone.currentTime = 0;
+        socket.emit('call-rejected', { to: from });
+        incomingCallPopup.style.display = 'none';
+        document.getElementById('callStatus').innerText = 'Call Rejected';
+    };
+});
 
-        // End Call
-        endCallButton.addEventListener('click', () => {
-            socket.emit('end-call', roomID);
-            endCall();
-        });
+// Call Accepted
+socket.on('call-accepted', async () => {
+    localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    peerConnection = new RTCPeerConnection(config);
+    peerConnection.addTrack(localStream.getTracks()[0], localStream);
 
-        socket.on('call-ended', () => {
-            endCall();
-        });
+    peerConnection.ontrack = (event) => {
+        const remoteAudio = new Audio();
+        remoteAudio.srcObject = event.streams[0];
+        remoteAudio.play();
+    };
 
-        function endCall() {
-            document.getElementById('callStatus').innerText = 'Call Ended';
-            endCallButton.style.display = 'none';
-            incomingCallPopup.style.display = 'none';
-            stopCallTimer();
+    peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+            socket.emit('candidate', { candidate: event.candidate, roomID });
         }
+    };
 
-        // Call Timer Functions
-        function startCallTimer() {
-            callStartTime = new Date();
-            callTimer = setInterval(() => {
-                const now = new Date();
-                const elapsed = Math.floor((now - callStartTime) / 1000);
-                const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
-                const seconds = String(elapsed % 60).padStart(2, '0');
-                callTimerElement.innerText = `${minutes}:${seconds}`;
-            }, 1000);
-        }
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+    socket.emit('offer', { offer, roomID });
 
-        function stopCallTimer() {
-            clearInterval(callTimer);
-            callTimerElement.innerText = '00:00';
-        }
+    document.getElementById('callStatus').innerText = 'Connected';
+    endCallButton.style.display = 'inline';
+    callTimerElement.style.display = 'inline';
+    startCallTimer();
+});
 
-        function startIncomingCallTimer() {
-            callStartTime = new Date();
-            callTimer = setInterval(() => {
-                const now = new Date();
-                const elapsed = Math.floor((now - callStartTime) / 1000);
-                const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
-                const seconds = String(elapsed % 60).padStart(2, '0');
-                callTimerPopup.innerText = `${minutes}:${seconds}`;
-            }, 1000);
-        }
+// Handle Offer
+socket.on('offer', async ({ offer }) => {
+    await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+    const answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer);
+    socket.emit('answer', { answer, roomID });
+});
 
-        function stopIncomingCallTimer() {
-            clearInterval(callTimer);
-            callTimerPopup.innerText = '00:00';
-        }
-    </script>
-</body>
-</html>
+// Handle Answer
+socket.on('answer', async ({ answer }) => {
+    await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+});
+
+// Handle ICE Candidate
+socket.on('candidate', ({ candidate }) => {
+    peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+});
+
+// End Call
+endCallButton.addEventListener('click', () => {
+    socket.emit('end-call', roomID);
+    endCall();
+});
+
+socket.on('call-ended', () => {
+    endCall();
+});
+
+function endCall() {
+    if (peerConnection) peerConnection.close();
+    peerConnection = null;
+    document.getElementById('callStatus').innerText = 'Call Ended';
+    endCallButton.style.display = 'none';
+    incomingCallPopup.style.display = 'none';
+    stopCallTimer();
+}
+
+// Call Timer Functions
+function startCallTimer() {
+    callStartTime = new Date();
+    callTimer = setInterval(() => {
+        const now = new Date();
+        const elapsed = Math.floor((now - callStartTime) / 1000);
+        const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
+        const seconds = String(elapsed % 60).padStart(2, '0');
+        callTimerElement.innerText = `${minutes}:${seconds}`;
+    }, 1000);
+}
+
+function stopCallTimer() {
+    clearInterval(callTimer);
+    callTimerElement.innerText = '00:00';
+}</script>
+
