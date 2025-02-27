@@ -294,6 +294,85 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
 
 </style>
  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Call Timer Popup</title>
+    <style>
+        /* Popup styling */
+        #callPopup {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 20px;
+            background-color: black;
+            color: white;
+            text-align: center;
+            line-height: 20px;
+            border-radius: 5px;
+            font-size: 12px;
+            display: none;
+            z-index: 999999; /* Always on top */
+        }
+    </style>
+</head>
+<body>
+    <!-- Call Timer -->
+    <span id="callTimer">00:00</span>
+    
+    <!-- Popup -->
+    <div id="callPopup">
+        <span id="popupTimer">00:00</span>
+    </div>
+
+    <script>
+        // Dummy Call Timer for demo purpose
+        let seconds = 0;
+        let minutes = 0;
+
+        // Function to start and update the call timer
+        function startCallTimer() {
+            seconds++;
+            if (seconds === 60) {
+                seconds = 0;
+                minutes++;
+            }
+
+            // Format time as MM:SS
+            const formattedTime = 
+                (minutes < 10 ? "0" + minutes : minutes) + ":" + 
+                (seconds < 10 ? "0" + seconds : seconds);
+            
+            document.getElementById("callTimer").innerText = formattedTime;
+        }
+
+        // Update Call Timer every second (for demo)
+        setInterval(startCallTimer, 1000);
+
+        // Function to check and update the popup timer
+        function updateCallPopup() {
+            const callTimer = document.getElementById("callTimer").innerText;
+            const callPopup = document.getElementById("callPopup");
+            const popupTimer = document.getElementById("popupTimer");
+
+            if (callTimer !== "00:00") {
+                popupTimer.innerText = callTimer;
+                callPopup.style.display = "block";
+            } else {
+                callPopup.style.display = "none";
+            }
+        }
+
+        // Check every second to update popup
+        setInterval(updateCallPopup, 1000);
+    </script>
+</body>
+</html>
+
+
 
 
 
@@ -311,7 +390,7 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
 	    
 	    <b id="callUser" disabled>
     <i class="fas fa-phone-alt"></i> 
-</b> <span id="callTimer"></span>    
+</b>  
 	<b id="endCall" style="display: none;">
   <i class="fas fa-phone-slash"></i></b>   
 
