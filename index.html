@@ -329,7 +329,18 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
 
 
 
+<div id="controls">
+    <button id="callUser" disabled></button>
+    
+    <span id="callStatus"></span>
+    <span id="callTimer"></span>
+</div>
 
+<div id="incomingCall" style="display: none;">
+    
+    <button id="acceptCall">Accept</button>
+    <button id="rejectCall">Reject</button>
+</div>
 
 
 
@@ -886,18 +897,7 @@ border-radius: 15px;
     <div data-role="header">
 
 
-<div id="controls">
-    <button id="callUser" disabled></button>
-    <button id="endCall" style="display: none;">End Call</button>
-    <span id="callStatus"></span>
-    <span id="callTimer"></span>
-</div>
 
-<div id="incomingCall" style="display: none;">
-    
-    <button id="acceptCall">Accept</button>
-    <button id="rejectCall">Reject</button>
-</div>
 	    
         <a href="#" class="modal-btn" data-modal-btn-id="1"><i class='fas fa-wifi' onclick="clickButton()" style='font-size:18px;color:#E74C3C'></i></i></a>
 	  
