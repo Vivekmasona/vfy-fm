@@ -1,5 +1,5 @@
- <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
-  
+  <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
+ 
 const socket = io("https://gold-foregoing-change.glitch.me/");
 
 let localStream;
