@@ -2421,7 +2421,7 @@ recognition.onresult = function(event) {
 	    lastResult.toLowerCase() === 'link download' ||
             lastResult.toLowerCase() === 'copy link download') {
             // Handle volume down commands
-            const butto1 = document.getElementById('openBtn');
+            const butto1 = document.getElementById('openButton');
             butto1.click();
             playAudio('/sound/curldl.mp3'); // Replace with the appropriate audio URL
             commandMatched = true;
