@@ -920,9 +920,7 @@ border-radius: 15px;
 
 		
 </style>
-
-
-
+	
 
     <style>
         body {
@@ -942,15 +940,24 @@ border-radius: 15px;
             border-bottom-left-radius: 20px;
             white-space: nowrap;
             z-index: 9999;
-            display: none; /* Pehle se hidden rahega */
+            visibility: hidden; /* Pehle se invisible */
+            opacity: 0;         /* Transparent rahega */
+            transition: opacity 0.3s ease;
+        }
+
+        /* Jab box mein content hoga tab dikhai dega */
+        .dynamic-box:not(:empty) {
+            visibility: visible;
+            opacity: 1;
         }
     </style>
+</head>
+<body>
 
-
-    <div class="dynamic-box" id="dynamicBox">
-        <!-- Yeh content jab add hoga tabhi box dikhega -->
-
-	<div id="incomingCall" style="display: none;">
+    <div class="dynamic-box">
+        <!-- Yaha pe content daalne par box dikhai dene lagega -->
+    
+    <div id="incomingCall" style="display: none;">
     <!-- Accept Call Button (Green Phone Icon) -->
     <b id="acceptCall" style="background: none; border: none; cursor: pointer;">
         <svg id="acceptIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="40" height="40">
@@ -971,22 +978,6 @@ border-radius: 15px;
 </div>     
     
     </div>
-
-    <script>
-        // Example: Dynamic content add karna
-        const dynamicBox = document.getElementById('dynamicBox');
-        const content = "Ye hai dynamic content jo left side badhega!";
-
-        if (content.trim() !== "") {
-            dynamicBox.innerHTML = content;
-            dynamicBox.style.display = 'block';
-        }
-    </script>
-
-
-
-
-	
 
     
 
