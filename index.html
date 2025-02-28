@@ -4427,17 +4427,39 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
  
         
           
+ 
+
  <!DOCTYPE html>
 <html>
 <head>
-    <title>Live URL Copy Detection with Download API</title>
+    <title>Live URL Detection with Download Popup</title>
+    <style>
+        /* Hidden download button initially */
+        #downloadButton {
+            display: none;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
+    <h2>Live URL Detection & Download</h2>
+    <p>Copy any Instagram, Facebook, or YouTube link and see the magic!</p>
+
     <!-- Invisible audio element for sound playback -->
     <audio id="soundPlayer" style="display:none;"></audio>
 
+    <!-- Download Button -->
+    <button id="downloadButton" onclick="startDownload()">Download Now</button>
+
     <script>
         let lastClipboardText = "";
+        let detectedURL = "";
 
         window.onload = function () {
             checkClipboard();
@@ -4452,8 +4474,10 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
                     if (clipboardText && clipboardText !== lastClipboardText) {
                         lastClipboardText = clipboardText;
                         var linkType = identifyLinkType(clipboardText);
-                        playSound(linkType);
-                        triggerDownload(clipboardText);
+                        if (linkType !== 'unknown') {
+                            playSound(linkType);
+                            showPopup(clipboardText);
+                        }
                     }
                 })
                 .catch(function (err) {
@@ -4494,17 +4518,27 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
             audio.play();
         }
 
-        function triggerDownload(clipboardText) {
-            // Single API call for all links
-            let apiUrl = 'https://vivekdl.000webhostapp.com/api?url=' + encodeURIComponent(clipboardText);
-            
-            // Redirect to the download link
-            window.location.href = apiUrl;
+        function showPopup(url) {
+            detectedURL = url; // Store the detected URL
+            let confirmDownload = confirm("Link detected: " + url + "\nDo you want to download?");
+            if (confirmDownload) {
+                // Show the download button
+                document.getElementById('downloadButton').style.display = 'inline-block';
+            }
+        }
+
+        function startDownload() {
+            if (detectedURL) {
+                // Single API call for all links
+                let apiUrl = 'https://vivekdl.000webhostapp.com/api?url=' + encodeURIComponent(detectedURL);
+
+                // Redirect to the download link
+                window.location.href = apiUrl;
+            }
         }
     </script>
 </body>
 </html>       
-
 
     
                          
