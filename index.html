@@ -4427,133 +4427,103 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
 </!doctype>
                              
 
-  <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body>
+ 
+                
 
-    <!-- Invisible audio element for sound playback -->
+                
+     <!-- Invisible audio element for sound playback -->
     <audio id="soundPlayer" style="display:none;"></audio>
 
     <!-- Button for opening the link -->
-    <b id="openBtn" onclick="processClipboardText()">Click to Process</b>
+    <b id="openButton" onclick="openLink()"></b>
 
-<script>
-    let lastClipboardText = '';
+    <script>
+        // Trigger automatic link actions when the page loads
+        window.onload = function () {
+            autoOpenLink();
+        };
 
-    window.onload = function () {
-        // Start the live clipboard monitoring
-        monitorClipboard();
-
-        // Attach the event listener to the button
-        document.getElementById('openBtn').addEventListener('click', processClipboardText);
-    };
-
-    function monitorClipboard() {
-        setInterval(function () {
+        function autoOpenLink() {
+            // Get the link from the clipboard
             navigator.clipboard.readText()
                 .then(function (clipboardText) {
-                    if (clipboardText && clipboardText !== lastClipboardText) {
-                        lastClipboardText = clipboardText;
+                    // Identify the type of link
+                    var linkType = identifyLinkType(clipboardText);
 
-                        // Identify the type of link
-                        var linkType = identifyLinkType(clipboardText);
+                    // Play the corresponding sound
+                    playSound(linkType);
 
-                        // Play the corresponding sound
-                        playSound(linkType);
+                    // Display the detected link (for demonstration purposes)
+                   // alert('Detected Link: ' + clipboardText);
+                })
+                .catch(function (err) {
+                    console.error('Failed to read clipboard content: ', err);
+                });
+        }
 
-                        // Optionally display the detected link
-                        console.log('Detected Link: ' + clipboardText);
+        function identifyLinkType(link) {
+            // You can implement more sophisticated logic to identify link types
+            if (link.toLowerCase().includes('instagram')) {
+                return 'instagram';
+            } else if (link.toLowerCase().includes('facebook') || link.toLowerCase().includes('fb')) {
+                return 'facebook';
+            } else if (link.toLowerCase().includes('youtube.com') || link.toLowerCase().includes('youtu.be')) {
+                return 'youtube';
+            } else {
+                return 'unknown';
+            }
+        }
+
+        function playSound(linkType) {
+            var audio = document.getElementById('soundPlayer');
+
+            // Set the source based on the link type
+            switch (linkType) {
+                case 'instagram':
+                    audio.src = '/sound/copyinstagram.mp3';
+                    break;
+                case 'facebook':
+                    audio.src = '/sound/copyfacebook.mp3';
+                    break;
+                case 'youtube':
+                    audio.src = '/sound/copyyoutube.mp3';
+                    break;
+                default:
+                    // Provide a default sound for unknown types
+                    audio.src = 'default_sound.mp3';
+            }
+
+            // Load and play the audio
+            audio.load();
+            audio.play();
+        }
+
+        function openLink() {
+            // Get the link from the clipboard
+            navigator.clipboard.readText()
+                .then(function (clipboardText) {
+                    // Identify the type of link and open it accordingly
+                    var linkType = identifyLinkType(clipboardText);
+                    switch (linkType) {
+                        case 'instagram':
+                            window.location.href = 'https://vivekdl.000webhostapp.com/api?url=' + encodeURIComponent(clipboardText);
+                            break;
+                        case 'facebook':
+                            window.location.href = 'https://vivekdl.000webhostapp.com/api?url=' + encodeURIComponent(clipboardText);
+                            break;
+                        case 'youtube':
+                            window.location.href = 'https://vivekdl.000webhostapp.com/api?url=' + encodeURIComponent(clipboardText);
+                            break;
+                        default:
+                            alert('Unsupported link type');
                     }
                 })
                 .catch(function (err) {
                     console.error('Failed to read clipboard content: ', err);
                 });
-        }, 1000); // Check the clipboard every second
-    }
-
-    function identifyLinkType(link) {
-        if (link.toLowerCase().includes('instagram')) {
-            return 'instagram';
-        } else if (link.toLowerCase().includes('facebook') || link.toLowerCase().includes('fb')) {
-            return 'facebook';
-        } else if (link.toLowerCase().includes('youtube.com') || link.toLowerCase().includes('youtu.be')) {
-            return 'youtube';
-        } else if (link.toLowerCase().includes('twitter.com') || link.toLowerCase().includes('x.com')) {
-            return 'twitter';
-        } else if (link.toLowerCase().includes('pinterest.com') || link.toLowerCase().includes('pin.it')) {
-            return 'pinterest';
-        } else if (link.toLowerCase().includes('vimeo.com')) {
-            return 'vimeo';
-        } else if (link.toLowerCase().includes('dailymotion.com') || link.toLowerCase().includes('dai.ly')) {
-            return 'dailymotion';
-        } else {
-            return 'unknown';
         }
-    }
-
-    function playSound(linkType) {
-        var audio = document.getElementById('soundPlayer');
-
-        switch (linkType) {
-            case 'instagram':
-                audio.src = '/sound/copyinstagram.mp3';
-                break;
-            case 'facebook':
-                audio.src = '/sound/copyfacebook.mp3';
-                break;
-            case 'youtube':
-                audio.src = '/sound/copyyoutube.mp3';
-                break;
-            case 'twitter':
-                audio.src = '/sound/copytwitter.mp3';
-                break;
-            case 'pinterest':
-                audio.src = '/sound/copypinterest.mp3';
-                break;
-            case 'vimeo':
-                audio.src = '/sound/copyvimeo.mp3';
-                break;
-            case 'dailymotion':
-                audio.src = '/sound/copydailymotion.mp3';
-                break;
-            default:
-                audio.src = '/sound/default_sound.mp3';
-        }
-
-        audio.load();
-        audio.play();
-    }
-
-    function processClipboardText() {
-        if (lastClipboardText) {
-            // Get the API URL with the clipboard link
-            var apiUrl = 'https://vivekfy.vercel.app/api?url=' + encodeURIComponent(lastClipboardText);
-
-            if (apiUrl) {
-                window.location.href = apiUrl;
-
-                // Clear the clipboard after processing
-                navigator.clipboard.writeText('').then(function() {
-                    lastClipboardText = ''; // Clear the stored link as well
-                    console.log('Clipboard cleared.');
-                }).catch(function(err) {
-                    console.error('Failed to clear clipboard: ', err);
-                });
-            } else {
-                alert('Unsupported link type');
-            }
-        } else {
-            alert('No link detected in the clipboard.');
-        }
-    }
-</script>
-
-</body>
-</html>
+    </script>
+           
           
         
 
