@@ -1,6 +1,6 @@
-<script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
-   
-<script>const socket = io("https://gold-foregoing-change.glitch.me/");
+ <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
+  
+const socket = io("https://gold-foregoing-change.glitch.me/");
 
 let localStream;
 let peerConnection;
@@ -169,5 +169,5 @@ function startCallTimer() {
 function stopCallTimer() {
     clearInterval(callTimer);
     callTimerElement.innerText = '00:00';
-}</script>
+}
 
