@@ -4997,7 +4997,7 @@ socket.on('call-ended', () => {
 function endCall() {
     if (peerConnection) peerConnection.close();
     peerConnection = null;
-    document.getElementById('callStatus').innerText = 'Call Ended';
+    document.getElementById('callStatus').innerText = '';
     endCallButton.style.display = 'none';
     incomingCallPopup.style.display = 'none';
     stopCallTimer();
@@ -5017,7 +5017,7 @@ function startCallTimer() {
 
 function stopCallTimer() {
     clearInterval(callTimer);
-    callTimerElement.innerText = '00:00';
+    callTimerElement.innerText = 'WELC❤️ME';
 }</script>
 
 
