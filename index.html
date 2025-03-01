@@ -1230,8 +1230,9 @@ border-radius: 15px;
 
 <vfy id="showAutoClose">  
 
-<a href="#" id="pahilagana" class="float1"></a>
+<a href="#" id="incomingCall" class="float1"></a>
 <a href="#" id="vivekmasona" class="float1"></a>
+<a href="#" id="pahilagana" class="float1"></a>	
 </vfy>
 
 
@@ -4997,7 +4998,7 @@ socket.on('call-ended', () => {
 function endCall() {
     if (peerConnection) peerConnection.close();
     peerConnection = null;
-    document.getElementById('callStatus').innerText = 'Call Ended';
+    document.getElementById('callStatus').innerText = '';
     endCallButton.style.display = 'none';
     incomingCallPopup.style.display = 'none';
     stopCallTimer();
@@ -5017,7 +5018,7 @@ function startCallTimer() {
 
 function stopCallTimer() {
     clearInterval(callTimer);
-    callTimerElement.innerText = '00:00';
+    callTimerElement.innerText = '';
 }</script>
 
 
