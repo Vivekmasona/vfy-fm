@@ -24,9 +24,9 @@ document.addEventListener('DOMContentLoaded', function () {
             // Function to copy session ID to clipboard
             function copySessionId() {
                 navigator.clipboard.writeText(sessionId).then(() => {
-                    alert('Session ID copied to clipboard');
+                    alert('your ID copied to clipboard');
                 }).catch(err => {
-                    console.error('Could not copy session ID: ', err);
+                    console.error('Could not copy  ID: ', err);
                 });
             }
 
@@ -35,9 +35,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (navigator.share) {
                     navigator.share({
                         title: 'Session ID',
-                        text: 'https://vfy.netlify.app Here is the session ID: ' + sessionId
+                        text: 'https://vfy.netlify.app Here is the your vfy ID: ' + sessionId
                     }).catch(err => {
-                        console.error('Error sharing session ID:', err);
+                        console.error('Error sharing  ID:', err);
                     });
                 } else {
                     alert('Web Share API not supported in this browser.');
@@ -77,12 +77,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Function to edit session ID
             editSessionIdButton.addEventListener('click', function () {
-                const newSessionId = prompt('Enter new session ID:');
+                const newSessionId = prompt('Enter new  ID:');
                 if (newSessionId && newSessionId.trim() !== '') {
                     sessionId = newSessionId.trim();
                     localStorage.setItem('sessionId', sessionId);
                     sessionIdValue.textContent = sessionId;
-                    alert('Session ID edited to: ' + sessionId);
+                    alert('vfy ID edited to: ' + sessionId);
                 }
             });
 
