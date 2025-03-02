@@ -5021,5 +5021,98 @@ function stopCallTimer() {
 }</script>
 
 
-    
+  
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: radial-gradient(circle, #0a0a0a, #1b1b1b);
+            overflow: hidden;
+        }
+
+        .button-container {
+            position: relative;
+            width: 40px;
+            height: 40px;
+        }
+
+        .atomic-button {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #ff0077, #ffcc00);
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(255, 0, 119, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.3s;
+            overflow: hidden;
+            font-family: monospace;
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 10px rgba(255, 0, 119, 0.8); }
+            100% { box-shadow: 0 0 20px rgba(255, 0, 119, 1); }
+        }
+
+        /* Typing Animation */
+        .typing-text {
+            display: inline-block;
+            overflow: hidden;
+            white-space: nowrap;
+            animation: typing 3s infinite steps(3);
+        }
+
+        @keyframes typing {
+            0% { content: "V"; }
+            33% { content: "VF"; }
+            66% { content: "VFY"; }
+            100% { content: ""; }
+        }
+
+        .typing-text::after {
+            content: "VFY";
+            animation: typing 3s infinite steps(3);
+        }
+
+        /* AI Text Animation */
+        .ai-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            font-weight: bold;
+            color: #000;
+            opacity: 0;
+            animation: floatAI 3s infinite;
+        }
+
+        @keyframes floatAI {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            50% { transform: translate(-50%, -80%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -150%) scale(0.5); opacity: 0; }
+        }
+
+    </style>
+
+
+
+    <div class="button-container" id="togglebutto">
+        <div class="atomic-button">
+            <span class="typing-text"></span>
+        </div>
+        <div class="ai-text">AI</div>
+    </div>
+
+
+  
 
