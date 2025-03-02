@@ -4875,9 +4875,9 @@ window.addEventListener('load', () => {
     if (roomID) {
         socket.emit('join-room', roomID);
         document.getElementById('callUser').disabled = false;
-        alert(`Automatically Joined Room: ${roomID}`);
+        alert(`connection successful: ${roomID}`);
     } else {
-        alert('Session ID not found. Please check if it is saved correctly.');
+        alert('Create vfy id');
     }
 });
 
