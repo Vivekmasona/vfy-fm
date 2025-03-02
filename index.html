@@ -1518,6 +1518,7 @@ $(document).on('swiperight', '.ui-page', function(event){
     return false;            
 });
 var firstSearch = true; // Flag to track if it's the first search
+const useSelfAPI = true; // true -> Self API, false -> YouTube v3 API (commented out)
 
 function search(){
   //Get Form input
@@ -1536,7 +1537,6 @@ function search(){
   }else{
       
 
-const useSelfAPI = true; // true -> Self API, false -> YouTube v3 API (commented out)
 
 if (useSelfAPI) {
     $.get(`https://self-lac.vercel.app/self-api?q=${encodeURIComponent(q)}`, function (data) {
