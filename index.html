@@ -1518,7 +1518,6 @@ $(document).on('swiperight', '.ui-page', function(event){
     return false;            
 });
 var firstSearch = true; // Flag to track if it's the first search
-const useSelfAPI = true; // true -> Self API, false -> YouTube v3 API (commented out)
 
 function search(){
   //Get Form input
@@ -1536,66 +1535,61 @@ function search(){
     return;
   }else{
       
-
-
-if (useSelfAPI) {
-    $.get(`https://self-lac.vercel.app/self-api?q=${encodeURIComponent(q)}`, function (data) {
-        var results = data.results;
-        if (results.length > 0) {
-            $.each(results, function (i, item) {
-                var output = getOutput(item, i);
-                $(output).appendTo("#homepage-content").listview();
-            });
-
-            if (firstSearch) {
-                loadSong($(".list")[0], 0);
-                firstSearch = false;
-            }
-        }
-    });
-} 
-/* 
-else {
-    $.get(
-        "https://www.googleapis.com/youtube/v3/search",
-        {
-            part: "snippet , id",
-            q: q,
-            type: "video",
-            videoSyndicated: "true",
-            videoCategoryId: "10",
-            eventType: "none",
-            key: "AIzaSyCucRPiYESnpi1fTrr3XOqAjIWr7J3Jcb8",
-            maxResults: "40"
+$.get(
+      "https://www.googleapis.com/youtube/v3/search",{
+          part : 'snippet , id',
+          q : q,
+          type : 'video',
+	 videoSyndicated: 'true',
+	videoCategoryId: '10',
+       //videoDuration: 'long', // This filters for videos under 4 minutes
+        eventType: 'none', // Exclude live videos
+        //videoDuration: 'medium', // 'medium' ya 'long' as per your preference
+        //eventType: 'none' // 'none'
+	//videoEmbeddable: 'true', // Exclude live videos
+        //videoType: 'video',
+        //order: 'date', // Sort by date (newest first)
+        //videoLicense: 'creativeCommon',
+          //key : "AIzaSyAs_tSQYJXX9axDYXkYGe9RZmt1p-XRFWo",
+	 // key : "AIzaSyAuncZ6zOgCiTErzcEc3cHGuhybV1UIJvA",
+	  //key : "AIzaSyCbn2fAWsEvw6TyD4PsfNchyK35rN69jH0",
+	  //key : "AIzaSyBemcQ7KH8CvxN0kKjGK-nhfuBzzTy4KEk", 
+	  //key : "AIzaSyBh6s9emY3VYSbsHudlhxProRt8mtFyt2s",
+	  //key : "AIzaSyBfsNcJJHd-O0ftUzH2KqIRc_KhXgPXne0",
+	  key : "AIzaSyCucRPiYESnpi1fTrr3XOqAjIWr7J3Jcb8",    
+          maxResults : "40"
         },
-        function (data) {
-            var nextPageToken = data.nextPageToken;
-            var prevPageToken = data.prevPageToken;
+          function (data) {
+                var nextPageToken = data.nextPageToken;
+                var prevPageToken = data.prevPageToken;
 
-            $.each(data.items, function (i, item) {
-                var output = getOutput(item, i);
-                $(output).appendTo("#homepage-content").listview();
-            });
+                // Load all songs in the search list
+                $.each(data.items, function (i, item) {
+                    var output = getOutput(item, i);
+                    $(output).appendTo("#homepage-content").listview();
+                });
 
-            if (firstSearch && data.items.length > 0) {
-                loadSong($(".list")[0], 0);
-                firstSearch = false;
-            }
+                if (firstSearch && data.items.length > 0) {
+                    // Automatically play the first song only on the first search
+                    loadSong($(".list")[0], 0);
+                    firstSearch = false; // Set the flag to false for subsequent searches
+                }
 
-            if (prevPageToken) {
-                $("#prev-btn").show();
-                $("#prev-btn").attr("prev", prevPageToken);
-                $("#prev-btn").attr("q", q);
+                if (prevPageToken) {
+                    $("#prev-btn").show();
+                    $("#prev-btn").attr("prev", prevPageToken);
+                    $("#prev-btn").attr("q", q);
+                }
+                if (nextPageToken) {
+                    $("#next-btn").show();
+                    $("#next-btn").attr("next", nextPageToken);
+                    $("#next-btn").attr("q", q);
+                }
             }
-            if (nextPageToken) {
-                $("#next-btn").show();
-                $("#next-btn").attr("next", nextPageToken);
-                $("#next-btn").attr("q", q);
-            }
-        }
-    );
+        );
+    }
 }
-*/
+
 
 function getOutput(item, i) {
   var id = item.id.videoId;
@@ -5141,3 +5135,4 @@ function stopCallTimer() {
 	
 
 	
+
