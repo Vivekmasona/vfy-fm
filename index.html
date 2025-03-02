@@ -5022,17 +5022,30 @@ function stopCallTimer() {
 
 
   
-    <style>
-        
 
-        .button-container {
-            position: relative;
-            width: 40px;
-            height: 40px;
+
+    <style>
+        body {
+            height: 200vh; /* Just to test scrolling */
+            background: radial-gradient(circle, #0a0a0a, #1b1b1b);
+            margin: 0;
+        }
+
+        /* Floating Button Container */
+        .floating-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .atomic-button {
-            position: absolute;
+            position: relative;
             width: 40px;
             height: 40px;
             background: linear-gradient(45deg, #ff0077, #ffcc00);
@@ -5045,8 +5058,7 @@ function stopCallTimer() {
             color: white;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.3s;
-            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.3s, background 0.3s;
             font-family: monospace;
             animation: pulse 2s infinite alternate;
         }
@@ -5084,7 +5096,7 @@ function stopCallTimer() {
             transform: translate(-50%, -50%);
             font-size: 14px;
             font-weight: bold;
-            color: #000;
+            color: cyan;
             opacity: 0;
             animation: floatAI 3s infinite;
         }
@@ -5095,17 +5107,30 @@ function stopCallTimer() {
             100% { transform: translate(-50%, -150%) scale(0.5); opacity: 0; }
         }
 
+        /* Click Animation */
+        .atomic-button:active {
+            background: linear-gradient(45deg, #ffcc00, #ff0077);
+            box-shadow: 0 0 25px rgba(255, 0, 119, 1);
+            transform: scale(0.9);
+        }
+
     </style>
+</head>
+<body>
 
-
-
-    <div class="button-container" id="togglebutto">
-        <div class="atomic-button">
+    <div class="floating-button">
+        <div class="atomic-button" id="Aibutton">
             <span class="typing-text"></span>
         </div>
         <div class="ai-text">AI</div>
     </div>
 
+    <script>
+        document.getElementById("Aibutton").addEventListener("click", function() {
+            alert("AI Button Clicked!");
+        });
+    </script>
 
-  
+	
 
+	
