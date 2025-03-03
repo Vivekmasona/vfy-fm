@@ -1613,7 +1613,7 @@ function getOutput(item, i) {
     return `
         <b onclick="loadSong(this)" index="${i}" class="list" vid="${id}" style="position:relative;">
             <div class="video">
-                <i class="fas fa-bookmark save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
+                <i class="fas fa-heart" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
                 <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" onclick="loadSong(this)" index="${i}" vid="${id}">
                 <section>
                     <img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">
