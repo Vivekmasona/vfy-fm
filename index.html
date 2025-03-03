@@ -4995,54 +4995,57 @@ function stopCallTimer() {
 </head>
 <body>
 
-    <button class="settings-btn" onclick="openPopup()">⚙️</button>
+   <button class="settings-btn" onclick="openPopup()">⚙️</button>
 
-    <div class="popup" id="popup">
-        <h3>Api setting</h3>
-        <div class="small-popup">
-            <div class="custom-radio">
-                <input type="radio" id="self" name="apiSelection" value="self">
-                <label for="self">Vfy Self API</label>
+<div class="popup" id="popup">
+    <h3>API Setting</h3>
+    <div class="small-popup">
+        <div class="custom-radio">
+            <input type="radio" id="self" name="apiSelection" value="self">
+            <label for="self">Vfy Self API</label>
 
-                <input type="radio" id="youtube" name="apiSelection" value="youtube">
-                <label for="youtube">YouTube v3 API</label>
-            </div>
+            <input type="radio" id="youtube" name="apiSelection" value="youtube">
+            <label for="youtube">YouTube v3 API</label>
         </div>
-        <button class="close-btn" onclick="closePopup()">Close</button>
     </div>
+    <button class="close-btn" onclick="closePopup()">Close</button>
+</div>
 
-    <script>
-        function openPopup() {
-            document.getElementById("popup").classList.add("active");
-        }
 
-        function closePopup() {
-            document.getElementById("popup").classList.remove("active");
-        }
 
-        function saveSelection(value) {
-            localStorage.setItem("apiSelection", value);
-        }
+<script>
+    function openPopup() {
+        document.getElementById("popup").classList.add("active");
+    }
 
-        function loadSelection() {
-            let savedValue = localStorage.getItem("apiSelection");
-            if (savedValue) {
-                document.querySelector(`input[value="${savedValue}"]`).checked = true;
+    function closePopup() {
+        document.getElementById("popup").classList.remove("active");
+    }
+
+    function saveSelection(value) {
+        localStorage.setItem("apiSelection", value);
+    }
+
+    function loadSelection() {
+        let savedValue = localStorage.getItem("apiSelection");
+        if (savedValue) {
+            let radio = document.querySelector(`input[value="${savedValue}"]`);
+            if (radio) {
+                radio.checked = true;
             }
         }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadSelection(); // Load saved selection first
 
         document.querySelectorAll('input[name="apiSelection"]').forEach((radio) => {
             radio.addEventListener("change", (event) => {
                 saveSelection(event.target.value);
             });
         });
-
-        window.onload = loadSelection;
-    </script>
-
-
-
-
+    });
+</script> 
 
 
     <script>
