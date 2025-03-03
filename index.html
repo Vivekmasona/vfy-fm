@@ -1517,33 +1517,33 @@ $(document).on('swiperight', '.ui-page', function(event){
     }
     return false;            
 });
-var firstSearch = true; // Flag to track if it's the first search
+//var firstSearch = true; // Flag to track if it's the first search
 
-function search(){
+//function search(){
   //Get Form input
-  $("#homepage-content").html("");
+ // $("#homepage-content").html("");
   
-  var ytapi = "AIzaSyAs_tSQYJXX9axDYXkYGe9RZmt1p-XRFWo";
+  //var ytapi = "AIzaSyAs_tSQYJXX9axDYXkYGe9RZmt1p-XRFWo";
  //var ytapi = "AIzaSyCbn2fAWsEvw6TyD4PsfNchyK35rN69jH0";
  //var ytapi = "AIzaSyAuncZ6zOgCiTErzcEc3cHGuhybV1UIJvA";
  //var ytapi = "AIzaSyBemcQ7KH8CvxN0kKjGK-nhfuBzzTy4KEk";
  //var ytapi = "AIzaSyBh6s9emY3VYSbsHudlhxProRt8mtFyt2s";
  //var ytapi = "AIzaSyBfsNcJJHd-O0ftUzH2KqIRc_KhXgPXne0";
   
-  var q = $(".search-bar").val();
-  if(q === null || q === undefined || q=== ""){
-    return;
-  }else{
+ // var q = $(".search-bar").val();
+  //if(q === null || q === undefined || q=== ""){
+   // return;
+//  }else{
       
-$.get(
-      "https://www.googleapis.com/youtube/v3/search",{
-          part : 'snippet , id',
-          q : q,
-          type : 'video',
-	 videoSyndicated: 'true',
-	videoCategoryId: '10',
+//$.get(
+      //"https://www.googleapis.com/youtube/v3/search",{
+         // part : 'snippet , id',
+          //q : q,
+          //type : 'video',
+	// videoSyndicated: 'true',
+	//videoCategoryId: '10',
        //videoDuration: 'long', // This filters for videos under 4 minutes
-        eventType: 'none', // Exclude live videos
+       // eventType: 'none', // Exclude live videos
         //videoDuration: 'medium', // 'medium' ya 'long' as per your preference
         //eventType: 'none' // 'none'
 	//videoEmbeddable: 'true', // Exclude live videos
@@ -1556,79 +1556,153 @@ $.get(
 	  //key : "AIzaSyBemcQ7KH8CvxN0kKjGK-nhfuBzzTy4KEk", 
 	  //key : "AIzaSyBh6s9emY3VYSbsHudlhxProRt8mtFyt2s",
 	  //key : "AIzaSyBfsNcJJHd-O0ftUzH2KqIRc_KhXgPXne0",
-	  key : "AIzaSyCucRPiYESnpi1fTrr3XOqAjIWr7J3Jcb8",    
-          maxResults : "40"
-        },
-          function (data) {
-                var nextPageToken = data.nextPageToken;
-                var prevPageToken = data.prevPageToken;
+	 // key : "AIzaSyCucRPiYESnpi1fTrr3XOqAjIWr7J3Jcb8",    
+         // maxResults : "40"
+       // },
+          //function (data) {
+              //  var nextPageToken = data.nextPageToken;
+                //var prevPageToken = data.prevPageToken;
 
                 // Load all songs in the search list
-                $.each(data.items, function (i, item) {
-                    var output = getOutput(item, i);
-                    $(output).appendTo("#homepage-content").listview();
-                });
+               // $.each(data.items, function (i, item) {
+                  //  var output = getOutput(item, i);
+                    //$(output).appendTo("#homepage-content").listview();
+               // });
 
-                if (firstSearch && data.items.length > 0) {
+               // if (firstSearch && data.items.length > 0) {
                     // Automatically play the first song only on the first search
-                    loadSong($(".list")[0], 0);
-                    firstSearch = false; // Set the flag to false for subsequent searches
-                }
+                   // loadSong($(".list")[0], 0);
+                   // firstSearch = false; // Set the flag to false for subsequent searches
+               // }
 
-                if (prevPageToken) {
-                    $("#prev-btn").show();
-                    $("#prev-btn").attr("prev", prevPageToken);
-                    $("#prev-btn").attr("q", q);
-                }
-                if (nextPageToken) {
-                    $("#next-btn").show();
-                    $("#next-btn").attr("next", nextPageToken);
-                    $("#next-btn").attr("q", q);
-                }
-            }
-        );
-    }
-}
+               // if (prevPageToken) {
+                   // $("#prev-btn").show();
+                   // $("#prev-btn").attr("prev", prevPageToken);
+                    //$("#prev-btn").attr("q", q);
+               // }
+               // if (nextPageToken) {
+                    //$("#next-btn").show();
+                    //$("#next-btn").attr("next", nextPageToken);
+                   // $("#next-btn").attr("q", q);
+                //}
+            //}
+      //  );
+   // }
+//}
 
 
-function getOutput(item, i) {
-  var id = item.id.videoId;
-  var title = item.snippet.title;
-  var description = item.snippet.description;
-  var thumbUrl = 'https://img.youtube.com/vi/' + id + '/mqdefault.jpg' || 'https://example.com/default-thumbnail.jpg';
-  var channelTitle = item.snippet.channelTitle;
-  var videoDate = new Date(item.snippet.publishedAt);
+//function getOutput(item, i) {
+ // var id = item.id.videoId;
+  //var title = item.snippet.title;
+//  var description = item.snippet.description;
+  //var thumbUrl = 'https://img.youtube.com/vi/' + id + '/mqdefault.jpg' || 'https://example.com/default-thumbnail.jpg';
+ // var channelTitle = item.snippet.channelTitle;
+//  var videoDate = new Date(item.snippet.publishedAt);
 
   // Check if the video is live and exclude it
- if (item.snippet.liveBroadcastContent === "live") {
-    return ''; // Empty string means skipping this item
-  }
+ //if (item.snippet.liveBroadcastContent === "live") {
+  //  return ''; // Empty string means skipping this item
+//  }
 
 
 	
-  var output =
-    '<b onclick="loadSong(this)" index="' + i + '" class="list" vid="' + id + '" style="position:relative;">' +
-    '<div class="video">' +
-    '<i class="fas fa-bookmark save-icon" onclick="event.stopPropagation(); saveFavorite(' + i + ', \'' + title + '\', \'' + thumbUrl + '\', \'' + id + '\')"></i>' + // Added video ID as a parameter
-    '<img src="' + thumbUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + i + '" vid="' + id + '">' +
-    '<section>' +
-    '<img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">' +
-    '<div>' +
-    '<p>V F Y ' + title + '</p>' +
-    '<small class="video-info">' + channelTitle + '</small>' +
-    '<small class="video-info"> VFY </small>' +
-    '<small class="video-info"> Ai </small>' +
-    '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +
-    '</div>' +
-    '</section>' +
-    '</div>' +
-    '</b>';
+  //var output =
+    //'<b onclick="loadSong(this)" index="' + i + '" class="list" vid="' + id + '" style="position:relative;">' +
+   // '<div class="video">' +
+    //'<i class="fas fa-bookmark save-icon" onclick="event.stopPropagation(); saveFavorite(' + i + ', \'' + title + '\', \'' + thumbUrl + '\', \'' + id + '\')"></i>' + // Added video ID as a parameter
+  //  '<img src="' + thumbUrl + '" alt="' + title + '" class="video-thumbnail" onclick="loadSong(this)" index="' + i + '" vid="' + id + '">' +
+   // '<section>' +
+ //   '<img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">' +
+    //'<div>' +
+   // '<p>V F Y ' + title + '</p>' +
+   // '<small class="video-info">' + channelTitle + '</small>' +
+  //  '<small class="video-info"> VFY </small>' +
+   // '<small class="video-info"> Ai </small>' +
+  //  '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +
+   // '</div>' +
+   // '</section>' +
+  //  '</div>' +
+ //   '</b>';
 
-return output;
-	}
+//return output;
+	//}
 
+//vivekfy self api //
+var firstSearch = true; // First search flag
 
+function search() {
+    $("#homepage-content").html("");
 
+    var q = $(".search-bar").val();
+    if (!q) {
+        console.warn("Search query is empty!");
+        return;
+    }
+
+    var apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(q)}`;
+
+    $.get(apiUrl, function (data) {
+        if (!data || !data.items) {
+            console.error("Invalid API response:", data);
+            $("#homepage-content").html("<p>No results found.</p>");
+            return;
+        }
+
+        var nextPageToken = data.nextPageToken;
+        var prevPageToken = data.prevPageToken;
+
+        $.each(data.items, function (i, item) {
+            var output = getOutput(item, i);
+            if (output) {
+                $("#homepage-content").append(output);
+            }
+        });
+
+        if (firstSearch && data.items.length > 0) {
+            loadSong($(".list")[0], 0);
+            firstSearch = false;
+        }
+
+        $("#prev-btn").toggle(!!prevPageToken).attr("prev", prevPageToken).attr("q", q);
+        $("#next-btn").toggle(!!nextPageToken).attr("next", nextPageToken).attr("q", q);
+    }).fail(function (error) {
+        console.error("Error fetching data:", error);
+        alert("Failed to load search results.");
+    });
+}
+
+function getOutput(item, i) {
+    var id = item.id?.videoId || item.id;
+    var title = item.snippet?.title || "No title";
+    var description = item.snippet?.description || "No description";
+    var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
+    var channelTitle = item.snippet?.channelTitle || "Unknown channel";
+    var videoDate = new Date(item.snippet?.publishedAt || Date.now());
+
+    // Exclude live videos
+    if (item.snippet?.liveBroadcastContent === "live") {
+        return '';
+    }
+
+    return `
+        <b onclick="loadSong(this)" index="${i}" class="list" vid="${id}" style="position:relative;">
+            <div class="video">
+                <i class="fas fa-bookmark save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
+                <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" onclick="loadSong(this)" index="${i}" vid="${id}">
+                <section>
+                    <img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">
+                    <div>
+                        <p>V F Y ${title}</p>
+                        <small class="video-info">${channelTitle1}</small>
+                        <small class="video-info"> VFY </small>
+                        <small class="video-info"> Ai </small>
+                        <small class="video-info">Release Date: ${videoDate.toDateString()}</small>
+                    </div>
+                </section>
+            </div>
+        </b>`;
+}
+	//end self api//
 
 // Show the popup when a butto is clicked
 $("#showPopupbutto").click(function() {
