@@ -1409,7 +1409,7 @@ displayFavorites();
 </footer>
 </!doctype>	
        
- <b id="title"></b>
+ 
 <script>
 
 $(document).ready(function() {
@@ -1660,9 +1660,7 @@ function loadSong(song, ind) {
 
     // Set the current song title with marquee effect to the div with ID "currentSongTitle"
     $("#currentSongTitle").html('<marquee behavior="alternate" scrollamount="1" onmousedown="this.stop();" onmouseup="this.start();">' + title + '</marquee>');
-
-$("#title").text(title);
-	
+    
     // Create a div with ID "currentSongOutput" to display video ID and max resolution thumbnail
     $("#currentSongOutput").html('Video ID: ' + id + '<br>' +
                                  'Max Resolution Thumbnail: <img src="' + thumbnail + '" alt="Current Song Thumbnail" style="max-width:100%; max-height:100%;">');
@@ -1874,7 +1872,7 @@ volumeSlider.addEventListener('input', function () {
 
 
    const titleaudio = document.getElementById('SAudio');
-const songTitleElement = document.getElementById('title');
+const songTitleElement = document.getElementById('vfytitle');
 const thumbnailElement = document.getElementById('SThumb');
 const nextButtonElement = document.getElementById('nextbutto');
 const heartButtonElement = document.getElementById('VFYmp3v2');
@@ -5116,6 +5114,7 @@ function stopCallTimer() {
         // **Page Load hote hi Automatic Load Hoga**
         window.onload = loadTrendingSongs;
     </script>
+
 
 
 
