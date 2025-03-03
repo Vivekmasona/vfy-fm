@@ -1050,12 +1050,7 @@ border-radius: 15px;
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">search</button></sr>
 	    
 	
-	    <label>
-        <input type="radio" name="apiSelection" value="self" checked> Self API
-    </label>
-    <label>
-        <input type="radio" name="apiSelection" value="youtube"> YouTube API
-    </label>
+	
 
    <div id="autocomplete-results"></div>
 
@@ -5023,113 +5018,157 @@ function stopCallTimer() {
   
 
 
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popup with Fixed Button</title>
     <style>
-        
-
-        /* Floating Button Container */
-        .floating-button {
-	    z-index:999999;
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #121212;
+            margin: 0;
+        }
+        .popup {
             position: fixed;
-            bottom: 5px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .atomic-button {
-            position: relative;
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(45deg, #ff0077, #ffcc00);
-            border-radius: 50%;
-            box-shadow: 0 0 15px rgba(255, 0, 119, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.3s, background 0.3s;
-            font-family: monospace;
-            animation: pulse 2s infinite alternate;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 10px rgba(255, 0, 119, 0.8); }
-            100% { box-shadow: 0 0 20px rgba(255, 0, 119, 1); }
-        }
-
-        /* Typing Animation */
-        .typing-text {
-            display: inline-block;
-            overflow: hidden;
-            white-space: nowrap;
-            animation: typing 3s infinite steps(3);
-        }
-
-        @keyframes typing {
-            0% { content: "V"; }
-            33% { content: "VF"; }
-            66% { content: "VFY"; }
-            100% { content: ""; }
-        }
-
-        .typing-text::after {
-            content: "VFY";
-            animation: typing 3s infinite steps(3);
-        }
-
-        /* AI Text Animation */
-        .ai-text {
-            position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 14px;
-            font-weight: bold;
-            color: #000;
-            opacity: 0;
-            animation: floatAI 3s infinite;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+            display: none;
+            border-radius: 10px;
+            z-index: 999999;
+            color: white;
+            width: 250px;
+            text-align: center;
         }
-
-        @keyframes floatAI {
-            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
-            50% { transform: translate(-50%, -80%) scale(1); opacity: 1; }
-            100% { transform: translate(-50%, -150%) scale(0.5); opacity: 0; }
+        .popup.active {
+            display: block;
         }
-
-        /* Click Animation */
-        .atomic-button:active {
-            background: linear-gradient(45deg, #ffcc00, #ff0077);
-            box-shadow: 0 0 25px rgba(255, 0, 119, 1);
-            transform: scale(0.9);
+        .small-popup {
+            margin-top: 10px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
         }
-
+        .custom-radio input {
+            display: none;
+        }
+        .custom-radio {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .custom-radio label {
+            position: relative;
+            padding-left: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            color: white;
+        }
+        .custom-radio label:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        .custom-radio input:checked + label:before {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            border: none;
+            box-shadow: 0 0 10px rgba(255, 65, 108, 0.8);
+        }
+        .close-btn {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            cursor: pointer;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .settings-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: none;
+            color: white;
+            padding: 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+            transition: 0.3s;
+        }
+        .settings-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
     </style>
 </head>
 <body>
 
-    <div class="floating-button">
-        <div class="atomic-button" id="Aibutton">
-            <span class="typing-text"></span>
+    <button class="settings-btn" onclick="openPopup()">⚙️</button>
+
+    <div class="popup" id="popup">
+        <h3>Api setting</h3>
+        <div class="small-popup">
+            <div class="custom-radio">
+                <input type="radio" id="self" name="apiSelection" value="self">
+                <label for="self">Vfy Self API</label>
+
+                <input type="radio" id="youtube" name="apiSelection" value="youtube">
+                <label for="youtube">YouTube v3 API</label>
+            </div>
         </div>
-        <div class="ai-text">AI</div>
+        <button class="close-btn" onclick="closePopup()">Close</button>
     </div>
 
     <script>
-        //document.getElementById("Aibutton").addEventListener("click", function() {
-          //  alert("AI Button Clicked!");
-       // });
+        function openPopup() {
+            document.getElementById("popup").classList.add("active");
+        }
+
+        function closePopup() {
+            document.getElementById("popup").classList.remove("active");
+        }
+
+        function saveSelection(value) {
+            localStorage.setItem("apiSelection", value);
+        }
+
+        function loadSelection() {
+            let savedValue = localStorage.getItem("apiSelection");
+            if (savedValue) {
+                document.querySelector(`input[value="${savedValue}"]`).checked = true;
+            }
+        }
+
+        document.querySelectorAll('input[name="apiSelection"]').forEach((radio) => {
+            radio.addEventListener("change", (event) => {
+                saveSelection(event.target.value);
+            });
+        });
+
+        window.onload = loadSelection;
     </script>
 
-	
 
-	
 
 
 
