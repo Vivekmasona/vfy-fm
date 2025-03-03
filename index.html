@@ -66,6 +66,48 @@ if (window !== window.top) {
 </script>
 
 
+
+
+<script>
+    function setMediaSession(item) {
+        if (!item || !item.id) return;
+
+        var id = item.id?.videoId || item.id; // ID fetch karega
+        var title = item.snippet?.title || "Now Playing"; // Title fetch karega
+        var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg'; // Thumbnail fetch karega
+        var artist = "Online Vivekfy AI"; // Fixed artist
+
+        // Media Session API
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: title,
+                artist: artist,
+                album: "Vivekfy Playlist",
+                artwork: [{ src: thumbUrl, sizes: "512x512", type: "image/jpeg" }]
+            });
+        }
+    }
+
+    // Jab audio play hoga, tab notification update karega
+    document.getElementById("SAudio")?.addEventListener("play", function () {
+        var id = this.getAttribute("data-id"); // Player ke `data-id` se YouTube ID lega
+        if (!id) return;
+
+        var item = {
+            id: id,
+            snippet: {
+                title: this.getAttribute("data-title") || "Now Playing",
+                thumbnails: { medium: { url: this.getAttribute("data-thumb") || "https://example.com/default-thumbnail.jpg" } }
+            }
+        };
+
+        setMediaSession(item);
+    });
+</script>
+
+
+
+
 <style>
         /* Global CSS jo har alert ko stylish banayega */
         body::after {
