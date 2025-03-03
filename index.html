@@ -1050,7 +1050,7 @@ border-radius: 15px;
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">search</button></sr>
 	    
 	
-	
+	<div id="title"></div>
 
    <div id="autocomplete-results"></div>
 
@@ -1657,6 +1657,8 @@ function loadSong(song, ind) {
 
     // Set the current time title to the div with ID "currentTimeTitle"
     $("#currentTimeTitle").text("Current Time: " + new Date().toLocaleTimeString());
+
+	$("#title").text('${title}');
 
     // Set the current song title with marquee effect to the div with ID "currentSongTitle"
     $("#currentSongTitle").html('<marquee behavior="alternate" scrollamount="1" onmousedown="this.stop();" onmouseup="this.start();">' + title + '</marquee>');
