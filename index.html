@@ -1873,24 +1873,28 @@ volumeSlider.addEventListener('input', function () {
 
    
 
+ 
  const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle');
 const thumbnailElement = document.getElementById('SThumb');
 const nextButtonElement = document.getElementById('nextbutto');
-const previousButtonElement = document.getElementById('prevbutto');
+const prevButtonElement = document.getElementById('prevbutto'); // Previous button added
 const heartButtonElement = document.getElementById('VFYmp3v2');
 const downloadButtonElement = document.getElementById('VFYmp3');
-const callButtonElement = document.getElementById('callbutto');
 
 // Global title variable
 let title = "Unknown Title";
+
+// Variable to keep track of the current notification
 let currentNotification = null;
 
+// Function to update the song title
 function updateTitle() {
-    title = songTitleElement ? songTitleElement.textContent.trim() : "Unknown Title";
-    console.log("Current Title:", title);
+    title = songTitleElement ? songTitleElement.textContent.trim() : "Unknown Title"; 
+    console.log("Updated Title:", title); // Debugging
 }
 
+// Function to update Media Session metadata
 function updateMediaSessionMetadata() {
     updateTitle();
     const thumbnailUrl = thumbnailElement ? thumbnailElement.src : '';
@@ -1900,22 +1904,33 @@ function updateMediaSessionMetadata() {
             title: title,
             artist: 'status vivekfy.ai',
             album: 'VivekFy',
-            artwork: [{ src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' }]
+            artwork: [
+                { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '192x192', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '256x256', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
+            ]
         });
 
+        // Media session action handlers
         navigator.mediaSession.setActionHandler('play', () => titleaudio.play());
         navigator.mediaSession.setActionHandler('pause', () => titleaudio.pause());
         navigator.mediaSession.setActionHandler('nexttrack', () => nextButtonElement.click());
-        navigator.mediaSession.setActionHandler('previoustrack', () => previousButtonElement.click());
+        navigator.mediaSession.setActionHandler('previoustrack', () => prevButtonElement.click()); // Previous track support
         navigator.mediaSession.setActionHandler('seekbackward', () => {
             titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
         });
         navigator.mediaSession.setActionHandler('seekforward', () => {
             titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
         });
+    } else {
+        console.log('The Media Session API is not supported in this browser.');
     }
 }
 
+// Function to show notification with updated title
 function showNotification() {
     updateTitle();
     const thumbnailUrl = thumbnailElement ? thumbnailElement.src : '';
@@ -1925,12 +1940,11 @@ function showNotification() {
         icon: thumbnailUrl,
         actions: [
             { action: 'prev', title: 'Previous', icon: 'path/to/prev-icon.png' },
-            { action: 'seekbackward', title: 'Rewind', icon: 'path/to/rewind-icon.png' },
-            { action: 'seekforward', title: 'Fast Forward', icon: 'path/to/forward-icon.png' },
+            { action: 'seekbackward', title: 'Rewind', icon: 'path/to/seek-back-icon.png' },
+            { action: 'seekforward', title: 'Fast Forward', icon: 'path/to/seek-forward-icon.png' },
             { action: 'heart', title: 'Favorite', icon: 'path/to/heart-icon.png' },
-            { action: 'call', title: 'Call', icon: 'path/to/call-icon.png' },
-            { action: 'download', title: 'Download', icon: 'path/to/download-icon.png' },
-            { action: 'next', title: 'Next', icon: 'path/to/next-icon.png' }
+            { action: 'next', title: 'Next', icon: 'path/to/next-icon.png' },
+            { action: 'download', title: 'Download', icon: 'path/to/download-icon.png' }
         ]
     };
 
@@ -1940,81 +1954,88 @@ function showNotification() {
 
     if (Notification.permission === 'granted') {
         currentNotification = new Notification(title, options);
-        currentNotification.onclick = () => console.log('Notification Clicked');
-
         currentNotification.addEventListener('click', (event) => {
-            switch (event.action) {
-                case 'prev':
-                    previousButtonElement.click();
-                    break;
-                case 'next':
-                    nextButtonElement.click();
-                    break;
-                case 'heart':
-                    heartButtonElement.click();
-                    break;
-                case 'download':
-                    downloadButtonElement.click();
-                    break;
-                case 'call':
-                    callButtonElement.click(); // Call button click event
-                    console.log('Call Button Clicked');
-                    break;
-                case 'seekbackward':
-                    titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
-                    break;
-                case 'seekforward':
-                    titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
-                    break;
-                default:
-                    console.log('Unknown action');
+            if (event.action === 'next') {
+                nextButtonElement.click();
+            } else if (event.action === 'prev') {
+                prevButtonElement.click(); // Previous song support
+            } else if (event.action === 'heart') {
+                heartButtonElement.click();
+            } else if (event.action === 'download') {
+                downloadButtonElement.click();
+            } else if (event.action === 'seekbackward') {
+                titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
+            } else if (event.action === 'seekforward') {
+                titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
             }
         });
     } else if (Notification.permission !== 'denied') {
         Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
-                showNotification();
+                currentNotification = new Notification(title, options);
+                currentNotification.addEventListener('click', (event) => {
+                    if (event.action === 'next') {
+                        nextButtonElement.click();
+                    } else if (event.action === 'prev') {
+                        prevButtonElement.click(); // Previous song support
+                    } else if (event.action === 'heart') {
+                        heartButtonElement.click();
+                    } else if (event.action === 'download') {
+                        downloadButtonElement.click();
+                    } else if (event.action === 'seekbackward') {
+                        titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
+                    } else if (event.action === 'seekforward') {
+                        titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
+                    }
+                });
             }
         });
     }
 }
 
+// Update the Media Session metadata initially
+updateMediaSessionMetadata();
+
+// Event listener when audio plays
 titleaudio.addEventListener('play', () => {
     updateTitle();
-    document.title = `${title} - Playing`;
+    document.title = `${title} - ${Math.floor(titleaudio.currentTime)} seconds`;
     showNotification();
 });
 
+// Event listener when audio pauses
 titleaudio.addEventListener('pause', () => {
     document.title = 'VIVEKFY-AI';
 });
 
+// Add event listener for the next button
 nextButtonElement.addEventListener('click', () => {
     updateTitle();
     updateMediaSessionMetadata();
     showNotification();
-    console.log('Next song button clicked');
+    console.log('Next song button clicked:', title);
 });
 
-previousButtonElement.addEventListener('click', () => {
+// Add event listener for the previous button
+prevButtonElement.addEventListener('click', () => {
     updateTitle();
-    console.log('Previous song button clicked');
+    updateMediaSessionMetadata();
+    showNotification();
+    console.log('Previous song button clicked:', title);
 });
 
+// Add event listener for the heart button
 heartButtonElement.addEventListener('click', () => {
-    console.log('Heart button clicked');
+    console.log('Heart button clicked:', title);
 });
 
+// Add event listener for the download button
 downloadButtonElement.addEventListener('click', () => {
-    console.log('Download button clicked');
-});
+    console.log('Download button clicked:', title);
+});                   
 
-callButtonElement.addEventListener('click', () => {
-    console.log('Call action initiated');
-    alert('Calling VivekFy Service...');
-});
 
-updateMediaSessionMetadata(); 
+
 
 
 
