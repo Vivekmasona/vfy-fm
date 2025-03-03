@@ -1842,167 +1842,64 @@ volumeSlider.addEventListener('input', function () {
 });
 
 
-   const titleaudio = document.getElementById('SAudio');
-const songTitleElement = document.getElementById('vfytitle');
-const thumbnailElement = document.getElementById('SThumb');
-const nextButtonElement = document.getElementById('nextbutto');
-const heartButtonElement = document.getElementById('VFYmp3v2');
-const downloadButtonElement = document.getElementById('VFYmp3');
 
-// Variable to keep track of the current notification
-let currentNotification = null;
 
-// Function to update Media Session metadata
-function updateMediaSessionMetadata() {
-    const songTitle = songTitleElement.textContent;
-    const thumbnailUrl = thumbnailElement.src;
+<script>
+    const audio = document.getElementById("SAudio");
 
-    if ('mediaSession' in navigator) {
-        navigator.mediaSession.metadata = new MediaMetadata({
-            title: songTitle,
-            artist: 'status vivekfy.ai',
-            album: 'VivekFy',
-            artwork: [
-                { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '192x192', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '256x256', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
-            ]
-        });
+    // Dummy song data (Replace with actual data)
+    let songIndex = 0;
+    const playlist = [
+        { title: "Song 1", artist: "Artist 1", artwork: "https://example.com/image1.jpg", src: "audio1.mp3" },
+        { title: "Song 2", artist: "Artist 2", artwork: "https://example.com/image2.jpg", src: "audio2.mp3" }
+    ];
 
-        // Set action handlers
-        navigator.mediaSession.setActionHandler('play', () => {
-            titleaudio.play();
-        });
-        navigator.mediaSession.setActionHandler('pause', () => {
-            titleaudio.pause();
-        });
-        navigator.mediaSession.setActionHandler('nexttrack', () => {
-            nextButtonElement.click();
-        });
-        navigator.mediaSession.setActionHandler('previoustrack', () => {
-            heartButtonElement.click();
-        });
-        navigator.mediaSession.setActionHandler('seekbackward', () => {
-            titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
-        });
-        navigator.mediaSession.setActionHandler('seekforward', () => {
-            titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
-        });
-    } else {
-        console.log('The Media Session API is not supported in this browser.');
-    }
-}
+    function updateMediaSession() {
+        if ("mediaSession" in navigator) {
+            const song = playlist[songIndex];
 
-// Function to show notification with updated thumbnail
-function showNotification() {
-    const songTitle = songTitleElement.textContent;
-    const thumbnailUrl = thumbnailElement.src;
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: song.title,
+                artist: song.artist,
+                artwork: [{ src: song.artwork, sizes: "512x512", type: "image/png" }]
+            });
 
-    const options = {
-        body: 'Audio is playing',
-        icon: thumbnailUrl,
-        actions: [
-            {
-                action: 'seekbackward',
-                title: 'Rewind',
-                icon: 'path/to/seek-back-icon.png'
-            },
-            {
-                action: 'seekforward',
-                title: 'Fast Forward',
-                icon: 'path/to/seek-forward-icon.png'
-            },
-            {
-                action: 'heart',
-                title: 'Favorite',
-                icon: 'path/to/heart-icon.png'
-            },
-            {
-                action: 'next',
-                title: 'Next Song',
-                icon: 'path/to/next-icon.png'
-            },
-            {
-                action: 'download',
-                title: 'Download',
-                icon: 'path/to/download-icon.png'
-            }
-        ]
-    };
-
-    // Close the previous notification if it exists
-    if (currentNotification) {
-        currentNotification.close();
+            navigator.mediaSession.setActionHandler("play", playAudio);
+            navigator.mediaSession.setActionHandler("pause", pauseAudio);
+            navigator.mediaSession.setActionHandler("nexttrack", nextTrack);
+            navigator.mediaSession.setActionHandler("previoustrack", prevTrack);
+        }
     }
 
-    if (Notification.permission === 'granted') {
-        currentNotification = new Notification(songTitle, options);
-        currentNotification.addEventListener('click', (event) => {
-            if (event.action === 'next') {
-                nextButtonElement.click();
-            } else if (event.action === 'heart') {
-                heartButtonElement.click();
-            } else if (event.action === 'download') {
-                downloadButtonElement.click();
-            } else if (event.action === 'seekbackward') {
-                titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
-            } else if (event.action === 'seekforward') {
-                titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
-            }
-        });
-    } else if (Notification.permission !== 'denied') {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                currentNotification = new Notification(songTitle, options);
-                currentNotification.addEventListener('click', (event) => {
-                    if (event.action === 'next') {
-                        nextButtonElement.click();
-                    } else if (event.action === 'heart') {
-                        heartButtonElement.click();
-                    } else if (event.action === 'download') {
-                        downloadButtonElement.click();
-                    } else if (event.action === 'seekbackward') {
-                        titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
-                    } else if (event.action === 'seekforward') {
-                        titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
-                    }
-                });
-            }
-        });
+    function playAudio() {
+        audio.play();
+        updateMediaSession();
+        navigator.mediaSession.playbackState = "playing";
     }
-}
 
-// Update the Media Session metadata initially
-updateMediaSessionMetadata();
+    function pauseAudio() {
+        audio.pause();
+        navigator.mediaSession.playbackState = "paused";
+    }
 
-titleaudio.addEventListener('play', () => {
-    document.title = songTitleElement.textContent + ' - ' + titleaudio.currentTime + ' seconds';
-    showNotification();
-});
+    function nextTrack() {
+        songIndex = (songIndex + 1) % playlist.length;
+        audio.src = playlist[songIndex].src;
+        playAudio();
+    }
 
-titleaudio.addEventListener('pause', () => {
-    document.title = 'VIVEKFY-AI';
-});
+    function prevTrack() {
+        songIndex = (songIndex - 1 + playlist.length) % playlist.length;
+        audio.src = playlist[songIndex].src;
+        playAudio();
+    }
 
-// Add event listener for the next button
-nextButtonElement.addEventListener('click', () => {
-    console.log('Next song button clicked');
-});
+    audio.onplay = () => navigator.mediaSession.playbackState = "playing";
+    audio.onpause = () => navigator.mediaSession.playbackState = "paused";
 
-// Add event listener for the heart button
-heartButtonElement.addEventListener('click', () => {
-    console.log('Heart button clicked');
-});
-
-// Add event listener for the download button
-downloadButtonElement.addEventListener('click', () => {
-    console.log('Download button clicked');
-});                      
-
-
+    // Initialize first song
+    updateMediaSession();
+</script>
 
 	
 
