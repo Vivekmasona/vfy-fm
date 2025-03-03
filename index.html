@@ -352,7 +352,197 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
 </style>
  
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popup with Local Storage</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #121212;
+        }
+        .main-container {
+            position: relative;
+        }
+        .main-button {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 18px;
+            border-radius: 8px;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 65, 108, 0.5);
+        }
+        .menu {
+            position: absolute;
+            top: 55px;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+        }
+        .menu.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        .menu button {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 6px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+        .menu button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+            display: none;
+            border-radius: 10px;
+            z-index: 999999;
+            color: white;
+            width: 250px;
+            text-align: center;
+        }
+        .popup.active {
+            display: block;
+        }
+        .small-popup {
+            margin-top: 10px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+        }
+        .custom-radio input {
+            display: none;
+        }
+        .custom-radio {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .custom-radio label {
+            position: relative;
+            padding-left: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            color: white;
+        }
+        .custom-radio label:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        .custom-radio input:checked + label:before {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            border: none;
+            box-shadow: 0 0 10px rgba(255, 65, 108, 0.8);
+        }
+        .close-btn {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            cursor: pointer;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
 
+    <div class="main-container">
+        <button class="main-button" onclick="toggleMenu()">☰ Menu</button>
+        <div class="menu" id="menu">
+            <button onclick="openPopup()">⚙️ Settings</button>
+            <button>🎮 Remote</button>
+        </div>
+    </div>
+
+    <div class="popup" id="popup">
+        
+        <div class="small-popup">
+            <div class="custom-radio">
+                <input type="radio" id="self" name="apiSelection" value="self">
+                <label for="self">Self API</label>
+
+                <input type="radio" id="youtube" name="apiSelection" value="youtube">
+                <label for="youtube">YouTube API</label>
+            </div>
+        </div>
+        <button class="close-btn" onclick="closePopup()">Close</button>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById("menu").classList.toggle("active");
+        }
+
+        function openPopup() {
+            document.getElementById("popup").classList.add("active");
+        }
+
+        function closePopup() {
+            document.getElementById("popup").classList.remove("active");
+        }
+
+        function saveSelection(value) {
+            localStorage.setItem("apiSelection", value);
+        }
+
+        function loadSelection() {
+            let savedValue = localStorage.getItem("apiSelection");
+            if (savedValue) {
+                document.querySelector(`input[value="${savedValue}"]`).checked = true;
+            }
+        }
+
+        document.querySelectorAll('input[name="apiSelection"]').forEach((radio) => {
+            radio.addEventListener("change", (event) => {
+                saveSelection(event.target.value);
+            });
+        });
+
+        window.onload = loadSelection;
+    </script>
+
+</body>
+</html>
 
 
 <div id="audioPlayerContainer">
@@ -1000,7 +1190,7 @@ border-radius: 15px;
 
 
 	    
-        <a href="#" class="modal-btn" data-modal-btn-id="1"><i class='fas fa-wifi' onclick="clickButton()" style='font-size:18px;color:#E74C3C'></i></i></a>
+        <a href="popup" class="modal-btn" data-modal-btn-id="1"><i class='fas fa-wifi' onclick="clickButton()" style='font-size:18px;color:#E74C3C'></i></i></a>
 	  
 	    
 	   
@@ -1050,12 +1240,7 @@ border-radius: 15px;
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">search</button></sr>
 	    
 	
-	    <label>
-        <input type="radio" name="apiSelection" value="self" checked> Self API
-    </label>
-    <label>
-        <input type="radio" name="apiSelection" value="youtube"> YouTube API
-    </label>
+	    
 
    <div id="autocomplete-results"></div>
 
