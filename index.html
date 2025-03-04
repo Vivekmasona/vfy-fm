@@ -14,6 +14,233 @@
 <title>music-AI</title>
 
 
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VFYP Pop</title>
+    <style>
+        /* Reset Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Body Background */
+        body {
+            background: url('https://source.unsplash.com/1600x900/?abstract,light') no-repeat center center/cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Floating Side Menu */
+        .side-menu {
+            position: fixed;
+            z-index:99999;
+            left: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Menu Items */
+        .menu-item {
+            width: 100%;
+            padding: 15px 0;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, color 0.3s;
+        }
+
+        .menu-item:hover {
+            transform: scale(1.1);
+        }
+
+        /* Neon Icons */
+        .menu-item i {
+            font-size: 30px;
+            display: block;
+            color: cyan;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.8);
+            transition: color 0.3s, text-shadow 0.3s;
+        }
+
+        .menu-item:hover i {
+            color: magenta;
+            text-shadow: 0 0 5px rgba(255, 0, 255, 0.8);
+        }
+
+        .menu-item span {
+            font-size: 14px;
+            display: block;
+            margin-top: 5px;
+            color: black;
+            opacity: 0.8;
+        }
+
+        /* VFYP Popup */
+        #vfypop {
+            position: fixed;
+            z-index: 9999;
+            top: 40px; /* 40px niche se start */
+            left: 0;
+            width: 100%;
+            height: calc(100% - 40px); /* Total height se 40px kam */
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        /* Popup Content Box */
+        #vfypop .popup-content {
+            width: 100%;
+            height:100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+            background: white;
+            color: black;
+        }
+
+        /* Hidden content inside menu items */
+        .menu-content {
+            display: none;
+        }
+
+    </style>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Floating Side Menu -->
+    <div class="side-menu">
+        <div class="menu-item" onclick="togglePopup(this)">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+            <div class="menu-content">
+                <h3>Welcome to Home</h3>
+                <p>This is the home section.</p>
+            </div>
+        </div>
+        <div class="menu-item" onclick="togglePopup(this)">
+            <i class="fas fa-heart"></i>
+            <span>Favorites</span>
+            <div class="menu-content">
+                
+
+
+     <ul id="fav-songs"></ul>   
+
+
+
+
+</div>
+        </div>
+        <div class="menu-item" onclick="togglePopup(this)">
+            <i class="fas fa-music"></i>
+            <span>Song</span>
+            <div class="menu-content">
+                <h3>Now Playing</h3>
+                <p>Enjoy your favorite songs.</p>
+            </div>
+        </div>
+        <div class="menu-item" onclick="togglePopup(this)">
+            <i class="fas fa-info-circle"></i>
+            <span>Detail</span>
+            <div class="menu-content">
+                <h3>Song Details</h3>
+                <p>Get song details here.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Screen VFYP Popup -->
+    <div id="vfypop">
+        <div class="popup-content" id="popup-body"></div>
+    </div>
+
+    <script>
+        let activeIcon = null;
+
+        function togglePopup(element) {
+            let popup = document.getElementById("vfypop");
+            let popupBody = document.getElementById("popup-body");
+
+            // Get the hidden content inside the clicked menu-item
+            let content = element.querySelector(".menu-content").innerHTML;
+
+            // Set popup content
+            popupBody.innerHTML = content;
+
+            // Toggle Popup Visibility
+            if (popup.style.visibility === "visible") {
+                closePopup();
+            } else {
+                popup.style.visibility = "visible";
+                popup.style.opacity = "1";
+                
+                // Change clicked icon to cancel icon
+                activeIcon = element;
+                let icon = activeIcon.querySelector("i");
+                icon.classList.remove(icon.classList[1]); // Remove previous icon
+                icon.classList.add("fas", "fa-times"); // Change to cancel icon
+                icon.style.color = "red"; // Change color
+            }
+        }
+
+        function closePopup() {
+            let popup = document.getElementById("vfypop");
+            popup.style.visibility = "hidden";
+            popup.style.opacity = "0";
+
+            // Reset previous icon
+            if (activeIcon) {
+                let icon = activeIcon.querySelector("i");
+                icon.classList.remove("fa-times");
+                icon.classList.add(activeIcon.dataset.originalIcon);
+                icon.style.color = ""; // Reset color
+                activeIcon = null;
+            }
+        }
+
+        // Store original icons
+        document.querySelectorAll(".menu-item").forEach(item => {
+            let icon = item.querySelector("i");
+            item.dataset.originalIcon = icon.classList[1]; // Store original class
+        });
+    </script>
+
+</body>
+</html>
+
+
+
+
+
+
 <link rel="stylesheet" href="connect/url/url.css" />
   <script src="connect/url/url.js" defer></script>
 
@@ -1190,11 +1417,7 @@ border-radius: 15px;
 
 <div id="song-container"></div>
 
-<!-- Favorite List ke liye Alag Div -->
-<div id="favorite-list">
-     <ul id="fav-songs"></ul>   
 
-</div>
 
 	
 
@@ -5116,6 +5339,7 @@ function stopCallTimer() {
         // **Page Load hote hi Automatic Load Hoga**
         window.onload = loadTrendingSongs;
     </script>
+
 
 
 
