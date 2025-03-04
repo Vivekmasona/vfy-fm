@@ -1054,8 +1054,8 @@ border-radius: 15px;
   </div>
 		
     <div data-role="main" class="ui-content">
-     <input type="search"  name="search" onclick="startDictation()"  id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
- <button  data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">search</button></sr>
+     <input type="search"  name="search"   id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
+ <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">search</button></sr>
 	    
 	
 	
@@ -5205,7 +5205,7 @@ function stopCallTimer() {
             
         </div>
         <div class="menu-item">
-            <i class="fas fa-microphone" onclick="search(),speakSearchText()"></i>
+            <i class="fas fa-microphone" onclick="startDictation()"></i>
             
         </div>
         <div class="menu-item">
