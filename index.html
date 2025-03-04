@@ -4993,7 +4993,7 @@ function stopCallTimer() {
 </head>
 <body>
 
-   <button class="settings-btn" onclick="openPopup()">⚙️</button>
+   
 
 <div class="popup" id="popup">
     <h3>API Setting</h3>
@@ -5119,9 +5119,20 @@ function stopCallTimer() {
 
 
 <style>
-        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
 
-        
+        body {
+            background: url('https://source.unsplash.com/1600x900/?abstract,light') no-repeat center center/cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
         .side-menu {
             position: fixed;
@@ -5181,12 +5192,12 @@ function stopCallTimer() {
 
     <div class="side-menu">
         <div class="menu-item">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
+            <i class="fas fa-cog" onclick="openPopup()" ></i>
+            
         </div>
         <div class="menu-item">
             <i class="fas fa-heart"></i>
-            <span>Favo</span>
+            <span>Favorites</span>
         </div>
         <div class="menu-item">
             <i class="fas fa-music"></i>
@@ -5203,14 +5214,15 @@ function stopCallTimer() {
             let currentDate = new Date().toLocaleDateString();
             alert(
                 "Developer: Vivek Verma\n" +
-                "App-Version: 2.0\n" +
+                "App Version: 2.0\n" +
                 "Server: Free\n" +
-                "search-API: 2\n" +
-                "Backend-API: 6\n" +
+                "API: 2\n" +
+                "Backend API: 6\n" +
                 "Date: " + currentDate
             );
         }
     </script>
+
 
 
 
