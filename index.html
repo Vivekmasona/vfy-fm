@@ -72,20 +72,30 @@ if (window !== window.top) {
             display: none;
             position: fixed;
             top: 50%;
-            left: 50%;
+            left: 54%;
             transform: translate(-50%, -50%);
-            background-color: #333;
+          /*  background-color: #00ffff; */
             color: #fff;
-            padding: 20px 30px;
-            border-radius: 8px;
+            padding: 20px 40px;
+            border-radius: 0px 50px 0px 50px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             font-family: Arial, sans-serif;
             z-index: 9999;
-            width: 300px;
+            width: 200px;
             text-align: center;
             opacity: 0;
-            transition: opacity 0.3s;
-        }
+            transition: opacity 0.2s;
+   background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+           
+
+
+
+ }
+        
+        
+        
 
         body.show-alert::after {
             display: block;
@@ -5231,6 +5241,7 @@ function stopCallTimer() {
             );
         }
     </script>
+
 
 
 
