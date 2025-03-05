@@ -64,83 +64,44 @@ if (window !== window.top) {
 
 //custom alert
 
-window.prompt = function (text, defaultValue) {
-    return new Promise((resolve) => {
-        let modal = document.createElement("div");
-        modal.innerHTML = `
-            <div id="customPromptOverlay" style="
-                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                backdrop-filter: blur(12px); background: rgba(0, 0, 0, 0.5);
-                display: flex; justify-content: center; align-items: center; z-index: 999999;">
+window.alert = function (message) {
+    let modal = document.createElement("div");
+    modal.innerHTML = `
+        <div id="customAlertOverlay" style="
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            backdrop-filter: blur(12px); background: rgba(0, 0, 0, 0.5);
+            display: flex; justify-content: center; align-items: center; z-index: 999999;">
+            
+            <div style="
+                background: rgba(255, 255, 255, 0.2); 
+                padding: 20px; border-radius: 12px; 
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+                backdrop-filter: blur(20px);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                text-align: center; width: 300px;">
                 
-                <div style="
-                    background: rgba(255, 255, 255, 0.2); 
-                    padding: 20px; border-radius: 12px; 
-                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-                    backdrop-filter: blur(20px);
-                    border: 1px solid rgba(255, 255, 255, 0.3);
-                    text-align: center; width: 300px;">
-                    
-                    <p style="color: #fff; font-size: 18px; font-weight: bold; margin-bottom: 15px;">
-                        ${text}
-                    </p>
-                    
-                    <input type="text" id="customPromptInput" value="${defaultValue || ''}" 
-                        style="width: 90%; padding: 10px; border: none; border-radius: 8px; 
-                        outline: none; font-size: 16px; background: rgba(255, 255, 255, 0.3);
-                        color: white; text-align: center;">
-                    
-                    <br><br>
-                    
-                    <button id="customPromptOk" style="
-                        background: #28a745; color: white; border: none;
-                        padding: 10px 20px; border-radius: 8px;
-                        font-size: 16px; cursor: pointer; margin-right: 10px;">
-                        OK
-                    </button>
-                    
-                    <button id="customPromptCancel" style="
-                        background: #dc3545; color: white; border: none;
-                        padding: 10px 20px; border-radius: 8px;
-                        font-size: 16px; cursor: pointer;">
-                        Cancel
-                    </button>
-                </div>
+                <p style="color: #fff; font-size: 18px; font-weight: bold; margin-bottom: 15px;">
+                    ${message}
+                </p>
+                
+                <button id="customAlertOk" style="
+                    background: #28a745; color: white; border: none;
+                    padding: 10px 20px; border-radius: 8px;
+                    font-size: 16px; cursor: pointer;">
+                    OK
+                </button>
             </div>
-        `;
-        document.body.appendChild(modal);
+        </div>
+    `;
+    document.body.appendChild(modal);
 
-        let inputField = document.getElementById("customPromptInput");
-        let okButton = document.getElementById("customPromptOk");
-        let cancelButton = document.getElementById("customPromptCancel");
+    let okButton = document.getElementById("customAlertOk");
 
-        // ✅ OK Button Click - Value Return Ho
-        okButton.addEventListener("click", function () {
-            let value = inputField.value.trim(); // Trim space hatayega
-            if (value !== "") {
-                document.body.removeChild(modal);
-                resolve(value); // ✅ Fix: Promise resolve with input value
-            }
-        });
-
-        // ❌ Cancel Button - Null Return Ho
-        cancelButton.addEventListener("click", function () {
-            document.body.removeChild(modal);
-            resolve(null);
-        });
-
-        // 🎯 Enter Key Press = OK Button Click
-        inputField.addEventListener("keyup", function (event) {
-            if (event.key === "Enter") {
-                okButton.click(); // OK button trigger karega
-            }
-        });
-
-        // 🔥 Auto Focus Input
-        setTimeout(() => inputField.focus(), 100);
+    // ✅ OK Button Click - Alert Close
+    okButton.addEventListener("click", function () {
+        document.body.removeChild(modal);
     });
 };
-        
 
 
 
