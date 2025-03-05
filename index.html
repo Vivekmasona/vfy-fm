@@ -65,10 +65,7 @@ if (window !== window.top) {
 //custom alert
 
 
-window.prompt = function (text, defaultValue) {
-    return new Promise((resolve) => {
-        let modal = document.createElement("div");
-        modal.innerHTML = `
+
             <div id="customPromptOverlay" style="
                 position: fixed; top: 0; left: 0; width: 100%; height: 100%;
                 backdrop-filter: blur(12px); background: rgba(0, 0, 0, 0.5);
@@ -108,25 +105,7 @@ window.prompt = function (text, defaultValue) {
                     </button>
                 </div>
             </div>
-        `;
-        document.body.appendChild(modal);
-
-        let inputField = modal.querySelector("input");
-        let buttons = modal.querySelectorAll("button");
-
         
-        // 🎯 Enter Key Press = OK Button Click
-        inputField.addEventListener("keyup", function (event) {
-            if (event.key === "Enter") {
-                buttons[0].click();
-            }
-        });
-
-        // 🔥 Auto Focus Input
-        setTimeout(() => inputField.focus(), 100);
-    });
-};
-	
 </script>
 
 
