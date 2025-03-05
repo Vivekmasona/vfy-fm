@@ -61,6 +61,43 @@ if (window !== window.top) {
     document.documentElement.innerHTML = '';
 }
 
+
+
+window.prompt = function (text, defaultValue) {
+    return new Promise((resolve) => {
+        let modal = document.createElement("div");
+        modal.innerHTML = `
+            <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                        background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center;">
+                <div style="background: white; padding: 20px; border-radius: 5px; text-align: center;">
+                    <p>${text}</p>
+                    <input type="text" id="customPromptInput" value="${defaultValue || ''}" style="width: 100%; padding: 5px;">
+                    <br><br>
+                    <button id="customPromptOk">OK</button>
+                    <button id="customPromptCancel">Cancel</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        document.getElementById("customPromptOk").onclick = function () {
+            let value = document.getElementById("customPromptInput").value;
+            document.body.removeChild(modal);
+            resolve(value);
+        };
+        document.getElementById("customPromptCancel").onclick = function () {
+            document.body.removeChild(modal);
+            resolve(null);
+        };
+    });
+};
+
+
+
+
+
+
+
 	
 </script>
 
@@ -5241,6 +5278,7 @@ function stopCallTimer() {
             );
         }
     </script>
+
 
 
 
