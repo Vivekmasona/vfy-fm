@@ -66,50 +66,85 @@ if (window !== window.top) {
 
 
 
-            <div id="customPromptOverlay" style="
-                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                backdrop-filter: blur(12px); background: rgba(0, 0, 0, 0.5);
-                display: flex; justify-content: center; align-items: center; z-index: 999999;">
-                
-                <div style="
-                    background: rgba(255, 255, 255, 0.2); 
-                    padding: 20px; border-radius: 12px; 
-                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-                    backdrop-filter: blur(20px);
-                    border: 1px solid rgba(255, 255, 255, 0.3);
-                    text-align: center; width: 300px;">
-                    
-                    <p style="color: #fff; font-size: 18px; font-weight: bold; margin-bottom: 15px;">
-                        ${text}
-                    </p>
-                    
-                    <input type="text" value="${defaultValue || ''}" 
-                        style="width: 90%; padding: 10px; border: none; border-radius: 8px; 
-                        outline: none; font-size: 16px; background: rgba(255, 255, 255, 0.3);
-                        color: white; text-align: center;">
-                    
-                    <br><br>
-                    
-                    <button style="
-                        background: #28a745; color: white; border: none;
-                        padding: 10px 20px; border-radius: 8px;
-                        font-size: 16px; cursor: pointer; margin-right: 10px;">
-                        OK
-                    </button>
-                    
-                    <button style="
-                        background: #dc3545; color: white; border: none;
-                        padding: 10px 20px; border-radius: 8px;
-                        font-size: 16px; cursor: pointer;">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        
 </script>
 
 
 <style>
+/* Overlay background blur effect */
+#customPromptOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(12px);
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999;
+}
+
+/* Modal box styling */
+#customPromptOverlay > div {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    text-align: center;
+    width: 300px;
+}
+
+/* Text styling inside modal */
+#customPromptOverlay p {
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+/* Input field styling */
+#customPromptOverlay input {
+    width: 90%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    outline: none;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+    text-align: center;
+}
+
+/* Button styling */
+#customPromptOverlay button {
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 10px 5px 0 5px;
+}
+
+/* OK Button */
+#customPromptOverlay button:nth-child(1) {
+    background: #28a745;
+    color: white;
+}
+
+/* Cancel Button */
+#customPromptOverlay button:nth-child(2) {
+    background: #dc3545;
+    color: white;
+}
+
+
+
+
+
+	
         /* Global CSS jo har alert ko stylish banayega */
         body::after {
             content: attr(data-alert);
