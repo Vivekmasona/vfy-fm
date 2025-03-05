@@ -114,21 +114,7 @@ window.prompt = function (text, defaultValue) {
         let inputField = modal.querySelector("input");
         let buttons = modal.querySelectorAll("button");
 
-        // ✅ OK Button Click - Value Return Ho
-        buttons[0].addEventListener("click", function () {
-            let value = inputField.value.trim();
-            if (value !== "") {
-                document.body.removeChild(modal);
-                resolve(value);
-            }
-        });
-
-        // ❌ Cancel Button - Null Return Ho
-        buttons[1].addEventListener("click", function () {
-            document.body.removeChild(modal);
-            resolve(null);
-        });
-
+        
         // 🎯 Enter Key Press = OK Button Click
         inputField.addEventListener("keyup", function (event) {
             if (event.key === "Enter") {
