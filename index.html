@@ -1417,44 +1417,7 @@ displayFavorites();
 
 
 </script>
-<script>
 
-
-function playRemotely(id, title) {
-    let sessionID = localStorage.getItem("sessionID");
-    if (!sessionID) {
-        alert("⚠ Session ID not found. Please start a session first.");
-        return;
-    }
-
-    let audioUrl = `https://vivekfy.vercel.app/vfy?id=${id}`;
-    let thumbnail = `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
-
-    fetch(`https://grape-earthy-amaranthus.glitch.me/control`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-            session: sessionID, 
-            url: audioUrl, 
-            title, 
-            thumbnail, 
-            id
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            alert(`▶ Now Playing Remotely: ${title}`);
-        } else {
-            alert("❌ Error: Unable to play remotely.");
-        }
-    })
-    .catch(err => console.error("❌ Remote Play Error:", err));
-}
-
-
-	
-</script>
 
 <!-- Your webpage content goes here -->
 
@@ -1756,7 +1719,37 @@ function loadSong(song, ind) {
 }
 
     
+function playRemotely(id, title) {
+    let sessionID = localStorage.getItem("sessionID");
+    if (!sessionID) {
+        alert("⚠ Session ID not found. Please start a session first.");
+        return;
+    }
 
+    let audioUrl = `https://vivekfy.vercel.app/vfy?id=${id}`;
+    let thumbnail = `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
+
+    fetch(`https://grape-earthy-amaranthus.glitch.me/control`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+            session: sessionID, 
+            url: audioUrl, 
+            title, 
+            thumbnail, 
+            id
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert(`▶ Now Playing Remotely: ${title}`);
+        } else {
+            alert("❌ Error: Unable to play remotely.");
+        }
+    })
+    .catch(err => console.error("❌ Remote Play Error:", err));
+}
 
 
 
