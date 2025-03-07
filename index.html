@@ -1639,21 +1639,19 @@ function getOutput(item, i) {
     }
 
     return `
-    <b onclick="loadSong(this)" index="${i}" class="list" vid="${id}" style="position:relative;">
-        <div class="video">
-            <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
-            <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" onclick="loadSong(this)" index="${i}" vid="${id}">
-            <section>
-                <img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">
-                <div>
-                    <p>V F Y ${title}</p>
-                </div>
-            </section>
-        </div>
-        <button class="remote-btn" onclick="event.stopPropagation(); playRemotely('${id}', '${title}')">
-            🎵 Remote Play
-        </button>
-    </b>`;
+        <b onclick="loadSong(this)" index="${i}" class="list" vid="${id}" style="position:relative;">
+            <div class="video">
+                <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
+                <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" onclick="loadSong(this)" index="${i}" vid="${id}">
+                <section>
+                    <img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">
+                    <div>
+                        <p>V F Y ${title}</p>
+                         </div>
+                </section>
+            </div>
+        </b>`;
+}
 
 // Show the popup when a butto is clicked
 $("#showPopupbutto").click(function() {
@@ -1719,37 +1717,7 @@ function loadSong(song, ind) {
 }
 
     
-function playRemotely(id, title) {
-    let sessionID = localStorage.getItem("sessionID");
-    if (!sessionID) {
-        alert("⚠ Session ID not found. Please start a session first.");
-        return;
-    }
 
-    let audioUrl = `https://vivekfy.vercel.app/vfy?id=${id}`;
-    let thumbnail = `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
-
-    fetch(`https://grape-earthy-amaranthus.glitch.me/control`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-            session: sessionID, 
-            url: audioUrl, 
-            title, 
-            thumbnail, 
-            id
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            alert(`▶ Now Playing Remotely: ${title}`);
-        } else {
-            alert("❌ Error: Unable to play remotely.");
-        }
-    })
-    .catch(err => console.error("❌ Remote Play Error:", err));
-}
 
 
 
