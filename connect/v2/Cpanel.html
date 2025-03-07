@@ -382,7 +382,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const viewCount = parseInt(item.statistics.viewCount);
                 return isLive && duration !== 'PT0S' && viewCount > 1000;
             }).map(item => ({
-                url: `https://vivekfy.vercel.app?/vfy?id=${item.id}`,
+                url: `https://long-libbie-vivekfy-29e7408f.koyeb.app/play?url=https://youtu.be/${item.id}`,
                 title: item.snippet.title,
                 thumbnail: item.snippet.thumbnails.default.url
             }));
