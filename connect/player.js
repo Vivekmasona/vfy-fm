@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-            const audioPlayer = document.getElementById('SAudio');
+            const audioPlayer = document.getElementById('audioPlayer');
             const playPauseButton = document.getElementById('playPauseButton');
             const playIcon = document.getElementById('playIcon');
             const sessionIdElement = document.getElementById('sessionId');
