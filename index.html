@@ -1638,6 +1638,12 @@ function getOutput(item, i) {
         return '';
     }
 
+    function createSongListItem(i, title, thumbUrl, id) {
+    let sessionID = localStorage.getItem("sessionID") || ""; // Session ID ko local storage se lo
+    if (!sessionID) {
+        console.warn("⚠ Session ID not found in local storage.");
+    }
+
     return `
         <b onclick="loadSong(this)" index="${i}" class="list" vid="${id}" style="position:relative;">
             <div class="video">
@@ -1647,12 +1653,64 @@ function getOutput(item, i) {
                     <img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">
                     <div>
                         <p>V F Y ${title}</p>
-                         </div>
+                    </div>
                 </section>
             </div>
+            <button class="remote-btn" onclick="event.stopPropagation(); playRemotely('${id}', '${title}')">
+                🎵 Remote Play
+            </button>
         </b>`;
 }
 
+// 🔥 Remote Play Function (Server pe data bhejne ke liye)
+function playRemotely(id, title) {
+    let sessionID = localStorage.getItem("sessionID");
+    if (!sessionID) {
+        alert("⚠ Session ID not found. Please start a session first.");
+        return;
+    }
+
+    fetch(`https://grape-earthy-amaranthus.glitch.me/control`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session: sessionID, url: `https://your-audio-url/${id}`, title })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert(`▶ Now Playing Remotely: ${title}`);
+        } else {
+            alert("❌ Error: Unable to play remotely.");
+        }
+    })
+    .catch(err => console.error("❌ Remote Play Error:", err));
+}
+
+// 🔄 Function to Upload All Songs on Page Load
+function uploadAllSongs() {
+    let sessionID = localStorage.getItem("sessionID");
+    if (!sessionID) return;
+
+    let songs = [];
+    document.querySelectorAll(".list").forEach((el, i) => {
+        let id = el.getAttribute("vid");
+        let title = el.querySelector("p").innerText.replace("V F Y ", "").trim();
+        let thumbUrl = el.querySelector("img.video-thumbnail").src;
+        songs.push({ id, title, thumbUrl });
+    });
+
+    fetch(`https://grape-earthy-amaranthus.glitch.me/upload`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session: sessionID, songs })
+    })
+    .then(res => res.json())
+    .then(data => console.log("✅ Songs Uploaded:", data))
+    .catch(err => console.error("❌ Upload Error:", err));
+}
+
+// 🔄 Auto Upload on Page Load
+window.onload = uploadAllSongs;
 // Show the popup when a butto is clicked
 $("#showPopupbutto").click(function() {
     $("#popupContainer").show();
