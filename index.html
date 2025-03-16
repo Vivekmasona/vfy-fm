@@ -945,11 +945,7 @@ border-radius: 15px;
 		
 </style>
 	
-<style>
-        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-        #sessionLed { width: 20px; height: 20px; border-radius: 50%; background-color: red; display: inline-block; margin-top: 10px; }
-        #callControls { margin-top: 20px; }
-    </style>
+
     <style>
         body {
             margin: 0;
@@ -1087,7 +1083,7 @@ border-radius: 15px;
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">search</button></sr>
 	    
 	
-	<span id="sessionLed"></span>
+	
 
    <div id="autocomplete-results"></div>
 
@@ -4757,80 +4753,102 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
  <script>
         const socket = io("https://gold-foregoing-change.glitch.me/");
-        let localStream, peerConnection, roomID, callTimer, callStartTime;
-        const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
+        let localStream;
+        let peerConnection;
+        const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+        let roomID;
+        let callTimer;
+        let callStartTime;
+
+        // Ringtone for Incoming Call
         const ringtone = new Audio("https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/ringtone.mp3");
         ringtone.loop = true;
 
-        const sessionLed = document.getElementById("sessionLed");
-        const callUserBtn = document.getElementById("callUser");
-        const endCallBtn = document.getElementById("endCall");
-        const callStatus = document.getElementById("callStatus");
-        const callTimerElement = document.getElementById("callTimer");
-        const incomingCallPopup = document.getElementById("incomingCall");
-        const acceptCallButton = document.getElementById("acceptCall");
-        const rejectCallButton = document.getElementById("rejectCall");
+        // Function to make the phone vibrate once
+        function vibrateOnce() {
+            if ("vibrate" in navigator) {
+                navigator.vibrate(300); // Vibrate for 300ms
+            }
+        }
 
+        // Automatically join room if sessionId is found in localStorage
         window.addEventListener('load', () => {
             roomID = localStorage.getItem('sessionId');
             if (roomID) {
                 socket.emit('join-room', roomID);
-                callUserBtn.disabled = false;
-                alert(`Connected to session: ${roomID}`);
+                document.getElementById('callUser').disabled = false;
+                alert(`Connection successful: ${roomID}`);
             } else {
-                alert('Create a session ID first.');
+                alert('Create VFY ID');
             }
-
-            // Check session status
-            socket.emit("session-check", roomID);
         });
 
-        socket.on("session-status", (status) => {
-            sessionLed.style.backgroundColor = status ? "green" : "red";
-        });
-
-        callUserBtn.addEventListener('click', () => {
+        // Call User
+        document.getElementById('callUser').addEventListener('click', async () => {
             socket.emit('call-request', { roomID });
-            callStatus.innerText = 'Calling...';
-            navigator.vibrate(100);  // Single vibration on call button click
+            document.getElementById('callStatus').innerText = 'Calling...';
+            vibrateOnce(); // Vibrate when call is placed
         });
 
+        // Incoming Call Popup
         socket.on('incoming-call', ({ from }) => {
-            incomingCallPopup.style.display = 'block';
-            callTimerElement.style.display = 'none';
-            acceptCallButton.style.display = 'inline';
-            rejectCallButton.style.display = 'inline';
-            endCallBtn.style.display = 'none';
+            document.getElementById('incomingCall').style.display = 'block';
+            document.getElementById('callTimer').style.display = 'none';
+            document.getElementById('acceptCall').style.display = 'inline';
+            document.getElementById('rejectCall').style.display = 'inline';
+            document.getElementById('endCall').style.display = 'none';
+
+            // Play ringtone
             ringtone.play();
-            callStatus.innerText = 'Incoming Call...';
-            navigator.vibrate(300);  // Vibrate on incoming call
 
-            acceptCallButton.onclick = async () => {
+            document.getElementById('callStatus').innerText = 'Incoming Call...';
+
+            // Accept Call
+            document.getElementById('acceptCall').onclick = async () => {
                 ringtone.pause();
                 ringtone.currentTime = 0;
+                vibrateOnce(); // Vibrate when call is accepted
                 socket.emit('call-accepted', { to: from });
-                incomingCallPopup.style.display = 'none';
-                callStatus.innerText = 'Connecting...';
-                startCall();
-                navigator.vibrate(100);  // Vibrate on call accept
+                document.getElementById('incomingCall').style.display = 'none';
+                document.getElementById('callStatus').innerText = 'Connecting...';
+
+                // Initialize Media
+                localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                peerConnection = new RTCPeerConnection(config);
+                peerConnection.addTrack(localStream.getTracks()[0], localStream);
+
+                peerConnection.ontrack = (event) => {
+                    const remoteAudio = new Audio();
+                    remoteAudio.srcObject = event.streams[0];
+                    remoteAudio.play();
+                };
+
+                peerConnection.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        socket.emit('candidate', { candidate: event.candidate, roomID });
+                    }
+                };
+
+                document.getElementById('callStatus').innerText = 'Connected';
+                document.getElementById('endCall').style.display = 'inline';
+                document.getElementById('callTimer').style.display = 'inline';
+                startCallTimer();
             };
 
-            rejectCallButton.onclick = () => {
+            // Reject Call
+            document.getElementById('rejectCall').onclick = () => {
                 ringtone.pause();
                 ringtone.currentTime = 0;
+                vibrateOnce(); // Vibrate when call is rejected
                 socket.emit('call-rejected', { to: from });
-                incomingCallPopup.style.display = 'none';
-                callStatus.innerText = 'Call Rejected';
-                navigator.vibrate(100);  // Vibrate on call reject
+                document.getElementById('incomingCall').style.display = 'none';
+                document.getElementById('callStatus').innerText = 'Call Rejected';
             };
         });
 
+        // Call Accepted
         socket.on('call-accepted', async () => {
-            startCall();
-        });
-
-        async function startCall() {
             localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
             peerConnection = new RTCPeerConnection(config);
             peerConnection.addTrack(localStream.getTracks()[0], localStream);
@@ -4851,12 +4869,13 @@ document.getElementById('search-btn').addEventListener('click', function() {
             await peerConnection.setLocalDescription(offer);
             socket.emit('offer', { offer, roomID });
 
-            callStatus.innerText = 'Connected';
-            endCallBtn.style.display = 'inline';
-            callTimerElement.style.display = 'inline';
+            document.getElementById('callStatus').innerText = 'Connected';
+            document.getElementById('endCall').style.display = 'inline';
+            document.getElementById('callTimer').style.display = 'inline';
             startCallTimer();
-        }
+        });
 
+        // Handle Offer
         socket.on('offer', async ({ offer }) => {
             await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
             const answer = await peerConnection.createAnswer();
@@ -4864,32 +4883,38 @@ document.getElementById('search-btn').addEventListener('click', function() {
             socket.emit('answer', { answer, roomID });
         });
 
+        // Handle Answer
         socket.on('answer', async ({ answer }) => {
             await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
         });
 
+        // Handle ICE Candidate
         socket.on('candidate', ({ candidate }) => {
             peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
         });
 
-        endCallBtn.addEventListener('click', () => {
+        // End Call
+        document.getElementById('endCall').addEventListener('click', () => {
             socket.emit('end-call', roomID);
             endCall();
+            vibrateOnce(); // Vibrate when call is ended
         });
 
         socket.on('call-ended', () => {
             endCall();
+            vibrateOnce(); // Vibrate when call is ended
         });
 
         function endCall() {
             if (peerConnection) peerConnection.close();
             peerConnection = null;
-            callStatus.innerText = '';
-            endCallBtn.style.display = 'none';
-            incomingCallPopup.style.display = 'none';
+            document.getElementById('callStatus').innerText = '';
+            document.getElementById('endCall').style.display = 'none';
+            document.getElementById('incomingCall').style.display = 'none';
             stopCallTimer();
         }
 
+        // Call Timer Functions
         function startCallTimer() {
             callStartTime = new Date();
             callTimer = setInterval(() => {
@@ -4897,15 +4922,15 @@ document.getElementById('search-btn').addEventListener('click', function() {
                 const elapsed = Math.floor((now - callStartTime) / 1000);
                 const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
                 const seconds = String(elapsed % 60).padStart(2, '0');
-                callTimerElement.innerText = `${minutes}:${seconds}`;
+                document.getElementById('callTimer').innerText = `${minutes}:${seconds}`;
             }, 1000);
         }
 
         function stopCallTimer() {
             clearInterval(callTimer);
-            callTimerElement.innerText = '';
+            document.getElementById('callTimer').innerText = '';
         }
-    </script>
+    </script>   
 
 
   
@@ -5243,35 +5268,9 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-    <script>
-        const socket = io("https://gold-foregoing-change.glitch.me/");  // Tumhara call system server
-        const sessionLed = document.getElementById("sessionLed");
-
-        let sessionID = localStorage.getItem('sessionId');  // Call system ka session ID
-
-        if (sessionID) {
-            // Server ko batao ki ye device join kar raha hai
-            socket.emit("join-room", sessionID);
-            socket.emit("session-check", sessionID);
-        }
-
-        // Server se session status suno
-        socket.on("session-status", (status) => {
-            if (status) {
-                sessionLed.style.backgroundColor = "green"; // Same session detected
-            } else {
-                sessionLed.style.backgroundColor = "red";   // No session match
-            }
-        });
-    </script>
 
 
 
-
-<style>
-        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-        #sessionLed { width: 20px; height: 20px; border-radius: 50%; background-color: red; display: inline-block; }
-    </style>
 
 
 
