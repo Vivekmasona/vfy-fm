@@ -68,55 +68,6 @@ if (window !== window.top) {
 
 </script>
 
- 
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-        .led { width: 50px; height: 50px; border-radius: 50%; display: inline-block; margin-top: 20px; }
-        .red { background-color: red; }
-        .green { background-color: green; }
-    </style>
-</head>
-<body>
-
-   
-    
-
-    <script>
-        const socket = io("https://gold-foregoing-change.glitch.me/");
-
-        let sessionID = localStorage.getItem('sessionId'); // Get saved session ID
-        if (!sessionID) {
-            alert('Session ID not found. Create a VFY ID first.');
-        } else {
-            socket.emit('join-session', sessionID);
-        }
-
-        // Check if two devices are in the same session
-        socket.on('session-status', (status) => {
-            const led = document.getElementById('led');
-            const statusText = document.getElementById('statusText');
-
-            if (status) {
-                led.classList.remove('red');
-                led.classList.add('green');
-                statusText.innerText = '🟢 Session Connected';
-            } else {
-                led.classList.remove('green');
-                led.classList.add('red');
-                statusText.innerText = '🔴 Session Not Connected';
-            }
-        });
-
-        // Notify server about the session ID
-        socket.emit('check-session', sessionID);
-    </script>
-
-</body>
-</html>
-
-
-
-
 
 <style>
 
@@ -423,12 +374,6 @@ background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30
 
 
 <div id="audioPlayerContainer">
-
-<div id="led" class="led red"></div>
-    <p id="statusText">🔴</p>
-
-
-	
     <svg id="playPauseButton" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24">
         <path id="playIcon" d="M8 5v14l11-7z"></path>
     </svg>
