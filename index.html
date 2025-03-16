@@ -5243,9 +5243,35 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
+    <script>
+        const socket = io("https://gold-foregoing-change.glitch.me/");  // Tumhara call system server
+        const sessionLed = document.getElementById("sessionLed");
+
+        let sessionID = localStorage.getItem('sessionId');  // Call system ka session ID
+
+        if (sessionID) {
+            // Server ko batao ki ye device join kar raha hai
+            socket.emit("join-room", sessionID);
+            socket.emit("session-check", sessionID);
+        }
+
+        // Server se session status suno
+        socket.on("session-status", (status) => {
+            if (status) {
+                sessionLed.style.backgroundColor = "green"; // Same session detected
+            } else {
+                sessionLed.style.backgroundColor = "red";   // No session match
+            }
+        });
+    </script>
 
 
 
+
+<style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        #sessionLed { width: 20px; height: 20px; border-radius: 50%; background-color: red; display: inline-block; }
+    </style>
 
 
 
