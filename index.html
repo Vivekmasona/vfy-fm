@@ -1058,7 +1058,7 @@ border-radius: 15px;
 
 
 
-
+<div id="sessionLed" style="width: 20px; height: 20px; border-radius: 50%; background-color: red;"></div>
 	    
 <h1>V F Y
 <span id="brandName"></span></h1>
@@ -4754,6 +4754,9 @@ document.getElementById('search-btn').addEventListener('click', function() {
  <script>
         const socket = io("https://gold-foregoing-change.glitch.me/");
 
+// Get LED Element
+const sessionLed = document.getElementById("sessionLed");
+
         let localStream;
         let peerConnection;
         const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
@@ -4892,6 +4895,23 @@ document.getElementById('search-btn').addEventListener('click', function() {
         socket.on('candidate', ({ candidate }) => {
             peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
         });
+
+
+// Emit session ID check using your call server
+socket.emit("session-check", roomID);
+
+// Listen for session detection response
+socket.on("session-status", (status) => {
+    if (status) {
+        sessionLed.style.backgroundColor = "green"; // 🟢 Session Connected
+    } else {
+        sessionLed.style.backgroundColor = "red"; // 🔴 Session Not Connected
+    }
+});
+
+
+
+	 
 
         // End Call
         document.getElementById('endCall').addEventListener('click', () => {
