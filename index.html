@@ -4450,7 +4450,7 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
                     await navigator.clipboard.readText();  // Triggers prompt
                     document.getElementById('status').textContent = 'Clipboard permission requested.';
                 } else {
-                    document.getElementById('status').textContent = 'Clipboard access denied.';
+          document.getElementById('status').textContent = 'Clipboard access denied.';
                 }
             } catch (error) {
                 document.getElementById('status').textContent = `Error: ${error.message}`;
@@ -4459,57 +4459,39 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
     </script>
 
  
-        
-          
- 
-
- <!DOCTYPE html>
-<html>
+  <!DOCTYPE html>
+<html lang="en">
 <head>
-     <style>
-        /* Hidden download button initially */
-        #downloadButton {
-            display: none;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
 </head>
 <body>
-    
+
     <!-- Invisible audio element for sound playback -->
     <audio id="soundPlayer" style="display:none;"></audio>
 
-    <!-- Download Button -->
-    <button id="downloadButton" onclick="startDownload()">Download Now</button>
+    <!-- Button for opening the link -->
+    <b id="openButton" onclick="openLink()"></b>
 
     <script>
-        let lastClipboardText = "";
-        let detectedURL = "";
-
+        // Trigger automatic link actions when the page loads
         window.onload = function () {
-            checkClipboard();
-            // Continuously check the clipboard every second
-            setInterval(checkClipboard, 1000);
+            autoOpenLink();
         };
 
-        function checkClipboard() {
+        function autoOpenLink() {
+            // Get the link from the clipboard
             navigator.clipboard.readText()
                 .then(function (clipboardText) {
-                    // If clipboard content is different from the last checked value
-                    if (clipboardText && clipboardText !== lastClipboardText) {
-                        lastClipboardText = clipboardText;
-                        var linkType = identifyLinkType(clipboardText);
-                        if (linkType !== 'unknown') {
-                            playSound(linkType);
-                            showPopup(clipboardText);
-                        }
-                    }
+                    // Identify the type of link
+                    var linkType = identifyLinkType(clipboardText);
+
+                    // Play the corresponding sound
+                    playSound(linkType);
+
+                    // Display the detected link (for demonstration purposes)
+                   // alert('Detected Link: ' + clipboardText);
                 })
                 .catch(function (err) {
                     console.error('Failed to read clipboard content: ', err);
@@ -4517,6 +4499,7 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
         }
 
         function identifyLinkType(link) {
+            // You can implement more sophisticated logic to identify link types
             if (link.toLowerCase().includes('instagram')) {
                 return 'instagram';
             } else if (link.toLowerCase().includes('facebook') || link.toLowerCase().includes('fb')) {
@@ -4530,6 +4513,8 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
 
         function playSound(linkType) {
             var audio = document.getElementById('soundPlayer');
+
+            // Set the source based on the link type
             switch (linkType) {
                 case 'instagram':
                     audio.src = '/sound/copyinstagram.mp3';
@@ -4541,7 +4526,8 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
                     audio.src = '/sound/copyyoutube.mp3';
                     break;
                 default:
-                    audio.src = '/sound/default_sound.mp3';
+                    // Provide a default sound for unknown types
+                    audio.src = 'default_sound.mp3';
             }
 
             // Load and play the audio
@@ -4549,29 +4535,38 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
             audio.play();
         }
 
-        function showPopup(url) {
-            detectedURL = url; // Store the detected URL
-            let confirmDownload = confirm("Link detected: " + url + "\nDo you want to download?");
-            if (confirmDownload) {
-                // Show the download button
-                document.getElementById('downloadButton').style.display = 'inline-block';
-            }
-        }
-
-        function startDownload() {
-            if (detectedURL) {
-                // Single API call for all links
-                let apiUrl = 'https://vivekfy.vercel.app/api?url=' + encodeURIComponent(detectedURL);
-
-                // Redirect to the download link
-                window.location.href = apiUrl;
-            }
+        function openLink() {
+            // Get the link from the clipboard
+            navigator.clipboard.readText()
+                .then(function (clipboardText) {
+                    // Identify the type of link and open it accordingly
+                    var linkType = identifyLinkType(clipboardText);
+                    switch (linkType) {
+                        case 'instagram':
+                            window.location.href = 'https://vivekmasona.000webhostapp.com/insta?link=' + encodeURIComponent(clipboardText);
+                            break;
+                        case 'facebook':
+                            window.location.href = 'https://vivekmasona.000webhostapp.com/fb?link=' + encodeURIComponent(clipboardText);
+                            break;
+                        case 'youtube':
+                            window.location.href = 'https://vivekfy-api.vercel.app/download/audio?url=' + encodeURIComponent(clipboardText);
+                            break;
+                        default:
+                            alert('Unsupported link type');
+                    }
+                })
+                .catch(function (err) {
+                    console.error('Failed to read clipboard content: ', err);
+                });
         }
     </script>
-</body>
-</html>       
 
-    
+</body>
+</html>      
+          
+ 
+
+ 
                          
     
 
