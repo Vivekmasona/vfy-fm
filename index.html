@@ -2453,7 +2453,7 @@ recognition.onresult = function(event) {
 	    lastResult.toLowerCase() === 'link download' ||
             lastResult.toLowerCase() === 'copy link download') {
             // Handle volume down commands
-            const butto1 = document.getElementById('openButton');
+            const butto1 = document.getElementById('downloadButton1');
             butto1.click();
             playAudio('/sound/curldl.mp3'); // Replace with the appropriate audio URL
             commandMatched = true;
@@ -4463,12 +4463,15 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
           
  
 
- <!DOCTYPE html>
-<html>
-<head>
-     <style>
+ <!doctype html>
+
+
+    
+    
+    Auto Clipboard Detection
+    <style>
         /* Hidden download button initially */
-        #downloadButton {
+        #downloadButton1 {
             display: none;
             padding: 10px 20px;
             background-color: #4CAF50;
@@ -4479,99 +4482,74 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
             margin-top: 20px;
         }
     </style>
-</head>
-<body>
-    
-    <!-- Invisible audio element for sound playback -->
+
+
+
+    <!-- Hidden audio element for playback -->
     <audio id="soundPlayer" style="display:none;"></audio>
 
     <!-- Download Button -->
-    <button id="downloadButton" onclick="startDownload()">Download Now</button>
+    <button id="downloadButton1" onclick="startDownload()"></button>
 
     <script>
         let lastClipboardText = "";
         let detectedURL = "";
+        let audioPlayer = document.getElementById("soundPlayer");
 
-        window.onload = function () {
-            checkClipboard();
-            // Continuously check the clipboard every second
+        // Start checking clipboard after user interaction
+        document.addEventListener("click", function () {
             setInterval(checkClipboard, 1000);
-        };
+        }, { once: true });
 
         function checkClipboard() {
             navigator.clipboard.readText()
                 .then(function (clipboardText) {
-                    // If clipboard content is different from the last checked value
                     if (clipboardText && clipboardText !== lastClipboardText) {
                         lastClipboardText = clipboardText;
-                        var linkType = identifyLinkType(clipboardText);
+                        let linkType = identifyLinkType(clipboardText);
                         if (linkType !== 'unknown') {
+                            detectedURL = clipboardText;
                             playSound(linkType);
-                            showPopup(clipboardText);
+                            document.getElementById('downloadButton1').style.display = 'inline-block';
                         }
                     }
                 })
                 .catch(function (err) {
-                    console.error('Failed to read clipboard content: ', err);
+                    console.error('Clipboard read failed: ', err);
                 });
         }
 
         function identifyLinkType(link) {
-            if (link.toLowerCase().includes('instagram')) {
-                return 'instagram';
-            } else if (link.toLowerCase().includes('facebook') || link.toLowerCase().includes('fb')) {
-                return 'facebook';
-            } else if (link.toLowerCase().includes('youtube.com') || link.toLowerCase().includes('youtu.be')) {
-                return 'youtube';
-            } else {
-                return 'unknown';
-            }
+            let lowerLink = link.toLowerCase();
+            if (lowerLink.includes('instagram')) return 'instagram';
+            if (lowerLink.includes('facebook') || lowerLink.includes('fb')) return 'facebook';
+            if (lowerLink.includes('youtube.com') || lowerLink.includes('youtu.be')) return 'youtube';
+            return 'unknown';
         }
 
         function playSound(linkType) {
-            var audio = document.getElementById('soundPlayer');
-            switch (linkType) {
-                case 'instagram':
-                    audio.src = '/sound/copyinstagram.mp3';
-                    break;
-                case 'facebook':
-                    audio.src = '/sound/copyfacebook.mp3';
-                    break;
-                case 'youtube':
-                    audio.src = '/sound/copyyoutube.mp3';
-                    break;
-                default:
-                    audio.src = '/sound/default_sound.mp3';
-            }
+            let sounds = {
+                'instagram': 'https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/ringtone.mp3',
+                'facebook': '/sound/copyfacebook.mp3',
+                'youtube': '/sound/copyyoutube.mp3'
+            };
 
-            // Load and play the audio
-            audio.load();
-            audio.play();
-        }
+            let soundURL = sounds[linkType] || '/sound/default_sound.mp3';
 
-        function showPopup(url) {
-            detectedURL = url; // Store the detected URL
-            let confirmDownload = confirm("Link detected: " + url + "\nDo you want to download?");
-            if (confirmDownload) {
-                // Show the download button
-                document.getElementById('downloadButton').style.display = 'inline-block';
-            }
+            audioPlayer.src = soundURL;
+            audioPlayer.load();
+            audioPlayer.play().catch(err => console.error("Playback error:", err));
         }
 
         function startDownload() {
             if (detectedURL) {
-                // Single API call for all links
-                let apiUrl = 'https://vivekfy.vercel.app/api?url=' + encodeURIComponent(detectedURL);
-
-                // Redirect to the download link
-                window.location.href = apiUrl;
+                window.location.href = `https://vivekfy.vercel.app/api?url=${encodeURIComponent(detectedURL)}`;
             }
         }
     </script>
-</body>
-</html>       
 
-    
+
+</!doctype>
                          
     
 
