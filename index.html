@@ -4485,21 +4485,49 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
 
 
 
-    <!-- Hidden audio element for playback -->
-    <audio id="soundPlayer" style="display:none;"></audio>
+    
+    <style>
+        #downloadButton1 {
+            display: none;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hidden Audio Element -->
+    <audio id="soundPlayer"></audio>
 
     <!-- Download Button -->
-    <button id="downloadButton1" onclick="startDownload()"></button>
+    <button id="downloadButton1" onclick="startDownload()">Download Now</button>
 
     <script>
         let lastClipboardText = "";
         let detectedURL = "";
         let audioPlayer = document.getElementById("soundPlayer");
 
-        // Start checking clipboard after user interaction
-        document.addEventListener("click", function () {
-            setInterval(checkClipboard, 1000);
-        }, { once: true });
+        window.onload = function () {
+            // Browser autoplay policy ko bypass karne ke liye ek mute sound play karna hoga
+            audioPlayer.muted = true;
+            audioPlayer.play().then(() => {
+                audioPlayer.pause();
+                audioPlayer.muted = false;
+                checkClipboard();
+                setInterval(checkClipboard, 1000);
+            }).catch(err => {
+                console.warn("Autoplay blocked. Waiting for user interaction...");
+                document.body.addEventListener("click", () => {
+                    checkClipboard();
+                    setInterval(checkClipboard, 1000);
+                }, { once: true });
+            });
+        };
 
         function checkClipboard() {
             navigator.clipboard.readText()
@@ -4514,9 +4542,7 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
                         }
                     }
                 })
-                .catch(function (err) {
-                    console.error('Clipboard read failed: ', err);
-                });
+                .catch(err => console.error("Clipboard read failed:", err));
         }
 
         function identifyLinkType(link) {
@@ -4549,7 +4575,6 @@ background: radial-gradient(circle, rgba(63,94,251,0) 0%, rgba(8,7,6,0.887957830
     </script>
 
 
-</!doctype>
                          
     
 
