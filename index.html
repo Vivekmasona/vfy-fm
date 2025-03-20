@@ -2104,119 +2104,115 @@ function convertTimeToSeconds(time) {
 
 
 var playVideoButton = document.getElementById("playVideobutto");
-var overlayBox = null; // Initialize overlayBox to null
+var overlayBox = null;
 
-playVideoButton.addEventListener("click", function() {
-    // Pause audio elements with the ID "SAudio"
-    var audioElements = document.querySelectorAll("#SAudio");
-    for (var i = 0; i < audioElements.length; i++) {
-        audioElements[i].pause();
-    }
+playVideoButton.addEventListener("click", function () {
+    // Pause any playing audio
+    document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
 
     var currentPlayingSongId = localStorage.getItem("playPresent");
 
-    // Close the existing overlay box if it exists
-    var existingOverlayBox = document.getElementById("overlayBox");
-    if (existingOverlayBox) {
-        document.body.removeChild(existingOverlayBox);
+    // Remove existing overlay if present
+    if (overlayBox) {
+        document.body.removeChild(overlayBox);
+        overlayBox = null;
     }
 
-    // Create and display the video in a new overlay box with controls
+    // Create overlay box
     overlayBox = document.createElement("div");
     overlayBox.id = "overlayBox";
-    overlayBox.style.backgroundColor = "rgba(0, 0, 0, 0.9)";
-    overlayBox.style.position = "fixed";
-    overlayBox.style.top = "50%";
-    overlayBox.style.left = "50%";
-    overlayBox.style.transform = "translate(-50%, -50%)";
-    overlayBox.style.width = "300px"; // Set the width of the overlay box
-    overlayBox.style.height = "200px"; // Set the height of the overlay box
+    overlayBox.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 350px;
+        height: 250px;
+        background-color: rgba(0, 0, 0, 0.9);
+        border-radius: 10px;
+        padding: 10px;
+        box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.3);
+        cursor: move;
+        z-index: 9999;
+    `;
 
+    // Video element
     var video = document.createElement("video");
     video.style.width = "100%";
-    video.style.height = "100%";
-    video.controls = true; // Show video controls
-    video.autoplay = true; // Autoplay video
+    video.style.height = "80%";
+    video.controls = false;
+    video.autoplay = true;
 
     var source = document.createElement("source");
-    source.src = "https://vivekfy.vercel.app/audio?itag=18&url=https://youtu.be/" + currentPlayingSongId;
-    source.type = "video/mp4"; // Change the type if needed
-
+    source.src = `https://vivekfy.vercel.app/audio?itag=18&url=https://youtu.be/${currentPlayingSongId}`;
+    source.type = "video/mp4";
     video.appendChild(source);
 
-    var closeButton = document.createElement("button");
-    closeButton.innerHTML = "Exit";
-    closeButton.className = "close-button";
-    closeButton.style.color = "#E74C3C";
-    closeButton.style.backgroundColor = "#333";
-    closeButton.style.border = "0";
-    closeButton.addEventListener("click", function() {
-        document.body.removeChild(overlayBox);
-        overlayBox = null; // Reset overlayBox to null when closing the overlay
+    // Control buttons
+    var controlsDiv = document.createElement("div");
+    controlsDiv.style.textAlign = "center";
+    controlsDiv.style.marginTop = "5px";
+
+    var playPauseBtn = document.createElement("button");
+    playPauseBtn.innerHTML = "⏯";
+    playPauseBtn.onclick = () => video.paused ? video.play() : video.pause();
+
+    var muteBtn = document.createElement("button");
+    muteBtn.innerHTML = "🔇";
+    muteBtn.onclick = () => video.muted = !video.muted;
+
+    var seekBar = document.createElement("input");
+    seekBar.type = "range";
+    seekBar.min = 0;
+    seekBar.max = 100;
+    seekBar.value = 0;
+    seekBar.style.width = "50%";
+    seekBar.oninput = () => video.currentTime = (video.duration * seekBar.value) / 100;
+
+    video.addEventListener("timeupdate", () => {
+        seekBar.value = (video.currentTime / video.duration) * 100;
     });
 
+    var pipBtn = document.createElement("button");
+    pipBtn.innerHTML = "📺";
+    pipBtn.onclick = () => video.requestPictureInPicture();
+
+    var closeButton = document.createElement("button");
+    closeButton.innerHTML = "❌";
+    closeButton.onclick = () => {
+        document.body.removeChild(overlayBox);
+        overlayBox = null;
+    };
+
+    controlsDiv.append(playPauseBtn, muteBtn, seekBar, pipBtn, closeButton);
     overlayBox.appendChild(video);
-    overlayBox.appendChild(closeButton);
+    overlayBox.appendChild(controlsDiv);
     document.body.appendChild(overlayBox);
 
-    // Add PiP button to the video
-    if (video.requestPictureInPicture) {
-        var pipButton = document.createElement("button");
-        pipButton.innerHTML = '<i class="fas fa-compress-arrows-alt"></i>'; // Font Awesome icon for PiP
-        pipButton.className = "pip-button";
-        pipButton.style.color = "#E74C3C";
-        pipButton.style.backgroundColor = "#333";
-        pipButton.style.border = "0";
-        pipButton.style.position = "absolute";
-        pipButton.style.top = "5%";
-        pipButton.style.left = "5%";
-        pipButton.style.transform = "translate(-5%, -5%)";
-        pipButton.addEventListener("click", function() {
-            video.requestPictureInPicture()
-                .then(() => {
-                    // Hide the overlay box when entering PiP mode
-                    overlayBox.style.display = "none";
-                })
-                .catch(error => {
-                    console.error('Failed to enter PiP mode:', error);
-                });
-        });
+    // Make overlay draggable
+    overlayBox.onmousedown = function (event) {
+        let shiftX = event.clientX - overlayBox.getBoundingClientRect().left;
+        let shiftY = event.clientY - overlayBox.getBoundingClientRect().top;
 
-        overlayBox.appendChild(pipButton);
-    }
-
-    // Automatically trigger PiP when video starts playing
-    video.addEventListener('loadedmetadata', function() {
-        if (video.requestPictureInPicture) {
-            video.requestPictureInPicture()
-                .then(() => {
-                    // Hide the overlay box when entering PiP mode automatically
-                    overlayBox.style.display = "none";
-                })
-                .catch(error => {
-                    console.error('Failed to enter PiP mode:', error);
-                });
+        function moveAt(x, y) {
+            overlayBox.style.left = x - shiftX + "px";
+            overlayBox.style.top = y - shiftY + "px";
         }
-    });
 
-    // Event listener for exiting PiP mode
-    video.addEventListener('leavepictureinpicture', function() {
-        // Show the overlay box when exiting PiP mode
-        overlayBox.style.display = "block";
-    });
-
-    // Event listener for the back button
-    window.addEventListener('popstate', function(event) {
-        if (overlayBox) {
-            document.body.removeChild(overlayBox);
-            overlayBox = null;
+        function onMouseMove(event) {
+            moveAt(event.clientX, event.clientY);
         }
-    });
 
-    // Add a new entry to the browser's history when the overlay is opened
-    history.pushState({ overlay: true }, "");
+        document.addEventListener("mousemove", onMouseMove);
+
+        document.onmouseup = function () {
+            document.removeEventListener("mousemove", onMouseMove);
+            document.onmouseup = null;
+        };
+    };
+
+    overlayBox.ondragstart = () => false;
 });
-
     
 
 	
