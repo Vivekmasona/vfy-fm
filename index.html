@@ -2121,12 +2121,14 @@ playVideoButton.addEventListener("click", function () {
     overlayBox = document.createElement("div");
     overlayBox.id = "overlayBox";
     overlayBox.style.cssText = `
-        position: fixed; top: 50%; left: 50%;
-        transform: translate(-50%, -50%);
+        position: fixed;
+        bottom: 20%;
+        right: 5%;
         width: 350px; height: 250px;
-        background: rgba(0, 0, 0, 0.9);
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(10px);
         border-radius: 10px; padding: 10px;
-        box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.3);
+        box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.2);
         cursor: move; z-index: 9999;
     `;
 
@@ -2134,8 +2136,12 @@ playVideoButton.addEventListener("click", function () {
     var video = document.createElement("video");
     video.controls = false;
     video.autoplay = true;
-    video.style.width = "100%";
-    video.style.height = "80%";
+    video.style.cssText = `
+        width: 100%;
+        height: 80%;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.1);
+    `;
 
     var source = document.createElement("source");
     source.src = `https://vivekfy.vercel.app/audio?itag=18&url=https://youtu.be/${currentPlayingSongId}`;
@@ -2147,7 +2153,8 @@ playVideoButton.addEventListener("click", function () {
     controlsDiv.style.cssText = `
         display: flex; justify-content: space-between;
         align-items: center; margin-top: 5px; padding: 5px;
-        background: #222; border-radius: 5px;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 5px;
     `;
 
     // Play/Pause button
@@ -2211,7 +2218,7 @@ playVideoButton.addEventListener("click", function () {
     overlayBox.appendChild(controlsDiv);
     document.body.appendChild(overlayBox);
 
-    // Make overlay draggable
+    // Make overlay draggable (Fixed)
     makeDraggable(overlayBox);
 });
 
@@ -2227,28 +2234,30 @@ function createButton(iconHtml, clickHandler) {
     return button;
 }
 
-// Function to make overlay draggable
+// Function to make overlay draggable (Fixed)
 function makeDraggable(element) {
-    element.onmousedown = function (event) {
-        let shiftX = event.clientX - element.getBoundingClientRect().left;
-        let shiftY = event.clientY - element.getBoundingClientRect().top;
+    let offsetX, offsetY, isDragging = false;
 
-        function moveAt(x, y) {
-            element.style.left = x - shiftX + "px";
-            element.style.top = y - shiftY + "px";
-        }
+    element.addEventListener("mousedown", (event) => {
+        isDragging = true;
+        offsetX = event.clientX - element.getBoundingClientRect().left;
+        offsetY = event.clientY - element.getBoundingClientRect().top;
 
         function onMouseMove(event) {
-            moveAt(event.clientX, event.clientY);
+            if (!isDragging) return;
+            element.style.left = event.clientX - offsetX + "px";
+            element.style.top = event.clientY - offsetY + "px";
+        }
+
+        function onMouseUp() {
+            isDragging = false;
+            document.removeEventListener("mousemove", onMouseMove);
+            document.removeEventListener("mouseup", onMouseUp);
         }
 
         document.addEventListener("mousemove", onMouseMove);
-
-        document.onmouseup = function () {
-            document.removeEventListener("mousemove", onMouseMove);
-            document.onmouseup = null;
-        };
-    };
+        document.addEventListener("mouseup", onMouseUp);
+    });
 
     element.ondragstart = () => false;
 }
