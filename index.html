@@ -1551,11 +1551,16 @@ $(document).on('swiperight', '.ui-page', function(event){
     }
     return false;            
 });
+
+
 var firstSearch = true;
 var currentQuery = "";
 var nextPageToken = "";
 var prevPageToken = "";
-var youtubeApiKey = "AIzaSyCucRPiYESnpi1fTrr3XOqAjIWr7J3Jcb8"; // Your YouTube API Key
+
+// Load API keys & URLs from environment variables
+var youtubeApiKey = process.env.YOUTUBE_API_KEY || "";
+var selfApiUrl = process.env.SELF_API_URL || "";
 
 function search() {
     $("#homepage-content").html("");
@@ -1571,7 +1576,7 @@ function search() {
     let apiUrl;
 
     if (selectedAPI === "self") {
-        apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(q)}`;
+        apiUrl = `${selfApiUrl}?q=${encodeURIComponent(q)}`;
     } else {
         apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=40&key=${youtubeApiKey}`;
     }
@@ -1618,7 +1623,7 @@ function paginate(direction) {
 
     let apiUrl;
     if (selectedAPI === "self") {
-        apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
+        apiUrl = `${selfApiUrl}?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
     } else {
         apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(currentQuery)}&type=video&maxResults=40&pageToken=${pageToken}&key=${youtubeApiKey}`;
     }
@@ -5311,6 +5316,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
             );
         }
     </script>
+
 
 
 
