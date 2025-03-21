@@ -1551,15 +1551,11 @@ $(document).on('swiperight', '.ui-page', function(event){
     }
     return false;            
 });
-
-
-
 var firstSearch = true;
 var currentQuery = "";
 var nextPageToken = "";
 var prevPageToken = "";
-var youtubeApiKey = import.meta.env.VITE_YOUTUBE_API_KEY; // Fetch from Netlify env
-var selfApiUrl = import.meta.env.VITE_SELF_API_URL; // Fetch from Netlify env
+var youtubeApiKey = "AIzaSyCucRPiYESnpi1fTrr3XOqAjIWr7J3Jcb8"; // Your YouTube API Key
 
 function search() {
     $("#homepage-content").html("");
@@ -1575,7 +1571,7 @@ function search() {
     let apiUrl;
 
     if (selectedAPI === "self") {
-        apiUrl = `${selfApiUrl}/v3-api?q=${encodeURIComponent(q)}`;
+        apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(q)}`;
     } else {
         apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=40&key=${youtubeApiKey}`;
     }
@@ -1622,7 +1618,7 @@ function paginate(direction) {
 
     let apiUrl;
     if (selectedAPI === "self") {
-        apiUrl = `${selfApiUrl}/v3-api?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
+        apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
     } else {
         apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(currentQuery)}&type=video&maxResults=40&pageToken=${pageToken}&key=${youtubeApiKey}`;
     }
@@ -1633,7 +1629,10 @@ function paginate(direction) {
 function getOutput(item, i) {
     var id = item.id?.videoId || item.id;
     var title = item.snippet?.title || "No title";
+    var description = item.snippet?.description || "No description";
     var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
+    var channelTitle = item.snippet?.channelTitle || "Unknown channel";
+    var videoDate = new Date(item.snippet?.publishedAt || Date.now());
 
     if (item.snippet?.liveBroadcastContent === "live") {
         return '';
@@ -1648,39 +1647,76 @@ function getOutput(item, i) {
                     <img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">
                     <div>
                         <p>V F Y ${title}</p>
-                    </div>
+                         </div>
                 </section>
             </div>
         </b>`;
 }
 
-// Show the popup
+// Show the popup when a butto is clicked
 $("#showPopupbutto").click(function() {
     $("#popupContainer").show();
 });
 
-// Close the popup
+// Close the popup when the close butto is clicked
 $("#closePopup").click(function() {
     $("#popupContainer").hide();
 });
-
+	
+	
 function loadSong(song, ind) {
     var id = $(song).attr("vid");
-    var thumbnail = `https://img.youtube.com/vi/${id}/sddefault.jpg`;
+    var indId = parseInt($(song).attr("index"));
+    var thumbnail = 'https://img.youtube.com/vi/' + id + '/sddefault.jpg';
     var title = $(song).text();
 
     localStorage.setItem("playPresent", id);
     localStorage.setItem("thumbnail", thumbnail);
     $("#thumbnail").attr("src", thumbnail);
-    $("#vfytitle").html(`<marquee behavior="alternate" scrollamount="4">${title}</marquee>`);
-    $("#currentSongOutput").html(`Video ID: ${id}<br><img src="${thumbnail}" style="max-width:100%;">`);
-    $("#channelNameDiv").text(`Channel ID: ${id}`);
 
-    var downloadButton = $(`<iframe id="downloadIframe" src="save?url=${id}" width="80%" height="50px" frameborder="0"></iframe>`);
+    // Set the profile ID
+    localStorage.setItem("profileID", id);
+    $("#profileID").text("Profile ID: " + id);
+
+    // Set the profile thumbnail and video ID
+    $("#profileThumbnail").html('<img src="' + thumbnail + '" alt="Profile Thumbnail">');
+    $("#profileThumbnail").data("videoId", id);
+
+    // Set the title text to the marquee div with ID "vfytitle"
+    $("#vfytitle").html('<marquee behavior="alternate" scrollamount="4" onmousedown="this.stop();" onmouseup="this.start();">' + title + '</marquee>');
+
+    // Set the current time title to the div with ID "currentTimeTitle"
+    $("#currentTimeTitle").text("Current Time: " + new Date().toLocaleTimeString());
+
+    // Set the current song title with marquee effect to the div with ID "currentSongTitle"
+    $("#currentSongTitle").html('<marquee behavior="alternate" scrollamount="1" onmousedown="this.stop();" onmouseup="this.start();">' + title + '</marquee>');
+    
+    // Create a div with ID "currentSongOutput" to display video ID and max resolution thumbnail
+    $("#currentSongOutput").html('Video ID: ' + id + '<br>' +
+                                 'Max Resolution Thumbnail: <img src="' + thumbnail + '" alt="Current Song Thumbnail" style="max-width:100%; max-height:100%;">');
+
+    // Create a div with ID "channelNameDiv" to display the channel ID
+    $("#channelNameDiv").text("Channel ID: " + id);
+
+    // Add the download button dynamically to the "downloadButtonDiv" within an iframe without border
+    var downloadButton = $('<iframe id="downloadIframe" src="save?url=' + id + '" width="80%" height="50px" frameborder="0" border-radius="50px 10px 50px 10px"></iframe>');
     $("#downloadButtonDiv").html(downloadButton);
 
-    play(id, ind);
+    // Add a click event listener to the iframe button
+    downloadButton.on('click', function(event) {
+        event.preventDefault(); // Prevent the default behavior of the link
+        // Add any additional actions or code you want to execute when the button is clicked
+        // For example, you might want to trigger a download or perform some other action
+    });
+
+    // Display the current playing song ID
+    var currentPlayingSongId = localStorage.getItem("playPresent");
+    $("#currentPlayingSongId").text("Current Playing Song ID: " + currentPlayingSongId);
+
+    play(id, indId);
 }
+
+    
 
 
 
