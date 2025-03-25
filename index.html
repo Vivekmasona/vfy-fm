@@ -4747,7 +4747,7 @@ body{
         // Add click event listener to the brand name
         brandNameElement.addEventListener('click', function () {
             // Use your custom TTS API to speak the complete device name
-            var ttsUrl = 'https://vivekfy.vercel.app/tts?text=' + encodeURIComponent(completeDeviceName);
+            var ttsUrl = 'https://vivekfy.vercel.app/tts/v2?text=' + encodeURIComponent(completeDeviceName);
             var audio = new Audio(ttsUrl);
             audio.play();
         });
