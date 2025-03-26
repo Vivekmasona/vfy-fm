@@ -4722,38 +4722,43 @@ body{
 
 
 	
+<h4 id="brandName" style="cursor: pointer; text-decoration: underline;"></h4>
 
-
-
-
-    <h4 id="brandName" style="cursor: pointer; text-decoration: underline;"></h4>
-
-<!-- Add your scripts here -->
 <script src="https://wurfl.io/wurfl.js"></script>
 
 <script>
-    // Wait for the document to be ready
-    $(document).ready(function () {
-        // Get the user's complete device name from WURFL library
+    document.addEventListener('DOMContentLoaded', function () {
         var completeDeviceName = WURFL.complete_device_name;
-
-        // Extract brand name
         var brandName = completeDeviceName.split(" ")[0];
 
-        // Display the brand name
         var brandNameElement = document.getElementById('brandName');
         brandNameElement.innerText = brandName;
 
-        // Add click event listener to the brand name
+        // Check if audio is already stored in sessionStorage
+        var savedAudioUrl = sessionStorage.getItem('deviceAudioUrl');
+
         brandNameElement.addEventListener('click', function () {
-            // Use your custom TTS API to speak the complete device name
-            var ttsUrl = 'https://vivekfy.vercel.app/tts/v2?text=' + encodeURIComponent(completeDeviceName);
-            var audio = new Audio(ttsUrl);
+            if (!savedAudioUrl) {
+                // Generate TTS URL and store it only on first click
+                savedAudioUrl = 'https://vivekfy.vercel.app/tts/v2?text=' + encodeURIComponent(completeDeviceName);
+                sessionStorage.setItem('deviceAudioUrl', savedAudioUrl);
+            }
+
+            // Play the stored or newly generated audio
+            var audio = new Audio(savedAudioUrl);
             audio.play();
         });
     });
+
+    // Clear sessionStorage when user navigates back or refreshes the page
+    window.addEventListener('beforeunload', function () {
+        sessionStorage.clear();
+    });
 </script>
 
+
+
+    
 
 
 </!doctype>
@@ -5302,7 +5307,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
         function showDetail() {
             let currentDate = new Date().toLocaleDateString();
             alert(
-                "Developer: Vivek Verma\n" +
+                "Developer: Vivek-Verma\n" +
                 "App Version: 2.0\n" +
                 "Server: Free\n" +
                 "API: 2\n" +
