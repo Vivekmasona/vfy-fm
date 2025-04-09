@@ -3697,6 +3697,7 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 
 
 
+
 <script>
   function speakSearchText() {
     const searchInput = document.getElementById('search-basic');
@@ -3710,38 +3711,29 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
       searchText = searchText.replace(word, '').trim();
     });
 
-    // Proceed with speech synthesis for the remaining text
+    // Proceed with custom TTS
     speakWithAudio(searchText);
   }
 
   function speakWithAudio(textToSpeak) {
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(textToSpeak);
+    if (!textToSpeak) return;
 
-      // Set language to Hindi
-      utterance.lang = 'hi-IN';
+    const ttsUrl = `https://apple-puddle-cattle.glitch.me/tts?text=${encodeURIComponent(textToSpeak)}`;
+    const audio = new Audio(ttsUrl);
 
-      // Select a male voice, if available
-      const voices = window.speechSynthesis.getVoices();
-      let maleVoice = voices.find(voice => voice.name === 'vivek');
-      if (maleVoice) {
-        utterance.voice = maleVoice;
-      } else {
-        console.log('Male voice not found; using the default voice.');
-      }
+    audio.volume = 1;
 
-      utterance.volume = 1; // Set volume to 100%
+    audio.onended = function () {
+      // After TTS finishes, play result audio
+      const resultAudio = new Audio('/sound/result.mp3');
+      resultAudio.play();
+    };
 
-      utterance.onend = function () {
-        // Once the text is spoken, initiate the audio link for "Search results from bhi faai music"
-        const audio = new Audio('/sound/result.mp3');
-        audio.play();
-      };
+    audio.onerror = function () {
+      console.log('Failed to load TTS audio.');
+    };
 
-      window.speechSynthesis.speak(utterance);
-    } else {
-      console.log('Text-to-speech not supported in this browser');
-    }
+    audio.play();
   }
 </script>
 
