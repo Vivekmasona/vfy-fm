@@ -5281,102 +5281,22 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
     
 
-
-
-
-
-
-
-<!DOCTYPE html>
-<html>
-<head>
-  <style>
-    body {
-      background: black;
-      color: white;
-      font-family: 'Arial', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      overflow: hidden;
-    }
-    .line {
-      opacity: 0;
-      font-size: 20px;
-      margin: 10px 0;
-      animation: fadeZoom 0.8s ease forwards;
-    }
-    .line .dot {
-      display: inline-block;
-      height: 10px;
-      width: 10px;
-      background: lime;
-      border-radius: 50%;
-      box-shadow: 0 0 10px lime, 0 0 20px lime;
-      margin-right: 10px;
-    }
-    .highlight {
-      font-weight: bold;
-      font-size: 24px;
-      color: #00ffcc;
-      animation: glow 1s infinite alternate;
-    }
-    @keyframes fadeZoom {
-      from {
-        opacity: 0;
-        transform: scale(0.8);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1.05);
-      }
-    }
-    @keyframes glow {
-      from {
-        text-shadow: 0 0 5px #00ffcc;
-      }
-      to {
-        text-shadow: 0 0 20px #00ffcc;
-      }
-    }
-  </style>
-</head>
-<body>
-
-<div id="details"></div>
 <script>
-  function showDetail() {
-    const currentDate = new Date().toLocaleDateString();
-    const lines = [
-      `<span class="dot"></span><span class="highlight">Dristi Kumari</span>`,
-      `App Version: 2.0`,
-      `Server: Free type`,
-      `API: 2 api (1 self, 2 yt v3)`,
-      `Backend API: 6 api for songs`,
-      `Date: ${currentDate}`
-    ];
+    function showDetail() {
+        let currentDate = new Date().toLocaleDateString();
+        let message = "";
+        message += "Developer: Dristi Kumari\n";
+        message += "App Version: 2.0\n";
+        message += "Server: Free type\n";
+        message += "API:\n  1. Self API\n  2. YouTube v3 API\n";
+        message += "Backend API: 6 APIs for songs\n";
+        message += "Date: " + currentDate;
 
-    const container = document.getElementById('details');
-    container.innerHTML = '';
-    
-    lines.forEach((text, index) => {
-      const div = document.createElement('div');
-      div.className = 'line';
-      div.style.animationDelay = `${index * 0.5}s`;
-      div.innerHTML = text;
-      container.appendChild(div);
-    });
-  }
+        alert(message);
+    }
 
-  showDetail(); // call on page load or you can call on button click
+    showDetail(); // Optional: call on page load
 </script>
-
-</body>
-</html>
-
-
 
 
 
