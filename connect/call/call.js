@@ -1,6 +1,6 @@
   <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
  
-const socket = io("https://gold-foregoing-change.glitch.me/");
+const socket = io("https://vfycall.vercel.app/");
 
 let localStream;
 let peerConnection;
