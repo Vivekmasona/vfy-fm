@@ -389,7 +389,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (songs.length > 0) {
                 // Send all song data to the server
-                await fetch('https://forest-season-patella.glitch.me/update-songs', {
+                await fetch('https://audio-remote.onrender.com/update-songs', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -421,7 +421,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }));
 
             // Send all song data to the server
-            await fetch('https://forest-season-patella.glitch.me/update-songs', {
+            await fetch('https://audio-remote.onrender.com/update-songs', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -483,7 +483,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        fetch('https://forest-season-patella.glitch.me/control', {
+        fetch('https://audio-remote.onrender.com/control', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -504,7 +504,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        fetch('https://forest-season-patella.glitch.me/update-url', {
+        fetch('https://audio-remote.onrender.com/update-url', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
