@@ -1800,37 +1800,59 @@ function playPause() {
 audio.addEventListener("ended", function() {
     playNextSong();
 });
+// YouTube API load
+var tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+document.body.appendChild(tag);
 
-// Listen for the 'error' event
 var alternativeAudioSources = [
-"https://vivekfy.vercel.app/tokyo?id=" + id,
-"https://vivekfy.vercel.app/vfy?id=" + id,
-//"https://vivekfy.vercel.app/vfy?id=" + id,
-//"https://vivekfy.vercel.app/vfy?id=" + id,
-"https://vivekfy.vercel.app/api-play?url=https://youtu.be/" + id,
-//"https://vivekfy.vercel.app/mp3?url=https://vkrdownloader.xyz/download.php?vkr=https://youtu.be/" + id,   
-"https://vivekfy.vercel.app/mp3?url=https://vkrdownloader.xyz/download.php?vkr=https://youtu.be/" + id,
-"https://vivekfy.vercel.app/mp3?url=https://vkrdownloader.xyz/download.php?vkr=https://youtu.be/" + id,
-//"https://distinctive-netta-vivekfy-608ee81c.koyeb.app/play?url=https://youtu.be/" + id,	
-//"https://distinctive-netta-vivekfy-608ee81c.koyeb.app/play?url=https://youtu.be/" + id,
-"https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/" + id,
-"https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + id,
-    
+    "iframe" // sirf YouTube IFrame API fallback
 ];
 
 var currentAlternativeIndex = 0;
+var ytPlayer;
+var ytId = id; // aapka YouTube video ID
 
+// IFrame API ready function (global hona chahiye)
+window.onYouTubeIframeAPIReady = function () {
+    // Player tabhi banega jab error aayega
+};
+
+// Audio error event
 audio.addEventListener("error", function () {
     setTimeout(function () {
-        audio.src = alternativeAudioSources[currentAlternativeIndex];
-        audio.load();
-        audio.play();
+        var source = alternativeAudioSources[currentAlternativeIndex];
+
+        if (source === "iframe") {
+            console.log("Switching to YouTube IFrame fallback...");
+
+            // Hidden container banaye
+            var div = document.createElement("div");
+            div.id = "ytplayer-container";
+            div.style.display = "none";
+            document.body.appendChild(div);
+
+            ytPlayer = new YT.Player('ytplayer-container', {
+                height: '0',
+                width: '0',
+                videoId: ytId,
+                playerVars: { 'autoplay': 1, 'controls': 0 },
+                events: {
+                    'onReady': function (event) {
+                        event.target.playVideo();
+                    },
+                    'onError': function (err) {
+                        console.error("YouTube IFrame failed:", err);
+                    }
+                }
+            });
+        }
+
         currentAlternativeIndex = (currentAlternativeIndex + 1) % alternativeAudioSources.length;
     }, 1000);
 });
 
-
-// butto click event
+// Next button event
 var nextbutto = document.getElementById("nextbutto");
 nextbutto.addEventListener("click", function () {
     playNextSong();
