@@ -1,6 +1,6 @@
   <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
  
-const socket = io("https://vfycalll.onrender.com/");
+const socket = io("https://vfycalll.vercel.app/");
 
 let localStream;
 let peerConnection;
