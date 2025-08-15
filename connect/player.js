@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Function to fetch current audio URL and play
             async function fetchAndUpdateAudioStatus() {
                 try {
-                    const urlResponse = await fetch('https://forest-season-patella.glitch.me/current-url/' + sessionId);
+                    const urlResponse = await fetch('https://audio-remote.onrender.com/current-url/' + sessionId);
                     const data = await urlResponse.json();
 
                     if (data.success && data.sessionId === sessionId) {
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Function to send control command to server
             function sendControlCommand(action) {
                 const requestPayload = { action, sessionId };
-                fetch('https://forest-season-patella.glitch.me/control', {
+                fetch('https://audio-remote.onrender.com/control', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
