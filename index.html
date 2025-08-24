@@ -5385,3 +5385,52 @@ document.getElementById('search-btn').addEventListener('click', function() {
 </script>
 
 
+
+
+
+<script>
+(async () => {
+  if (!("getBattery" in navigator)) {
+    console.log("⚡ Battery API not supported");
+    return;
+  }
+
+  // Preload audio object
+  const sound = new Audio("https://www.myinstants.com/media/sounds/uh_pjRnSML.mp3");
+  sound.volume = 1.0;
+
+  // Force unlock audio on first user gesture
+  function unlock() {
+    sound.play().then(() => {
+      sound.pause();
+      sound.currentTime = 0;
+      console.log("🔊 Audio unlocked");
+    }).catch(err => console.log("Unlock failed:", err));
+    document.removeEventListener("click", unlock);
+    document.removeEventListener("touchstart", unlock);
+  }
+  document.addEventListener("click", unlock);
+  document.addEventListener("touchstart", unlock);
+
+  const battery = await navigator.getBattery();
+
+  function playSound() {
+    try {
+      const s = sound.cloneNode(); // clone so it always plays fresh
+      s.volume = 1.0;
+      s.play().catch(err => console.log("Play blocked:", err));
+    } catch (e) {
+      console.log("Error:", e);
+    }
+  }
+
+  // Listen charging state
+  battery.addEventListener("chargingchange", () => {
+    playSound();
+    console.log(battery.charging ? "🔌 Charger connected" : "❌ Charger disconnected");
+  });
+})();
+</script>
+
+
+	
