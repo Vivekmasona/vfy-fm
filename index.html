@@ -1087,10 +1087,7 @@ border-radius: 15px;
 
 
 
- <h2>Session Status</h2>
-<div id="statusDot"></div>
-<div id="message">Checking session...</div>
-
+ 
     
 
 	    
@@ -5436,63 +5433,5 @@ document.getElementById('search-btn').addEventListener('click', function() {
 </script>
 
 
-
-
-
-
-	<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Session Green Dot Real-Time</title>
-<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-<style>
-  body { font-family: Arial; text-align: center; padding: 20px; }
-  #statusDot {
-    width: 24px; height: 24px; border-radius: 50%;
-    background-color: gray; margin: 20px auto;
-    box-shadow: 0 0 0px rgba(0, 255, 0, 0);
-    transition: all 0.3s ease-in-out;
-  }
-  .online {
-    background-color: #00ff00;
-    animation: glow 1.5s infinite alternate;
-  }
-  @keyframes glow {
-    0% { box-shadow: 0 0 5px #00ff00; }
-    50% { box-shadow: 0 0 15px #00ff00; }
-    100% { box-shadow: 0 0 5px #00ff00; }
-  }
-</style>
-</head>
-<body>
-
-
-<script>
-  const socket = io("https://vfylive.onrender.com"); // server URL
-
-  // Read or generate sessionId
-  let sessionId = localStorage.getItem("sessionId");
-  if(!sessionId){
-      sessionId = 'sess_' + Math.random().toString(36).substr(2,9);
-      localStorage.setItem("sessionId", sessionId);
-  }
-
-  const dot = document.getElementById("statusDot");
-  const message = document.getElementById("message");
-
-  // Join session
-  socket.emit("join-session", sessionId);
-
-  // When server notifies update
-  socket.on("update-status", (data) => {
-    dot.classList.add("online");
-    message.innerText = `Session: ${sessionId} | Devices Online: ${data.onlineCount}\n${data.message}`;
-    alert(data.message); // popup when another device joins
-  });
-</script>
-
-</body>
-</html>
 	
+
