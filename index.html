@@ -1088,13 +1088,11 @@ border-radius: 15px;
 
 
  
-    <div id="overlay"></div>
+    <h2>Automatic Session → Green Dot</h2>
+  <div id="sessionDotContainer"></div>
+  <div class="status" id="extra">Count: —</div>
+  <div class="status" id="infoText">Not joined</div>
 
-<div id="sessionPopup">
-  <h3>Your Session ID</h3>
-  <p id="sessionText"></p>
-  <button id="closeBtn">Close</button>
-</div>
 
 	    
 
@@ -5543,4 +5541,107 @@ socket.on("sessionOnline", data => {
     }
 });
 </script>
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session Green Dot Demo</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; text-align: center; }
+    .dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #bbb;
+      display: inline-block;
+      vertical-align: middle;
+      box-shadow: none;
+      transition: box-shadow 300ms, background 300ms, transform 200ms;
+    }
+    .dot.glow {
+      background: #2ecc71;
+      box-shadow: 0 0 14px 4px rgba(46,204,113,0.6);
+      transform: scale(1.08);
+    }
+    #sessionDotContainer { display: inline-block; margin-top: 20px; }
+    .status { margin-top: 12px; color: #333; }
+  </style>
+</head>
+<body>
+
+  
+  <!-- Socket.IO client -->
+  <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
+  <script>
+    const serverUrl = "https://vfylive.onrender.com";
+    const socket = io(serverUrl, { autoConnect: true });
+
+    const dotContainer = document.getElementById("sessionDotContainer");
+    const extra = document.getElementById("extra");
+    const infoText = document.getElementById("infoText");
+
+    // Create dot element
+    const statusDot = document.createElement("div");
+    statusDot.className = "dot";
+    statusDot.title = "offline";
+    dotContainer.appendChild(statusDot);
+
+    let currentSession = null;
+
+    function joinSession(sid) {
+      currentSession = sid;
+      localStorage.setItem("sessionId", sid);
+      socket.emit("join-session", { sessionId: sid });
+      infoText.textContent = "Joined: " + sid;
+    }
+
+    // Auto join on page load
+    window.addEventListener("load", () => {
+      let storedSession = localStorage.getItem("sessionId");
+      if (!storedSession) {
+        // Agar localStorage empty hai to random session ID generate karo
+        storedSession = "sid_" + Math.random().toString(36).substring(2, 10);
+      }
+      joinSession(storedSession);
+    });
+
+    // Receive count updates
+    socket.on("session-count", (data) => {
+      if (!currentSession || data.sessionId !== currentSession) return;
+      extra.textContent = "Count: " + data.count;
+    });
+
+    // Both-present update
+    socket.on("both-present", (data) => {
+      if (!currentSession || data.sessionId !== currentSession) return;
+      if (data.bothPresent) {
+        statusDot.classList.add("glow");
+        statusDot.title = "2+ users in same session";
+        infoText.textContent = `Session: ${currentSession} — multiple users online`;
+      } else {
+        statusDot.classList.remove("glow");
+        statusDot.title = "waiting for another user";
+        infoText.textContent = `Session: ${currentSession} — waiting`;
+      }
+    });
+
+    socket.on("connect", () => console.log("Connected", socket.id));
+    socket.on("disconnect", () => {
+      statusDot.classList.remove("glow");
+      extra.textContent = "Count: —";
+      infoText.textContent = "Disconnected";
+    });
+  </script>
+
+</body>
+</html>
+
+
+	
 
