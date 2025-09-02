@@ -5386,31 +5386,85 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session Online Detector</title>
+<style>
+  body { font-family: sans-serif; padding: 20px; text-align: center; }
+  #greenDot {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background-color: gray;
+      display: inline-block;
+      margin-top: 20px;
+      transition: background-color 0.3s;
+  }
+  #manualSession {
+      margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+
+<h2>Session Online Detector</h2>
+
+<!-- Green dot -->
+<div id="greenDot"></div>
+
+<!-- Manual session ID input -->
+<div id="manualSession">
+    <input type="text" id="sessionInput" placeholder="Enter Session ID">
+    <button id="joinBtn">Join Session</button>
+</div>
+
 <script src="https://vfylive.onrender.com/socket.io/socket.io.js"></script>
 <script>
-  // Connect to server
-  const socket = io("https://vfylive.onrender.com");
+const socket = io("https://vfylive.onrender.com");
+const greenDot = document.getElementById('greenDot');
+const joinBtn = document.getElementById('joinBtn');
+const sessionInput = document.getElementById('sessionInput');
 
-  socket.on('connect', () => {
-      console.log("Connected to server with socket id:", socket.id);
+let sessionId;
 
-      // Automatically join room if sessionId exists in localStorage
-      const sessionId = localStorage.getItem('sessionId');
-      if (sessionId) {
-          socket.emit('join-room', sessionId);
-          console.log("Joining room:", sessionId);
-      } else {
-          alert('Create VFY ID');
-      }
-  });
+// Function to join session
+function joinSession(id) {
+    sessionId = id;
+    localStorage.setItem('sessionId', sessionId); // store in localStorage
+    socket.emit('join-room', sessionId);
+    console.log("Joined session:", sessionId);
+}
 
-  // Listen for same-session connection
-  socket.on('same-session-connected', (data) => {
-      alert(data.message); // message: "Another user joined with the same session ID!"
-  });
+// Auto join if localStorage has sessionId
+window.addEventListener('load', () => {
+    const storedId = localStorage.getItem('sessionId');
+    if (storedId) joinSession(storedId);
+});
 
-  socket.on('disconnect', () => {
-      console.log("Disconnected from server");
-  });
+// Manual join button
+joinBtn.addEventListener('click', () => {
+    const id = sessionInput.value.trim();
+    if (id) joinSession(id);
+    else alert("Enter a valid session ID");
+});
+
+// Listen for other users joining the same session
+socket.on('same-session-connected', (data) => {
+    console.log(data.message);
+    greenDot.style.backgroundColor = 'green'; // glow green
+    alert(data.message); // optional popup
+});
+
+// Optional: reset dot when everyone leaves
+socket.on('disconnect', () => {
+    greenDot.style.backgroundColor = 'gray';
+});
 </script>
 
+</body>
+</html>
+	
