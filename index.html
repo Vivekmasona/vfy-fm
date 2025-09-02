@@ -22,6 +22,8 @@
   <script src="massage/ms.js" defer></script>
 <link rel="stylesheet" href="connect/player.css" />
   <script src="connect/player.js" defer></script>
+<script src="online/ol.js" defer></script>
+
 
 
     
@@ -942,6 +944,24 @@ border-radius: 15px;
 
 		
 </style>
+
+
+<style>
+  body { font-family: sans-serif; padding: 20px; text-align: center; }
+  #greenDot {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background-color: gray;
+      display: inline-block;
+      margin-top: 20px;
+      transition: background-color 0.3s;
+  }
+  #manualSession {
+      margin-top: 20px;
+  }
+</style>
+
+	
 	
 
     <style>
@@ -1087,7 +1107,17 @@ border-radius: 15px;
 
 
 
- 
+ <h2>Session Online Detector</h2>
+
+<!-- Green dot -->
+<div id="greenDot"></div>
+
+<!-- Manual session ID input -->
+<div id="manualSession">
+    <input type="text" id="sessionInput" placeholder="Enter Session ID">
+    <button id="joinBtn">Join Session</button>
+</div>
+
     
 
 	    
