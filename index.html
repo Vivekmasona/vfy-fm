@@ -5432,6 +5432,23 @@ document.getElementById('search-btn').addEventListener('click', function() {
 })();
 </script>
 
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket = io("https://vfylive.onrender.com"); // tumhara server URL
 
+window.addEventListener('load', () => {
+    const roomID = localStorage.getItem('sessionId');
+    if (roomID) {
+        socket.emit('join-room', roomID);
+    } else {
+        alert('Create VFY ID');
+    }
+});
+
+// Listen for same-session connection
+socket.on('same-session-connected', (data) => {
+    alert(data.message); // tumhara "connected" message
+});
+</script>
 	
 
