@@ -5518,4 +5518,31 @@ window.addEventListener('load', () => {
 
 </body>
 </html>
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io('https://vfylive.onrender.com/');
+  const sessionId = localStorage.getItem('sessionId');
+
+  socket.emit('joinSession', sessionId);
+
+  socket.on('sessionOnline', (data) => {
+    if (data.sessionId === sessionId) {
+      document.getElementById("overlay").style.display = 'block';
+      document.getElementById("onlinePopup").style.display = 'block';
+    }
+  });
+
+  socket.on('sessionOffline', (data) => {
+    if (data.sessionId === sessionId) {
+      document.getElementById("overlay").style.display = 'none';
+      document.getElementById("onlinePopup").style.display = 'none';
+    }
+  });
+</script>
+
+
+
+
 	
