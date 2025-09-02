@@ -1088,7 +1088,7 @@ border-radius: 15px;
 
 
  
-    <h2>Same Session → Green Dot</h2>
+    <h2>Same</h2>
   <div style="margin-top:18px;">
     <div class="dot" id="statusDot" title="offline"></div>
     <div style="display:inline-block; margin-left:12px;" id="infoText">Not joined</div>
@@ -5440,13 +5440,12 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Auto Session Green Dot</title>
+  <title>Auto Green Dot Session</title>
   <style>
     body { font-family: sans-serif; padding: 20px; text-align: center; }
     .dot {
@@ -5460,7 +5459,6 @@ document.getElementById('search-btn').addEventListener('click', function() {
 </head>
 <body>
   
-  <!-- Socket.IO client -->
   <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
   <script>
     const serverUrl = "https://vfylive.onrender.com"; 
@@ -5470,46 +5468,38 @@ document.getElementById('search-btn').addEventListener('click', function() {
     const infoText = document.getElementById("infoText");
     const extra = document.getElementById("extra");
 
-    let currentSession = null;
+    // Fixed global session ID for all devices
+    const GLOBAL_SESSION_ID = "global_shared_session";
 
-    function joinSession(sid) {
-      currentSession = sid;
-      socket.emit("join-session", { sessionId: sid });
-      infoText.textContent = "Joined: " + sid;
+    function joinSession() {
+      socket.emit("join-session", { sessionId: GLOBAL_SESSION_ID });
+      infoText.textContent = "Joined global session";
     }
 
-    // Auto-join on page load
     window.addEventListener("load", () => {
-      let storedId = localStorage.getItem("sessionId");
-      if (!storedId) {
-        storedId = "sess_" + Math.random().toString(36).substr(2, 8);
-        localStorage.setItem("sessionId", storedId);
-      }
-      joinSession(storedId);
+      joinSession();
     });
 
-    // receive count updates
+    // Receive count updates
     socket.on("session-count", (data) => {
-      if (!currentSession || data.sessionId !== currentSession) return;
+      if (data.sessionId !== GLOBAL_SESSION_ID) return;
       extra.textContent = "Count: " + data.count;
     });
 
-    // both-present event
+    // Green dot for multiple users
     socket.on("both-present", (data) => {
-      if (!currentSession || data.sessionId !== currentSession) return;
-      const both = !!data.bothPresent;
-      if (both) {
+      if (data.sessionId !== GLOBAL_SESSION_ID) return;
+      if (data.bothPresent) {
         statusDot.classList.add("glow");
         statusDot.title = "2+ users in same session";
-        infoText.textContent = `Session: ${currentSession} — multiple users`;
+        infoText.textContent = `Global session — multiple users`;
       } else {
         statusDot.classList.remove("glow");
         statusDot.title = "waiting for another user";
-        infoText.textContent = `Session: ${currentSession} — waiting`;
+        infoText.textContent = `Global session — waiting`;
       }
     });
 
-    // socket connect/disconnect
     socket.on("connect", () => console.log("Connected to server", socket.id));
     socket.on("disconnect", () => {
       statusDot.classList.remove("glow");
@@ -5519,6 +5509,9 @@ document.getElementById('search-btn').addEventListener('click', function() {
   </script>
 </body>
 </html>
+
+
+
 	
 
 
