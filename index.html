@@ -5521,17 +5521,7 @@ window.addEventListener('load', () => {
 
 
 
-
-
 <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
-
-<div id="overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:999;"></div>
-<div id="onlinePopup" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:20px;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,0.3);z-index:1000;">
-  <h3>Session Online</h3>
-  <p id="onlineText">Your session is online on another device!</p>
-  <button onclick="closePopup()">Close</button>
-</div>
-
 <script>
 const socket = io("https://vfylive.onrender.com"); // Apke backend ka URL
 const sessionId = localStorage.getItem('sessionId') || generateSessionId();
@@ -5545,19 +5535,12 @@ function generateSessionId() {
 // Join session
 socket.emit("joinSession", sessionId);
 
-// Listen for other device notification
+// Listen for other device with same sessionId
 socket.on("sessionOnline", data => {
     if(data.sessionId === sessionId){
-        document.getElementById("overlay").style.display = 'block';
-        document.getElementById("onlinePopup").style.display = 'block';
+        // Default browser popup
+        alert(`Session ${sessionId} is online on another device!`);
     }
 });
-
-function closePopup(){
-    document.getElementById("overlay").style.display = 'none';
-    document.getElementById("onlinePopup").style.display = 'none';
-}
 </script>
 
-
-	
