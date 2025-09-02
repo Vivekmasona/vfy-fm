@@ -5439,4 +5439,58 @@ document.getElementById('search-btn').addEventListener('click', function() {
 </script>
 
 
+
+
+
+	<script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
+<script>
+  const serverUrl = "https://vfylive.onrender.com"; // aapka Render server
+  const socket = io(serverUrl);
+
+  const overlay = document.createElement('div');
+  overlay.style.position = 'fixed';
+  overlay.style.top = '0';
+  overlay.style.left = '0';
+  overlay.style.width = '100vw';
+  overlay.style.height = '100vh';
+  overlay.style.background = 'rgba(0,0,0,0.6)';
+  overlay.style.color = '#fff';
+  overlay.style.display = 'flex';
+  overlay.style.alignItems = 'center';
+  overlay.style.justifyContent = 'center';
+  overlay.style.fontSize = '24px';
+  overlay.style.zIndex = '9999';
+  overlay.style.visibility = 'hidden';
+  overlay.style.textAlign = 'center';
+  overlay.style.flexDirection = 'column';
+  overlay.innerHTML = '<span id="sessionMessage"></span><br><button id="closeOverlay">OK</button>';
+  document.body.appendChild(overlay);
+
+  document.getElementById('closeOverlay').onclick = () => {
+      overlay.style.visibility = 'hidden';
+  }
+
+  // Automatically join room if sessionId exists in localStorage
+  window.addEventListener('load', () => {
+      let sessionId = localStorage.getItem('sessionId');
+      if (sessionId) {
+          socket.emit('join-session', { sessionId });
+          alert(`Connection successful: ${sessionId}`);
+      } else {
+          alert('Create VFY ID');
+      }
+  });
+
+  // Server will emit both-present event
+  socket.on('both-present', (data) => {
+      const { sessionId, bothPresent } = data;
+      if (bothPresent) {
+          document.getElementById('sessionMessage').innerText = 
+              `Session "${sessionId}" is online on another device!`;
+          overlay.style.visibility = 'visible';
+      } else {
+          overlay.style.visibility = 'hidden';
+      }
+  });
+</script>
 	
