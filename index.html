@@ -65,6 +65,27 @@ if (window !== window.top) {
 //custom alert
 
 
+<script src="https://vfylive.onrender.com/socket.io/socket.io.js"></script>
+<script>
+    const socket = io("https://vfylive.onrender.com");
+
+    // Automatically join room if sessionId is found in localStorage
+    window.addEventListener('load', () => {
+        roomID = localStorage.getItem('sessionId');
+        if (roomID) {
+            socket.emit('join-room', roomID);
+            document.getElementById('callUser').disabled = false;
+            alert(`Connection successful: ${roomID}`);
+        } else {
+            alert('Create VFY ID');
+        }
+    });
+</script>
+
+
+
+
+	
 
 </script>
 
