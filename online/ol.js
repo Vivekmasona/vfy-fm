@@ -1,53 +1,42 @@
-
-
-<script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
+<script src="https://vfylive.onrender.com/socket.io/socket.io.js"></script>
 <script>
-  const serverUrl = "https://vfylive.onrender.com"; 
-  const socket = io(serverUrl, { autoConnect: true });
+const socket = io("https://vfylive.onrender.com");
+const greenDot = document.getElementById('greenDot');
+const joinBtn = document.getElementById('joinBtn');
+const sessionInput = document.getElementById('sessionInput');
 
-  const statusDot = document.getElementById("statusDot");
-  const infoText = document.getElementById("infoText");
+let sessionId;
 
-  let currentSession = null;
+// Function to join session
+function joinSession(id) {
+    sessionId = id;
+    localStorage.setItem('sessionId', sessionId); // store in localStorage
+    socket.emit('join-room', sessionId);
+    console.log("Joined session:", sessionId);
+}
 
-  function joinSession(sid) {
-    if (!sid) return;
-    currentSession = sid;
-    socket.emit("join-session", { sessionId: sid });
-    infoText.textContent = "Joined session";
-  }
+// Auto join if localStorage has sessionId
+window.addEventListener('load', () => {
+    const storedId = localStorage.getItem('sessionId');
+    if (storedId) joinSession(storedId);
+});
 
-  // Auto-join using sessionId from localStorage
-  window.addEventListener('load', () => {
-    const savedSession = localStorage.getItem("sessionId");
-    if (savedSession) {
-      joinSession(savedSession);
-    } else {
-      infoText.textContent = "No session found";
-    }
-  });
+// Manual join button
+joinBtn.addEventListener('click', () => {
+    const id = sessionInput.value.trim();
+    if (id) joinSession(id);
+    else alert("Enter a valid session ID");
+});
 
-  // both-present event → glow green dot
-  socket.on("both-present", (data) => {
-    if (!currentSession || data.sessionId !== currentSession) return;
-    if (data.bothPresent) {
-      statusDot.classList.add("glow");
-      statusDot.title = "2+ users in same session";
-      infoText.textContent = "Multiple users online";
-    } else {
-      statusDot.classList.remove("glow");
-      statusDot.title = "waiting for another user";
-      infoText.textContent = "Waiting for others...";
-    }
-  });
+// Listen for other users joining the same session
+socket.on('same-session-connected', (data) => {
+    console.log(data.message);
+    greenDot.style.backgroundColor = 'green'; // glow green
+    alert(data.message); // optional popup
+});
 
-  socket.on("connect", () => {
-    console.log("Connected to server", socket.id);
-  });
-  socket.on("disconnect", () => {
-    statusDot.classList.remove("glow");
-    infoText.textContent = "Disconnected";
-  });
+// Optional: reset dot when everyone leaves
+socket.on('disconnect', () => {
+    greenDot.style.backgroundColor = 'gray';
+});
 </script>
-</body>
-</html>
