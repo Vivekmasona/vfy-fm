@@ -5438,56 +5438,63 @@ document.getElementById('search-btn').addEventListener('click', function() {
 })();
 </script>
 
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Session Online Popup</title>
+  <style>
+    #overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      z-index: 9999;
+      flex-direction: column;
+    }
+  </style>
+</head>
+<body>
+<div id="overlay">Waiting for another device...</div>
 
 <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
 <script>
-  const serverUrl = "https://vfylive.onrender.com"; // Render server
+  const serverUrl = "https://vfylive.onrender.com"; // Your Render server
   const socket = io(serverUrl);
 
-  // Overlay popup always visible
-  const overlay = document.createElement('div');
-  overlay.style.position = 'fixed';
-  overlay.style.top = '0';
-  overlay.style.left = '0';
-  overlay.style.width = '100vw';
-  overlay.style.height = '100vh';
-  overlay.style.background = 'rgba(0,0,0,0.6)';
-  overlay.style.color = '#fff';
-  overlay.style.display = 'flex';
-  overlay.style.alignItems = 'center';
-  overlay.style.justifyContent = 'center';
-  overlay.style.fontSize = '24px';
-  overlay.style.zIndex = '9999';
-  overlay.style.textAlign = 'center';
-  overlay.style.flexDirection = 'column';
-  overlay.innerHTML = `<span id="sessionMessage">Waiting for another device...</span>`;
-  document.body.appendChild(overlay);
+  const overlay = document.getElementById('overlay');
 
-  // Auto-join session if sessionId exists in localStorage
+  // Auto join if sessionId in localStorage
   window.addEventListener('load', () => {
-      const sessionId = localStorage.getItem('sessionId');
-      if (sessionId) {
-          socket.emit('join-session', { sessionId });
-          console.log(`Connected to session: ${sessionId}`);
-      } else {
-          console.warn('No session ID found in localStorage');
-      }
+    const sessionId = localStorage.getItem('sessionId');
+    if (!sessionId) {
+      console.warn("No sessionId found in localStorage");
+      overlay.innerText = "No session ID found";
+      return;
+    }
+    console.log("Joining session:", sessionId);
+    socket.emit('join-session', { sessionId });
   });
 
-  // Server event: update popup when 2+ users detected
+  // Listen for both-present
   socket.on('both-present', (data) => {
-      const { sessionId, bothPresent } = data;
-      const msg = document.getElementById('sessionMessage');
-      if (bothPresent) {
-          msg.innerText = `Session "${sessionId}" is online on another device!`;
-          overlay.style.background = 'rgba(46,204,113,0.8)'; // green highlight
-      } else {
-          msg.innerText = `Waiting for another device...`;
-          overlay.style.background = 'rgba(0,0,0,0.6)'; // default dark
-      }
+    const { sessionId, bothPresent } = data;
+    if (bothPresent) {
+      overlay.innerText = `Session "${sessionId}" is online on another device!`;
+      overlay.style.background = 'rgba(46,204,113,0.8)';
+    } else {
+      overlay.innerText = 'Waiting for another device...';
+      overlay.style.background = 'rgba(0,0,0,0.6)';
+    }
   });
+
+  socket.on('connect', () => console.log("Connected to server", socket.id));
+  socket.on('disconnect', () => console.log("Disconnected from server"));
 </script>
-
-
-	
-	
+</body>
+</html>
