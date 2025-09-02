@@ -1088,7 +1088,13 @@ border-radius: 15px;
 
 
  
-    
+    <div id="overlay"></div>
+
+<div id="sessionPopup">
+  <h3>Your Session ID</h3>
+  <p id="sessionText"></p>
+  <button id="closeBtn">Close</button>
+</div>
 
 	    
 
@@ -5433,4 +5439,83 @@ document.getElementById('search-btn').addEventListener('click', function() {
 </script>
 
 
+
+
+
+
+
+
+
+
+
+
+
+	<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session ID Popup</title>
+  <style>
+    /* Simple popup styling */
+    #sessionPopup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      z-index: 1000;
+      text-align: center;
+    }
+    #overlay {
+      display: none;
+      position: fixed;
+      top:0;
+      left:0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+    }
+    #closeBtn {
+      margin-top: 15px;
+      padding: 5px 10px;
+      cursor: pointer;
+      border: none;
+      background: #007BFF;
+      color: white;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+
+
+
+<script>
+window.addEventListener('load', () => {
+    // Get sessionId from localStorage
+    const sessionId = localStorage.getItem('sessionId');
+
+    if(sessionId) {
+        // Show popup
+        document.getElementById('sessionText').innerText = sessionId;
+        document.getElementById('sessionPopup').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+    }
+
+    // Close button
+    document.getElementById('closeBtn').addEventListener('click', () => {
+        document.getElementById('sessionPopup').style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+    });
+});
+</script>
+
+</body>
+</html>
 	
