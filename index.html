@@ -1088,11 +1088,13 @@ border-radius: 15px;
 
 
  
-    <h2>Automatic Session → Green Dot</h2>
-  <div id="sessionDotContainer"></div>
+    <h2>Same Session → Green Dot</h2>
+  <div style="margin-top:18px;">
+    <div class="dot" id="statusDot" title="offline"></div>
+    <div style="display:inline-block; margin-left:12px;" id="infoText">Not joined</div>
+  </div>
   <div class="status" id="extra">Count: —</div>
-  <div class="status" id="infoText">Not joined</div>
-
+		
 
 	    
 
@@ -5439,191 +5441,67 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-
-
-
-
-
-
-
-
-
-	<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Session ID Popup</title>
-  <style>
-    /* Simple popup styling */
-    #sessionPopup {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      padding: 20px 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
-      z-index: 1000;
-      text-align: center;
-    }
-    #overlay {
-      display: none;
-      position: fixed;
-      top:0;
-      left:0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 999;
-    }
-    #closeBtn {
-      margin-top: 15px;
-      padding: 5px 10px;
-      cursor: pointer;
-      border: none;
-      background: #007BFF;
-      color: white;
-      border-radius: 5px;
-    }
-  </style>
-</head>
-<body>
-
-
-
-<script>
-window.addEventListener('load', () => {
-    // Get sessionId from localStorage
-    const sessionId = localStorage.getItem('sessionId');
-
-    if(sessionId) {
-        // Show popup
-        document.getElementById('sessionText').innerText = sessionId;
-        document.getElementById('sessionPopup').style.display = 'block';
-        document.getElementById('overlay').style.display = 'block';
-    }
-
-    // Close button
-    document.getElementById('closeBtn').addEventListener('click', () => {
-        document.getElementById('sessionPopup').style.display = 'none';
-        document.getElementById('overlay').style.display = 'none';
-    });
-});
-</script>
-
-</body>
-</html>
-
-
-
-<script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
-<script>
-const socket = io("https://vfylive.onrender.com"); // Apke backend ka URL
-const sessionId = localStorage.getItem('sessionId') || generateSessionId();
-
-function generateSessionId() {
-    const id = 'sess-' + Math.random().toString(36).substr(2,9);
-    localStorage.setItem('sessionId', id);
-    return id;
-}
-
-// Join session
-socket.emit("joinSession", sessionId);
-
-// Listen for other device with same sessionId
-socket.on("sessionOnline", data => {
-    if(data.sessionId === sessionId){
-        // Default browser popup
-        alert(`Session ${sessionId} is online on another device!`);
-    }
-});
-</script>
-
-
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Session Green Dot Demo</title>
+  <title>Auto Session Green Dot</title>
   <style>
     body { font-family: sans-serif; padding: 20px; text-align: center; }
     .dot {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: #bbb;
-      display: inline-block;
-      vertical-align: middle;
-      box-shadow: none;
-      transition: box-shadow 300ms, background 300ms, transform 200ms;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: #bbb; display: inline-block; vertical-align: middle;
+      box-shadow: none; transition: box-shadow 300ms, background 300ms, transform 200ms;
     }
-    .dot.glow {
-      background: #2ecc71;
-      box-shadow: 0 0 14px 4px rgba(46,204,113,0.6);
-      transform: scale(1.08);
-    }
-    #sessionDotContainer { display: inline-block; margin-top: 20px; }
-    .status { margin-top: 12px; color: #333; }
+    .dot.glow { background: #2ecc71; box-shadow: 0 0 14px 4px rgba(46,204,113,0.6); transform: scale(1.08); }
+    .status { margin-top: 12px; color: #333; font-size: 16px; }
   </style>
 </head>
 <body>
-
   
   <!-- Socket.IO client -->
   <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
   <script>
-    const serverUrl = "https://vfylive.onrender.com";
+    const serverUrl = "https://vfylive.onrender.com"; 
     const socket = io(serverUrl, { autoConnect: true });
 
-    const dotContainer = document.getElementById("sessionDotContainer");
-    const extra = document.getElementById("extra");
+    const statusDot = document.getElementById("statusDot");
     const infoText = document.getElementById("infoText");
-
-    // Create dot element
-    const statusDot = document.createElement("div");
-    statusDot.className = "dot";
-    statusDot.title = "offline";
-    dotContainer.appendChild(statusDot);
+    const extra = document.getElementById("extra");
 
     let currentSession = null;
 
     function joinSession(sid) {
       currentSession = sid;
-      localStorage.setItem("sessionId", sid);
       socket.emit("join-session", { sessionId: sid });
       infoText.textContent = "Joined: " + sid;
     }
 
-    // Auto join on page load
+    // Auto-join on page load
     window.addEventListener("load", () => {
-      let storedSession = localStorage.getItem("sessionId");
-      if (!storedSession) {
-        // Agar localStorage empty hai to random session ID generate karo
-        storedSession = "sid_" + Math.random().toString(36).substring(2, 10);
+      let storedId = localStorage.getItem("sessionId");
+      if (!storedId) {
+        storedId = "sess_" + Math.random().toString(36).substr(2, 8);
+        localStorage.setItem("sessionId", storedId);
       }
-      joinSession(storedSession);
+      joinSession(storedId);
     });
 
-    // Receive count updates
+    // receive count updates
     socket.on("session-count", (data) => {
       if (!currentSession || data.sessionId !== currentSession) return;
       extra.textContent = "Count: " + data.count;
     });
 
-    // Both-present update
+    // both-present event
     socket.on("both-present", (data) => {
       if (!currentSession || data.sessionId !== currentSession) return;
-      if (data.bothPresent) {
+      const both = !!data.bothPresent;
+      if (both) {
         statusDot.classList.add("glow");
         statusDot.title = "2+ users in same session";
-        infoText.textContent = `Session: ${currentSession} — multiple users online`;
+        infoText.textContent = `Session: ${currentSession} — multiple users`;
       } else {
         statusDot.classList.remove("glow");
         statusDot.title = "waiting for another user";
@@ -5631,17 +5509,24 @@ socket.on("sessionOnline", data => {
       }
     });
 
-    socket.on("connect", () => console.log("Connected", socket.id));
+    // socket connect/disconnect
+    socket.on("connect", () => console.log("Connected to server", socket.id));
     socket.on("disconnect", () => {
       statusDot.classList.remove("glow");
       extra.textContent = "Count: —";
       infoText.textContent = "Disconnected";
     });
   </script>
-
 </body>
 </html>
+	
+
+
+
+
+
+
+
 
 
 	
-
