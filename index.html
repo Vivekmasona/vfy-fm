@@ -1090,8 +1090,7 @@ border-radius: 15px;
  <div id="presenceWrap">
     <span id="vfyDot" title="Offline"></span>
     <span id="vfyMsg"></span>
-  </div>
-    
+ </div>
 
 	    
 
@@ -5438,6 +5437,12 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
+
+	
+	
+	
+	
+	
 <!doctype html>
 <html>
 <head>
@@ -5458,35 +5463,25 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
   <script>
     // ==== CONFIG ====
-    const API_BASE = "https://vfylive.onrender.com"; // <-- अपना server URL
+    const API_BASE = "https://vfylive.onrender.com"; // <- अपना server URL
     const HEARTBEAT_MS = 10_000; // हर 10s ping
-    const STATUS_MS = 10_000;    // हर 10s status check
+    const STATUS_MS   = 10_000; // हर 10s status check
 
-    // ==== Helpers ====
-    function uuid() {
-      return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-      );
+    // ==== LocalStorage से सीधा पढ़ना ====
+    const sessionId = localStorage.getItem("sessionId"); 
+    if (!sessionId) {
+      alert("⚠️ LocalStorage में 'sessionId' नहीं मिला!");
     }
-    function getOrMake(key, maker) {
-      let v = localStorage.getItem(key);
-      if (!v) { v = maker(); localStorage.setItem(key, v); }
-      return v;
-    }
-
-    // ==== IDs from localStorage ====
-    const sessionId = getOrMake("sessionId", () => "VFY-" + uuid().slice(0,8));
-    const deviceId  = getOrMake("deviceId",  () => "DEV-" + uuid().slice(0,8));
+    const deviceId = "DEV-" + Math.random().toString(36).slice(2,10);
 
     const dot = document.getElementById("vfyDot");
     const msg = document.getElementById("vfyMsg");
 
-    let announced = false; // alert दोहराने से रोकने के लिए
-
-    // पहली बार ही storage का sessionId दिखा दो
-    msg.textContent = `Session: ${sessionId}`;
+    // Dot के पास sessionId हमेशा दिखाओ
+    msg.textContent = sessionId ? `Session: ${sessionId}` : "No sessionId";
 
     async function ping() {
+      if (!sessionId) return;
       try {
         const r = await fetch(`${API_BASE}/ping?sessionId=${encodeURIComponent(sessionId)}&deviceId=${encodeURIComponent(deviceId)}`);
         const data = await r.json();
@@ -5497,6 +5492,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
     }
 
     async function checkStatus() {
+      if (!sessionId) return;
       try {
         const r = await fetch(`${API_BASE}/presence?sessionId=${encodeURIComponent(sessionId)}`);
         const data = await r.json();
@@ -5513,34 +5509,27 @@ document.getElementById('search-btn').addEventListener('click', function() {
       if (onlineCount >= 2) {
         dot.classList.add("online");
         dot.title = "Online (multiple devices)";
-        if (!announced) {
-          announced = true;
-          alert(`✅ Same session (${sessionId}) active on ${onlineCount} devices`);
-        }
-      } else if (onlineCount === 1) {
-        dot.classList.remove("online");
-        dot.title = "Only you online";
-        announced = false;
       } else {
-        offlineUI();
+        dot.classList.remove("online");
+        dot.title = "Offline/Single device";
       }
     }
 
     function offlineUI() {
       dot.classList.remove("online");
       dot.title = "Offline";
-      announced = false;
     }
 
     // Auto-start
-    ping();               
-    setInterval(ping, HEARTBEAT_MS);     
-    setInterval(checkStatus, STATUS_MS); 
+    ping();
+    setInterval(ping, HEARTBEAT_MS);
+    setInterval(checkStatus, STATUS_MS);
   </script>
 </body>
-</html>
-
-
-
-
+</html>	
+	
+	
+	
+	
+	
 	
