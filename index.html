@@ -1087,11 +1087,7 @@ border-radius: 15px;
 
 
 
- <div id="presenceWrap">
-    <span id="vfyDot" title="Offline"></span>
-    <span id="vfySession"></span>
- </div>
-	    
+ 
 
     
     </div> 
@@ -1099,6 +1095,8 @@ border-radius: 15px;
    </div>
 
 
+<h3>Stored IDs</h3>
+  <div id="list"></div>
 
 
 
@@ -5439,99 +5437,92 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 	
 	
-	
-	
-	
-<!doctype html>
+	<!doctype html>
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Presence Dot</title>
+  <title>Presence Dot with LocalStorage</title>
   <style>
-    #presenceWrap {
+    body { font-family: system-ui, sans-serif; padding: 20px; }
+    .item {
       display: flex;
       align-items: center;
-      font-family: system-ui, sans-serif;
+      margin-bottom: 6px;
     }
-    #vfyDot {
+    .dot {
       width: 14px; height: 14px; border-radius: 50%;
       background: #bbb; 
-      display: inline-block;
       margin-right: 8px;
       box-shadow: 0 0 0 rgba(0,0,0,0); 
       transition: all .2s ease;
     }
-    #vfyDot.online { background: #1db954; box-shadow: 0 0 10px #1db954; }
-    #vfySession { font-size: 14px; }
+    .dot.online { background: #1db954; box-shadow: 0 0 10px #1db954; }
+    .label { font-size: 14px; }
   </style>
 </head>
 <body>
   
-
   <script>
-    const API_BASE = "https://vfylive.onrender.com"; // आपका server URL
+    const API_BASE = "https://vfylive.onrender.com"; // आपका presence server
     const HEARTBEAT_MS = 10_000;
-    const STATUS_MS   = 10_000;
 
-    // === LocalStorage से sessionId पढ़ो (आपके working code जैसा) ===
-    let roomID = null;
-    window.addEventListener('load', () => {
-      roomID = localStorage.getItem('sessionId');
-      const session = document.getElementById("vfySession");
-      if (roomID) {
-        session.textContent = `Session: ${roomID}`;
-      } else {
-        session.textContent = "⚠️ No sessionId found";
-      }
-    });
+    const listDiv = document.getElementById("list");
 
-    // Random deviceId बनाओ
-    const deviceId = "DEV-" + Math.random().toString(36).slice(2,10);
+    // ==== LocalStorage ke sabhi items read karo ====
+    function renderList() {
+      listDiv.innerHTML = "";
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        const value = localStorage.getItem(key);
 
-    const dot = document.getElementById("vfyDot");
+        // Har ek item banाओ
+        const itemDiv = document.createElement("div");
+        itemDiv.className = "item";
 
-    async function ping() {
-      if (!roomID) return;
-      try {
-        const r = await fetch(`${API_BASE}/ping?sessionId=${encodeURIComponent(roomID)}&deviceId=${encodeURIComponent(deviceId)}`);
-        const data = await r.json();
-        updateUI(data);
-      } catch {
-        offlineUI();
-      }
-    }
+        const dot = document.createElement("span");
+        dot.className = "dot";
+        dot.id = `dot-${key}`;
 
-    async function checkStatus() {
-      if (!roomID) return;
-      try {
-        const r = await fetch(`${API_BASE}/presence?sessionId=${encodeURIComponent(roomID)}`);
-        const data = await r.json();
-        updateUI(data);
-      } catch {
-        offlineUI();
+        const label = document.createElement("span");
+        label.className = "label";
+        label.textContent = `${key}: ${value}`;
+
+        itemDiv.appendChild(dot);
+        itemDiv.appendChild(label);
+        listDiv.appendChild(itemDiv);
+
+        // Presence check sirf sessionId ke लिए
+        if (key === "sessionId") {
+          startPresence(dot, value);
+        }
       }
     }
 
-    function updateUI(data) {
-      if (!data || data.ok !== true) return offlineUI();
-      const { onlineCount } = data;
-      if (onlineCount >= 2) {
-        dot.classList.add("online");
-        dot.title = "Online (multiple devices)";
-      } else {
-        dot.classList.remove("online");
-        dot.title = "Offline/Single device";
+    function startPresence(dotElem, sessionId) {
+      const deviceId = "DEV-" + Math.random().toString(36).slice(2,10);
+
+      async function ping() {
+        try {
+          const r = await fetch(`${API_BASE}/ping?sessionId=${encodeURIComponent(sessionId)}&deviceId=${encodeURIComponent(deviceId)}`);
+          const data = await r.json();
+          if (data.ok && data.onlineCount >= 2) {
+            dotElem.classList.add("online");
+          } else {
+            dotElem.classList.remove("online");
+          }
+        } catch {
+          dotElem.classList.remove("online");
+        }
       }
+
+      ping();
+      setInterval(ping, HEARTBEAT_MS);
     }
 
-    function offlineUI() {
-      dot.classList.remove("online");
-      dot.title = "Offline";
-    }
-
-    // Auto-start
-    setInterval(ping, HEARTBEAT_MS);
-    setInterval(checkStatus, STATUS_MS);
+    // Render sabhi localStorage items
+    renderList();
   </script>
 </body>
 </html>
+	
+	
