@@ -5437,9 +5437,6 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-
-
-	
 <!doctype html>
 <html>
 <head>
@@ -5447,24 +5444,13 @@ document.getElementById('search-btn').addEventListener('click', function() {
   <title>Session Presence Dot</title>
   <style>
     body { font-family: sans-serif; padding: 20px; }
-    .item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-    }
+    .item { display: flex; align-items: center; margin-bottom: 10px; }
     .dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: #bbb; /* default grey */
-      margin-right: 8px;
-      box-shadow: 0 0 0 rgba(0,0,0,0);
-      transition: all .2s ease;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: #bbb; margin-right: 8px;
+      transition: all .3s ease;
     }
-    .dot.online {
-      background: #1db954; /* Spotify green */
-      box-shadow: 0 0 10px #1db954;
-    }
+    .dot.online { background: #1db954; box-shadow: 0 0 10px #1db954; }
     .label { font-size: 14px; }
   </style>
 </head>
@@ -5472,8 +5458,8 @@ document.getElementById('search-btn').addEventListener('click', function() {
   
 
   <script>
-    const API_BASE = "https://vfylive.onrender.com"; // आपका server
-    const HEARTBEAT_MS = 5000; // हर 5 सेकंड में चेक करेगा
+    const API_BASE = "https://vfylive.onrender.com"; // server का URL
+    const HEARTBEAT_MS = 5000; // हर 5 सेकंड में ping भेजेगा
 
     const box = document.getElementById("sessionBox");
 
@@ -5492,13 +5478,12 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
       const label = document.createElement("span");
       label.className = "label";
-      label.textContent = sessionId; // सिर्फ ID दिखेगी
+      label.textContent = sessionId;
 
       itemDiv.appendChild(dot);
       itemDiv.appendChild(label);
       box.appendChild(itemDiv);
 
-      // presence शुरू
       startPresence(dot, sessionId);
     }
 
@@ -5527,3 +5512,5 @@ document.getElementById('search-btn').addEventListener('click', function() {
   </script>
 </body>
 </html>
+
+	
