@@ -5278,7 +5278,9 @@ document.getElementById('search-btn').addEventListener('click', function() {
         </div>
 
 
-  <div id="sessionBox"></div>
+  <div class="menu-item" onclick="showDetail()">
+  <i id="heartDot" class="fas fa-heart"></i>
+</div>
 		
     </div>
 
@@ -5437,99 +5439,67 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Session Presence Dot with Sound</title>
-  <style>
-    body { font-family: sans-serif; padding: 20px; }
-    .item { display: flex; align-items: center; margin-bottom: 10px; }
-    .dot {
-      width: 14px; height: 14px; border-radius: 50%;
-      background: #bbb; margin-right: 8px;
-      transition: all .3s ease;
-    }
-    .dot.online { background: #1db954; box-shadow: 0 0 10px #1db954; }
-    .label { font-size: 14px; }
-  </style>
-</head>
-<body>
-  
 
-  <script>
-    const API_BASE = "https://vfylive.onrender.com"; // server का URL
-    const HEARTBEAT_MS = 5000; // हर 5 सेकंड में ping भेजेगा
 
-    const SOUND_ONLINE = new Audio("https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/Sound.mp3");
-    const SOUND_OFFLINE = new Audio("https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/Sound2.mp3");
+<script>
+  const heart = document.getElementById("heartDot");
 
-    const box = document.getElementById("sessionBox");
+  // Default styling
+  heart.style.color = "#bbb";
+  heart.style.transition = "all 0.3s ease";
+  heart.style.textShadow = "0 0 0 rgba(0,0,0,0)";
 
-    function renderSession() {
-      const sessionId = localStorage.getItem("sessionId");
-      if (!sessionId) {
-        box.innerHTML = "<p>No sessionId found in localStorage</p>";
-        return;
-      }
+  const API_BASE = "https://vfylive.onrender.com"; // आपका server
+  const HEARTBEAT_MS = 5000;
+  const sessionId = localStorage.getItem("sessionId");
+  const deviceId = "DEV-" + Math.random().toString(36).slice(2,10);
 
-      const itemDiv = document.createElement("div");
-      itemDiv.className = "item";
+  // Sound setup
+  const SOUND_ONLINE = new Audio("https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/Sound.mp3");
+  const SOUND_OFFLINE = new Audio("https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/Sound2.mp3");
 
-      const dot = document.createElement("span");
-      dot.className = "dot";
+  let lastOnline = false; // Previous state
 
-      const label = document.createElement("span");
-      label.className = "label";
-      label.textContent = sessionId;
+  if (sessionId) {
+    async function ping() {
+      try {
+        const res = await fetch(`${API_BASE}/ping?sessionId=${encodeURIComponent(sessionId)}&deviceId=${encodeURIComponent(deviceId)}`);
+        const data = await res.json();
 
-      itemDiv.appendChild(dot);
-      itemDiv.appendChild(label);
-      box.appendChild(itemDiv);
+        if (data.ok && data.onlineCount >= 2) {
+          // Online → red heart glow
+          heart.style.color = "red";
+          heart.style.textShadow = "0 0 10px red";
 
-      startPresence(dot, sessionId);
-    }
-
-    function startPresence(dotElem, sessionId) {
-      const deviceId = "DEV-" + Math.random().toString(36).slice(2,10);
-      let lastOnline = false; // पिछली state याद रखने के लिए
-
-      async function ping() {
-        try {
-          const res = await fetch(`${API_BASE}/ping?sessionId=${encodeURIComponent(sessionId)}&deviceId=${encodeURIComponent(deviceId)}`);
-          const data = await res.json();
-
-          if (data.ok && data.onlineCount >= 2) {
-            dotElem.classList.add("online");
-
-            if (!lastOnline) {
-              SOUND_ONLINE.play().catch(() => {}); // online sound
-              lastOnline = true;
-            }
-
-          } else {
-            dotElem.classList.remove("online");
-
-            if (lastOnline) {
-              SOUND_OFFLINE.play().catch(() => {}); // offline sound
-              lastOnline = false;
-            }
+          if (!lastOnline) {
+            SOUND_ONLINE.play().catch(() => {});
+            lastOnline = true;
           }
-        } catch (e) {
-          dotElem.classList.remove("online");
+        } else {
+          // Offline → grey
+          heart.style.color = "#bbb";
+          heart.style.textShadow = "0 0 0 rgba(0,0,0,0)";
 
           if (lastOnline) {
-            SOUND_OFFLINE.play().catch(() => {}); // error case भी offline माने
+            SOUND_OFFLINE.play().catch(() => {});
             lastOnline = false;
           }
         }
+      } catch (e) {
+        // Error → treat as offline
+        heart.style.color = "#bbb";
+        heart.style.textShadow = "0 0 0 rgba(0,0,0,0)";
+        if (lastOnline) {
+          SOUND_OFFLINE.play().catch(() => {});
+          lastOnline = false;
+        }
       }
-
-      ping(); // first call
-      setInterval(ping, HEARTBEAT_MS);
     }
 
-    renderSession();
-  </script>
-</body>
-</html>
+    ping(); // first call
+    setInterval(ping, HEARTBEAT_MS);
+  }
+</script>
+
+
+	
