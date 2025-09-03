@@ -1091,7 +1091,6 @@ border-radius: 15px;
     <span id="vfyDot" title="Offline"></span>
     <span id="vfySession"></span>
  </div>
-
 	    
 
     
@@ -5447,7 +5446,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Presence (No WebSocket)</title>
+  <title>Presence Dot</title>
   <style>
     #presenceWrap {
       display: flex;
@@ -5470,25 +5469,31 @@ document.getElementById('search-btn').addEventListener('click', function() {
   
 
   <script>
-    // ==== CONFIG ====
-    const API_BASE = "https://vfylive.onrender.com"; // <- अपना server URL
+    const API_BASE = "https://vfylive.onrender.com"; // आपका server URL
     const HEARTBEAT_MS = 10_000;
     const STATUS_MS   = 10_000;
 
-    // ==== LocalStorage से sessionId ====
-    const sessionId = localStorage.getItem("sessionId");
-    const deviceId  = "DEV-" + Math.random().toString(36).slice(2,10);
+    // === LocalStorage से sessionId पढ़ो (आपके working code जैसा) ===
+    let roomID = null;
+    window.addEventListener('load', () => {
+      roomID = localStorage.getItem('sessionId');
+      const session = document.getElementById("vfySession");
+      if (roomID) {
+        session.textContent = `Session: ${roomID}`;
+      } else {
+        session.textContent = "⚠️ No sessionId found";
+      }
+    });
 
-    const dot     = document.getElementById("vfyDot");
-    const session = document.getElementById("vfySession");
+    // Random deviceId बनाओ
+    const deviceId = "DEV-" + Math.random().toString(36).slice(2,10);
 
-    // Dot के right side में sessionId दिखाओ
-    session.textContent = sessionId ? `Session: ${sessionId}` : "No sessionId";
+    const dot = document.getElementById("vfyDot");
 
     async function ping() {
-      if (!sessionId) return;
+      if (!roomID) return;
       try {
-        const r = await fetch(`${API_BASE}/ping?sessionId=${encodeURIComponent(sessionId)}&deviceId=${encodeURIComponent(deviceId)}`);
+        const r = await fetch(`${API_BASE}/ping?sessionId=${encodeURIComponent(roomID)}&deviceId=${encodeURIComponent(deviceId)}`);
         const data = await r.json();
         updateUI(data);
       } catch {
@@ -5497,9 +5502,9 @@ document.getElementById('search-btn').addEventListener('click', function() {
     }
 
     async function checkStatus() {
-      if (!sessionId) return;
+      if (!roomID) return;
       try {
-        const r = await fetch(`${API_BASE}/presence?sessionId=${encodeURIComponent(sessionId)}`);
+        const r = await fetch(`${API_BASE}/presence?sessionId=${encodeURIComponent(roomID)}`);
         const data = await r.json();
         updateUI(data);
       } catch {
@@ -5510,7 +5515,6 @@ document.getElementById('search-btn').addEventListener('click', function() {
     function updateUI(data) {
       if (!data || data.ok !== true) return offlineUI();
       const { onlineCount } = data;
-
       if (onlineCount >= 2) {
         dot.classList.add("online");
         dot.title = "Online (multiple devices)";
@@ -5526,7 +5530,6 @@ document.getElementById('search-btn').addEventListener('click', function() {
     }
 
     // Auto-start
-    ping();
     setInterval(ping, HEARTBEAT_MS);
     setInterval(checkStatus, STATUS_MS);
   </script>
