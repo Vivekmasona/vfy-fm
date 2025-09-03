@@ -1095,8 +1095,8 @@ border-radius: 15px;
    </div>
 
 
-<h3>Stored IDs</h3>
-  <div id="list"></div>
+
+  <div id="sessionBox"></div>
 
 
 
@@ -5436,18 +5436,16 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 	
-	
-	<!doctype html>
+<!doctype html>
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Presence Dot with LocalStorage</title>
+  <title>Session Presence Dot</title>
   <style>
     body { font-family: system-ui, sans-serif; padding: 20px; }
     .item {
       display: flex;
       align-items: center;
-      margin-bottom: 6px;
     }
     .dot {
       width: 14px; height: 14px; border-radius: 50%;
@@ -5462,40 +5460,35 @@ document.getElementById('search-btn').addEventListener('click', function() {
 </head>
 <body>
   
+
   <script>
     const API_BASE = "https://vfylive.onrender.com"; // आपका presence server
     const HEARTBEAT_MS = 10_000;
 
-    const listDiv = document.getElementById("list");
+    const box = document.getElementById("sessionBox");
 
-    // ==== LocalStorage ke sabhi items read karo ====
-    function renderList() {
-      listDiv.innerHTML = "";
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        const value = localStorage.getItem(key);
-
-        // Har ek item banाओ
-        const itemDiv = document.createElement("div");
-        itemDiv.className = "item";
-
-        const dot = document.createElement("span");
-        dot.className = "dot";
-        dot.id = `dot-${key}`;
-
-        const label = document.createElement("span");
-        label.className = "label";
-        label.textContent = `${key}: ${value}`;
-
-        itemDiv.appendChild(dot);
-        itemDiv.appendChild(label);
-        listDiv.appendChild(itemDiv);
-
-        // Presence check sirf sessionId ke लिए
-        if (key === "sessionId") {
-          startPresence(dot, value);
-        }
+    function renderSession() {
+      const sessionId = localStorage.getItem("sessionId");
+      if (!sessionId) {
+        box.innerHTML = "<p>No sessionId found in localStorage</p>";
+        return;
       }
+
+      const itemDiv = document.createElement("div");
+      itemDiv.className = "item";
+
+      const dot = document.createElement("span");
+      dot.className = "dot";
+
+      const label = document.createElement("span");
+      label.className = "label";
+      label.textContent = `sessionId: ${sessionId}`;
+
+      itemDiv.appendChild(dot);
+      itemDiv.appendChild(label);
+      box.appendChild(itemDiv);
+
+      startPresence(dot, sessionId);
     }
 
     function startPresence(dotElem, sessionId) {
@@ -5519,10 +5512,8 @@ document.getElementById('search-btn').addEventListener('click', function() {
       setInterval(ping, HEARTBEAT_MS);
     }
 
-    // Render sabhi localStorage items
-    renderList();
+    renderSession();
   </script>
 </body>
-</html>
-	
+</html>	
 	
