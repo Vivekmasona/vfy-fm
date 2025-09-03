@@ -5433,5 +5433,118 @@ document.getElementById('search-btn').addEventListener('click', function() {
 </script>
 
 
+
+
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Presence (No WebSocket)</title>
+  <style>
+    #vfyDot {
+      width: 14px; height: 14px; border-radius: 50%;
+      background: #bbb; display: inline-block; vertical-align: middle;
+      box-shadow: 0 0 0 rgba(0,0,0,0); transition: all .2s ease;
+    }
+    #vfyDot.online { background: #1db954; box-shadow: 0 0 10px #1db954; }
+    #vfyMsg { font-family: system-ui, sans-serif; margin-left: 8px; }
+  </style>
+</head>
+<body>
+  <div id="presenceWrap">
+    <span id="vfyDot" title="Offline"></span>
+    <span id="vfyMsg">Waiting…</span>
+  </div>
+
+  <script>
+    // ==== CONFIG ====
+    const API_BASE = "https://vfylive.onrender.com"; // <-- अपना server URL डालें (Render वाला)
+    const HEARTBEAT_MS = 10_000; // हर 10s ping
+    const STATUS_MS = 10_000;    // हर 10s status check
+
+    // ==== Helpers ====
+    function uuid() {
+      return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+      );
+    }
+    function getOrMake(key, maker) {
+      let v = localStorage.getItem(key);
+      if (!v) { v = maker(); localStorage.setItem(key, v); }
+      return v;
+    }
+
+    // ==== IDs from localStorage ====
+    const sessionId = getOrMake("sessionId", () => "VFY-" + uuid().slice(0,8));
+    const deviceId  = getOrMake("deviceId",  () => "DEV-" + uuid().slice(0,8));
+
+    const dot = document.getElementById("vfyDot");
+    const msg = document.getElementById("vfyMsg");
+
+    let announced = false; // एक ही बार “2+ online” alert दिखाने के लिए
+
+    async function ping() {
+      try {
+        const r = await fetch(`${API_BASE}/ping?sessionId=${encodeURIComponent(sessionId)}&deviceId=${encodeURIComponent(deviceId)}`);
+        const data = await r.json();
+        updateUI(data);
+      } catch (e) {
+        offlineUI("Ping failed");
+      }
+    }
+
+    async function checkStatus() {
+      try {
+        const r = await fetch(`${API_BASE}/presence?sessionId=${encodeURIComponent(sessionId)}`);
+        const data = await r.json();
+        updateUI(data);
+      } catch (e) {
+        offlineUI("Status failed");
+      }
+    }
+
+    function updateUI(data) {
+      if (!data || data.ok !== true) return offlineUI("No data");
+      const { onlineCount, peers } = data;
+
+      if (onlineCount >= 2) {
+        dot.classList.add("online");
+        dot.title = "Online";
+        msg.textContent = `Online: ${onlineCount} devices in this session`;
+        if (!announced) {
+          announced = true;
+          // आपकी मांग के अनुसार – “online का मैसेज”
+          // चाहें तो alert हटाकर toast दिखाएँ
+          alert(`✅ Same session active on ${onlineCount} devices`);
+        }
+      } else if (onlineCount === 1) {
+        dot.classList.add("online");
+        dot.title = "Online (single device)";
+        msg.textContent = `Online: waiting for another device…`;
+        announced = false; // अगली बार 2+ पर फिर से announce कर सकें
+      } else {
+        offlineUI("Nobody online");
+      }
+      // (optional) peers list देखनी हो तो console:
+      // console.log("Peers", peers);
+    }
+
+    function offlineUI(text) {
+      dot.classList.remove("online");
+      dot.title = "Offline";
+      msg.textContent = text || "Offline";
+      announced = false;
+    }
+
+    // Auto-start
+    ping();               // तुरंत एक बार
+    setInterval(ping, HEARTBEAT_MS);     // heartbeat
+    setInterval(checkStatus, STATUS_MS); // status polling
+  </script>
+</body>
+</html>
+
+
 	
 
