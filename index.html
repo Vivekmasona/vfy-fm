@@ -1089,7 +1089,7 @@ border-radius: 15px;
 
  <div id="presenceWrap">
     <span id="vfyDot" title="Offline"></span>
-    <span id="vfyMsg"></span>
+    <span id="vfySession"></span>
  </div>
 
 	    
@@ -5449,13 +5449,21 @@ document.getElementById('search-btn').addEventListener('click', function() {
   <meta charset="utf-8">
   <title>Presence (No WebSocket)</title>
   <style>
+    #presenceWrap {
+      display: flex;
+      align-items: center;
+      font-family: system-ui, sans-serif;
+    }
     #vfyDot {
       width: 14px; height: 14px; border-radius: 50%;
-      background: #bbb; display: inline-block; vertical-align: middle;
-      box-shadow: 0 0 0 rgba(0,0,0,0); transition: all .2s ease;
+      background: #bbb; 
+      display: inline-block;
+      margin-right: 8px;
+      box-shadow: 0 0 0 rgba(0,0,0,0); 
+      transition: all .2s ease;
     }
     #vfyDot.online { background: #1db954; box-shadow: 0 0 10px #1db954; }
-    #vfyMsg { font-family: system-ui, sans-serif; margin-left: 8px; }
+    #vfySession { font-size: 14px; }
   </style>
 </head>
 <body>
@@ -5464,21 +5472,18 @@ document.getElementById('search-btn').addEventListener('click', function() {
   <script>
     // ==== CONFIG ====
     const API_BASE = "https://vfylive.onrender.com"; // <- अपना server URL
-    const HEARTBEAT_MS = 10_000; // हर 10s ping
-    const STATUS_MS   = 10_000; // हर 10s status check
+    const HEARTBEAT_MS = 10_000;
+    const STATUS_MS   = 10_000;
 
-    // ==== LocalStorage से सीधा पढ़ना ====
-    const sessionId = localStorage.getItem("sessionId"); 
-    if (!sessionId) {
-      alert("⚠️ LocalStorage में 'sessionId' नहीं मिला!");
-    }
-    const deviceId = "DEV-" + Math.random().toString(36).slice(2,10);
+    // ==== LocalStorage से sessionId ====
+    const sessionId = localStorage.getItem("sessionId");
+    const deviceId  = "DEV-" + Math.random().toString(36).slice(2,10);
 
-    const dot = document.getElementById("vfyDot");
-    const msg = document.getElementById("vfyMsg");
+    const dot     = document.getElementById("vfyDot");
+    const session = document.getElementById("vfySession");
 
-    // Dot के पास sessionId हमेशा दिखाओ
-    msg.textContent = sessionId ? `Session: ${sessionId}` : "No sessionId";
+    // Dot के right side में sessionId दिखाओ
+    session.textContent = sessionId ? `Session: ${sessionId}` : "No sessionId";
 
     async function ping() {
       if (!sessionId) return;
@@ -5486,7 +5491,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
         const r = await fetch(`${API_BASE}/ping?sessionId=${encodeURIComponent(sessionId)}&deviceId=${encodeURIComponent(deviceId)}`);
         const data = await r.json();
         updateUI(data);
-      } catch (e) {
+      } catch {
         offlineUI();
       }
     }
@@ -5497,7 +5502,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
         const r = await fetch(`${API_BASE}/presence?sessionId=${encodeURIComponent(sessionId)}`);
         const data = await r.json();
         updateUI(data);
-      } catch (e) {
+      } catch {
         offlineUI();
       }
     }
@@ -5526,10 +5531,4 @@ document.getElementById('search-btn').addEventListener('click', function() {
     setInterval(checkStatus, STATUS_MS);
   </script>
 </body>
-</html>	
-	
-	
-	
-	
-	
-	
+</html>
