@@ -1293,48 +1293,7 @@ border-radius: 15px;
 </vfy>
 
 
-	
-	<style>
-/* Mini player styling */
-#miniPlayer {
-  position: fixed;
-  bottom: 80px; 
-  left: 0;
-  width: 40%;
-  max-width: 450px;
-  height: 250px;
-  z-index: 9999;
-  display: none;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-  border-radius: 8px;
-  overflow: hidden;
-  background: #000;
-}
-
-#miniPlayer .custom-controls {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  display: flex;
-  gap: 10px;
-  padding: 6px 8px;
-  background: rgba(255,165,0,0.3);
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-}
-
-#miniPlayer input[type=range] {
-  height: 8px !important;
-  border-radius: 8px !important;
-}
-</style>
-
-<div id="miniPlayer"></div>
-
-
-
-	
+	  
 <style>
         body {
             margin: 0;
@@ -1694,21 +1653,11 @@ function paginate(direction) {
 
 
 
-
-
-
-    
-
-
-    let currentVideoListItem = null; 
+let currentVideoListItem = null; 
 let ytPlayer = null;
 let isPlaying = false;
 
-// --- Popup show/hide ---
-$("#showPopupbutto").click(() => $("#popupContainer").show());
-$("#closePopup").click(() => $("#popupContainer").hide());
-
-// --- Output Function ---
+// --- Your Output Function ---
 function getOutput(item, i) {
     var id = item.id?.videoId || item.id;
     var title = item.snippet?.title || "No title";
@@ -1722,10 +1671,12 @@ function getOutput(item, i) {
                 <i class="fas fa-heart save-icon" 
                    onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
 
+                <!-- Thumbnail -->
                 <img src="${thumbUrl}" alt="${title}" 
                      class="video-thumbnail" index="${i}" vid="${id}" 
                      data-thumb="${thumbUrl}" style="width:100%;">
 
+                <!-- Overlay play button -->
                 <div class="overlay-play" style="
                     position:absolute; top:10px; right:10px;
                     width:40px; height:40px;
@@ -1749,10 +1700,10 @@ function getOutput(item, i) {
 // --- Handle audio click ---
 function handleAudioClick(el) {
     stopVideoIfPlaying();
-    loadSong(el); // your audio player logic
+    loadSong(el); // your audio player
 }
 
-// --- Stop current video ---
+// --- Stop current video and restore thumbnail ---
 function stopVideoIfPlaying() {
     if (currentVideoListItem) {
         let iframeWrapper = currentVideoListItem.find('.yt-wrapper');
@@ -1770,129 +1721,131 @@ function stopVideoIfPlaying() {
     }
 }
 
+// --- Popup show/hide ---
+$("#showPopupbutto").click(() => $("#popupContainer").show());
+$("#closePopup").click(() => $("#popupContainer").hide());
+
 // --- Play video on overlay click ---
 $(document).on('click', '.overlay-play', function(e) {
     e.stopPropagation();
     let listItem = $(this).closest('.list');
     let videoId = listItem.attr('vid');
 
+    // Pause all audios
     document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
 
+    // Stop old video
     if (currentVideoListItem && currentVideoListItem[0] !== listItem[0]) {
         stopVideoIfPlaying();
     }
 
+    // Replace thumbnail with custom player wrapper
     let thumb = listItem.find('.video-thumbnail');
     if (thumb.length) {
         let thumbUrl = thumb.attr('src');
         let wrapper = $(`
             <div class="yt-wrapper" data-thumb="${thumbUrl}" style="position:relative; width:100%;">
                 <div id="yt-player-${videoId}"></div>
-                <div class="custom-controls">
+                <!-- Custom Controls -->
+                <div class="custom-controls" style="
+                    position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
+                    width:95%; display:flex; align-items:center; gap:15px;
+                    padding:8px 12px; border-radius:20px;
+                    background:rgba(255,165,0,0.2); backdrop-filter:blur(12px);
+                    box-shadow:0 4px 20px rgba(255,165,0,0.5);">
+
                     <button class="play-pause-btn" id="ytToggleBtn" onclick="togglePlayPause()" style="
-                        width:35px; height:35px; border-radius:50%; background:orange; display:flex; align-items:center; justify-content:center; cursor:pointer;">
-                        <svg viewBox="0 0 24 24" id="ytToggleIcon" fill="white" width="16" height="16">
+                        width:45px; height:45px; border:none; border-radius:50%;
+                        background:linear-gradient(145deg,#ff9900,#ff6600);
+                        box-shadow:inset 2px 2px 6px rgba(255,255,255,0.5),
+                                   inset -2px -2px 6px rgba(0,0,0,0.3),
+                                   0 5px 15px rgba(255,140,0,0.6);
+                        display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                        <svg viewBox="0 0 24 24" id="ytToggleIcon" fill="white" width="20" height="20">
                             <path d="M3 22v-20l18 10-18 10z"/>
                         </svg>
                     </button>
-                    <input type="range" id="ytSeek" value="0" min="0" max="100" style="flex:1; height:8px; border-radius:8px;">
-                    <input type="range" id="ytVol" value="100" min="0" max="100" style="width:60px; height:6px; border-radius:6px;">
+
+                    <input type="range" id="ytSeek" value="0" min="0" max="100" style="
+                        flex:1; appearance:none; height:6px; border-radius:10px;
+                        background:linear-gradient(90deg,orange,#ff6600); outline:none; cursor:pointer;">
+                    
+                    <input type="range" id="ytVol" value="100" min="0" max="100" style="
+                        width:90px; appearance:none; height:6px; border-radius:10px;
+                        background:linear-gradient(90deg,orange,#ff6600); outline:none; cursor:pointer;">
                 </div>
             </div>
         `);
+        thumb.replaceWith(wrapper);
 
-        if (listItem.find('.yt-wrapper').length === 0) {
-            thumb.replaceWith(wrapper);
-
-            ytPlayer = new YT.Player(`yt-player-${videoId}`, {
-                height: '250',
-                width: '100%',
-                videoId: videoId,
-                playerVars: { autoplay: 1, controls: 0, modestbranding: 1, rel: 0 },
-                events: {
-                    'onReady': onYtReady,
-                    'onStateChange': onYtStateChange
-                }
-            });
-        }
+        // Load YouTube API player
+        ytPlayer = new YT.Player(`yt-player-${videoId}`, {
+            height: '250',
+            width: '100%',
+            videoId: videoId,
+            playerVars: { autoplay: 1, controls: 0, modestbranding: 1, rel: 0 },
+            events: {
+                'onReady': onYtReady,
+                'onStateChange': onYtStateChange
+            }
+        });
     }
 
     currentVideoListItem = listItem;
 });
 
-// --- Mini-player scroll logic ---
-let miniPlayerContainer = document.getElementById("miniPlayer");
-
-window.addEventListener("scroll", () => {
-    if (!currentVideoListItem) return;
-
-    let rect = currentVideoListItem[0].getBoundingClientRect();
-    let wrapper = currentVideoListItem.find('.yt-wrapper');
-
-    if (rect.bottom < 0 || rect.top > window.innerHeight) {
-        if (wrapper.length && !miniPlayerContainer.contains(wrapper[0])) {
-            miniPlayerContainer.appendChild(wrapper[0]);
-            miniPlayerContainer.style.display = "block";
-        }
-    } else {
-        if (wrapper.length && miniPlayerContainer.contains(wrapper[0])) {
-            currentVideoListItem[0].appendChild(wrapper[0]);
-            miniPlayerContainer.style.display = "none";
-        }
-    }
-});
-
-// --- YouTube API ---
+// --- YouTube API setup ---
 function onYtReady() {
     updateYtSeek();
-    if (document.getElementById("ytVol")) {
-        document.getElementById("ytVol").addEventListener("input", e => {
-            ytPlayer.setVolume(e.target.value);
-        });
-    }
-    if (document.getElementById("ytSeek")) {
-        document.getElementById("ytSeek").addEventListener("input", e => {
-            let duration = ytPlayer.getDuration();
-            ytPlayer.seekTo((e.target.value / 100) * duration, true);
-        });
-    }
+    document.getElementById("ytVol").addEventListener("input", e => {
+        ytPlayer.setVolume(e.target.value);
+    });
+    document.getElementById("ytSeek").addEventListener("input", e => {
+        let duration = ytPlayer.getDuration();
+        ytPlayer.seekTo((e.target.value / 100) * duration, true);
+    });
 }
 
 function updateYtSeek() {
     if (ytPlayer && ytPlayer.getDuration) {
         let duration = ytPlayer.getDuration();
         let current = ytPlayer.getCurrentTime();
-        if (duration > 0 && document.getElementById("ytSeek")) {
+        if (duration > 0) {
             document.getElementById("ytSeek").value = (current / duration) * 100;
         }
     }
     setTimeout(updateYtSeek, 1000);
 }
 
+// --- Toggle Play/Pause ---
 function togglePlayPause() {
     if (!ytPlayer) return;
     if (isPlaying) {
         ytPlayer.pauseVideo();
-        document.getElementById("ytToggleIcon").innerHTML = '<path d="M3 22v-20l18 10-18 10z"/>'; 
+        document.getElementById("ytToggleIcon").innerHTML = '<path d="M3 22v-20l18 10-18 10z"/>'; // play
     } else {
         ytPlayer.playVideo();
-        document.getElementById("ytToggleIcon").innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; 
+        document.getElementById("ytToggleIcon").innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; // pause
     }
     isPlaying = !isPlaying;
 }
 
 function onYtStateChange(event) {
-    if (event.data == YT.PlayerState.ENDED) stopVideoIfPlaying();
-    else if (event.data == YT.PlayerState.PLAYING) isPlaying = true;
-    else if (event.data == YT.PlayerState.PAUSED) isPlaying = false;
+    if (event.data == YT.PlayerState.ENDED) {
+        stopVideoIfPlaying();
+    } else if (event.data == YT.PlayerState.PLAYING) {
+        isPlaying = true;
+        document.getElementById("ytToggleIcon").innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; // pause
+    } else if (event.data == YT.PlayerState.PAUSED) {
+        isPlaying = false;
+        document.getElementById("ytToggleIcon").innerHTML = '<path d="M3 22v-20l18 10-18 10z"/>'; // play
+    }
 }
 
-// Load YouTube API
+// --- Load YouTube API ---
 let tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
-document.body.appendChild(tag);
-    
-
+document.body.appendChild(tag);	
 
                 
 	
