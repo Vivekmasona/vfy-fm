@@ -1663,7 +1663,7 @@ function getOutput(item, i) {
     if (item.snippet?.liveBroadcastContent === "live") return '';
 
     return `
-        <b index="${i}" class="list" vid="${id}" style="position:relative;" onclick="loadSong(this)">
+        <b index="${i}" class="list" vid="${id}" style="position:relative;" onclick="handleAudioClick(this)">
             <div class="video" style="position:relative;">
                 <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
 
@@ -1700,6 +1700,24 @@ function getOutput(item, i) {
         </b>`;
 }
 
+// --- Handle audio click ---
+function handleAudioClick(el) {
+    // --- Stop video if playing ---
+    if (currentVideoListItem) {
+        let iframe = currentVideoListItem.find('iframe');
+        let prevThumbUrl = iframe.data('thumb');
+        if (iframe.length && prevThumbUrl) {
+            iframe.replaceWith(
+                `<img src="${prevThumbUrl}" alt="Video" class="video-thumbnail" style="width:100%;" data-thumb="${prevThumbUrl}">`
+            );
+        }
+        currentVideoListItem = null;
+    }
+
+    // --- Load audio as usual ---
+    loadSong(el);
+}
+
 // --- Popup show/hide ---
 $("#showPopupbutto").click(function() { $("#popupContainer").show(); });
 $("#closePopup").click(function() { $("#popupContainer").hide(); });
@@ -1716,13 +1734,8 @@ $(document).on('click', '.overlay-play', function(e) {
     // --- Restore previous video if exists ---
     if (currentVideoListItem && currentVideoListItem[0] !== listItem[0]) {
         let iframe = currentVideoListItem.find('iframe');
-        let prevThumbUrl = iframe.data('thumb'); // get stored original thumbnail URL
-        if (!prevThumbUrl) {
-            prevThumbUrl = currentVideoListItem.find('.video-thumbnail').attr('data-thumb') || 'https://example.com/default-thumbnail.jpg';
-        }
-
-        // Replace iframe with original thumbnail
-        if (iframe.length) {
+        let prevThumbUrl = iframe.data('thumb');
+        if (iframe.length && prevThumbUrl) {
             iframe.replaceWith(
                 `<img src="${prevThumbUrl}" alt="Video" class="video-thumbnail" style="width:100%;" data-thumb="${prevThumbUrl}">`
             );
@@ -1736,14 +1749,12 @@ $(document).on('click', '.overlay-play', function(e) {
         thumb.attr('data-thumb', thumbUrl); // Save original thumbnail
         let iframe = $(`<iframe width="100%" height="${thumb.height()}" src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" 
                         frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`);
-        iframe.data('thumb', thumbUrl); // store thumb URL in iframe for restoration
+        iframe.data('thumb', thumbUrl); // store thumb URL in iframe
         thumb.replaceWith(iframe);
     }
 
     currentVideoListItem = listItem;
 });
-
-
 
 	
 
