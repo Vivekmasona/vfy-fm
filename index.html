@@ -1667,11 +1667,11 @@ function getOutput(item, i) {
                 <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
                 
                 <div style="position:relative;">
-                    <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" onclick="loadSong(this)" index="${i}" vid="${id}">
+                    <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" onclick="loadAudio(this)" index="${i}" vid="${id}">
                     
-                    <!-- Video play button top-right -->
+                    <!-- Play video button top-right -->
                     <i class="fas fa-play-circle video-play-button" 
-                       onclick="playVideoSeparate(this, '${id}')"></i>
+                       onclick="playVideo(this, '${id}')"></i>
                 </div>
 
                 <section>
@@ -1683,26 +1683,33 @@ function getOutput(item, i) {
         </b>`;
 }
 
-// ORIGINAL AUDIO FUNCTION
-function playVideoStopAudio(button, videoId) {
+// AUDIO FUNCTION (load audio separately)
+function loadAudio(element) {
+    const id = element.getAttribute('vid');
+    const index = element.getAttribute('index');
+    const title = element.alt; // or dataset if you want
+    const wrapper = element.parentElement;
+
+    // Stop other audio
     document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
 
-    const wrapper = button.parentElement;
-    const iframe = document.createElement('iframe');
-    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-    iframe.width = '100%';
-    iframe.height = wrapper.offsetHeight + 'px';
-    iframe.frameBorder = '0';
-    iframe.allow = 'autoplay; encrypted-media';
-    iframe.allowFullscreen = true;
+    // Remove existing audio in wrapper if any
+    let oldAudio = wrapper.querySelector("#SAudio");
+    if (oldAudio) oldAudio.remove();
 
-    wrapper.innerHTML = '';
-    wrapper.appendChild(iframe);
+    // Create new audio element
+    let audio = document.createElement('audio');
+    audio.id = "SAudio";
+    audio.src = `https://your-audio-source.com/${id}.mp3`; // Replace with actual audio URL
+    audio.autoplay = true;
+    wrapper.appendChild(audio);
+
+    console.log("Audio loaded:", title, id, index);
 }
 
-// NEW SEPARATE VIDEO FUNCTION
-function playVideoSeparate(button, videoId) {
-    // Stop all audio first
+// VIDEO FUNCTION (load video separately)
+function playVideo(button, videoId) {
+    // Stop all audio
     document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
 
     const wrapper = button.parentElement;
@@ -1714,6 +1721,7 @@ function playVideoSeparate(button, videoId) {
     iframe.allow = 'autoplay; encrypted-media';
     iframe.allowFullscreen = true;
 
+    // Replace wrapper content with video
     wrapper.innerHTML = '';
     wrapper.appendChild(iframe);
 }
