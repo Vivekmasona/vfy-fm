@@ -1684,6 +1684,7 @@ function getOutput(item, i) {
                 <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
                 <div style="position:relative;">
                     <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" onclick="loadSong(this)" index="${i}" vid="${id}">
+                    <!-- Play icon only plays video, does NOT trigger loadSong -->
                     <i class="fas fa-play-circle play-icon" onclick="event.stopPropagation(); playVideo(this, '${id}')"></i>
                 </div>
                 <section>
@@ -1696,7 +1697,7 @@ function getOutput(item, i) {
         </b>`;
 }
 
-// Play video function
+// Play video function (only plays video, does not select song)
 function playVideo(button, videoId) {
     const wrapper = button.parentElement;
     const iframe = document.createElement('iframe');
@@ -1707,6 +1708,7 @@ function playVideo(button, videoId) {
     iframe.allow = 'autoplay; encrypted-media';
     iframe.allowFullscreen = true;
 
+    // Replace thumbnail only
     wrapper.innerHTML = '';
     wrapper.appendChild(iframe);
 }
