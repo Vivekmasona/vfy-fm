@@ -1653,115 +1653,59 @@ function paginate(direction) {
 
 
 
-// ==================== Generate HTML for each video/audio item ====================
-function getOutput(item, i) {    
-    var id = item.id?.videoId || item.id;    
-    var title = item.snippet?.title || "No title";    
-    var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';    
-    
-    if (item.snippet?.liveBroadcastContent === "live") return '';    
-    
-    return `    
-        <b index="${i}" class="list" vid="${id}" style="position:relative;">    
-            <div class="video">    
-                <!-- Favorite icon -->
-                <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>    
+ 
+function getOutput(item, i) {
+    var id = item.id?.videoId || item.id;
+    var title = item.snippet?.title || "No title";
+    var description = item.snippet?.description || "No description";
+    var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
+    var channelTitle = item.snippet?.channelTitle || "Unknown channel";
+    var videoDate = new Date(item.snippet?.publishedAt || Date.now());
 
-                <div style="position:relative;">    
-                    <!-- Thumbnail click = Audio -->
-                    <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" 
-                         onclick="loadSong(this)" index="${i}" vid="${id}">    
-
-                    <!-- Play video button -->
-                    <i class="fas fa-video video-overlay-button" 
-                       onclick="playVideoFooter('${id}', '${title}', '${thumbUrl}')"></i>    
-                </div>    
-
-                <section>    
-                    <div>    
-                        <p>V F Y ${title}</p>    
-                    </div>    
-                </section>    
-            </div>    
-        </b>`;    
-}
-
-// ==================== Load song audio ====================
-function loadSong(imgElement) {
-    const index = imgElement.getAttribute('index');
-    const vid = imgElement.getAttribute('vid');
-    console.log("Audio selected:", index, vid);
-
-    // Stop all other audio
-    document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
-
-    // Load new audio (example: update src)
-    const audioPlayer = document.getElementById('SAudio');
-    if(audioPlayer) {
-        audioPlayer.src = `https://your-audio-url/${vid}.mp3`;
-        audioPlayer.play();
-    }
-}
-
-// ==================== Play video overlay in footer ====================
-function playVideoFooter(videoId, title, thumbUrl) {
-    // Stop all audio first
-    document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
-
-    // Footer overlay container (create once)
-    let footerOverlay = document.getElementById('footerVideoOverlay');
-    if(!footerOverlay) {
-        footerOverlay = document.createElement('div');
-        footerOverlay.id = 'footerVideoOverlay';
-        footerOverlay.style.position = 'fixed';
-        footerOverlay.style.bottom = '60px';
-        footerOverlay.style.left = '10px';
-        footerOverlay.style.width = '320px';
-        footerOverlay.style.height = '180px';
-        footerOverlay.style.background = '#000';
-        footerOverlay.style.zIndex = 999;
-        footerOverlay.style.borderRadius = '10px';
-        footerOverlay.style.overflow = 'hidden';
-        footerOverlay.style.boxShadow = '0 0 15px rgba(255,165,0,0.8)';
-        document.body.appendChild(footerOverlay);
+    if (item.snippet?.liveBroadcastContent === "live") {
+        return '';
     }
 
-    // Remove old iframe
-    footerOverlay.innerHTML = '';
-
-    // Add iframe
-    const iframe = document.createElement('iframe');
-    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-    iframe.width = '100%';
-    iframe.height = '100%';
-    iframe.frameBorder = '0';
-    iframe.allow = 'autoplay; encrypted-media';
-    iframe.allowFullscreen = true;
-    footerOverlay.appendChild(iframe);
-
-    // Optional: title overlay
-    const titleDiv = document.createElement('div');
-    titleDiv.innerText = title;
-    titleDiv.style.position = 'absolute';
-    titleDiv.style.bottom = '0';
-    titleDiv.style.width = '100%';
-    titleDiv.style.background = 'rgba(0,0,0,0.6)';
-    titleDiv.style.color = '#fff';
-    titleDiv.style.padding = '4px';
-    titleDiv.style.fontSize = '12px';
-    titleDiv.style.textAlign = 'center';
-    footerOverlay.appendChild(titleDiv);
+    return `
+        <b onclick="loadSong(this)" index="${i}" class="list" vid="${id}" style="position:relative;">
+            <div class="video">
+                <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
+                <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" index="${i}" vid="${id}">
+                <section>
+                    <img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">
+                    <div>
+                        <p>V F Y ${title}</p>
+                    </div>
+                </section>
+            </div>
+        </b>`;
 }
 
-// ==================== Popup show/hide ====================
-$("#showPopupbutto").click(function() {    
-    $("#popupContainer").show();    
-});    
-
-$("#closePopup").click(function() {    
-    $("#popupContainer").hide();    
+// --- Popup show/hide as in original ---
+$("#showPopupbutto").click(function() {
+    $("#popupContainer").show();
 });
 
+$("#closePopup").click(function() {
+    $("#popupContainer").hide();
+});
+
+// --- Add 4-second press-to-play on thumbnails ---
+let pressTimer;
+$(document).on('mousedown touchstart', '.video-thumbnail', function(e) {
+    let thumb = $(this);
+    let videoId = thumb.attr('vid');
+
+    // Start 4-second timer
+    pressTimer = setTimeout(() => {
+        // Replace thumbnail with YouTube iframe
+        let iframe = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" 
+                        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+        thumb.replaceWith(iframe);
+    }, 4000);
+}).on('mouseup mouseleave touchend touchcancel', '.video-thumbnail', function(e) {
+    clearTimeout(pressTimer); // Cancel if released early
+});
 	
 
 	
