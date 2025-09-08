@@ -1652,94 +1652,118 @@ function paginate(direction) {
 
 
 
-// ---------------------- AUDIO LIST ----------------------
-function getAudioOutput(item, i) {
-    var id = item.id?.videoId || item.id;
-    var title = item.snippet?.title || "No title";
-    var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
 
-    if (item.snippet?.liveBroadcastContent === "live") return '';
+// ==================== Generate HTML for each video/audio item ====================
+function getOutput(item, i) {    
+    var id = item.id?.videoId || item.id;    
+    var title = item.snippet?.title || "No title";    
+    var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';    
+    
+    if (item.snippet?.liveBroadcastContent === "live") return '';    
+    
+    return `    
+        <b index="${i}" class="list" vid="${id}" style="position:relative;">    
+            <div class="video">    
+                <!-- Favorite icon -->
+                <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>    
 
-    return `
-        <b index="${i}" class="list" vid="${id}" style="position:relative;">
-            <div class="audio-item">
-                <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
-                
-                <div style="position:relative;">
-                    <img src="${thumbUrl}" alt="${title}" class="audio-thumbnail" onclick="loadSong(this)" index="${i}" vid="${id}">
-                </div>
+                <div style="position:relative;">    
+                    <!-- Thumbnail click = Audio -->
+                    <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" 
+                         onclick="loadSong(this)" index="${i}" vid="${id}">    
 
-                <section>
-                    <div>
-                        <p>V F Y ${title}</p>
-                    </div>
-                </section>
-            </div>
-        </b>`;
+                    <!-- Play video button -->
+                    <i class="fas fa-video video-overlay-button" 
+                       onclick="playVideoFooter('${id}', '${title}', '${thumbUrl}')"></i>    
+                </div>    
+
+                <section>    
+                    <div>    
+                        <p>V F Y ${title}</p>    
+                    </div>    
+                </section>    
+            </div>    
+        </b>`;    
 }
 
-// ---------------------- VIDEO LIST ----------------------
-function getVideoOutput(item, i) {
-    var id = item.id?.videoId || item.id;
-    var title = item.snippet?.title || "No title";
-    var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
+// ==================== Load song audio ====================
+function loadSong(imgElement) {
+    const index = imgElement.getAttribute('index');
+    const vid = imgElement.getAttribute('vid');
+    console.log("Audio selected:", index, vid);
 
-    if (item.snippet?.liveBroadcastContent === "live") return '';
-
-    return `
-        <b index="${i}" class="list video-list" vid="${id}" style="position:relative;">
-            <div class="video-item">
-                <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
-                
-                <div style="position:relative;">
-                    <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" index="${i}" vid="${id}">
-                    <i class="fas fa-play-circle video-play-button" onclick="playVideo(this, '${id}')"></i>
-                </div>
-
-                <section>
-                    <div>
-                        <p>V F Y ${title}</p>
-                    </div>
-                </section>
-            </div>
-        </b>`;
-}
-
-// ---------------------- PLAY VIDEO ----------------------
-function playVideo(button, videoId) {
-    // Stop all audio elements
+    // Stop all other audio
     document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
 
-    const wrapper = button.parentElement;
+    // Load new audio (example: update src)
+    const audioPlayer = document.getElementById('SAudio');
+    if(audioPlayer) {
+        audioPlayer.src = `https://your-audio-url/${vid}.mp3`;
+        audioPlayer.play();
+    }
+}
 
-    // Remove old iframe if exists
-    const oldIframe = wrapper.querySelector('iframe');
-    if(oldIframe) oldIframe.remove();
+// ==================== Play video overlay in footer ====================
+function playVideoFooter(videoId, title, thumbUrl) {
+    // Stop all audio first
+    document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
 
+    // Footer overlay container (create once)
+    let footerOverlay = document.getElementById('footerVideoOverlay');
+    if(!footerOverlay) {
+        footerOverlay = document.createElement('div');
+        footerOverlay.id = 'footerVideoOverlay';
+        footerOverlay.style.position = 'fixed';
+        footerOverlay.style.bottom = '60px';
+        footerOverlay.style.left = '10px';
+        footerOverlay.style.width = '320px';
+        footerOverlay.style.height = '180px';
+        footerOverlay.style.background = '#000';
+        footerOverlay.style.zIndex = 999;
+        footerOverlay.style.borderRadius = '10px';
+        footerOverlay.style.overflow = 'hidden';
+        footerOverlay.style.boxShadow = '0 0 15px rgba(255,165,0,0.8)';
+        document.body.appendChild(footerOverlay);
+    }
+
+    // Remove old iframe
+    footerOverlay.innerHTML = '';
+
+    // Add iframe
     const iframe = document.createElement('iframe');
     iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
     iframe.width = '100%';
-    iframe.height = wrapper.offsetHeight + 'px';
+    iframe.height = '100%';
     iframe.frameBorder = '0';
     iframe.allow = 'autoplay; encrypted-media';
     iframe.allowFullscreen = true;
+    footerOverlay.appendChild(iframe);
 
-    // Overlay without removing thumbnail/title
-    iframe.style.position = 'absolute';
-    iframe.style.top = 0;
-    iframe.style.left = 0;
-    iframe.style.zIndex = 10;
-    wrapper.appendChild(iframe);
+    // Optional: title overlay
+    const titleDiv = document.createElement('div');
+    titleDiv.innerText = title;
+    titleDiv.style.position = 'absolute';
+    titleDiv.style.bottom = '0';
+    titleDiv.style.width = '100%';
+    titleDiv.style.background = 'rgba(0,0,0,0.6)';
+    titleDiv.style.color = '#fff';
+    titleDiv.style.padding = '4px';
+    titleDiv.style.fontSize = '12px';
+    titleDiv.style.textAlign = 'center';
+    footerOverlay.appendChild(titleDiv);
 }
 
-// ---------------------- POPUP ----------------------
-$("#showPopupbutto").click(function() {
-    $("#popupContainer").show();
+// ==================== Popup show/hide ====================
+$("#showPopupbutto").click(function() {    
+    $("#popupContainer").show();    
+});    
+
+$("#closePopup").click(function() {    
+    $("#popupContainer").hide();    
 });
 
-$("#closePopup").click(function() {
-    $("#popupContainer").hide();
-});
+	
+
 	
 	
 function loadSong(song, ind) {
