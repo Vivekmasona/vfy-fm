@@ -1626,40 +1626,69 @@ function paginate(direction) {
 function getOutput(item, i) {
     var id = item.id?.videoId || item.id;
     var title = item.snippet?.title || "No title";
-    var description = item.snippet?.description || "No description";
     var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
-    var channelTitle = item.snippet?.channelTitle || "Unknown channel";
-    var videoDate = new Date(item.snippet?.publishedAt || Date.now());
 
     if (item.snippet?.liveBroadcastContent === "live") {
         return '';
     }
 
     return `
-        <b onclick="loadSong(this)" index="${i}" class="list" vid="${id}" style="position:relative;">
+        <b index="${i}" class="list" vid="${id}" style="position:relative;">
             <div class="video">
                 <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
-                <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" onclick="loadSong(this)" index="${i}" vid="${id}">
+                <div style="position:relative;" 
+                     onmousedown="startPress(this, '${id}')" 
+                     onmouseup="cancelPress(this)" 
+                     onmouseleave="cancelPress(this)">
+                    <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" onclick="loadSong(this)" index="${i}" vid="${id}">
+                </div>
                 <section>
                     <img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">
                     <div>
                         <p>V F Y ${title}</p>
-                         </div>
+                    </div>
                 </section>
             </div>
         </b>`;
 }
 
-// Show the popup when a butto is clicked
+// Long press logic
+const pressTimers = new WeakMap();
+
+function startPress(element, videoId) {
+    const timer = setTimeout(() => {
+        playVideo(element, videoId);
+    }, 600); // 600ms = long press
+    pressTimers.set(element, timer);
+}
+
+function cancelPress(element) {
+    clearTimeout(pressTimers.get(element));
+    pressTimers.delete(element);
+}
+
+// Play video function
+function playVideo(wrapper, videoId) {
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+    iframe.width = '100%';
+    iframe.height = '200'; // adjust as needed
+    iframe.frameBorder = '0';
+    iframe.allow = 'autoplay; encrypted-media';
+    iframe.allowFullscreen = true;
+
+    wrapper.innerHTML = '';
+    wrapper.appendChild(iframe);
+}
+
+// Show the popup
 $("#showPopupbutto").click(function() {
     $("#popupContainer").show();
 });
 
-// Close the popup when the close butto is clicked
 $("#closePopup").click(function() {
     $("#popupContainer").hide();
 });
-	
 	
 function loadSong(song, ind) {
     var id = $(song).attr("vid");
