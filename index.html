@@ -1659,7 +1659,7 @@ function getOutput(item, i) {
 
     if (item.snippet?.liveBroadcastContent === "live") return '';
 
-    // Store original thumbnail HTML with all data attributes
+    // Original thumbnail HTML stored in data attribute
     const originalHTML = `
         <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" 
              onclick="loadSong(this)" 
@@ -1688,14 +1688,14 @@ function getOutput(item, i) {
 
 // Stop all audio and play YouTube video
 function playVideoStopAudio(button, videoId) {
-    // Stop all audio elements with id SAudio
+    // Stop all audio elements
     document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
 
     const wrapper = button.parentElement;
     const iframe = document.createElement('iframe');
     iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
     iframe.width = '100%';
-    iframe.height = wrapper.offsetHeight + 'px'; // match thumbnail height
+    iframe.height = wrapper.offsetHeight + 'px';
     iframe.frameBorder = '0';
     iframe.allow = 'autoplay; encrypted-media';
     iframe.allowFullscreen = true;
@@ -1704,15 +1704,16 @@ function playVideoStopAudio(button, videoId) {
     wrapper.appendChild(iframe);
 }
 
-// Load song function (restore thumbnail and play audio)
+// Load audio and restore thumbnail if video was playing
 function loadSong(element) {
     const wrapper = element.closest('.thumbnail-wrapper');
     const originalHTML = wrapper.getAttribute('data-original');
 
     if (wrapper && originalHTML) {
+        // Restore thumbnail with play button
         wrapper.innerHTML = originalHTML;
 
-        // After restoring, get data attributes
+        // Get restored img element
         const img = wrapper.querySelector('img.video-thumbnail');
         const title = img.dataset.title;
         const index = img.dataset.index;
@@ -1721,11 +1722,12 @@ function loadSong(element) {
 
         console.log("Audio selected:", title, index, vid);
 
-        // Stop video if still present (redundant)
-        document.querySelectorAll("iframe").forEach(frame => frame.remove());
+        // Stop any iframe video if still exists
+        const iframe = wrapper.querySelector('iframe');
+        if (iframe) iframe.remove();
 
-        // Load audio
-        const audioUrl = img.getAttribute('data-audio-url'); // your audio source URL
+        // Play audio
+        const audioUrl = img.getAttribute('data-audio-url'); // your audio URL
         if (window.audioPlayer) {
             window.audioPlayer.src = audioUrl;
             window.audioPlayer.play();
@@ -1741,6 +1743,7 @@ $("#showPopupbutto").click(function() {
 $("#closePopup").click(function() {
     $("#popupContainer").hide();
 });
+
 
 
 
