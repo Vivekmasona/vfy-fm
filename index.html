@@ -113,27 +113,6 @@ if (window !== window.top) {
     </style>
 <style>
 
-.thumbnail-wrapper {
-    position: relative;
-    display: inline-block;
-}
-
-.play-button {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(255, 165, 0, 0.8); /* orange glow */
-    border: none;
-    color: white;
-    font-size: 24px;
-    border-radius: 50%;
-    padding: 10px 15px;
-    cursor: pointer;
-}
-	
-	
-</style>
     
     <b onclick="alert('This is a stylish alert!')"></b>
 
@@ -1661,7 +1640,7 @@ function getOutput(item, i) {
         <b onclick="loadSong(this)" index="${i}" class="list" vid="${id}" style="position:relative;">
             <div class="video">
                 <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
-                <div style="position:relative;" class="thumbnail-wrapper">
+                <div style="position:relative;">
                     <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" onclick="loadSong(this)" index="${i}" vid="${id}">
                     <button class="play-button" onclick="event.stopPropagation(); playVideo(this, '${id}')">▶</button>
                 </div>
@@ -1690,15 +1669,16 @@ function playVideo(button, videoId) {
     wrapper.appendChild(iframe);
 }
 
-// Show the popup when a button is clicked
+// Show the popup when a butto is clicked
 $("#showPopupbutto").click(function() {
     $("#popupContainer").show();
 });
 
-// Close the popup when the close button is clicked
+// Close the popup when the close butto is clicked
 $("#closePopup").click(function() {
     $("#popupContainer").hide();
 });
+	
 	
 	
 function loadSong(song, ind) {
