@@ -1659,17 +1659,19 @@ function getOutput(item, i) {
 
     if (item.snippet?.liveBroadcastContent === "live") return '';
 
+    // Store original thumbnail HTML in data attribute
+    const originalHTML = `
+        <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" onclick="loadSong(this)" index="${i}" vid="${id}">
+        <i class="fas fa-play-circle video-play-button" onclick="playVideoStopAudio(this, '${id}')"></i>
+    `;
+
     return `
         <b index="${i}" class="list" vid="${id}" style="position:relative;">
             <div class="video">
                 <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
                 
-                <div style="position:relative;">
-                    <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" onclick="loadSong(this)" index="${i}" vid="${id}">
-                    
-                    <!-- Play button top-right -->
-                    <i class="fas fa-play-circle video-play-button" 
-                       onclick="playVideoStopAudio(this, '${id}')"></i>
+                <div class="thumbnail-wrapper" data-original='${originalHTML}'>
+                    ${originalHTML}
                 </div>
 
                 <section>
@@ -1697,6 +1699,24 @@ function playVideoStopAudio(button, videoId) {
 
     wrapper.innerHTML = '';
     wrapper.appendChild(iframe);
+}
+
+// Load song function (restore thumbnail if needed)
+function loadSong(element) {
+    // Stop video iframe if exists
+    const wrapper = element.closest('.thumbnail-wrapper');
+    const originalHTML = wrapper.getAttribute('data-original');
+    if (wrapper && originalHTML) {
+        wrapper.innerHTML = originalHTML;
+    }
+
+    // Your existing audio loading logic here
+    const audioId = element.getAttribute('vid');
+    const audioUrl = element.getAttribute('data-audio-url'); // replace with your source
+    if (window.audioPlayer) {
+        window.audioPlayer.src = audioUrl;
+        window.audioPlayer.play();
+    }
 }
 
 // Popup show/hide
