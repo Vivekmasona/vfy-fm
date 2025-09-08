@@ -1303,14 +1303,8 @@ border-radius: 15px;
   width: 100%;
   max-width: 450px;
   height: 250px;
-  background: rgba(0,0,0,0.85);
-  border-radius: 12px 12px 0 0;
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
-  display: none;
-  overflow: hidden;
   z-index: 9999;
-  margin: 0 auto;
-  right: 0;
+  display: none;
 }
 </style>
 
@@ -1686,9 +1680,8 @@ function paginate(direction) {
 let currentVideoListItem = null; 
 let ytPlayer = null;
 let isPlaying = false;
-let isMiniPlayer = false;
 
-// --- Output Function ---
+// --- Your Output Function ---
 function getOutput(item, i) {
     var id = item.id?.videoId || item.id;
     var title = item.snippet?.title || "No title";
@@ -1731,7 +1724,7 @@ function getOutput(item, i) {
 // --- Handle audio click ---
 function handleAudioClick(el) {
     stopVideoIfPlaying();
-    loadSong(el); // your audio player
+    loadSong(el); // your audio player logic
 }
 
 // --- Stop current video and restore thumbnail ---
@@ -1770,7 +1763,7 @@ $(document).on('click', '.overlay-play', function(e) {
         stopVideoIfPlaying();
     }
 
-    // Replace thumbnail with custom player wrapper
+    // Replace thumbnail with custom player wrapper if not already replaced
     let thumb = listItem.find('.video-thumbnail');
     if (thumb.length) {
         let thumbUrl = thumb.attr('src');
@@ -1807,70 +1800,44 @@ $(document).on('click', '.overlay-play', function(e) {
                 </div>
             </div>
         `);
-        thumb.replaceWith(wrapper);
 
-        // Load YouTube API player
-        ytPlayer = new YT.Player(`yt-player-${videoId}`, {
-            height: '250',
-            width: '100%',
-            videoId: videoId,
-            playerVars: { autoplay: 1, controls: 0, modestbranding: 1, rel: 0 },
-            events: {
-                'onReady': onYtReady,
-                'onStateChange': onYtStateChange
-            }
-        });
+        // Only replace if yt-wrapper not already present
+        if (listItem.find('.yt-wrapper').length === 0) {
+            thumb.replaceWith(wrapper);
+
+            ytPlayer = new YT.Player(`yt-player-${videoId}`, {
+                height: '250',
+                width: '100%',
+                videoId: videoId,
+                playerVars: { autoplay: 1, controls: 0, modestbranding: 1, rel: 0 },
+                events: {
+                    'onReady': onYtReady,
+                    'onStateChange': onYtStateChange
+                }
+            });
+        }
     }
 
     currentVideoListItem = listItem;
 });
 
-// --- Mini Player Functions ---
-function showMiniPlayer(videoId, thumbUrl) {
-    let mini = document.getElementById("miniPlayer");
-    mini.innerHTML = `
-        <div id="yt-mini-${videoId}" style="width:100%; height:100%;"></div>
-    `;
-    mini.style.display = "block";
-
-    ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
-        height: '100%',
-        width: '100%',
-        videoId: videoId,
-        playerVars: { autoplay: 1, controls: 0, modestbranding: 1, rel: 0 },
-        events: {
-            'onReady': onYtReady,
-            'onStateChange': onYtStateChange
-        }
-    });
-    isMiniPlayer = true;
-}
-
-function hideMiniPlayer() {
-    let mini = document.getElementById("miniPlayer");
-    mini.innerHTML = "";
-    mini.style.display = "none";
-    isMiniPlayer = false;
-}
-
-
+// --- Mini player scroll logic ---
 let miniPlayerContainer = document.getElementById("miniPlayer");
 
-// Scroll event
 window.addEventListener("scroll", () => {
     if (!currentVideoListItem) return;
 
     let rect = currentVideoListItem[0].getBoundingClientRect();
-    let wrapper = currentVideoListItem.find(".yt-wrapper");
+    let wrapper = currentVideoListItem.find('.yt-wrapper');
 
     if (rect.bottom < 0 || rect.top > window.innerHeight) {
-        // Video list se bahar → move to miniPlayer
-        if (wrapper.length && miniPlayerContainer.childElementCount === 0) {
+        // Move existing wrapper to mini player
+        if (wrapper.length && !miniPlayerContainer.contains(wrapper[0])) {
             miniPlayerContainer.appendChild(wrapper[0]);
             miniPlayerContainer.style.display = "block";
         }
     } else {
-        // Video list me visible → move back to original position
+        // Move back to original position
         if (wrapper.length && miniPlayerContainer.contains(wrapper[0])) {
             currentVideoListItem[0].appendChild(wrapper[0]);
             miniPlayerContainer.style.display = "none";
@@ -1878,9 +1845,6 @@ window.addEventListener("scroll", () => {
     }
 });
 
-
-
-	
 // --- YouTube API setup ---
 function onYtReady() {
     updateYtSeek();
@@ -1908,7 +1872,6 @@ function updateYtSeek() {
     setTimeout(updateYtSeek, 1000);
 }
 
-// --- Toggle Play/Pause ---
 function togglePlayPause() {
     if (!ytPlayer) return;
     if (isPlaying) {
@@ -1924,7 +1887,6 @@ function togglePlayPause() {
 function onYtStateChange(event) {
     if (event.data == YT.PlayerState.ENDED) {
         stopVideoIfPlaying();
-        hideMiniPlayer();
     } else if (event.data == YT.PlayerState.PLAYING) {
         isPlaying = true;
         if (document.getElementById("ytToggleIcon")) {
@@ -1938,27 +1900,10 @@ function onYtStateChange(event) {
     }
 }
 
-// --- Scroll event to detect mini player ---
-window.addEventListener("scroll", () => {
-    if (!currentVideoListItem) return;
-
-    let rect = currentVideoListItem[0].getBoundingClientRect();
-    if (rect.bottom < 0 || rect.top > window.innerHeight) {
-        if (!isMiniPlayer) {
-            let vid = currentVideoListItem.attr("vid");
-            let thumb = currentVideoListItem.find(".video-thumbnail").attr("src") || "";
-            showMiniPlayer(vid, thumb);
-        }
-    } else {
-        if (isMiniPlayer) hideMiniPlayer();
-    }
-});
-
 // --- Load YouTube API ---
 let tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
 document.body.appendChild(tag);
-
     
 
 
