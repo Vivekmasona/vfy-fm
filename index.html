@@ -1664,7 +1664,7 @@ function getOutput(item, i) {
     }
 
     return `
-        <b index="${i}" class="list" vid="${id}" style="position:relative;">
+        <b index="${i}" class="list" vid="${id}" style="position:relative;" onclick="loadSong(this)">
             <div class="video" style="position:relative;">
                 <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
                 <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" index="${i}" vid="${id}">
@@ -1707,9 +1707,9 @@ $("#closePopup").click(function() {
     $("#popupContainer").hide();
 });
 
-// --- Play video on overlay click ---
+// --- Play video only on overlay click ---
 $(document).on('click', '.overlay-play', function(e) {
-    e.stopPropagation(); // Prevent other click handlers
+    e.stopPropagation(); // Prevent triggering loadSong
     let listItem = $(this).closest('.list');
     let videoId = listItem.attr('vid');
 
@@ -1718,7 +1718,6 @@ $(document).on('click', '.overlay-play', function(e) {
                     frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
     listItem.find('.video').html(iframe);
 });
-
 	
 
 	
