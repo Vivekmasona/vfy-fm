@@ -1652,71 +1652,94 @@ function paginate(direction) {
 
 
 
-function getOutput(item, i) {    
-    var id = item.id?.videoId || item.id;    
-    var title = item.snippet?.title || "No title";    
-    var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';    
-    
-    if (item.snippet?.liveBroadcastContent === "live") return '';    
-    
-    return `    
-        <b index="${i}" class="list" vid="${id}" style="position:relative;">    
-            <div class="video">    
-                <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>    
-                    
-                <div style="position:relative;">    
-                    <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" onclick="loadSong(this)" index="${i}" vid="${id}">    
-                        
-                    <!-- Play button top-right -->    
-                    <i class="fas fa-play-circle video-play-button"     
-                       onclick="playVideoStopAudio(this, '${id}')"></i>    
-                </div>    
-    
-                <section>    
-                    <div>    
-                        <p>V F Y ${title}</p>    
-                    </div>    
-                </section>    
-            </div>    
-        </b>`;    
-}    
-    
-// Stop all audio and play YouTube video without removing title/thumbnail
-function playVideoStopAudio(button, videoId) {    
-    // Stop all audio elements with id SAudio    
-    document.querySelectorAll("#SAudio").forEach(audio => audio.pause());    
-    
+// ---------------------- AUDIO LIST ----------------------
+function getAudioOutput(item, i) {
+    var id = item.id?.videoId || item.id;
+    var title = item.snippet?.title || "No title";
+    var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
+
+    if (item.snippet?.liveBroadcastContent === "live") return '';
+
+    return `
+        <b index="${i}" class="list" vid="${id}" style="position:relative;">
+            <div class="audio-item">
+                <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
+                
+                <div style="position:relative;">
+                    <img src="${thumbUrl}" alt="${title}" class="audio-thumbnail" onclick="loadSong(this)" index="${i}" vid="${id}">
+                </div>
+
+                <section>
+                    <div>
+                        <p>V F Y ${title}</p>
+                    </div>
+                </section>
+            </div>
+        </b>`;
+}
+
+// ---------------------- VIDEO LIST ----------------------
+function getVideoOutput(item, i) {
+    var id = item.id?.videoId || item.id;
+    var title = item.snippet?.title || "No title";
+    var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
+
+    if (item.snippet?.liveBroadcastContent === "live") return '';
+
+    return `
+        <b index="${i}" class="list video-list" vid="${id}" style="position:relative;">
+            <div class="video-item">
+                <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
+                
+                <div style="position:relative;">
+                    <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" index="${i}" vid="${id}">
+                    <i class="fas fa-play-circle video-play-button" onclick="playVideo(this, '${id}')"></i>
+                </div>
+
+                <section>
+                    <div>
+                        <p>V F Y ${title}</p>
+                    </div>
+                </section>
+            </div>
+        </b>`;
+}
+
+// ---------------------- PLAY VIDEO ----------------------
+function playVideo(button, videoId) {
+    // Stop all audio elements
+    document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
+
     const wrapper = button.parentElement;
 
     // Remove old iframe if exists
     const oldIframe = wrapper.querySelector('iframe');
     if(oldIframe) oldIframe.remove();
 
-    const iframe = document.createElement('iframe');    
-    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;    
-    iframe.width = '100%';    
-    iframe.height = wrapper.offsetHeight + 'px'; // match thumbnail height    
-    iframe.frameBorder = '0';    
-    iframe.allow = 'autoplay; encrypted-media';    
-    iframe.allowFullscreen = true;    
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+    iframe.width = '100%';
+    iframe.height = wrapper.offsetHeight + 'px';
+    iframe.frameBorder = '0';
+    iframe.allow = 'autoplay; encrypted-media';
+    iframe.allowFullscreen = true;
 
-    // Add iframe as overlay, do not remove existing HTML
+    // Overlay without removing thumbnail/title
     iframe.style.position = 'absolute';
     iframe.style.top = 0;
     iframe.style.left = 0;
     iframe.style.zIndex = 10;
-    wrapper.appendChild(iframe);    
-}    
-    
-// Popup show/hide    
-$("#showPopupbutto").click(function() {    
-    $("#popupContainer").show();    
-});    
-    
-$("#closePopup").click(function() {    
-    $("#popupContainer").hide();    
+    wrapper.appendChild(iframe);
+}
+
+// ---------------------- POPUP ----------------------
+$("#showPopupbutto").click(function() {
+    $("#popupContainer").show();
 });
 
+$("#closePopup").click(function() {
+    $("#popupContainer").hide();
+});
 	
 	
 function loadSong(song, ind) {
