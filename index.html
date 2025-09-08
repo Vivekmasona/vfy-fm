@@ -918,9 +918,8 @@ border-radius: 15px;
     font-size: 28px;
     color: #E74C3C;
     background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(15px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-         
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     border-radius: 10%;
     padding: 5px;
     cursor: pointer;
@@ -930,6 +929,26 @@ border-radius: 15px;
 
 .save-icon:hover {
     color: #ffff00;
+}
+
+.play-icon {
+    position: absolute;
+    top: 5px;
+    right: 5px; /* top-right corner */
+    font-size: 28px;
+    color: #00A86B; /* can change color */
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 10%;
+    padding: 5px;
+    cursor: pointer;
+    z-index: 10;
+    transition: color 0.3s;
+}
+
+.play-icon:hover {
+    color: #FFD700; /* hover color */
 }
 
 .video-thumbnail {
@@ -1646,6 +1665,7 @@ function paginate(direction) {
     fetchResults(apiUrl);
 }
 
+
 function getOutput(item, i) {
     var id = item.id?.videoId || item.id;
     var title = item.snippet?.title || "No title";
@@ -1664,7 +1684,7 @@ function getOutput(item, i) {
                 <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
                 <div style="position:relative;">
                     <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" onclick="loadSong(this)" index="${i}" vid="${id}">
-                    <button class="play-button" onclick="event.stopPropagation(); playVideo(this, '${id}')">▶</button>
+                    <i class="fas fa-play-circle play-icon" onclick="event.stopPropagation(); playVideo(this, '${id}')"></i>
                 </div>
                 <section>
                     <img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">
@@ -1691,12 +1711,12 @@ function playVideo(button, videoId) {
     wrapper.appendChild(iframe);
 }
 
-// Show the popup when a butto is clicked
+// Show the popup when a button is clicked
 $("#showPopupbutto").click(function() {
     $("#popupContainer").show();
 });
 
-// Close the popup when the close butto is clicked
+// Close the popup when the close button is clicked
 $("#closePopup").click(function() {
     $("#popupContainer").hide();
 });
