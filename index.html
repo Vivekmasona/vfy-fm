@@ -1652,6 +1652,9 @@ function paginate(direction) {
 
 
 
+
+
+
 function getOutput(item, i) {
     var id = item.id?.videoId || item.id;
     var title = item.snippet?.title || "No title";
@@ -1659,36 +1662,30 @@ function getOutput(item, i) {
 
     if (item.snippet?.liveBroadcastContent === "live") return '';
 
-    // Original thumbnail HTML stored in data attribute
-    const originalHTML = `
-        <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" 
-             onclick="loadSong(this)" 
-             data-index="${i}" data-vid="${id}" data-title="${title}" data-thumb="${thumbUrl}">
-        <i class="fas fa-play-circle video-play-button" 
-           onclick="playVideoStopAudio(this, '${id}')"></i>
-    `;
-
     return `
         <b index="${i}" class="list" vid="${id}" style="position:relative;">
             <div class="video">
                 <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
                 
-                <div class="thumbnail-wrapper" data-original='${originalHTML}'>
-                    ${originalHTML}
+                <div style="position:relative;">
+                    <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" onclick="loadSong(this)" index="${i}" vid="${id}">
+                    
+                    <!-- Play button top-right -->
+                    <i class="fas fa-play-circle video-play-button" 
+                       onclick="playVideoSeparate(this, '${id}')"></i>
                 </div>
 
                 <section>
                     <div>
-                        <p class="video-title">${title}</p>
+                        <p>V F Y ${title}</p>
                     </div>
                 </section>
             </div>
         </b>`;
 }
 
-// Stop all audio and play YouTube video
+// ORIGINAL FUNCTION (audio stop + video play)
 function playVideoStopAudio(button, videoId) {
-    // Stop all audio elements
     document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
 
     const wrapper = button.parentElement;
@@ -1704,35 +1701,22 @@ function playVideoStopAudio(button, videoId) {
     wrapper.appendChild(iframe);
 }
 
-// Load audio and restore thumbnail if video was playing
-function loadSong(element) {
-    const wrapper = element.closest('.thumbnail-wrapper');
-    const originalHTML = wrapper.getAttribute('data-original');
+// NEW SEPARATE VIDEO FUNCTION (looks the same, but separate code)
+function playVideoSeparate(button, videoId) {
+    // Stop all audio
+    document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
 
-    if (wrapper && originalHTML) {
-        // Restore thumbnail with play button
-        wrapper.innerHTML = originalHTML;
+    const wrapper = button.parentElement;
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+    iframe.width = '100%';
+    iframe.height = wrapper.offsetHeight + 'px';
+    iframe.frameBorder = '0';
+    iframe.allow = 'autoplay; encrypted-media';
+    iframe.allowFullscreen = true;
 
-        // Get restored img element
-        const img = wrapper.querySelector('img.video-thumbnail');
-        const title = img.dataset.title;
-        const index = img.dataset.index;
-        const vid = img.dataset.vid;
-        const thumb = img.dataset.thumb;
-
-        console.log("Audio selected:", title, index, vid);
-
-        // Stop any iframe video if still exists
-        const iframe = wrapper.querySelector('iframe');
-        if (iframe) iframe.remove();
-
-        // Play audio
-        const audioUrl = img.getAttribute('data-audio-url'); // your audio URL
-        if (window.audioPlayer) {
-            window.audioPlayer.src = audioUrl;
-            window.audioPlayer.play();
-        }
-    }
+    wrapper.innerHTML = '';
+    wrapper.appendChild(iframe);
 }
 
 // Popup show/hide
@@ -1743,7 +1727,7 @@ $("#showPopupbutto").click(function() {
 $("#closePopup").click(function() {
     $("#popupContainer").hide();
 });
-
+	
 
 
 
