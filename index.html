@@ -1651,6 +1651,8 @@ function paginate(direction) {
 }
 
 
+
+
 let currentVideoListItem = null; // Track the currently playing video
 
 function getOutput(item, i) {
@@ -1658,9 +1660,7 @@ function getOutput(item, i) {
     var title = item.snippet?.title || "No title";
     var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
 
-    if (item.snippet?.liveBroadcastContent === "live") {
-        return '';
-    }
+    if (item.snippet?.liveBroadcastContent === "live") return '';
 
     return `
         <b index="${i}" class="list" vid="${id}" style="position:relative;" onclick="loadSong(this)">
@@ -1701,12 +1701,8 @@ function getOutput(item, i) {
 }
 
 // --- Popup show/hide ---
-$("#showPopupbutto").click(function() {
-    $("#popupContainer").show();
-});
-$("#closePopup").click(function() {
-    $("#popupContainer").hide();
-});
+$("#showPopupbutto").click(function() { $("#popupContainer").show(); });
+$("#closePopup").click(function() { $("#popupContainer").hide(); });
 
 // --- Play video on overlay click ---
 $(document).on('click', '.overlay-play', function(e) {
@@ -1714,14 +1710,20 @@ $(document).on('click', '.overlay-play', function(e) {
     let listItem = $(this).closest('.list');
     let videoId = listItem.attr('vid');
 
-    // --- Pause all audios ---
+    // --- Pause all audio ---
     document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
 
     // --- Restore previous video if exists ---
     if (currentVideoListItem && currentVideoListItem[0] !== listItem[0]) {
-        let prevThumbUrl = currentVideoListItem.find('.video-thumbnail, iframe').data('thumb');
-        if (prevThumbUrl) {
-            currentVideoListItem.find('iframe').replaceWith(
+        let iframe = currentVideoListItem.find('iframe');
+        let prevThumbUrl = iframe.data('thumb'); // get stored original thumbnail URL
+        if (!prevThumbUrl) {
+            prevThumbUrl = currentVideoListItem.find('.video-thumbnail').attr('data-thumb') || 'https://example.com/default-thumbnail.jpg';
+        }
+
+        // Replace iframe with original thumbnail
+        if (iframe.length) {
+            iframe.replaceWith(
                 `<img src="${prevThumbUrl}" alt="Video" class="video-thumbnail" style="width:100%;" data-thumb="${prevThumbUrl}">`
             );
         }
@@ -1732,14 +1734,18 @@ $(document).on('click', '.overlay-play', function(e) {
     if (thumb.length) {
         let thumbUrl = thumb.attr('src');
         thumb.attr('data-thumb', thumbUrl); // Save original thumbnail
-        let iframe = `<iframe width="100%" height="${thumb.height()}" src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" 
-                        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+        let iframe = $(`<iframe width="100%" height="${thumb.height()}" src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" 
+                        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`);
+        iframe.data('thumb', thumbUrl); // store thumb URL in iframe for restoration
         thumb.replaceWith(iframe);
     }
 
-    // Track current playing video
     currentVideoListItem = listItem;
 });
+
+
+
+	
 
                 
 	
