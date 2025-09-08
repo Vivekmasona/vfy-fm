@@ -1652,6 +1652,8 @@ function paginate(direction) {
 
 
 
+let currentVideoListItem = null; // Track the currently playing video
+
 function getOutput(item, i) {
     var id = item.id?.videoId || item.id;
     var title = item.snippet?.title || "No title";
@@ -1669,7 +1671,7 @@ function getOutput(item, i) {
                 <!-- Thumbnail -->
                 <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" index="${i}" vid="${id}" style="width:100%;">
 
-                <!-- Overlay play button on top-right -->
+                <!-- Overlay play button -->
                 <div class="overlay-play" style="
                     position:absolute;
                     top:10px;
@@ -1700,26 +1702,42 @@ function getOutput(item, i) {
 }
 
 // --- Popup show/hide ---
-$("#showPopupbutto").click(function() {
-    $("#popupContainer").show();
-});
-$("#closePopup").click(function() {
-    $("#popupContainer").hide();
-});
+$("#showPopupbutto").click(function() { $("#popupContainer").show(); });
+$("#closePopup").click(function() { $("#popupContainer").hide(); });
 
-// --- Play video only on overlay click ---
+// --- Play video on overlay click ---
 $(document).on('click', '.overlay-play', function(e) {
     e.stopPropagation(); // Prevent triggering loadSong
     let listItem = $(this).closest('.list');
     let videoId = listItem.attr('vid');
 
-    // Replace thumbnail image with iframe
-    let thumb = listItem.find('.video-thumbnail');
-    let iframe = `<iframe width="100%" height="${thumb.height()}" src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" 
-                    frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-    thumb.replaceWith(iframe);
-});
+    // --- Pause all audios ---
+    document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
 
+    // --- If another video is already playing, restore its thumbnail ---
+    if (currentVideoListItem && currentVideoListItem[0] !== listItem[0]) {
+        let prevVideoId = currentVideoListItem.attr('vid');
+        let prevThumbUrl = currentVideoListItem.find('.video-thumbnail').attr('data-thumb') || 'https://example.com/default-thumbnail.jpg';
+        
+        // Restore thumbnail if iframe exists
+        currentVideoListItem.find('iframe').replaceWith(
+            `<img src="${prevThumbUrl}" alt="Video" class="video-thumbnail" vid="${prevVideoId}" style="width:100%;">`
+        );
+    }
+
+    // --- Replace thumbnail with video iframe ---
+    let thumb = listItem.find('.video-thumbnail');
+    if (thumb.length) {
+        // Save thumbnail URL in data attribute in case we need to restore later
+        thumb.attr('data-thumb', thumb.attr('src'));
+        let iframe = `<iframe width="100%" height="${thumb.height()}" src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" 
+                        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+        thumb.replaceWith(iframe);
+    }
+
+    // Track current playing video
+    currentVideoListItem = listItem;
+});
 
 	
 	
