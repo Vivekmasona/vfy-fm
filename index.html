@@ -940,6 +940,44 @@ border-radius: 15px;
     background-color:#ffff00;
 }
 
+
+
+
+.video-play-button {
+    position: absolute;
+    top: 50%;  /* center vertically */
+    left: 50%; /* center horizontally */
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 165, 0, 0.8); /* orange glow */
+    border-radius: 50%;
+    padding: 20px;
+    cursor: pointer;
+    z-index: 15;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: transform 0.2s, background 0.2s;
+}
+
+.video-play-button:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+    background: rgba(255, 165, 0, 1);
+}
+
+.video-play-button img {
+    width: 50px;   /* logo size */
+    height: 50px;
+    margin-right: 10px;
+}
+
+.video-play-button i {
+    font-size: 28px;
+    color: #fff;
+}
+
+
+
 		
 </style>
 	
@@ -1623,6 +1661,7 @@ function paginate(direction) {
     fetchResults(apiUrl);
 }
 
+
 function getOutput(item, i) {
     var id = item.id?.videoId || item.id;
     var title = item.snippet?.title || "No title";
@@ -1634,16 +1673,18 @@ function getOutput(item, i) {
         <b index="${i}" class="list" vid="${id}" style="position:relative;">
             <div class="video">
                 <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
-                <div class="thumbnail-wrapper" 
-                     onmousedown="startPress(this, '${id}')" 
-                     onmouseup="cancelPress(this)" 
-                     onmouseleave="cancelPress(this)"
-                     ontouchstart="startPress(this, '${id}')" 
-                     ontouchend="cancelPress(this)">
+                
+                <div style="position:relative;">
                     <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" onclick="loadSong(this)" index="${i}" vid="${id}">
+
+                    <!-- Big play button centered over logo -->
+                    <div class="video-play-button" onclick="playVideoStopAudio(this, '${id}')">
+                        <img src="img/logo.png" alt="play-logo">
+                        <i class="fas fa-play"></i>
+                    </div>
                 </div>
+
                 <section>
-                    <img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">
                     <div>
                         <p>V F Y ${title}</p>
                     </div>
@@ -1652,25 +1693,14 @@ function getOutput(item, i) {
         </b>`;
 }
 
-// Long-press logic
-const pressTimers = new WeakMap();
+// Function to stop audio and play video
+function playVideoStopAudio(button, videoId) {
+    // Stop audio if you have a global audio player
+    if (window.audioPlayer && !window.audioPlayer.paused) {
+        window.audioPlayer.pause();
+    }
 
-function startPress(element, videoId) {
-    // Set timer for 600ms
-    const timer = setTimeout(() => {
-        playVideo(element, videoId);
-    }, 600);
-    pressTimers.set(element, timer);
-}
-
-function cancelPress(element) {
-    const timer = pressTimers.get(element);
-    if (timer) clearTimeout(timer);
-    pressTimers.delete(element);
-}
-
-// Play video in-place
-function playVideo(wrapper, videoId) {
+    const wrapper = button.parentElement;
     const iframe = document.createElement('iframe');
     iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
     iframe.width = '100%';
@@ -1691,7 +1721,6 @@ $("#showPopupbutto").click(function() {
 $("#closePopup").click(function() {
     $("#popupContainer").hide();
 });
-
 
 
 
