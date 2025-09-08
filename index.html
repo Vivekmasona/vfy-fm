@@ -1853,6 +1853,34 @@ function hideMiniPlayer() {
     isMiniPlayer = false;
 }
 
+
+let miniPlayerContainer = document.getElementById("miniPlayer");
+
+// Scroll event
+window.addEventListener("scroll", () => {
+    if (!currentVideoListItem) return;
+
+    let rect = currentVideoListItem[0].getBoundingClientRect();
+    let wrapper = currentVideoListItem.find(".yt-wrapper");
+
+    if (rect.bottom < 0 || rect.top > window.innerHeight) {
+        // Video list se bahar → move to miniPlayer
+        if (wrapper.length && miniPlayerContainer.childElementCount === 0) {
+            miniPlayerContainer.appendChild(wrapper[0]);
+            miniPlayerContainer.style.display = "block";
+        }
+    } else {
+        // Video list me visible → move back to original position
+        if (wrapper.length && miniPlayerContainer.contains(wrapper[0])) {
+            currentVideoListItem[0].appendChild(wrapper[0]);
+            miniPlayerContainer.style.display = "none";
+        }
+    }
+});
+
+
+
+	
 // --- YouTube API setup ---
 function onYtReady() {
     updateYtSeek();
