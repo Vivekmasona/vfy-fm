@@ -1659,10 +1659,13 @@ function getOutput(item, i) {
 
     if (item.snippet?.liveBroadcastContent === "live") return '';
 
-    // Store original thumbnail HTML in data attribute
+    // Store original thumbnail HTML with all data attributes
     const originalHTML = `
-        <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" onclick="loadSong(this)" index="${i}" vid="${id}">
-        <i class="fas fa-play-circle video-play-button" onclick="playVideoStopAudio(this, '${id}')"></i>
+        <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" 
+             onclick="loadSong(this)" 
+             data-index="${i}" data-vid="${id}" data-title="${title}" data-thumb="${thumbUrl}">
+        <i class="fas fa-play-circle video-play-button" 
+           onclick="playVideoStopAudio(this, '${id}')"></i>
     `;
 
     return `
@@ -1676,7 +1679,7 @@ function getOutput(item, i) {
 
                 <section>
                     <div>
-                        <p>V F Y ${title}</p>
+                        <p class="video-title">${title}</p>
                     </div>
                 </section>
             </div>
@@ -1701,21 +1704,32 @@ function playVideoStopAudio(button, videoId) {
     wrapper.appendChild(iframe);
 }
 
-// Load song function (restore thumbnail if needed)
+// Load song function (restore thumbnail and play audio)
 function loadSong(element) {
-    // Stop video iframe if exists
     const wrapper = element.closest('.thumbnail-wrapper');
     const originalHTML = wrapper.getAttribute('data-original');
+
     if (wrapper && originalHTML) {
         wrapper.innerHTML = originalHTML;
-    }
 
-    // Your existing audio loading logic here
-    const audioId = element.getAttribute('vid');
-    const audioUrl = element.getAttribute('data-audio-url'); // replace with your source
-    if (window.audioPlayer) {
-        window.audioPlayer.src = audioUrl;
-        window.audioPlayer.play();
+        // After restoring, get data attributes
+        const img = wrapper.querySelector('img.video-thumbnail');
+        const title = img.dataset.title;
+        const index = img.dataset.index;
+        const vid = img.dataset.vid;
+        const thumb = img.dataset.thumb;
+
+        console.log("Audio selected:", title, index, vid);
+
+        // Stop video if still present (redundant)
+        document.querySelectorAll("iframe").forEach(frame => frame.remove());
+
+        // Load audio
+        const audioUrl = img.getAttribute('data-audio-url'); // your audio source URL
+        if (window.audioPlayer) {
+            window.audioPlayer.src = audioUrl;
+            window.audioPlayer.play();
+        }
     }
 }
 
