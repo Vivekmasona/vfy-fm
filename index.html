@@ -1655,9 +1655,7 @@ function paginate(direction) {
 function getOutput(item, i) {
     var id = item.id?.videoId || item.id;
     var title = item.snippet?.title || "No title";
-    var description = item.snippet?.description || "No description";
     var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
-    var channelTitle = item.snippet?.channelTitle || "Unknown channel";
 
     if (item.snippet?.liveBroadcastContent === "live") {
         return '';
@@ -1666,40 +1664,39 @@ function getOutput(item, i) {
     return `
         <b index="${i}" class="list" vid="${id}" style="position:relative;" onclick="loadSong(this)">
             <div class="video" style="position:relative;">
-                <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
-                <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" index="${i}" vid="${id}">
-                
-                <!-- Overlay play button -->
-                <div class="overlay-play" style="
-                    position:absolute;
-                    top:10px;
-                    left:10px;
-                    width:40px;
-                    height:40px;
-                    background:rgba(255,165,0,0.8);
-                    border-radius:50%;
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
-                    cursor:pointer;
-                    z-index:10;
-                ">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-                        <path d="M3 22v-20l18 10-18 10z"/>
-                    </svg>
+                <div class="video-header" style="display:flex; align-items:center; justify-content:space-between;">
+                    <div style="display:flex; align-items:center;">
+                        <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
+                        <p style="margin-left:10px;">V F Y ${title}</p>
+                    </div>
+                    <!-- Overlay play button on right -->
+                    <div class="overlay-play" style="
+                        width:40px;
+                        height:40px;
+                        background:rgba(255,165,0,0.8);
+                        border-radius:50%;
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        cursor:pointer;
+                        z-index:10;
+                    ">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                            <path d="M3 22v-20l18 10-18 10z"/>
+                        </svg>
+                    </div>
                 </div>
 
-                <section>
-                    <img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">
-                    <div>
-                        <p>V F Y ${title}</p>
-                    </div>
-                </section>
+                <!-- Thumbnail (optional, can remove if not needed) -->
+                <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" index="${i}" vid="${id}" style="width:100%; margin-top:5px;">
+
+                <!-- Video iframe container -->
+                <div class="video-player-container" style="margin-top:5px;"></div>
             </div>
         </b>`;
 }
 
-// --- Popup show/hide as in original ---
+// --- Popup show/hide ---
 $("#showPopupbutto").click(function() {
     $("#popupContainer").show();
 });
@@ -1713,12 +1710,12 @@ $(document).on('click', '.overlay-play', function(e) {
     let listItem = $(this).closest('.list');
     let videoId = listItem.attr('vid');
 
-    // Replace video div with iframe
-    let iframe = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" 
+    // Insert iframe below header (title + save icon)
+    let iframe = `<iframe width="100%" height="200" src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" 
                     frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-    listItem.find('.video').html(iframe);
+    listItem.find('.video-player-container').html(iframe);
 });
-	
+
 
 	
 	
