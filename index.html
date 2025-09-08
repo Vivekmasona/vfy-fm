@@ -1653,77 +1653,55 @@ function paginate(direction) {
 
 
 
+function getOutput(item, i) {  
+    var id = item.id?.videoId || item.id;  
+    var title = item.snippet?.title || "No title";  
+    var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';  
 
-function getOutput(item, i) {
-    var id = item.id?.videoId || item.id;
-    var title = item.snippet?.title || "No title";
-    var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
+    if (item.snippet?.liveBroadcastContent === "live") return '';  
 
-    if (item.snippet?.liveBroadcastContent === "live") return '';
-
-    return `
-        <b index="${i}" class="list" vid="${id}" style="position:relative;">
-            <div class="video">
-                <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
-                <div class="thumbnail-wrapper" 
-                     onmousedown="startPress(this, '${id}')" 
-                     onmouseup="cancelPress(this)" 
-                     onmouseleave="cancelPress(this)"
-                     ontouchstart="startPress(this, '${id}')" 
-                     ontouchend="cancelPress(this)">
-                    <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" onclick="loadSong(this)" index="${i}" vid="${id}">
-                </div>
-                <section>
-                    <img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">
-                    <div>
-                        <p>V F Y ${title}</p>
-                    </div>
-                </section>
-            </div>
-        </b>`;
-}
-
-// Long-press logic
-const pressTimers = new WeakMap();
-
-function startPress(element, videoId) {
-    // Set timer for 600ms
-    const timer = setTimeout(() => {
-        playVideo(element, videoId);
-    }, 600);
-    pressTimers.set(element, timer);
-}
-
-function cancelPress(element) {
-    const timer = pressTimers.get(element);
-    if (timer) clearTimeout(timer);
-    pressTimers.delete(element);
-}
-
-// Play video in-place
-function playVideo(wrapper, videoId) {
-    const iframe = document.createElement('iframe');
-    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-    iframe.width = '100%';
-    iframe.height = wrapper.offsetHeight + 'px'; // match thumbnail height
-    iframe.frameBorder = '0';
-    iframe.allow = 'autoplay; encrypted-media';
-    iframe.allowFullscreen = true;
-
-    wrapper.innerHTML = '';
-    wrapper.appendChild(iframe);
-}
-
-// Show/hide popup
-$("#showPopupbutto").click(function() {
-    $("#popupContainer").show();
-});
-
-$("#closePopup").click(function() {
-    $("#popupContainer").hide();
-});
-
+    return `  
+    <!-- Play button top-right -->  
+                    <i class="fas fa-play-circle video-play-button"   
+                       onclick="playVideoStopAudio('${id}')"></i>  
+           
     
+        <b index="${i}" class="list" vid="${id}" style="position:relative;">  
+            <div class="video">  
+                <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>  
+                  
+                <div style="position:relative;">  
+                    <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" onclick="loadSong(this)" index="${i}" vid="${id}">  
+                      
+                         </div>  
+
+                <section>  
+                    <div>  
+                        <p>V F Y ${title}</p>  
+                    </div>  
+                </section>  
+            </div>  
+        </b>`;  
+}  
+
+// Stop all audio and play YouTube video in a separate container
+function playVideoStopAudio(videoId) {  
+    // Stop all audio elements with id SAudio
+    document.querySelectorAll("#SAudio").forEach(audio => audio.pause());  
+
+    const videoContainer = document.getElementById("videoPlayerContainer"); // <- your separate div
+    videoContainer.innerHTML = ''; // clear previous video if any
+
+    const iframe = document.createElement('iframe');  
+    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;  
+    iframe.width = '100%';  
+    iframe.height = '100%';  
+    iframe.frameBorder = '0';  
+    iframe.allow = 'autoplay; encrypted-media';  
+    iframe.allowFullscreen = true;  
+
+    videoContainer.appendChild(iframe);  
+}
 
 	
 	
