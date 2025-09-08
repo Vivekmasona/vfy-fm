@@ -1653,8 +1653,10 @@ function paginate(direction) {
 
 
 
-let currentVideoListItem = null; // Track the currently playing video
+let currentVideoListItem = null; 
+let ytPlayer = null;
 
+// --- Your Output Function ---
 function getOutput(item, i) {
     var id = item.id?.videoId || item.id;
     var title = item.snippet?.title || "No title";
@@ -1665,26 +1667,22 @@ function getOutput(item, i) {
     return `
         <b index="${i}" class="list" vid="${id}" style="position:relative;" onclick="handleAudioClick(this)">
             <div class="video" style="position:relative;">
-                <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
+                <i class="fas fa-heart save-icon" 
+                   onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
 
                 <!-- Thumbnail -->
-                <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" index="${i}" vid="${id}" data-thumb="${thumbUrl}" style="width:100%;">
+                <img src="${thumbUrl}" alt="${title}" 
+                     class="video-thumbnail" index="${i}" vid="${id}" 
+                     data-thumb="${thumbUrl}" style="width:100%;">
 
                 <!-- Overlay play button -->
                 <div class="overlay-play" style="
-                    position:absolute;
-                    top:10px;
-                    right:10px;
-                    width:40px;
-                    height:40px;
+                    position:absolute; top:10px; right:10px;
+                    width:40px; height:40px;
                     background:rgba(255,165,0,0.8);
-                    border-radius:50%;
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
-                    cursor:pointer;
-                    z-index:10;
-                ">
+                    border-radius:50%; display:flex;
+                    align-items:center; justify-content:center;
+                    cursor:pointer; z-index:10;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
                         <path d="M3 22v-20l18 10-18 10z"/>
                     </svg>
@@ -1692,9 +1690,7 @@ function getOutput(item, i) {
 
                 <section>
                     <img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">
-                    <div>
-                        <p>V F Y ${title}</p>
-                    </div>
+                    <div><p>V F Y ${title}</p></div>
                 </section>
             </div>
         </b>`;
@@ -1702,61 +1698,118 @@ function getOutput(item, i) {
 
 // --- Handle audio click ---
 function handleAudioClick(el) {
-    // --- Stop video if playing ---
+    stopVideoIfPlaying();
+    loadSong(el); // your audio player
+}
+
+// --- Stop current video and restore thumbnail ---
+function stopVideoIfPlaying() {
     if (currentVideoListItem) {
-        let iframe = currentVideoListItem.find('iframe');
-        let prevThumbUrl = iframe.data('thumb');
-        if (iframe.length && prevThumbUrl) {
-            iframe.replaceWith(
-                `<img src="${prevThumbUrl}" alt="Video" class="video-thumbnail" style="width:100%;" data-thumb="${prevThumbUrl}">`
+        let iframeWrapper = currentVideoListItem.find('.yt-wrapper');
+        let prevThumbUrl = iframeWrapper.data('thumb');
+        if (iframeWrapper.length && prevThumbUrl) {
+            iframeWrapper.replaceWith(
+                `<img src="${prevThumbUrl}" alt="Video"
+                      class="video-thumbnail" style="width:100%;"
+                      data-thumb="${prevThumbUrl}">`
             );
         }
         currentVideoListItem = null;
+        ytPlayer = null;
     }
-
-    // --- Load audio as usual ---
-    loadSong(el);
 }
 
 // --- Popup show/hide ---
-$("#showPopupbutto").click(function() { $("#popupContainer").show(); });
-$("#closePopup").click(function() { $("#popupContainer").hide(); });
+$("#showPopupbutto").click(() => $("#popupContainer").show());
+$("#closePopup").click(() => $("#popupContainer").hide());
 
 // --- Play video on overlay click ---
 $(document).on('click', '.overlay-play', function(e) {
-    e.stopPropagation(); // Prevent triggering audio load
+    e.stopPropagation();
     let listItem = $(this).closest('.list');
     let videoId = listItem.attr('vid');
 
-    // --- Pause all audio ---
+    // Pause all audios
     document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
 
-    // --- Restore previous video if exists ---
+    // Stop old video
     if (currentVideoListItem && currentVideoListItem[0] !== listItem[0]) {
-        let iframe = currentVideoListItem.find('iframe');
-        let prevThumbUrl = iframe.data('thumb');
-        if (iframe.length && prevThumbUrl) {
-            iframe.replaceWith(
-                `<img src="${prevThumbUrl}" alt="Video" class="video-thumbnail" style="width:100%;" data-thumb="${prevThumbUrl}">`
-            );
-        }
+        stopVideoIfPlaying();
     }
 
-    // --- Replace thumbnail with video iframe ---
+    // Replace thumbnail with custom player wrapper
     let thumb = listItem.find('.video-thumbnail');
     if (thumb.length) {
         let thumbUrl = thumb.attr('src');
-        thumb.attr('data-thumb', thumbUrl); // Save original thumbnail
-        let iframe = $(`<iframe width="100%" height="${thumb.height()}" src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" 
-                        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`);
-        iframe.data('thumb', thumbUrl); // store thumb URL in iframe
-        thumb.replaceWith(iframe);
+        let wrapper = $(`
+            <div class="yt-wrapper" data-thumb="${thumbUrl}" style="position:relative; width:100%;">
+                <div id="yt-player-${videoId}"></div>
+                <!-- Custom Controls -->
+                <div class="custom-controls" style="
+                    position:absolute; bottom:10px; left:0; width:100%;
+                    display:flex; align-items:center; justify-content:center;
+                    gap:10px; background:rgba(0,0,0,0.5); padding:5px;
+                    border-radius:10px;">
+                    <button onclick="ytPlay()" style="background:orange; border:none; border-radius:50%; width:35px; height:35px;">▶️</button>
+                    <button onclick="ytPause()" style="background:orange; border:none; border-radius:50%; width:35px; height:35px;">⏸️</button>
+                    <input type="range" id="ytSeek" value="0" min="0" max="100" style="flex:1;">
+                    <input type="range" id="ytVol" value="100" min="0" max="100" style="width:80px;">
+                </div>
+            </div>
+        `);
+        thumb.replaceWith(wrapper);
+
+        // Load YouTube API player
+        ytPlayer = new YT.Player(`yt-player-${videoId}`, {
+            height: '250',
+            width: '100%',
+            videoId: videoId,
+            playerVars: { autoplay: 1, controls: 0, modestbranding: 1, rel: 0 },
+            events: {
+                'onReady': onYtReady,
+                'onStateChange': onYtStateChange
+            }
+        });
     }
 
     currentVideoListItem = listItem;
 });
 
-	
+// --- YouTube API setup ---
+function onYtReady() {
+    updateYtSeek();
+    document.getElementById("ytVol").addEventListener("input", e => {
+        ytPlayer.setVolume(e.target.value);
+    });
+    document.getElementById("ytSeek").addEventListener("input", e => {
+        let duration = ytPlayer.getDuration();
+        ytPlayer.seekTo((e.target.value / 100) * duration, true);
+    });
+}
+
+function updateYtSeek() {
+    if (ytPlayer && ytPlayer.getDuration) {
+        let duration = ytPlayer.getDuration();
+        let current = ytPlayer.getCurrentTime();
+        if (duration > 0) {
+            document.getElementById("ytSeek").value = (current / duration) * 100;
+        }
+    }
+    setTimeout(updateYtSeek, 1000);
+}
+
+function ytPlay() { ytPlayer && ytPlayer.playVideo(); }
+function ytPause() { ytPlayer && ytPlayer.pauseVideo(); }
+function onYtStateChange(event) {
+    if (event.data == YT.PlayerState.ENDED) {
+        stopVideoIfPlaying();
+    }
+}
+
+// --- Load YouTube API ---
+let tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+document.body.appendChild(tag);	
 
                 
 	
