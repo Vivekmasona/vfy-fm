@@ -1292,7 +1292,21 @@ border-radius: 15px;
 <a href="#" id="vivekmasona" class="float1"></a>
 </vfy>
 
-
+<style>
+/* Mini Player Mode */
+.mini-player {
+  position: fixed !important;
+  bottom: 80px;
+  right: 20px;
+  width: 50% !important;
+  height: auto !important;
+  z-index: 9999;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+</style>
 	  
 <style>
         body {
@@ -1657,7 +1671,7 @@ let currentVideoListItem = null;
 let ytPlayer = null;
 let isPlaying = false;
 
-// --- Your Output Function ---
+// --- Output Function ---
 function getOutput(item, i) {
     var id = item.id?.videoId || item.id;
     var title = item.snippet?.title || "No title";
@@ -1842,10 +1856,25 @@ function onYtStateChange(event) {
     }
 }
 
+// --- Mini-player on Scroll ---
+window.addEventListener("scroll", function() {
+    if (currentVideoListItem) {
+        let wrapper = currentVideoListItem.find(".yt-wrapper");
+        if (!wrapper.length) return;
+
+        if (window.scrollY > 200) {
+            wrapper.addClass("mini-player");
+        } else {
+            wrapper.removeClass("mini-player");
+        }
+    }
+});
+
 // --- Load YouTube API ---
 let tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
-document.body.appendChild(tag);	
+document.body.appendChild(tag);
+
 
                 
 	
