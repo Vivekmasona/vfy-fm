@@ -74,13 +74,6 @@ if (window !== window.top) {
 
 
 
-
-
-
-
-	
-
-
 	
         /* Global CSS jo har alert ko stylish banayega */
         body::after {
@@ -118,7 +111,6 @@ if (window !== window.top) {
             opacity: 1;
         }
     </style>
-<style>
 
     
     <b onclick="alert('This is a stylish alert!')"></b>
@@ -903,8 +895,9 @@ border-radius: 15px;
     font-size: 28px;
     color: #E74C3C;
     background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(15px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+         
     border-radius: 10%;
     padding: 5px;
     cursor: pointer;
@@ -915,7 +908,6 @@ border-radius: 15px;
 .save-icon:hover {
     color: #ffff00;
 }
-
 
 .video-thumbnail {
     width: 100%;
@@ -1631,7 +1623,6 @@ function paginate(direction) {
     fetchResults(apiUrl);
 }
 
-
 function getOutput(item, i) {
     var id = item.id?.videoId || item.id;
     var title = item.snippet?.title || "No title";
@@ -1648,47 +1639,26 @@ function getOutput(item, i) {
         <b onclick="loadSong(this)" index="${i}" class="list" vid="${id}" style="position:relative;">
             <div class="video">
                 <i class="fas fa-heart save-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
-                <div style="position:relative;">
-                    <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" onclick="loadSong(this)" index="${i}" vid="${id}">
-                    <!-- Play icon only plays video, does NOT trigger loadSong -->
-                    <i class="fas fa-play-circle play-icon" onclick="event.stopPropagation(); playVideo(this, '${id}')"></i>
-                </div>
+                <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" onclick="loadSong(this)" index="${i}" vid="${id}">
                 <section>
                     <img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">
                     <div>
                         <p>V F Y ${title}</p>
-                    </div>
+                         </div>
                 </section>
             </div>
         </b>`;
 }
 
-// Play video function (only plays video, does not select song)
-function playVideo(button, videoId) {
-    const wrapper = button.parentElement;
-    const iframe = document.createElement('iframe');
-    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-    iframe.width = '100%';
-    iframe.height = '200'; // adjust if needed
-    iframe.frameBorder = '0';
-    iframe.allow = 'autoplay; encrypted-media';
-    iframe.allowFullscreen = true;
-
-    // Replace thumbnail only
-    wrapper.innerHTML = '';
-    wrapper.appendChild(iframe);
-}
-
-// Show the popup when a button is clicked
+// Show the popup when a butto is clicked
 $("#showPopupbutto").click(function() {
     $("#popupContainer").show();
 });
 
-// Close the popup when the close button is clicked
+// Close the popup when the close butto is clicked
 $("#closePopup").click(function() {
     $("#popupContainer").hide();
 });
-	
 	
 	
 function loadSong(song, ind) {
@@ -5102,10 +5072,10 @@ document.getElementById('search-btn').addEventListener('click', function() {
     <div class="small-popup">
         <div class="custom-radio">
             <input type="radio" id="self" name="apiSelection" value="self">
-            <label for="self">VfY</label>
+            <label for="self">VFY API</label>
 
             <input type="radio" id="youtube" name="apiSelection" value="youtube">
-            <label for="youtube">Youtube</label>
+            <label for="youtube">YT V3 API</label>
         </div>
     </div>
     <button class="close-btn" onclick="closePopup()">Close</button>
@@ -5302,7 +5272,10 @@ document.getElementById('search-btn').addEventListener('click', function() {
             
           
         </div>
-        
+        <div class="menu-item" onclick="showDetail()">
+            <i class="fas fa-info-circle"></i>
+            
+        </div>
 
 
   <div class="menu-item" onclick="showDetail()">
@@ -5387,11 +5360,11 @@ document.getElementById('search-btn').addEventListener('click', function() {
   function showDetail() {
     const currentDate = new Date().toLocaleDateString();
     const lines = [
-      `<span class="dot"></span><span class="highlight">VIVEK</span>`,
+      `<span class="dot"></span><span class="highlight">DEV VIVEK</span>`,
       `App Version: <b>2.0</b>`,
-      `Server: <b>vivekfy</b>`,
-      `API: <b>2 api</b> (VFY, YOUTUBE)`,
-      `Backend API: <b>6 APIs</b> `,
+      `Server: <b>Free type</b>`,
+      `API: <b>2 api</b> (1 self, 1 YouTube v3)`,
+      `Backend API: <b>6 APIs</b> for songs`,
       `Date: <b>${currentDate}</b>`
     ];
 
