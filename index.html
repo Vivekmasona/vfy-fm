@@ -1681,12 +1681,10 @@ function getOutput(item, i) {
         </b>`;
 }
 
-// Function to stop audio and play video
+// Stop all audio and play YouTube video
 function playVideoStopAudio(button, videoId) {
-    // Stop any existing audio
-    if (window.audioPlayer && !window.audioPlayer.paused) {
-        window.audioPlayer.pause();
-    }
+    // Stop all audio elements with id SAudio
+    document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
 
     const wrapper = button.parentElement;
     const iframe = document.createElement('iframe');
@@ -1708,7 +1706,7 @@ $("#showPopupbutto").click(function() {
 
 $("#closePopup").click(function() {
     $("#popupContainer").hide();
-});	
+});
 
 
 
