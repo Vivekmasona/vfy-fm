@@ -1654,7 +1654,6 @@ function paginate(direction) {
 
 
 
-
 function getOutput(item, i) {
     var id = item.id?.videoId || item.id;
     var title = item.snippet?.title || "No title";
@@ -1670,7 +1669,7 @@ function getOutput(item, i) {
                 <div style="position:relative;">
                     <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" onclick="loadSong(this)" index="${i}" vid="${id}">
                     
-                    <!-- Play button top-right -->
+                    <!-- Video play button top-right -->
                     <i class="fas fa-play-circle video-play-button" 
                        onclick="playVideoSeparate(this, '${id}')"></i>
                 </div>
@@ -1684,7 +1683,7 @@ function getOutput(item, i) {
         </b>`;
 }
 
-// ORIGINAL FUNCTION (audio stop + video play)
+// ORIGINAL AUDIO FUNCTION
 function playVideoStopAudio(button, videoId) {
     document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
 
@@ -1701,9 +1700,9 @@ function playVideoStopAudio(button, videoId) {
     wrapper.appendChild(iframe);
 }
 
-// NEW SEPARATE VIDEO FUNCTION (looks the same, but separate code)
+// NEW SEPARATE VIDEO FUNCTION
 function playVideoSeparate(button, videoId) {
-    // Stop all audio
+    // Stop all audio first
     document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
 
     const wrapper = button.parentElement;
@@ -1727,9 +1726,8 @@ $("#showPopupbutto").click(function() {
 $("#closePopup").click(function() {
     $("#popupContainer").hide();
 });
-	
 
-
+    
 
 	
 	
