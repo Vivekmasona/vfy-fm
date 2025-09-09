@@ -3873,22 +3873,23 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 
 
 <style>
-  /* Modal container - bottom-up style */
+  /* Modal container - bottom-up responsive style */
 .modal-container1 {
     display: none; /* Hidden by default */
     position: fixed;
     bottom: 0; /* Start from bottom */
     left: 0;
     width: 100%;
-    height: 60%; /* Cover only 60% from bottom */
-    background: rgb(59,175,194);
+    height: 60vh; /* 60% of viewport height */
     background: radial-gradient(circle, rgba(59,175,194,0.95) 0%, rgba(133,137,139,0.97) 0%, rgba(52,50,48,0.998) 60%, rgba(0,0,0,1) 100%);
     z-index: 999999;
-    border-top-left-radius: 20px; /* Optional rounded top corners */
+    border-top-left-radius: 20px;
     border-top-right-radius: 20px;
     box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
-    overflow: hidden; /* content stay inside */
-    animation: slideUp 0.5s ease forwards; /* optional slide-up effect */
+    overflow: hidden;
+    animation: slideUp 0.5s ease forwards;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Optional slide-up animation */
@@ -3897,7 +3898,7 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
     100% { transform: translateY(0); opacity: 1; }
 }
 
-/* Modal content */
+/* Modal content responsive */
 .modal-content1 {
     background-color: transparent;
     width: 100%;
@@ -3906,7 +3907,29 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
     text-align: center;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* Content starts from top inside modal */
+    justify-content: flex-start;
+    align-items: center;
+    overflow-y: auto; /* Scroll if content exceeds height */
+    box-sizing: border-box;
+}
+
+/* Optional: scrollbar styling */
+.modal-content1::-webkit-scrollbar {
+    width: 6px;
+}
+.modal-content1::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 3px;
+}
+.modal-content1::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Responsive text & elements inside modal */
+.modal-content1 * {
+    max-width: 95%;
+    margin: 5px 0;
+    word-wrap: break-word;
 }
 </style>
 
