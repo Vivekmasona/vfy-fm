@@ -190,198 +190,176 @@ if (window !== window.top) {
 <style>
 
  
+@import url('https://fonts.googleapis.com/css2?family=Khula:wght@400;600;700&family=Public+Sans:wght@100;300;400;600&display=swap');
 
-  @import url('https://fonts.googleapis.com/css2?family=Khula:wght@400;600;700&family=Public+Sans:wght@100;300;400;600&display=swap');    
-
-body {    
-  margin: 0;    
-  padding: 0;    
-  font-family: "Public Sans", sans-serif;    
-  background: radial-gradient(circle at top, #1e1c2a, #0d0b12 80%);    
-  color: #fff;    
-  display: flex;    
-  justify-content: center;    
-  align-items: center;    
-  min-height: 100vh;    
-}    
-
-.container {    
-  width: 95%; /* full width for responsiveness */  
-  max-width: 600px;    
-  padding: 20px;    
-  box-sizing: border-box;    
-}    
-
-#phone {    
-  background: rgba(255, 255, 255, 0.05);    
-  backdrop-filter: blur(15px);    
-  border-radius: 30px;    
-  padding: 20px;    
-  box-shadow: 0 25px 50px rgba(0,0,0,0.4);    
-  overflow: hidden;    
-  width: 100%; /* full container width */  
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Public Sans", sans-serif;
+  background: radial-gradient(circle at top, #1e1c2a, #0d0b12 80%);
+  color: #fff;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-}    
-
-/* 🔝 Top Menu */    
-#top-menu {    
-  display: flex;    
-  justify-content: space-between;    
-  align-items: center;    
-  font-size: .8rem;    
-  letter-spacing: 1px;    
-  margin-bottom: 20px;    
-  color: #ff4c6a;    
-  width: 100%;    
-}    
-
-/* 🎵 Thumbnail */    
-.thumbnail-border {    
-  height: 200px;    
-  width: 200px;    
-  margin: 20px auto;    
-  border-radius: 50%;    
-  padding: 5px;    
-  background: linear-gradient(135deg, #ff4c6a, #ff9671, #ffc75f);    
-  display: flex;    
-  justify-content: center;    
-  align-items: center;    
-  box-shadow: 0 12px 30px rgba(255,76,106,0.3);    
-}    
-
-.thumbnail-border img {    
-  height: 100%;    
-  width: 100%;    
-  border-radius: 50%;    
-  object-fit: cover;    
-  box-shadow: inset 0 0 20px rgba(255,255,255,0.2);    
-}    
-
-/* 🎶 Song details */    
-#song-details {    
-  text-align: center;    
-  margin-top: 15px;    
-  width: 100%;    
-}    
-
-.song-title {    
-  font-size: 1.4rem;    
-  font-weight: 600;    
-  color: #fff;    
-  text-shadow: 0 2px 10px rgba(0,0,0,0.5);    
-}    
-
-.artist {    
-  font-size: 1rem;    
-  color: #aaa;    
-}    
-
-/***** 📊 Time Slider *****/    
-#time-slider {    
-  margin: 20px 0 10px 0;    
-  width: 100%;    
-}    
-
-.slider {    
-  -webkit-appearance: none;    
-  width: 100%;    
-  height: 8px;    
-  border-radius: 5px;    
-  background: linear-gradient(90deg, #ff4c6a, #ffc75f);    
-  outline: none;    
-  cursor: pointer;    
-}    
-
-.slider::-webkit-slider-thumb {    
-  -webkit-appearance: none;    
-  width: 18px;    
-  height: 18px;    
-  border-radius: 50%;    
-  background: #fff;    
-  border: 2px solid #ff4c6a;    
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);    
-  cursor: pointer;    
-}    
-
-.slider-times {    
-  font-size: 0.7rem;    
-  display: flex;    
-  justify-content: space-between;    
-  color: #ccc;    
-  margin-top: 5px;    
-}    
-
-/* 🎛 Controls */    
-#song-controls {    
-  display: flex;    
-  justify-content: space-around;    
-  align-items: center;    
-  margin-top: 25px;    
-  width: 100%;    
-}    
-
-#song-controls .button {    
-  flex: 1;    
-  max-width: 70px;    
-  height: 60px;    
-  margin: 0 5px;    
-  border-radius: 20px;    
-  background: rgba(255,255,255,0.1);    
-  backdrop-filter: blur(10px);    
-  display: flex;    
-  justify-content: center;    
-  align-items: center;    
-  color: #ff4c6a;    
-  font-size: 1.4rem;    
-  cursor: pointer;    
-  transition: all 0.3s ease-in-out;    
-  box-shadow: 0 6px 15px rgba(0,0,0,0.3);    
-}    
-
-#song-controls .button:hover {    
-  background: linear-gradient(135deg, #ff4c6a, #ff9671);    
-  color: #fff;    
-  transform: scale(1.1);    
-  box-shadow: 0 10px 25px rgba(255,76,106,0.4);    
-}    
-
-/* 🔊 Volume */    
-#volumeSliderContainer {    
-  margin-top: 20px;    
-  width: 100%;    
-}    
-
-#volumeSlider {    
-  -webkit-appearance: none;    
-  width: 100%;    
-  height: 6px;    
-  border-radius: 5px;    
-  background: linear-gradient(90deg, #ff4c6a, #ffc75f);    
-  outline: none;    
-}    
-
-#volumeSlider::-webkit-slider-thumb {    
-  -webkit-appearance: none;    
-  width: 14px;    
-  height: 14px;    
-  border-radius: 50%;    
-  background: #fff;    
-  border: 2px solid #ff4c6a;    
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);    
-  cursor: pointer;    
-}    
-
-/* Responsive */    
-@media (max-width: 500px) {    
-  .thumbnail-border { height: 150px; width: 150px; }    
-  .song-title { font-size: 1.1rem; }    
-  #song-controls .button { max-width: 50px; height: 50px; font-size: 1.2rem; }    
-  .slider { height: 6px; }    
-  #volumeSlider { height: 5px; }    
+  height: 100vh;
 }
-  
+
+.container {
+  width: 100%;
+  max-width: 420px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+#phone {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  border-radius: 30px;
+  padding: 20px;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+  overflow: hidden;
+}
+
+/* 🔝 Top Menu */
+#top-menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: .8rem;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+  color: #ff4c6a;
+}
+
+/* 🎵 Thumbnail */
+.thumbnail-border {
+  height: 200px;
+  width: 200px;
+  margin: 20px auto;
+  border-radius: 50%;
+  padding: 5px;
+  background: linear-gradient(135deg, #ff4c6a, #ff9671, #ffc75f);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 12px 30px rgba(255,76,106,0.3);
+}
+
+.thumbnail-border img {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: inset 0 0 20px rgba(255,255,255,0.2);
+}
+
+/* 🎶 Song details */
+#song-details {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.song-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.artist {
+  font-size: 0.9rem;
+  color: #aaa;
+}
+
+/* 📊 Time slider */
+#time-slider {
+  margin: 20px 0 10px 0;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #ff4c6a, #ffc75f);
+  outline: none;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #ff4c6a;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  cursor: pointer;
+}
+
+.slider-times {
+  font-size: 0.7rem;
+  display: flex;
+  justify-content: space-between;
+  color: #ccc;
+  margin-top: 5px;
+}
+
+/* 🎛 Controls */
+#song-controls {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 25px;
+}
+
+#song-controls .button {
+  height: 60px;
+  width: 60px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ff4c6a;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+}
+
+#song-controls .button:hover {
+  background: linear-gradient(135deg, #ff4c6a, #ff9671);
+  color: #fff;
+  transform: scale(1.1);
+  box-shadow: 0 10px 25px rgba(255,76,106,0.4);
+}
+
+/* 🔊 Volume */
+#volumeSliderContainer {
+  margin-top: 20px;
+}
+
+#volumeSlider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #ff4c6a, #ffc75f);
+  outline: none;
+}
+
+#volumeSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #ff4c6a;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  cursor: pointer;
+}
          
 
 
@@ -3873,55 +3851,28 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 
 
 <style>
-  
-/* Modal container - hidden by default */
-.modal-container1 {
-    display: none; /* Hidden initially */
+  /* Styling for the modal container */
+  .modal-container1 {
+    display: none;
     position: fixed;
-    bottom: 0; /* Bottom-up modal */
-    left: 0;
-    width: 100%;
-    height: 60vh; /* 60% of viewport height */
-    background: radial-gradient(circle, rgba(59,175,194,0.95) 0%, rgba(133,137,139,0.97) 0%, rgba(52,50,48,0.998) 60%, rgba(0,0,0,1) 100%);
-    z-index: 999999;
-    border-top-left-radius: 0;  /* No border gaps */
-    border-top-right-radius: 0;
-    box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* Center content vertically */
-    align-items: center; /* Center content horizontally */
-    overflow: hidden; /* Content fits inside, no scroll */
-    animation: slideUp 0.4s ease forwards;
-}
-
-/* Slide-up animation */
-@keyframes slideUp {
-    0% { transform: translateY(100%); opacity: 0; }
-    100% { transform: translateY(0); opacity: 1; }
-}
-
-/* Modal content fully responsive and fit */
-.modal-content1 {
-    width: 100%;
+    top: 0;
+    left: -20px;
+    width: 110%;
     height: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* Content vertically centered */
-    align-items: center; /* Content horizontally centered */
-}
+    background: rgb(59,175,194);
+background: radial-gradient(circle, rgba(59,175,194,0.9557312232860621) 0%, rgba(133,137,139,0.9702766750169837) 0%, rgba(52,50,48,0.9981027630792147) 60%, rgba(0,0,0,1) 84%);	
+	
+	z-index: 999999;
+  }
 
-/* Ensure all inner elements scale properly */
-.modal-content1 * {
-    max-width: 100%;
-    max-height: 100%;
-    margin: 5px 0;
-    word-wrap: break-word;
-    flex-shrink: 1; /* Shrinks if needed to fit modal */
-}
+  /* Styling for the modal content */
+  .modal-content1 {
+    background-color: transparent;
+    width: 100%;
+    top: 0%;
+    padding: 20px;
+    text-align: center;
+  }
 </style>
 
 
