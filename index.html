@@ -3420,37 +3420,67 @@ var offlineMsg = document.getElementById("offline-message");
 
 
 <style>
-    @keyframes shake {
-        0% { transform: translateX(0); }
-        20% { transform: translateX(-10px); }
-        40% { transform: translateX(10px); }
-        60% { transform: translateX(-10px); }
-        80% { transform: translateX(10px); }
-        100% { transform: translateX(0); }
-    }
+    /* Shake animation for button click (optional) */
+@keyframes shake {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-10px); }
+    40% { transform: translateX(10px); }
+    60% { transform: translateX(-10px); }
+    80% { transform: translateX(10px); }
+    100% { transform: translateX(0); }
+}
 
-    .download-popup-button {
-        position: fixed;
-        bottom: 15%;
-        right: 6%;
-        background: #E74C3C; /* Change download button background color */
-        color: white;
-        padding: 10px;
-        border: none;
-        cursor: pointer;
-        border-radius: 50%; /* Make button round */
-        z-index: 9999;
-    }
+/* Spin animation for icons */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 
-    .download-popup-button a {
-        text-decoration: none;
-        color: white;
-        font-size: 30px; /* Adjust font size of the download icon */
-    }
+/* Download button style */
+.download-popup-button {
+    position: fixed;
+    bottom: 15%;
+    right: 6%;
+    background: #E74C3C; 
+    color: white;
+    width: 60px;
+    height: 60px;
+    border: none;
+    cursor: pointer;
+    border-radius: 50%; 
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+}
 
-    .shake {
-        animation: shake 0.5s;
-    }
+/* Button icon inside */
+.download-popup-button a {
+    text-decoration: none;
+    color: white;
+}
+
+/* Wrapper for spinning icons around button */
+.icon-wrapper {
+    position: fixed;
+    bottom: 15%;
+    right: 6%;
+    width: 60px;
+    height: 60px;
+    pointer-events: none;
+}
+
+/* Each spinning icon */
+.icon-wrapper svg {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    transform-origin: -50% -50%;
+    animation: spin 1s linear infinite;
+}
 </style>
 
             
