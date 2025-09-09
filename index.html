@@ -23,7 +23,101 @@
 <link rel="stylesheet" href="connect/player.css" />
   <script src="connect/player.js" defer></script>
 
+<script>
+(function() {
+  // Create loader container
+  const loader = document.createElement('div');
+  loader.id = 'loader';
+  document.body.appendChild(loader);
 
+  // Style loader container
+  Object.assign(loader.style, {
+    position: 'fixed',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    color: '#00FFAA',
+    fontFamily: 'monospace',
+    fontSize: '22px',
+    textAlign: 'center',
+    lineHeight: '1.5',
+    zIndex: '9999',
+    userSelect: 'none'
+  });
+
+  // Create text span
+  const text = document.createElement('span');
+  loader.appendChild(text);
+
+  // Create cursor span
+  const cursor = document.createElement('span');
+  cursor.textContent = '|';
+  loader.appendChild(cursor);
+
+  // Cursor blink
+  cursor.style.display = 'inline-block';
+  cursor.style.marginLeft = '2px';
+  setInterval(() => {
+    cursor.style.opacity = (cursor.style.opacity === '0' ? '1' : '0');
+  }, 600);
+
+  // Fake code lines
+  const fakeLines = [
+    "Initializing core modules...",
+    "Loading assets...",
+    "Fetching remote data...",
+    "Compiling main.js...",
+    "Optimizing UI components...",
+    "Connecting to server...",
+    "Authenticating user: Vivek Masona",
+    "Injecting dependencies...",
+    "Applying configuration...",
+    "Running security checks...",
+    "Cache cleared successfully",
+    "Finalizing startup sequence...",
+    "Ready to launch! Vivek Masona"
+  ];
+
+  let lineIndex = 0;
+  let charIndex = 0;
+
+  function typeLine() {
+    if(lineIndex >= fakeLines.length) lineIndex = 0;
+    const currentLine = fakeLines[lineIndex];
+
+    if(charIndex < currentLine.length) {
+      text.textContent += currentLine.charAt(charIndex);
+      charIndex++;
+      setTimeout(typeLine, 50 + Math.random() * 50);
+    } else {
+      setTimeout(deleteLine, 800);
+    }
+  }
+
+  function deleteLine() {
+    if(charIndex > 0) {
+      text.textContent = text.textContent.slice(0, -1);
+      charIndex--;
+      setTimeout(deleteLine, 20 + Math.random() * 30);
+    } else {
+      lineIndex++;
+      setTimeout(typeLine, 300);
+    }
+  }
+
+  // Start typing
+  typeLine();
+
+  // Hide loader on page load
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      loader.style.transition = 'opacity 0.8s ease';
+      loader.style.opacity = '0';
+      setTimeout(() => loader.remove(), 900);
+    }, 500);
+  });
+})();
+</script>
     
     <script>
 // App ke load hone ke baad ek state push karte hain
