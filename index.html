@@ -1330,23 +1330,40 @@ display: flex;
 }
 
 .play-button {
-color:#FF5733;
-font-size: 40px;
-    width: 15%;
-    display: flex;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
+  position: relative;
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center;     /* Center vertically */
+  width: 80px;             /* Button ka width */
+  height: 80px;            /* Button ka height */
+  border-radius: 50%;      /* Circular button */
+  cursor: pointer;
+  overflow: hidden;
+  background: transparent; /* Button background transparent */
 }
 
+/* Icon & text ek hi jagah */
 .play-button i {
-color:#FF5733;
-    font-size: 40px;
-    padding: 15px;
-    position: relative;
-    z-index: 2;
+  color: #FF5733;
+  font-size: 40px;
+  z-index: 2;
+  position: relative;
 }
 
+/* Glossy blur background */
+.play-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.3); /* semi-transparent white */
+  backdrop-filter: blur(8px);            /* blur effect */
+  border-radius: 50%;                     /* same as button */
+  z-index: 1;
+  pointer-events: none;                   /* click pass through */
+}
 
 
 
