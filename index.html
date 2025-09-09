@@ -3851,28 +3851,41 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 
 
 <style>
-  /* Styling for the modal container */
-  .modal-container1 {
-    display: none;
+  /* Modal container - bottom-up style */
+.modal-container1 {
+    display: none; /* Hidden by default */
     position: fixed;
-    top: 0;
-    left: -20px;
-    width: 110%;
-    height: 100%;
+    bottom: 0; /* Start from bottom */
+    left: 0;
+    width: 100%;
+    height: 60%; /* Cover only 60% from bottom */
     background: rgb(59,175,194);
-background: radial-gradient(circle, rgba(59,175,194,0.9557312232860621) 0%, rgba(133,137,139,0.9702766750169837) 0%, rgba(52,50,48,0.9981027630792147) 60%, rgba(0,0,0,1) 84%);	
-	
-	z-index: 999999;
-  }
+    background: radial-gradient(circle, rgba(59,175,194,0.95) 0%, rgba(133,137,139,0.97) 0%, rgba(52,50,48,0.998) 60%, rgba(0,0,0,1) 100%);
+    z-index: 999999;
+    border-top-left-radius: 20px; /* Optional rounded top corners */
+    border-top-right-radius: 20px;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+    overflow: hidden; /* content stay inside */
+    animation: slideUp 0.5s ease forwards; /* optional slide-up effect */
+}
 
-  /* Styling for the modal content */
-  .modal-content1 {
+/* Optional slide-up animation */
+@keyframes slideUp {
+    0% { transform: translateY(100%); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+/* Modal content */
+.modal-content1 {
     background-color: transparent;
     width: 100%;
-    top: 0%;
+    height: 100%;
     padding: 20px;
     text-align: center;
-  }
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Content starts from top inside modal */
+}
 </style>
 
 
