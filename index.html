@@ -1654,10 +1654,7 @@ function paginate(direction) {
 
 
 
-                
-
-
-        let currentVideoListItem = null; 
+let currentVideoListItem = null; 
 let ytPlayer = null;
 let isPlaying = false;
 
@@ -1703,13 +1700,13 @@ function getOutput(item, i) {
 
 // --- Handle audio click ---
 function handleAudioClick(el) {
-    // Stop any playing YouTube video
+    // Stop any playing video first
     stopVideoIfPlaying();
 
-    // Pause all other audios (mutual exclusivity)
+    // Pause all other audios
     document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
 
-    loadSong(el); // your audio player
+    loadSong(el); // your audio player function
 }
 
 // --- Stop current video and restore thumbnail ---
@@ -1741,8 +1738,16 @@ $(document).on('click', '.overlay-play', function(e) {
     let listItem = $(this).closest('.list');
     let videoId = listItem.attr('vid');
 
-    // STOP all audios when video starts
-    document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
+    // Check if any audio is currently playing
+    let anyAudioPlaying = false;
+    document.querySelectorAll("#SAudio").forEach(audio => {
+        if (!audio.paused) anyAudioPlaying = true;
+    });
+
+    // Only stop audio if it's currently playing
+    if (anyAudioPlaying) {
+        document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
+    }
 
     // Stop old video if switching
     if (currentVideoListItem && currentVideoListItem[0] !== listItem[0]) {
@@ -1767,9 +1772,6 @@ $(document).on('click', '.overlay-play', function(e) {
                     <button class="play-pause-btn" id="ytToggleBtn" onclick="togglePlayPause()" style="
                         width:45px; height:45px; border:none; border-radius:50%;
                         background:linear-gradient(145deg,#ff9900,#ff6600);
-                        box-shadow:inset 2px 2px 6px rgba(255,255,255,0.5),
-                                   inset -2px -2px 6px rgba(0,0,0,0.3),
-                                   0 5px 15px rgba(255,140,0,0.6);
                         display:flex; align-items:center; justify-content:center; cursor:pointer;">
                         <svg viewBox="0 0 24 24" id="ytToggleIcon" fill="white" width="20" height="20">
                             <path d="M3 22v-20l18 10-18 10z"/>
@@ -1807,7 +1809,8 @@ $(document).on('click', '.overlay-play', function(e) {
 // --- Ensure audio never plays with video ---
 document.querySelectorAll("#SAudio").forEach(audio => {
     audio.addEventListener('play', () => {
-        stopVideoIfPlaying();
+        // Only stop video if audio actually starts
+        if (ytPlayer && isPlaying) stopVideoIfPlaying();
     });
 });
 
@@ -1860,7 +1863,11 @@ function onYtStateChange(event) {
 // --- Load YouTube API ---
 let tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
-document.body.appendChild(tag);
+document.body.appendChild(tag);                
+
+
+        
+
                 
 	
 	
