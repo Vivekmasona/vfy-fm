@@ -163,7 +163,6 @@ if (window !== window.top) {
 
 <style>
 
- 
 @import url('https://fonts.googleapis.com/css2?family=Khula:wght@400;600;700&family=Public+Sans:wght@100;300;400;600&display=swap');
 
 body {
@@ -334,8 +333,42 @@ body {
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   cursor: pointer;
 }
-         
 
+/* 🟣 Floating Button (slide from bottom to 60%) */
+.floating-btn {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -100px; /* start hidden */
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff4c6a, #ff9671);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.6rem;
+  color: #fff;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+  cursor: pointer;
+  animation: slideUp 1.2s ease-out forwards;
+  animation-delay: 0.4s;
+  z-index: 9999;
+}
+
+/* Animation */
+@keyframes slideUp {
+  from {
+    bottom: -100px;
+    opacity: 0;
+  }
+  to {
+    bottom: 60%;
+    opacity: 1;
+  }
+} 
+
+  
 
 </style>
  
