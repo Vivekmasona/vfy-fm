@@ -3851,7 +3851,8 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 
 
 <style>
-  .modal-container1 {
+
+.modal-container1 {
     display: none;
     position: fixed;
     top: 0;
@@ -3860,37 +3861,28 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
     height: 100vh;
     background: radial-gradient(circle, rgba(59,175,194,0.95) 0%, rgba(133,137,139,0.97) 0%, rgba(52,50,48,0.998) 60%, rgba(0,0,0,1) 84%);
     z-index: 999999;
-    overflow: auto; /* ensures content can scroll if too big */
-    padding: 20px;
-    box-sizing: border-box;
+    overflow: hidden; /* scroll remove, full page content visible */
 }
 
 .modal-content1 {
-    background-color: rgba(255, 255, 255, 0.05); /* slightly transparent for visibility */
-    margin: 0 auto;
-    padding: 20px;
-    max-width: 95%; /* content will not overflow screen */
-    width: auto;
-    height: auto;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
     text-align: center;
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    word-wrap: break-word; /* ensures long text wraps */
+    background-color: transparent; /* no border, no extra background */
+    display: flex;
+    justify-content: center;
+    align-items: center; /* center content vertically and horizontally */
+    flex-direction: column; /* stack content vertically */
+    box-sizing: border-box;
 }
 
-@media screen and (max-width: 768px) {
-    .modal-content1 {
-        padding: 15px;
-        font-size: 14px; /* scale down font for smaller screens */
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .modal-content1 {
-        padding: 10px;
-        font-size: 12px;
-    }
-}
+.modal-content1 > * {
+    width: 100%; /* any child element takes full width */
+    height: 100%; /* any child element takes full height */
+	}
+	
 </style>
 
 
