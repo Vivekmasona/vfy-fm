@@ -167,271 +167,174 @@ if (window !== window.top) {
 @import url('https://fonts.googleapis.com/css2?family=Khula:wght@400;600;700&family=Public+Sans:wght@100;300;400;600&display=swap');
 
 body {
-  background-color: transparent;
-  font-family: "Public Sans", sans-serif;
-  color: #E74C3C;
   margin: 0;
   padding: 0;
-}
-
-a {
-  color: #7a92fe;
-}
-
-a:hover {
+  font-family: "Public Sans", sans-serif;
+  background: radial-gradient(circle at top, #1e1c2a, #0d0b12 80%);
   color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
 .container {
-  height: 100%;
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 10px;
+  max-width: 420px;
+  padding: 20px;
   box-sizing: border-box;
 }
 
 #phone {
-  background-color: transparent;
-  width: 100%;
-  max-width: 450px;
-  height: auto;
-  border-radius: 2px;
-  margin: 0 auto;
-  box-shadow: rgba(104, 139, 255, 0.1) 0px 48px 100px 0px, 
-              rgba(17, 12, 46, 0.15) 0px 30px 100px 0px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  border-radius: 30px;
+  padding: 20px;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+  overflow: hidden;
 }
 
+/* 🔝 Top Menu */
 #top-menu {
-  z-index: 99999;	
-  width: 90%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 5%;
-  text-transform: uppercase;
-  font-size: .7rem;
-  letter-spacing: .1rem;
-  color: #E74C3C;
+  font-size: .8rem;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+  color: #ff4c6a;
 }
 
-#top-menu i {
-  z-index: 99999;	
-  font-size: 1rem;
-}
-
+/* 🎵 Thumbnail */
 .thumbnail-border {
   height: 200px;
   width: 200px;
-  margin: 20% auto 0 auto;
+  margin: 20px auto;
   border-radius: 50%;
-  padding: .4rem;
-}
-
-.button {
-  z-index: 99999;
-  height: 50px;
-  width: 50px;
+  padding: 5px;
+  background: linear-gradient(135deg, #ff4c6a, #ff9671, #ffc75f);
   display: flex;
-  align-items: center;
   justify-content: center;
-  border-radius: 15%;
-  position: fixed; /* 👈 button always visible */
-  bottom: 20px;
-  right: 20px;
-  background: #fff;
-  box-shadow: inset 3px 2px 5px 0 rgba(255,255,255,.5), 
-              rgba(104, 139, 255, 0.1) 7px 3px 10px, 
-              rgba(0,0,0, 0.1) 7px 5px 10px;
-}
-
-.button:hover {
-  box-shadow: inset 6px 6px 10px 0 rgba(0,0,0,0.2);
-  background-color: #E74C3C;
-  color: #fff;
-}
-
-#song-details {
-  z-index: 99999;	
-  margin-top: -12%;
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  padding: 0 10px;
+  box-shadow: 0 12px 30px rgba(255,76,106,0.3);
+}
+
+.thumbnail-border img {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: inset 0 0 20px rgba(255,255,255,0.2);
+}
+
+/* 🎶 Song details */
+#song-details {
   text-align: center;
+  margin-top: 15px;
 }
 
 .song-title {
-  z-index: 99999;
-  font-size: 1.4rem;
-  width: 100%;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 
 .artist {
-  z-index: 99999;
-  font-size: .8rem;
-  color: #abb3c7;
+  font-size: 0.9rem;
+  color: #aaa;
 }
 
+/* 📊 Time slider */
 #time-slider {
-  margin: 24% 5%;
-}
-
-.slider-times {
-  font-size: .6rem;
-  display: flex;
-  justify-content: space-between;
-  color: #E74C3C;
-}
-
-input[type="range"]::-moz-range-progress {
-  background-color: #E74C3C; 
+  margin: 20px 0 10px 0;
 }
 
 .slider {
   -webkit-appearance: none;
   width: 100%;
-  height: 10px;
-  border-radius: 5px;  
-  background: #E74C3C;
+  height: 8px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #ff4c6a, #ffc75f);
   outline: none;
-  box-shadow: inset 2px 2px 2px 0 rgba(104,139,255,0.2), 
-              inset 3px 3px 2px 0 rgba(50,50,50,0.1), 
-              inset -45px -45px 1px 0 rgba(255,255,255,0.1), 
-              inset -1px -1px 1px 0 rgba(0,0,0,0.1);
+  cursor: pointer;
 }
 
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  appearance: none;
-  width: 25px;
-  height: 25px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  border: none;
-  background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30%, #d2e1f8 70%, #E74C3C 100%);
-  box-shadow: inset 2px 2px 2px 0 rgba(104,139,255,0.1), 
-              rgba(0,0,0,0.1) 0px 54px 55px, 
-              rgba(0,0,0,0.12) 0px -12px 30px, 
-              rgba(0,0,0,0.12) 0px 4px 6px, 
-              rgba(0,0,0,0.1) 0px 12px 20px;
+  background: #fff;
+  border: 2px solid #ff4c6a;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  cursor: pointer;
 }
 
-.slider::-moz-range-thumb {
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  border: none;
-  background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30%, #d2e1f8 50%, #E74C3C 100%);
-  box-shadow: inset 2px 2px 2px 0 rgba(104,139,255,0.1), 
-              rgba(0,0,0,0.1) 0px 54px 55px, 
-              rgba(0,0,0,0.12) 0px -12px 30px, 
-              rgba(0,0,0,0.12) 0px 4px 6px, 
-              rgba(0,0,0,0.1) 0px 12px 20px;
-}
-
-#song-controls {
-  width: 96%;
-  margin: 0% 2%;
+.slider-times {
+  font-size: 0.7rem;
   display: flex;
-  flex-wrap: wrap; /* Responsive */
-  gap: 10px;
-  justify-content: center;
+  justify-content: space-between;
+  color: #ccc;
+  margin-top: 5px;
+}
+
+/* 🎛 Controls */
+#song-controls {
+  display: flex;
+  justify-content: space-around;
   align-items: center;
-  font-size: 1rem;
-  color: #E74C3C;
+  margin-top: 25px;
 }
 
 #song-controls .button {
-  height: 65px;
-  width: 65px;
-  position: static; /* Controls ke liye fixed nahi */
-  flex: 1 1 60px;
-  max-width: 80px;
+  height: 60px;
+  width: 60px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ff4c6a;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.3);
 }
 
+#song-controls .button:hover {
+  background: linear-gradient(135deg, #ff4c6a, #ff9671);
+  color: #fff;
+  transform: scale(1.1);
+  box-shadow: 0 10px 25px rgba(255,76,106,0.4);
+}
+
+/* 🔊 Volume */
 #volumeSliderContainer {
-  width: 100%;
-  max-width: 400px;
-  margin: 10px auto;
+  margin-top: 20px;
 }
 
 #volumeSlider {
-  width: 100%;
-  height: 10px;
   -webkit-appearance: none;
-  background: #E74C3C;
-  outline: none;
-  border: 5px solid red;
+  width: 100%;
+  height: 6px;
   border-radius: 5px;
+  background: linear-gradient(90deg, #ff4c6a, #ffc75f);
+  outline: none;
 }
 
 #volumeSlider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 15px;
-  height: 15px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
+  background: #fff;
+  border: 2px solid #ff4c6a;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   cursor: pointer;
-  background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30%, #d2e1f8 70%, #E74C3C 100%);
-  box-shadow: inset 2px 2px 2px 0 rgba(104,139,255,0.1), 
-              rgba(0,0,0,0.1) 0px 54px 55px, 
-              rgba(0,0,0,0.12) 0px -12px 30px, 
-              rgba(0,0,0,0.12) 0px 4px 6px, 
-              rgba(0,0,0,0.1) 0px 12px 20px;
 }
-
-#volumeSlider::-moz-range-thumb {
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  cursor: pointer;
-  background: radial-gradient(circle at center, #E74C3C 0, #E74C3C 20%, #d2e1f8 30%, #d2e1f8 50%, #E74C3C 100%);
-  box-shadow: inset 2px 2px 2px 0 rgba(104,139,255,0.1), 
-              rgba(0,0,0,0.1) 0px 54px 55px, 
-              rgba(0,0,0,0.12) 0px -12px 30px, 
-              rgba(0,0,0,0.12) 0px 4px 6px, 
-              rgba(0,0,0,0.1) 0px 12px 20px;
-}
-
-/* ✅ Responsive Media Queries */
-@media screen and (max-width: 768px) {
-  .thumbnail-border {
-    height: 160px;
-    width: 160px;
-    margin-top: 15%;
-  }
-
-  .song-title {
-    font-size: 1.1rem;
-  }
-
-  #song-controls .button {
-    height: 55px;
-    width: 55px;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .thumbnail-border {
-    height: 120px;
-    width: 120px;
-    margin-top: 12%;
-  }
-
-  .song-title {
-    font-size: 1rem;
-  }
-
-  #song-controls {
-    font-size: 0.9rem;
-  }
-
-  #song-controls .button {
-    height: 50px;
-    width: 50px;
-  }
-}				       
+         
 
 
 </style>
