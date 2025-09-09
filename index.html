@@ -3873,63 +3873,54 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 
 
 <style>
-  /* Modal container - bottom-up responsive style */
+  
+/* Modal container - hidden by default */
 .modal-container1 {
-    display: none; /* Hidden by default */
+    display: none; /* Hidden initially */
     position: fixed;
-    bottom: 0; /* Start from bottom */
+    bottom: 0; /* Bottom-up modal */
     left: 0;
     width: 100%;
     height: 60vh; /* 60% of viewport height */
     background: radial-gradient(circle, rgba(59,175,194,0.95) 0%, rgba(133,137,139,0.97) 0%, rgba(52,50,48,0.998) 60%, rgba(0,0,0,1) 100%);
     z-index: 999999;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
+    border-top-left-radius: 0;  /* No border gaps */
+    border-top-right-radius: 0;
     box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
-    overflow: hidden;
-    animation: slideUp 0.5s ease forwards;
     display: flex;
     flex-direction: column;
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
+    overflow: hidden; /* Content fits inside, no scroll */
+    animation: slideUp 0.4s ease forwards;
 }
 
-/* Optional slide-up animation */
+/* Slide-up animation */
 @keyframes slideUp {
     0% { transform: translateY(100%); opacity: 0; }
     100% { transform: translateY(0); opacity: 1; }
 }
 
-/* Modal content responsive */
+/* Modal content fully responsive and fit */
 .modal-content1 {
-    background-color: transparent;
     width: 100%;
     height: 100%;
-    padding: 20px;
+    padding: 10px;
+    box-sizing: border-box;
     text-align: center;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    overflow-y: auto; /* Scroll if content exceeds height */
-    box-sizing: border-box;
+    justify-content: center; /* Content vertically centered */
+    align-items: center; /* Content horizontally centered */
 }
 
-/* Optional: scrollbar styling */
-.modal-content1::-webkit-scrollbar {
-    width: 6px;
-}
-.modal-content1::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.3);
-    border-radius: 3px;
-}
-.modal-content1::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-/* Responsive text & elements inside modal */
+/* Ensure all inner elements scale properly */
 .modal-content1 * {
-    max-width: 95%;
+    max-width: 100%;
+    max-height: 100%;
     margin: 5px 0;
     word-wrap: break-word;
+    flex-shrink: 1; /* Shrinks if needed to fit modal */
 }
 </style>
 
