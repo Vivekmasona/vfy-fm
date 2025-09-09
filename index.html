@@ -1653,7 +1653,11 @@ function paginate(direction) {
 
 
 
-let currentVideoListItem = null; 
+
+                
+
+
+        let currentVideoListItem = null; 
 let ytPlayer = null;
 let isPlaying = false;
 
@@ -1699,7 +1703,12 @@ function getOutput(item, i) {
 
 // --- Handle audio click ---
 function handleAudioClick(el) {
+    // Stop any playing YouTube video
     stopVideoIfPlaying();
+
+    // Pause all other audios (mutual exclusivity)
+    document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
+
     loadSong(el); // your audio player
 }
 
@@ -1716,6 +1725,7 @@ function stopVideoIfPlaying() {
             );
         }
         currentVideoListItem = null;
+        if (ytPlayer) ytPlayer.stopVideo();
         ytPlayer = null;
         isPlaying = false;
     }
@@ -1731,10 +1741,10 @@ $(document).on('click', '.overlay-play', function(e) {
     let listItem = $(this).closest('.list');
     let videoId = listItem.attr('vid');
 
-    // Pause all audios
+    // STOP all audios when video starts
     document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
 
-    // Stop old video
+    // Stop old video if switching
     if (currentVideoListItem && currentVideoListItem[0] !== listItem[0]) {
         stopVideoIfPlaying();
     }
@@ -1794,6 +1804,13 @@ $(document).on('click', '.overlay-play', function(e) {
     currentVideoListItem = listItem;
 });
 
+// --- Ensure audio never plays with video ---
+document.querySelectorAll("#SAudio").forEach(audio => {
+    audio.addEventListener('play', () => {
+        stopVideoIfPlaying();
+    });
+});
+
 // --- YouTube API setup ---
 function onYtReady() {
     updateYtSeek();
@@ -1817,7 +1834,6 @@ function updateYtSeek() {
     setTimeout(updateYtSeek, 1000);
 }
 
-// --- Toggle Play/Pause ---
 function togglePlayPause() {
     if (!ytPlayer) return;
     if (isPlaying) {
@@ -1831,9 +1847,8 @@ function togglePlayPause() {
 }
 
 function onYtStateChange(event) {
-    if (event.data == YT.PlayerState.ENDED) {
-        stopVideoIfPlaying();
-    } else if (event.data == YT.PlayerState.PLAYING) {
+    if (event.data == YT.PlayerState.ENDED) stopVideoIfPlaying();
+    else if (event.data == YT.PlayerState.PLAYING) {
         isPlaying = true;
         document.getElementById("ytToggleIcon").innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; // pause
     } else if (event.data == YT.PlayerState.PAUSED) {
@@ -1845,8 +1860,7 @@ function onYtStateChange(event) {
 // --- Load YouTube API ---
 let tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
-document.body.appendChild(tag);	
-
+document.body.appendChild(tag);
                 
 	
 	
