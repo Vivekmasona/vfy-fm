@@ -2273,27 +2273,7 @@ downloadButtonElement.addEventListener('click', () => {
 
 
 
-let currentAudioVideoId = null; // <-- store videoId of audio currently selected
 
-// --- In your handleAudioClick function ---
-function handleAudioClick(el) {
-    stopVideoIfPlaying(); // stop any video
-    document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
-    loadSong(el); // your audio player function
-
-    // Save the videoId for this audio (from attribute 'vid' of clicked element)
-    currentAudioVideoId = el.getAttribute('vid');
-    console.log("Current audio's videoId saved:", currentAudioVideoId);
-}
-
-// --- Trigger video button on click ---
-document.getElementById("vidplay").addEventListener("click", () => {
-    if (!currentAudioVideoId) return alert("No audio selected!");
-
-    // Find the overlay-play button of this video
-    let targetOverlay = document.querySelector(`.list[vid="${currentAudioVideoId}"] .overlay-play`);
-    if (targetOverlay) targetOverlay.click(); // trigger video play
-});
 
 
 
@@ -2527,7 +2507,7 @@ recognition.onresult = function(event) {
             lastResult.toLowerCase() === 'video play' ||
             lastResult.toLowerCase() === 'video') {
             // Handle video playback commands
-            const butto1 = document.getElementById('vidplay');
+            const butto1 = document.getElementById('playVideobutto');
             butto1.click();
             playAudio('/sound/video.mp3'); // Replace with the appropriate audio URL
             commandMatched = true;
@@ -3804,7 +3784,7 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 	
  <butto id="developer"></butto>
 
-<butto id="vidplay"></butto>
+<butto id="playVideobutto"></butto>
 
 
 <style>
