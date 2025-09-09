@@ -3420,66 +3420,87 @@ var offlineMsg = document.getElementById("offline-message");
 
 
 <style>
-    /* Shake animation for button click (optional) */
-@keyframes shake {
-    0% { transform: translateX(0); }
-    20% { transform: translateX(-10px); }
-    40% { transform: translateX(10px); }
-    60% { transform: translateX(-10px); }
-    80% { transform: translateX(10px); }
-    100% { transform: translateX(0); }
-}
-
-/* Spin animation for icons */
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Download button style */
+    
+    /* --- Button Styling --- */
 .download-popup-button {
     position: fixed;
     bottom: 15%;
     right: 6%;
-    background: #E74C3C; 
-    color: white;
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
     border: none;
-    cursor: pointer;
-    border-radius: 50%; 
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 30px;
-}
-
-/* Button icon inside */
-.download-popup-button a {
-    text-decoration: none;
+    background: linear-gradient(45deg, #ff416c, #ff4b2b);
     color: white;
+    font-size: 30px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 20px #ff416c, 0 0 40px #ff4b2b, 0 0 60px #ff416c;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    z-index: 9999;
 }
 
-/* Wrapper for spinning icons around button */
+/* Button hover effect */
+.download-popup-button:hover {
+    transform: scale(1.2) rotate(-5deg);
+    box-shadow: 0 0 30px #ff416c, 0 0 60px #ff4b2b, 0 0 90px #ff416c;
+}
+
+/* --- Button icon --- */
+.download-popup-button a {
+    color: white;
+    text-decoration: none;
+}
+
+/* --- Orbiting Icons Wrapper --- */
 .icon-wrapper {
     position: fixed;
     bottom: 15%;
     right: 6%;
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     pointer-events: none;
 }
 
-/* Each spinning icon */
+/* --- Each Orbiting Icon --- */
 .icon-wrapper svg {
     position: absolute;
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     top: 50%;
     left: 50%;
     transform-origin: -50% -50%;
-    animation: spin 1s linear infinite;
+    animation: spin 1.2s linear infinite;
+    fill: #00ffff;
+    filter: drop-shadow(0 0 8px #00ffff);
+}
+
+/* Slight delay for each icon for staggered orbit */
+.icon-wrapper svg:nth-child(1) { animation-delay: 0s; }
+.icon-wrapper svg:nth-child(2) { animation-delay: 0.2s; }
+.icon-wrapper svg:nth-child(3) { animation-delay: 0.4s; }
+.icon-wrapper svg:nth-child(4) { animation-delay: 0.6s; }
+.icon-wrapper svg:nth-child(5) { animation-delay: 0.8s; }
+.icon-wrapper svg:nth-child(6) { animation-delay: 1s; }
+
+/* --- Spin Animation --- */
+@keyframes spin {
+    0%   { transform: rotate(0deg) translate(40px) rotate(0deg); }
+    100% { transform: rotate(360deg) translate(40px) rotate(-360deg); }
+}
+
+/* --- Optional: Button shake on click --- */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
+}
+
+/* Add shake effect on click */
+.download-popup-button.shake {
+    animation: shake 0.5s;
 }
 </style>
 
