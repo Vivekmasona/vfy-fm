@@ -223,18 +223,24 @@ z-index:99999;
   padding: .4rem;
 }
 .button {
-z-index:99999;
+  z-index: 99999;
   height: 50px;
   width: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  box-shadow:  inset 3px 2px 5px 0 rgba(255,255,255, .5), rgba(104, 139, 255, 0.1) 7px 3px 10px, rgba(0,0,0, 0.1) 7px 5px 10px
+  border-radius: 15%;
+  position: fixed;   /* 👈 fixed kar diya */
+  bottom: 20px;      /* 👈 screen ke niche se distance */
+  right: 20px;       /* 👈 screen ke right side se distance */
+  background: #fff;
+  box-shadow: inset 3px 2px 5px 0 rgba(255,255,255, .5), 
+              rgba(104, 139, 255, 0.1) 7px 3px 10px, 
+              rgba(0,0,0, 0.1) 7px 5px 10px;
 }
 
 .button:hover {
-    box-shadow: inset 6px 6px 10px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: inset 6px 6px 10px 0 rgba(0, 0, 0, 0.2);
   background-color: #E74C3C;
   color: #fff;
 }
