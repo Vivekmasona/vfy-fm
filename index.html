@@ -4972,7 +4972,10 @@ document.getElementById('search-btn').addEventListener('click', function() {
             }
         }
 
-        // Function to extract session ID from URL
+        
+let sessionId = null; // Global rakha
+
+// Function to extract session ID from URL
 function getSessionIdFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
     let sid = urlParams.get("sid");
@@ -4985,20 +4988,53 @@ function getSessionIdFromUrl() {
     return sid;
 }
 
+// Automatically join room if sessionId is found in localStorage or URL
+window.addEventListener("load", () => {
+    sessionId = getSessionIdFromUrl();
 
-// Automatically join room if sessionId is found in localStorage
-        window.addEventListener('load', () => {
-            roomID = localStorage.getItem('sessionId');
-            if (roomID) {
-                socket.emit('join-room', roomID);
-                document.getElementById('callUser').disabled = false;
-                alert(`Connection successful: ${roomID}`);
-            } else {
-                alert('Create VFY ID');
-            }
+    if (sessionId) {
+        // Save in localStorage
+        localStorage.setItem("sessionId", sessionId);
+    } else {
+        // Agar URL me nahi mila to localStorage se lo
+        sessionId = localStorage.getItem("sessionId");
+    }
+
+    if (sessionId) {
+        socket.emit("join-room", sessionId);
+        document.getElementById("callUser").disabled = false;
+        alert(`Connection successful: ${sessionId}`);
+    } else {
+        alert("Create VFY ID");
+    }
+});
+
+// Function to share session ID
+function shareSessionId() {
+    if (!sessionId) {
+        alert("No session ID found. Please create one first.");
+        return;
+    }
+
+    const shareUrl = `https://vfy.netlify.app?sid=${sessionId}`;
+
+    if (navigator.share) {
+        navigator.share({
+            title: 'Join my VFY Session',
+            text: 'Click the link to join my session:',
+            url: shareUrl
+        }).catch(err => {
+            console.error('Error sharing session ID:', err);
         });
-
-
+    } else {
+        // Fallback: copy to clipboard
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            alert(`Link copied to clipboard: ${shareUrl}`);
+        }).catch(err => {
+            console.error('Clipboard copy failed:', err);
+        });
+    }
+	 }
 	 
 
         // Call User
