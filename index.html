@@ -4985,26 +4985,21 @@ function getSessionIdFromUrl() {
     return sid;
 }
 
-// Automatically join room if sessionId is found in localStorage or URL
-window.addEventListener("load", () => {
-    let roomID = getSessionIdFromUrl();
 
-    if (roomID) {
-        // Save in localStorage
-        localStorage.setItem("sessionId", roomID);
-    } else {
-        // Agar URL me nahi mila to localStorage se lo
-        roomID = localStorage.getItem("sessionId");
-    }
+// Automatically join room if sessionId is found in localStorage
+        window.addEventListener('load', () => {
+            roomID = localStorage.getItem('sessionId');
+            if (roomID) {
+                socket.emit('join-room', roomID);
+                document.getElementById('callUser').disabled = false;
+                alert(`Connection successful: ${roomID}`);
+            } else {
+                alert('Create VFY ID');
+            }
+        });
 
-    if (roomID) {
-        socket.emit("join-room", roomID);
-        document.getElementById("callUser").disabled = false;
-        alert(`Connection successful: ${roomID}`);
-    } else {
-        alert("Create VFY ID");
-    }
-});
+
+	 
 
         // Call User
         document.getElementById('callUser').addEventListener('click', async () => {
