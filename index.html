@@ -1665,7 +1665,6 @@ function paginate(direction) {
 
 
 
-
 let currentVideoListItem = null; 
 let ytPlayer = null;
 let isPlaying = false;
@@ -1766,50 +1765,41 @@ $(document).on('click', '.overlay-play', function(e) {
         stopVideoIfPlaying();
     }
 
-// Replace thumbnail with custom player wrapper
-let thumb = listItem.find('.video-thumbnail');
-if (thumb.length) {
-    let thumbUrl = thumb.attr('src');
-    let wrapper = $(`
-        <div class="yt-wrapper" data-thumb="${thumbUrl}" style="position:relative; width:100%;">
-            <div id="yt-player-${videoId}"></div>
-            <!-- Custom Controls -->
-            <div class="custom-controls" style="
-                position:absolute; bottom:8px; left:50%; transform:translateX(-50%);
-                width:92%; display:flex; align-items:center; gap:10px;
-                padding:6px 10px; border-radius:15px;
-                background:rgba(51,51,51,0.55);
-                backdrop-filter:blur(10px) saturate(150%);
-                box-shadow:0 2px 12px rgba(0,0,0,0.4);
-            ">
+    // Replace thumbnail with custom player wrapper
+    let thumb = listItem.find('.video-thumbnail');
+    if (thumb.length) {
+        let thumbUrl = thumb.attr('src');
+        let wrapper = $(`
+            <div class="yt-wrapper" data-thumb="${thumbUrl}" style="position:relative; width:100%;">
+                <div id="yt-player-${videoId}"></div>
+                <!-- Custom Controls -->
+                <div class="custom-controls" style="
+                    position:absolute; bottom:1px; left:50%; transform:translateX(-50%);
+                    width:95%; display:flex; align-items:center; gap:15px;
+                    padding:8px 12px; border-radius:5px;
+                    background:rgba(255,165,0,0.2); backdrop-filter:blur(12px);
+                    box-shadow:0 4px 20px rgba(255,165,0,0.5);">
 
-                <button class="play-pause-btn" id="ytToggleBtn" onclick="togglePlayPause()" style="
-                    width:38px; height:38px; border:none; border-radius:50%;
-                    background:linear-gradient(145deg,#ff8800,#ff5500);
-                    display:flex; align-items:center; justify-content:center; cursor:pointer;
-                    box-shadow:0 3px 6px rgba(0,0,0,0.3);
-                ">
-                    <svg viewBox="0 0 24 24" id="ytToggleIcon" fill="white" width="18" height="18">
-                        <path d="M3 22v-20l18 10-18 10z"/>
-                    </svg>
-                </button>
+                    <button class="play-pause-btn" id="ytToggleBtn" onclick="togglePlayPause()" style="
+                        width:45px; height:45px; border:none; border-radius:50%;
+                        background:linear-gradient(145deg,#ff9900,#ff6600);
+                        display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                        <svg viewBox="0 0 24 24" id="ytToggleIcon" fill="white" width="20" height="20">
+                            <path d="M3 22v-20l18 10-18 10z"/>
+                        </svg>
+                    </button>
 
-                <input type="range" id="ytSeek" value="0" min="0" max="100" style="
-                    flex:1; appearance:none; height:4px; border-radius:8px;
-                    background:linear-gradient(90deg,#ff8800,#ff5500);
-                    outline:none; cursor:pointer;
-                ">
-                
-                <input type="range" id="ytVol" value="100" min="0" max="100" style="
-                    width:70px; appearance:none; height:4px; border-radius:8px;
-                    background:linear-gradient(90deg,#ff8800,#ff5500);
-                    outline:none; cursor:pointer;
-                ">
+                    <input type="range" id="ytSeek" value="0" min="0" max="100" style="
+                        flex:1; appearance:none; height:6px; border-radius:10px;
+                        background:linear-gradient(90deg,orange,#ff6600); outline:none; cursor:pointer;">
+                    
+                    <input type="range" id="ytVol" value="100" min="0" max="100" style="
+                        width:90px; appearance:none; height:6px; border-radius:10px;
+                        background:linear-gradient(90deg,orange,#ff6600); outline:none; cursor:pointer;">
+                </div>
             </div>
-        </div>
-    `);
-    thumb.replaceWith(wrapper);
-
+        `);
+        thumb.replaceWith(wrapper);
 
         // Load YouTube API player
         ytPlayer = new YT.Player(`yt-player-${videoId}`, {
@@ -1885,6 +1875,9 @@ function onYtStateChange(event) {
 let tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
 document.body.appendChild(tag);                
+	
+
+                
 
 
         
