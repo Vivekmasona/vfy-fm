@@ -1815,25 +1815,30 @@ if (thumb.length) {
 
 
 
-        // Load YouTube API player
-ytPlayer = new YT.Player(`yt-player-${videoId}`, {
-    height: '250',
-    width: '100%',
-    videoId: videoId,
-    playerVars: {
-        autoplay: 1,
-        controls: 0,          // apne custom controls
-        modestbranding: 1,    // YouTube branding kam
-        rel: 0,               // related videos band
-        showinfo: 0,          // title & uploader info hide
-        iv_load_policy: 3     // annotations/iv overlays band
-    },
-    events: {
-        'onReady': onYtReady,
-        'onStateChange': onYtStateChange
-    }
-});
-}
+        // Load YouTube API player  
+ytPlayer = new YT.Player(`yt-player-${videoId}`, {  
+    height: '250',  
+    width: '100%',  
+    videoId: videoId,  
+    playerVars: {  
+        autoplay: 1,          // autoplay allowed  
+        controls: 0,          // YouTube controls OFF  
+        disablekb: 1,         // keyboard controls OFF  
+        modestbranding: 1,    // minimal branding  
+        rel: 0,               // no related videos  
+        showinfo: 0,          // title/channel hide  
+        iv_load_policy: 3,    // annotations OFF  
+        fs: 0,                // fullscreen button OFF  
+        playsinline: 1        // inline play (no native full overlay)  
+    },  
+    events: {  
+        'onReady': onYtReady,  
+        'onStateChange': onYtStateChange  
+    }  
+});  
+
+// Ensure video not clickable  
+document.getElementById(`yt-player-${videoId}`).style.pointerEvents = "none";
 // --- Ensure audio never plays with video ---
 document.querySelectorAll("#SAudio").forEach(audio => {
     audio.addEventListener('play', () => {
