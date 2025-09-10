@@ -1904,67 +1904,60 @@ document.body.appendChild(tag);
 function loadSong(song, ind) {
     var id = $(song).attr("vid");
     var indId = parseInt($(song).attr("index"));
-    var thumbnail = 'https://img.youtube.com/vi/' + id + '/sddefault.jpg';
     var title = $(song).text();
+    var thumbnail = 'https://img.youtube.com/vi/' + id + '/sddefault.jpg';
 
-    // Save last played song ID
-    localStorage.setItem("lastPlayedId", id);
+    // Get cache object
+    var songsCache = JSON.parse(localStorage.getItem("songsCache") || "{}");
 
-    // Get storage object
-    var songsData = JSON.parse(localStorage.getItem("songsData") || "{}");
-
-    // Ensure song entry
-    if (!songsData[id]) {
-        songsData[id] = {
-            time: 0,
+    // If song not cached, create entry
+    if (!songsCache[id]) {
+        songsCache[id] = {
+            url: "", // play() function ke through update hoga
             title: title,
             thumbnail: thumbnail,
             lastUpdate: Date.now()
         };
     } else {
-        // Update with latest title/thumbnail
-        songsData[id].title = title;
-        songsData[id].thumbnail = thumbnail;
-        songsData[id].lastUpdate = Date.now();
+        // update title & thumbnail
+        songsCache[id].title = title;
+        songsCache[id].thumbnail = thumbnail;
+        songsCache[id].lastUpdate = Date.now();
     }
 
-    localStorage.setItem("songsData", JSON.stringify(songsData));
+    localStorage.setItem("songsCache", JSON.stringify(songsCache));
+
+    // Save this as last played
+    localStorage.setItem("lastPlayedId", id);
 
     // ---- UI SETUP ----
     $("#thumbnail").attr("src", thumbnail);
     $("#profileID").text("Profile ID: " + id);
     $("#profileThumbnail").html('<img src="' + thumbnail + '" alt="Profile Thumbnail">');
     $("#profileThumbnail").data("videoId", id);
-    $("#vfytitle").html('<marquee behavior="alternate" scrollamount="4" onmousedown="this.stop();" onmouseup="this.start();">' + title + '</marquee>');
+    $("#vfytitle").html('<marquee behavior="alternate" scrollamount="4">' + title + '</marquee>');
     $("#currentTimeTitle").text("Current Time: " + new Date().toLocaleTimeString());
-    $("#currentSongTitle").html('<marquee behavior="alternate" scrollamount="1" onmousedown="this.stop();" onmouseup="this.start();">' + title + '</marquee>');
+    $("#currentSongTitle").html('<marquee behavior="alternate" scrollamount="1">' + title + '</marquee>');
     $("#currentSongOutput").html('Video ID: ' + id + '<br>' +
-                                 'Max Resolution Thumbnail: <img src="' + thumbnail + '" alt="Current Song Thumbnail" style="max-width:100%; max-height:100%;">');
+                                 'Thumbnail: <img src="' + thumbnail + '" style="max-width:100%;">');
     $("#channelNameDiv").text("Channel ID: " + id);
 
-    var downloadButton = $('<iframe id="downloadIframe" src="save?url=' + id + '" width="80%" height="50px" frameborder="0" border-radius="50px 10px 50px 10px"></iframe>');
+    var downloadButton = $('<iframe id="downloadIframe" src="save?url=' + id + '" width="80%" height="50px" frameborder="0"></iframe>');
     $("#downloadButtonDiv").html(downloadButton);
-
-    downloadButton.on('click', function(event) {
-        event.preventDefault();
-    });
 
     $("#currentPlayingSongId").text("Current Playing Song ID: " + id);
 
     // ---- PLAY SONG ----
     play(id, indId);
 
-    // --- SAVE TIME PROGRESS ---
+    // --- SAVE PROGRESS ONLY FOR LAST SONG ---
     var audio = document.getElementById("SAudio");
     if (audio) {
         audio.ontimeupdate = function () {
-            var songsData = JSON.parse(localStorage.getItem("songsData") || "{}");
-            if (!songsData[id]) songsData[id] = {};
-            songsData[id].time = audio.currentTime;
-            songsData[id].title = title;
-            songsData[id].thumbnail = thumbnail;
-            songsData[id].lastUpdate = Date.now();
-            localStorage.setItem("songsData", JSON.stringify(songsData));
+            var lastId = localStorage.getItem("lastPlayedId");
+            if (lastId === id) {
+                localStorage.setItem("lastSongTime", audio.currentTime);
+            }
         };
     }
 }
@@ -1974,18 +1967,10 @@ window.addEventListener("load", function () {
     var lastId = localStorage.getItem("lastPlayedId");
     if (!lastId) return;
 
-    var songsData = JSON.parse(localStorage.getItem("songsData") || "{}");
-    var songInfo = songsData[lastId];
+    var songsCache = JSON.parse(localStorage.getItem("songsCache") || "{}");
+    var songInfo = songsCache[lastId];
 
     if (songInfo) {
-        // Expire check (20 min = 1200000 ms)
-        if (Date.now() - songInfo.lastUpdate > 1200000) {
-            delete songsData[lastId];
-            localStorage.setItem("songsData", JSON.stringify(songsData));
-            return; // expired, do nothing
-        }
-
-        // Dummy element with original title
         var dummy = $('<div>')
             .attr("vid", lastId)
             .attr("index", 0)
@@ -1994,17 +1979,18 @@ window.addEventListener("load", function () {
         loadSong(dummy, 0);
 
         var audio = document.getElementById("SAudio");
+        var savedTime = localStorage.getItem("lastSongTime") || 0;
+
         if (audio) {
             audio.addEventListener("loadedmetadata", function () {
-                if (songInfo.time) {
-                    audio.currentTime = songInfo.time; // resume from saved
-                }
+                if (savedTime) audio.currentTime = savedTime;
                 audio.play();
             });
         }
     }
 });
     
+        
 
     
 
