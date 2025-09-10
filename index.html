@@ -1815,88 +1815,98 @@ if (thumb.length) {
 
 
 
-        // Load YouTube API player  
+// Load YouTube API player  
 ytPlayer = new YT.Player(`yt-player-${videoId}`, {  
     height: '250',  
     width: '100%',  
     videoId: videoId,  
     playerVars: {  
-        autoplay: 1,          // autoplay allowed  
-        controls: 0,          // YouTube controls OFF  
-        disablekb: 1,         // keyboard controls OFF  
-        modestbranding: 1,    // minimal branding  
-        rel: 0,               // no related videos  
-        showinfo: 0,          // title/channel hide  
-        iv_load_policy: 3,    // annotations OFF  
-        fs: 0,                // fullscreen button OFF  
-        playsinline: 1        // inline play (no native full overlay)  
+        autoplay: 1,          // Auto play  
+        controls: 0,          // YouTube default controls OFF  
+        modestbranding: 1,    // Minimal branding  
+        rel: 0,               // No related videos  
+        showinfo: 0,          // No title/channel info  
+        iv_load_policy: 3,    // Annotations OFF  
+        fs: 0,                // No fullscreen button  
+        disablekb: 1,         // Keyboard shortcuts disable  
+        playsinline: 1        // Play inline on mobile  
     },  
     events: {  
         'onReady': onYtReady,  
         'onStateChange': onYtStateChange  
     }  
 });  
-}
-// Ensure video not clickable  
-document.getElementById(`yt-player-${videoId}`).style.pointerEvents = "none";
-// --- Ensure audio never plays with video ---
-document.querySelectorAll("#SAudio").forEach(audio => {
-    audio.addEventListener('play', () => {
-        // Only stop video if audio actually starts
-        if (ytPlayer && isPlaying) stopVideoIfPlaying();
-    });
-});
 
-// --- YouTube API setup ---
-function onYtReady() {
-    updateYtSeek();
-    document.getElementById("ytVol").addEventListener("input", e => {
-        ytPlayer.setVolume(e.target.value);
-    });
-    document.getElementById("ytSeek").addEventListener("input", e => {
-        let duration = ytPlayer.getDuration();
-        ytPlayer.seekTo((e.target.value / 100) * duration, true);
-    });
-}
+// Make sure video itself is not clickable  
+document.getElementById(`yt-player-${videoId}`).style.pointerEvents = "none";  
 
-function updateYtSeek() {
-    if (ytPlayer && ytPlayer.getDuration) {
-        let duration = ytPlayer.getDuration();
-        let current = ytPlayer.getCurrentTime();
-        if (duration > 0) {
-            document.getElementById("ytSeek").value = (current / duration) * 100;
-        }
-    }
-    setTimeout(updateYtSeek, 1000);
-}
+currentVideoListItem = listItem;  
+});  
 
-function togglePlayPause() {
-    if (!ytPlayer) return;
-    if (isPlaying) {
-        ytPlayer.pauseVideo();
-        document.getElementById("ytToggleIcon").innerHTML = '<path d="M3 22v-20l18 10-18 10z"/>'; // play
-    } else {
-        ytPlayer.playVideo();
-        document.getElementById("ytToggleIcon").innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; // pause
-    }
-    isPlaying = !isPlaying;
-}
+// --- Ensure audio never plays with video ---  
+document.querySelectorAll("#SAudio").forEach(audio => {  
+    audio.addEventListener('play', () => {  
+        // Only stop video if audio actually starts  
+        if (ytPlayer && isPlaying) stopVideoIfPlaying();  
+    });  
+});  
 
-function onYtStateChange(event) {
-    if (event.data == YT.PlayerState.ENDED) stopVideoIfPlaying();
-    else if (event.data == YT.PlayerState.PLAYING) {
-        isPlaying = true;
-        document.getElementById("ytToggleIcon").innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; // pause
-    } else if (event.data == YT.PlayerState.PAUSED) {
-        isPlaying = false;
-        document.getElementById("ytToggleIcon").innerHTML = '<path d="M3 22v-20l18 10-18 10z"/>'; // play
-    }
-}
+// --- YouTube API setup ---  
+function onYtReady() {  
+    updateYtSeek();  
 
-// --- Load YouTube API ---
-let tag = document.createElement('script');
-tag.src = "https://www.youtube.com/iframe_api";
-document.body.appendChild(tag);                
+    document.getElementById("ytVol").addEventListener("input", e => {  
+        ytPlayer.setVolume(e.target.value);  
+    });  
+
+    document.getElementById("ytSeek").addEventListener("input", e => {  
+        let duration = ytPlayer.getDuration();  
+        ytPlayer.seekTo((e.target.value / 100) * duration, true);  
+    });  
+}  
+
+function updateYtSeek() {  
+    if (ytPlayer && ytPlayer.getDuration) {  
+        let duration = ytPlayer.getDuration();  
+        let current = ytPlayer.getCurrentTime();  
+        if (duration > 0) {  
+            document.getElementById("ytSeek").value = (current / duration) * 100;  
+        }  
+    }  
+    setTimeout(updateYtSeek, 1000);  
+}  
+
+function togglePlayPause() {  
+    if (!ytPlayer) return;  
+    if (isPlaying) {  
+        ytPlayer.pauseVideo();  
+        document.getElementById("ytToggleIcon").innerHTML =  
+            '<path d="M3 22v-20l18 10-18 10z"/>'; // play  
+    } else {  
+        ytPlayer.playVideo();  
+        document.getElementById("ytToggleIcon").innerHTML =  
+            '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; // pause  
+    }  
+    isPlaying = !isPlaying;  
+}  
+
+function onYtStateChange(event) {  
+    if (event.data == YT.PlayerState.ENDED) stopVideoIfPlaying();  
+    else if (event.data == YT.PlayerState.PLAYING) {  
+        isPlaying = true;  
+        document.getElementById("ytToggleIcon").innerHTML =  
+            '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'; // pause  
+    } else if (event.data == YT.PlayerState.PAUSED) {  
+        isPlaying = false;  
+        document.getElementById("ytToggleIcon").innerHTML =  
+            '<path d="M3 22v-20l18 10-18 10z"/>'; // play  
+    }  
+}  
+
+// --- Load YouTube API ---  
+let tag = document.createElement('script');  
+tag.src = "https://www.youtube.com/iframe_api";  
+document.body.appendChild(tag);
 
 
         
