@@ -1665,6 +1665,7 @@ function paginate(direction) {
 
 
 
+
 let currentVideoListItem = null; 
 let ytPlayer = null;
 let isPlaying = false;
@@ -1774,9 +1775,9 @@ $(document).on('click', '.overlay-play', function(e) {
                 <div id="yt-player-${videoId}"></div>
                 <!-- Custom Controls -->
                 <div class="custom-controls" style="
-                    position:absolute; bottom:1px; left:50%; transform:translateX(-50%);
+                    position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
                     width:95%; display:flex; align-items:center; gap:15px;
-                    padding:8px 12px; border-radius:5px;
+                    padding:8px 12px; border-radius:20px;
                     background:rgba(255,165,0,0.2); backdrop-filter:blur(12px);
                     box-shadow:0 4px 20px rgba(255,165,0,0.5);">
 
@@ -1875,9 +1876,6 @@ function onYtStateChange(event) {
 let tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
 document.body.appendChild(tag);                
-	
-
-                
 
 
         
