@@ -4972,69 +4972,42 @@ document.getElementById('search-btn').addEventListener('click', function() {
             }
         }
 
-        
-let sessionId = null; // Global rakha
-
-// Function to extract session ID from URL
+  // Function to extract session ID from URL or hash
 function getSessionIdFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
     let sid = urlParams.get("sid");
 
-    // Agar query param me sid nahi hai to hash check karo
+    // Agar sid query param me nahi mila to hash check karo
     if (!sid && window.location.hash) {
-        sid = window.location.hash.substring(1); // remove #
+        sid = window.location.hash.substring(1); // #abcd1234 → abcd1234
     }
 
     return sid;
 }
 
-// Automatically join room if sessionId is found in localStorage or URL
+// Automatically join room if sessionId is found
 window.addEventListener("load", () => {
-    sessionId = getSessionIdFromUrl();
+    let roomID = getSessionIdFromUrl();
 
-    if (sessionId) {
-        // Save in localStorage
-        localStorage.setItem("sessionId", sessionId);
+    if (roomID) {
+        // Save sessionId in localStorage
+        localStorage.setItem("sessionId", roomID);
     } else {
         // Agar URL me nahi mila to localStorage se lo
-        sessionId = localStorage.getItem("sessionId");
+        roomID = localStorage.getItem("sessionId");
     }
 
-    if (sessionId) {
-        socket.emit("join-room", sessionId);
+    if (roomID) {
+        // Auto join karo
+        socket.emit("join-room", roomID);
         document.getElementById("callUser").disabled = false;
-        alert(`Connection successful: ${sessionId}`);
+        console.log(`Connection successful: ${roomID}`);
     } else {
-        alert("Create VFY ID");
+        console.log("No Session Found — Create VFY ID");
     }
-});
+});      
 
-// Function to share session ID
-function shareSessionId() {
-    if (!sessionId) {
-        alert("No session ID found. Please create one first.");
-        return;
-    }
-
-    const shareUrl = `https://vfy.netlify.app?sid=${sessionId}`;
-
-    if (navigator.share) {
-        navigator.share({
-            title: 'Join my VFY Session',
-            text: 'Click the link to join my session:',
-            url: shareUrl
-        }).catch(err => {
-            console.error('Error sharing session ID:', err);
-        });
-    } else {
-        // Fallback: copy to clipboard
-        navigator.clipboard.writeText(shareUrl).then(() => {
-            alert(`Link copied to clipboard: ${shareUrl}`);
-        }).catch(err => {
-            console.error('Clipboard copy failed:', err);
-        });
-    }
-	 }
+    
 	 
 
         // Call User
