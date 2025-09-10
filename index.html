@@ -1906,57 +1906,41 @@ function loadSong(song, ind) {
     var thumbnail = 'https://img.youtube.com/vi/' + id + '/sddefault.jpg';
     var title = $(song).text();
 
-    // Save song data in localStorage
+    // Save current playing song
     localStorage.setItem("playPresent", id);
     localStorage.setItem("thumbnail", thumbnail);
-    localStorage.setItem("songTitle", title); // ✅ save original title
+    localStorage.setItem("songTitle", title);
+
     $("#thumbnail").attr("src", thumbnail);
-
-    // Set the profile ID
-    localStorage.setItem("profileID", id);
     $("#profileID").text("Profile ID: " + id);
-
-    // Set the profile thumbnail and video ID
     $("#profileThumbnail").html('<img src="' + thumbnail + '" alt="Profile Thumbnail">');
     $("#profileThumbnail").data("videoId", id);
 
-    // Set the title text to the marquee div with ID "vfytitle"
-    $("#vfytitle").html('<marquee behavior="alternate" scrollamount="4" onmousedown="this.stop();" onmouseup="this.start();">' + title + '</marquee>');
-
-    // Set the current time title to the div with ID "currentTimeTitle"
+    $("#vfytitle").html('<marquee behavior="alternate" scrollamount="4">' + title + '</marquee>');
     $("#currentTimeTitle").text("Current Time: " + new Date().toLocaleTimeString());
+    $("#currentSongTitle").html('<marquee behavior="alternate" scrollamount="1">' + title + '</marquee>');
 
-    // Set the current song title with marquee effect to the div with ID "currentSongTitle"
-    $("#currentSongTitle").html('<marquee behavior="alternate" scrollamount="1" onmousedown="this.stop();" onmouseup="this.start();">' + title + '</marquee>');
-    
-    // Create a div with ID "currentSongOutput" to display video ID and max resolution thumbnail
     $("#currentSongOutput").html('Video ID: ' + id + '<br>' +
-                                 'Max Resolution Thumbnail: <img src="' + thumbnail + '" alt="Current Song Thumbnail" style="max-width:100%; max-height:100%;">');
-
-    // Create a div with ID "channelNameDiv" to display the channel ID
+        'Max Resolution Thumbnail: <img src="' + thumbnail + '" alt="Current Song Thumbnail" style="max-width:100%;">');
     $("#channelNameDiv").text("Channel ID: " + id);
 
-    // Add the download button dynamically to the "downloadButtonDiv" within an iframe without border
-    var downloadButton = $('<iframe id="downloadIframe" src="save?url=' + id + '" width="80%" height="50px" frameborder="0" border-radius="50px 10px 50px 10px"></iframe>');
+    var downloadButton = $('<iframe id="downloadIframe" src="save?url=' + id + '" width="80%" height="50px" frameborder="0"></iframe>');
     $("#downloadButtonDiv").html(downloadButton);
 
-    // Add a click event listener to the iframe button
-    downloadButton.on('click', function(event) {
-        event.preventDefault();
-    });
-
-    // Display the current playing song ID
-    var currentPlayingSongId = localStorage.getItem("playPresent");
-    $("#currentPlayingSongId").text("Current Playing Song ID: " + currentPlayingSongId);
+    $("#currentPlayingSongId").text("Current Playing Song ID: " + id);
 
     // ---- PLAY SONG ----
     play(id, indId);
 
-    // --- SAVE CURRENT TIME ON PROGRESS ---
-    var audio = document.getElementById("SAudio"); // ✅ player id SAudio
+    // --- SAVE CURRENT TIME FOR THIS SONG ---
+    var audio = document.getElementById("SAudio");
     if (audio) {
         audio.ontimeupdate = function () {
-            localStorage.setItem("currentSongTime", audio.currentTime);
+            var songData = {
+                time: audio.currentTime,
+                timestamp: Date.now()
+            };
+            localStorage.setItem("songTime_" + id, JSON.stringify(songData));
         };
     }
 }
@@ -1964,11 +1948,21 @@ function loadSong(song, ind) {
 // ---- RESUME LAST SONG ON PAGE LOAD ----
 window.addEventListener("load", function () {
     var savedId = localStorage.getItem("playPresent");
-    var savedTime = localStorage.getItem("currentSongTime");
-    var savedTitle = localStorage.getItem("songTitle"); // ✅ get saved title
+    var savedTitle = localStorage.getItem("songTitle");
 
     if (savedId) {
-        // Dummy element banake original title set karo
+        // Get saved time for this song
+        var songData = JSON.parse(localStorage.getItem("songTime_" + savedId) || "{}");
+
+        var resumeTime = 0;
+        if (songData.time && songData.timestamp) {
+            var age = Date.now() - songData.timestamp;
+            if (age < 20 * 60 * 1000) { // ✅ 20 min validity
+                resumeTime = songData.time;
+            }
+        }
+
+        // Dummy element for loadSong
         var dummy = $('<div>')
             .attr("vid", savedId)
             .attr("index", 0)
@@ -1979,15 +1973,16 @@ window.addEventListener("load", function () {
         var audio = document.getElementById("SAudio");
         if (audio) {
             audio.addEventListener("loadedmetadata", function () {
-                if (savedTime) {
-                    audio.currentTime = savedTime; // resume from last position
+                if (resumeTime > 0) {
+                    audio.currentTime = resumeTime;
                 }
                 audio.play();
             });
         }
     }
-});    
-        
+});
+    
+    
 
     
 
