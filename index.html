@@ -1900,16 +1900,16 @@ document.body.appendChild(tag);
         
 
 
+
 function loadSong(song, ind) {
     var id = $(song).attr("vid");
-    var indId = parseInt($(song).attr("index"));
     var thumbnail = 'https://img.youtube.com/vi/' + id + '/sddefault.jpg';
     var title = $(song).text();
 
-    // Save current playing song
-    localStorage.setItem("playPresent", id);
-    localStorage.setItem("thumbnail", thumbnail);
-    localStorage.setItem("songTitle", title);
+    // Save last played info
+    localStorage.setItem("lastSongId", id);
+    localStorage.setItem("lastSongTitle", title);
+    localStorage.setItem("lastSongThumbnail", thumbnail);
 
     $("#thumbnail").attr("src", thumbnail);
     $("#profileID").text("Profile ID: " + id);
@@ -1924,64 +1924,63 @@ function loadSong(song, ind) {
         'Max Resolution Thumbnail: <img src="' + thumbnail + '" alt="Current Song Thumbnail" style="max-width:100%;">');
     $("#channelNameDiv").text("Channel ID: " + id);
 
-    var downloadButton = $('<iframe id="downloadIframe" src="save?url=' + id + '" width="80%" height="50px" frameborder="0"></iframe>');
-    $("#downloadButtonDiv").html(downloadButton);
+    $("#downloadButtonDiv").html('<iframe id="downloadIframe" src="save?url=' + id + '" width="80%" height="50px" frameborder="0"></iframe>');
 
     $("#currentPlayingSongId").text("Current Playing Song ID: " + id);
 
     // ---- PLAY SONG ----
-    play(id, indId);
+    let url = play(id, ind); // play() function से audio URL return करवाओ
+    localStorage.setItem("lastSongUrl", url);   // ✅ save googlevideo url
+    localStorage.setItem("lastSongUrlTime", Date.now()); // ✅ कब save हुआ
 
-    // --- SAVE CURRENT TIME FOR THIS SONG ---
+    // Save progress
     var audio = document.getElementById("SAudio");
     if (audio) {
         audio.ontimeupdate = function () {
-            var songData = {
-                time: audio.currentTime,
-                timestamp: Date.now()
-            };
-            localStorage.setItem("songTime_" + id, JSON.stringify(songData));
+            localStorage.setItem("lastSongTime", audio.currentTime);
         };
     }
 }
 
 // ---- RESUME LAST SONG ON PAGE LOAD ----
 window.addEventListener("load", function () {
-    var savedId = localStorage.getItem("playPresent");
-    var savedTitle = localStorage.getItem("songTitle");
+    var id = localStorage.getItem("lastSongId");
+    var title = localStorage.getItem("lastSongTitle");
+    var thumbnail = localStorage.getItem("lastSongThumbnail");
+    var savedUrl = localStorage.getItem("lastSongUrl");
+    var savedUrlTime = localStorage.getItem("lastSongUrlTime");
+    var savedTime = localStorage.getItem("lastSongTime");
 
-    if (savedId) {
-        // Get saved time for this song
-        var songData = JSON.parse(localStorage.getItem("songTime_" + savedId) || "{}");
-
-        var resumeTime = 0;
-        if (songData.time && songData.timestamp) {
-            var age = Date.now() - songData.timestamp;
-            if (age < 20 * 60 * 1000) { // ✅ 20 min validity
-                resumeTime = songData.time;
-            }
-        }
-
-        // Dummy element for loadSong
-        var dummy = $('<div>')
-            .attr("vid", savedId)
-            .attr("index", 0)
-            .text(savedTitle || "Unknown Title");
-
-        loadSong(dummy, 0);
-
+    if (id) {
         var audio = document.getElementById("SAudio");
-        if (audio) {
+
+        // Check if saved googlevideo URL is still fresh (usually ~6 hours valid)
+        if (savedUrl && savedUrlTime && (Date.now() - savedUrlTime < 6 * 60 * 60 * 1000)) {
+            // ✅ try to load saved URL
+            audio.src = savedUrl;
             audio.addEventListener("loadedmetadata", function () {
-                if (resumeTime > 0) {
-                    audio.currentTime = resumeTime;
-                }
-                audio.play();
+                if (savedTime) audio.currentTime = savedTime;
+                audio.play().catch(() => {
+                    // If autoplay blocked, user must click play
+                });
             });
+        } else {
+            // ❌ expired → regenerate using videoId
+            var dummy = $('<div>')
+                .attr("vid", id)
+                .attr("index", 0)
+                .text(title || "Unknown Title");
+
+            loadSong(dummy, 0); // reload with fresh url
         }
+
+        // UI restore
+        $("#thumbnail").attr("src", thumbnail);
+        $("#profileID").text("Profile ID: " + id);
+        $("#vfytitle").html('<marquee behavior="alternate" scrollamount="4">' + (title || "") + '</marquee>');
+        $("#currentSongTitle").html('<marquee behavior="alternate" scrollamount="1">' + (title || "") + '</marquee>');
     }
-});
-    
+});    
     
 
     
