@@ -1816,19 +1816,22 @@ if (thumb.length) {
 
 
         // Load YouTube API player
-        ytPlayer = new YT.Player(`yt-player-${videoId}`, {
-            height: '250',
-            width: '100%',
-            videoId: videoId,
-            playerVars: { autoplay: 1, controls: 0, modestbranding: 1, rel: 0 },
-            events: {
-                'onReady': onYtReady,
-                'onStateChange': onYtStateChange
-            }
-        });
+ytPlayer = new YT.Player(`yt-player-${videoId}`, {
+    height: '250',
+    width: '100%',
+    videoId: videoId,
+    playerVars: {
+        autoplay: 1,
+        controls: 0,          // apne custom controls
+        modestbranding: 1,    // YouTube branding kam
+        rel: 0,               // related videos band
+        showinfo: 0,          // title & uploader info hide
+        iv_load_policy: 3     // annotations/iv overlays band
+    },
+    events: {
+        'onReady': onYtReady,
+        'onStateChange': onYtStateChange
     }
-
-    currentVideoListItem = listItem;
 });
 
 // --- Ensure audio never plays with video ---
