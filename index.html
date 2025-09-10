@@ -1772,7 +1772,9 @@ if (thumb.length) {
     let thumbUrl = thumb.attr('src');
     let wrapper = $(`
         <div class="yt-wrapper" data-thumb="${thumbUrl}" style="position:relative; width:100%;">
-            <div id="yt-player-${videoId}"></div>
+            <div id="yt-player-${videoId}" style="pointer-events:none;"></div> 
+            <!-- iframe/video click disabled -->
+
             <!-- Custom Controls -->
             <div class="custom-controls" style="
                 position:absolute; bottom:8px; left:50%; transform:translateX(-50%);
@@ -1781,6 +1783,7 @@ if (thumb.length) {
                 background:rgba(51,51,51,0.55);
                 backdrop-filter:blur(10px) saturate(150%);
                 box-shadow:0 2px 12px rgba(0,0,0,0.4);
+                pointer-events:auto; /* Controls clickable */
             ">
 
                 <button class="play-pause-btn" id="ytToggleBtn" onclick="togglePlayPause()" style="
@@ -1809,6 +1812,7 @@ if (thumb.length) {
         </div>
     `);
     thumb.replaceWith(wrapper);
+
 
 
         // Load YouTube API player
