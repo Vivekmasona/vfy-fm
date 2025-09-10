@@ -135,19 +135,32 @@
             }
 
             // Function to share session ID
-            function shareSessionId() {
-                if (navigator.share) {
-                    navigator.share({
-                        title: 'Session ID',
-                        text: 'Here is the session ID: ' + sessionId
-                    }).catch(err => {
-                        console.error('Error sharing session ID:', err);
-                    });
-                } else {
-                    alert('Web Share API not supported in this browser.');
-                }
-            }
+function shareSessionId() {
+    const sessionId = localStorage.getItem("sessionId"); // localStorage se session id lo
+    if (!sessionId) {
+        alert("No session ID found. Please create one first.");
+        return;
+    }
 
+    const shareUrl = `https://vfy.netlify.app?sid=${sessionId}`;
+
+    if (navigator.share) {
+        navigator.share({
+            title: 'Join my VFY Session',
+            text: 'Click the link to join my session:',
+            url: shareUrl
+        }).catch(err => {
+            console.error('Error sharing session ID:', err);
+        });
+    } else {
+        // Fallback: copy to clipboard
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            alert(`Link copied to clipboard: ${shareUrl}`);
+        }).catch(err => {
+            console.error('Clipboard copy failed:', err);
+        });
+    }
+}
             // Function to show buttons and hide session ID after 2 seconds
             setTimeout(() => {
                 sessionIdElement.style.display = 'none';
