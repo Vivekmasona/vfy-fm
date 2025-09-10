@@ -1899,15 +1899,13 @@ document.body.appendChild(tag);
 
         
 
-                
-	
-	
 function loadSong(song, ind) {
     var id = $(song).attr("vid");
     var indId = parseInt($(song).attr("index"));
     var thumbnail = 'https://img.youtube.com/vi/' + id + '/sddefault.jpg';
     var title = $(song).text();
 
+    // Save song ID in localStorage
     localStorage.setItem("playPresent", id);
     localStorage.setItem("thumbnail", thumbnail);
     $("#thumbnail").attr("src", thumbnail);
@@ -1942,17 +1940,52 @@ function loadSong(song, ind) {
 
     // Add a click event listener to the iframe button
     downloadButton.on('click', function(event) {
-        event.preventDefault(); // Prevent the default behavior of the link
-        // Add any additional actions or code you want to execute when the button is clicked
-        // For example, you might want to trigger a download or perform some other action
+        event.preventDefault();
     });
 
     // Display the current playing song ID
     var currentPlayingSongId = localStorage.getItem("playPresent");
     $("#currentPlayingSongId").text("Current Playing Song ID: " + currentPlayingSongId);
 
+    // ---- PLAY SONG ----
     play(id, indId);
+
+    // --- SAVE CURRENT TIME ON PROGRESS ---
+    var audio = document.getElementById("SAudio"); // ✅ तुमने बताया player id यही है
+    if (audio) {
+        audio.ontimeupdate = function () {
+            localStorage.setItem("currentSongTime", audio.currentTime);
+        };
+    }
 }
+
+// ---- RESUME LAST SONG ON PAGE LOAD ----
+window.addEventListener("load", function () {
+    var savedId = localStorage.getItem("playPresent");
+    var savedTime = localStorage.getItem("currentSongTime");
+
+    if (savedId) {
+        // Dummy element banake loadSong call
+        var dummy = $('<div>')
+            .attr("vid", savedId)
+            .attr("index", 0)
+            .text("Last Played Song");
+
+        loadSong(dummy, 0);
+
+        var audio = document.getElementById("SAudio");
+        if (audio) {
+            audio.addEventListener("loadedmetadata", function () {
+                if (savedTime) {
+                    audio.currentTime = savedTime; // resume from last position
+                }
+                audio.play();
+            });
+        }
+    }
+});                
+	
+	
 
     
 
