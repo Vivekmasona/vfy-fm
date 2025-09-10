@@ -1899,15 +1899,17 @@ document.body.appendChild(tag);
 
         
 
+
 function loadSong(song, ind) {
     var id = $(song).attr("vid");
     var indId = parseInt($(song).attr("index"));
     var thumbnail = 'https://img.youtube.com/vi/' + id + '/sddefault.jpg';
     var title = $(song).text();
 
-    // Save song ID in localStorage
+    // Save song data in localStorage
     localStorage.setItem("playPresent", id);
     localStorage.setItem("thumbnail", thumbnail);
+    localStorage.setItem("songTitle", title); // ✅ save original title
     $("#thumbnail").attr("src", thumbnail);
 
     // Set the profile ID
@@ -1951,7 +1953,7 @@ function loadSong(song, ind) {
     play(id, indId);
 
     // --- SAVE CURRENT TIME ON PROGRESS ---
-    var audio = document.getElementById("SAudio"); // ✅ तुमने बताया player id यही है
+    var audio = document.getElementById("SAudio"); // ✅ player id SAudio
     if (audio) {
         audio.ontimeupdate = function () {
             localStorage.setItem("currentSongTime", audio.currentTime);
@@ -1963,13 +1965,14 @@ function loadSong(song, ind) {
 window.addEventListener("load", function () {
     var savedId = localStorage.getItem("playPresent");
     var savedTime = localStorage.getItem("currentSongTime");
+    var savedTitle = localStorage.getItem("songTitle"); // ✅ get saved title
 
     if (savedId) {
-        // Dummy element banake loadSong call
+        // Dummy element banake original title set karo
         var dummy = $('<div>')
             .attr("vid", savedId)
             .attr("index", 0)
-            .text("Last Played Song");
+            .text(savedTitle || "Unknown Title");
 
         loadSong(dummy, 0);
 
@@ -1983,9 +1986,8 @@ window.addEventListener("load", function () {
             });
         }
     }
-});                
-	
-	
+});    
+        
 
     
 
