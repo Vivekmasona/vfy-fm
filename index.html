@@ -1833,7 +1833,7 @@ ytPlayer = new YT.Player(`yt-player-${videoId}`, {
         'onStateChange': onYtStateChange
     }
 });
-
+}
 // --- Ensure audio never plays with video ---
 document.querySelectorAll("#SAudio").forEach(audio => {
     audio.addEventListener('play', () => {
