@@ -1903,84 +1903,107 @@ document.body.appendChild(tag);
 
 function loadSong(song, ind) {
     var id = $(song).attr("vid");
+    var indId = parseInt($(song).attr("index"));
     var thumbnail = 'https://img.youtube.com/vi/' + id + '/sddefault.jpg';
     var title = $(song).text();
 
-    // Save last played info
-    localStorage.setItem("lastSongId", id);
-    localStorage.setItem("lastSongTitle", title);
-    localStorage.setItem("lastSongThumbnail", thumbnail);
+    // Save last played song ID
+    localStorage.setItem("lastPlayedId", id);
 
+    // Get storage object
+    var songsData = JSON.parse(localStorage.getItem("songsData") || "{}");
+
+    // Ensure song entry
+    if (!songsData[id]) {
+        songsData[id] = {
+            time: 0,
+            title: title,
+            thumbnail: thumbnail,
+            lastUpdate: Date.now()
+        };
+    } else {
+        // Update with latest title/thumbnail
+        songsData[id].title = title;
+        songsData[id].thumbnail = thumbnail;
+        songsData[id].lastUpdate = Date.now();
+    }
+
+    localStorage.setItem("songsData", JSON.stringify(songsData));
+
+    // ---- UI SETUP ----
     $("#thumbnail").attr("src", thumbnail);
     $("#profileID").text("Profile ID: " + id);
     $("#profileThumbnail").html('<img src="' + thumbnail + '" alt="Profile Thumbnail">');
     $("#profileThumbnail").data("videoId", id);
-
-    $("#vfytitle").html('<marquee behavior="alternate" scrollamount="4">' + title + '</marquee>');
+    $("#vfytitle").html('<marquee behavior="alternate" scrollamount="4" onmousedown="this.stop();" onmouseup="this.start();">' + title + '</marquee>');
     $("#currentTimeTitle").text("Current Time: " + new Date().toLocaleTimeString());
-    $("#currentSongTitle").html('<marquee behavior="alternate" scrollamount="1">' + title + '</marquee>');
-
+    $("#currentSongTitle").html('<marquee behavior="alternate" scrollamount="1" onmousedown="this.stop();" onmouseup="this.start();">' + title + '</marquee>');
     $("#currentSongOutput").html('Video ID: ' + id + '<br>' +
-        'Max Resolution Thumbnail: <img src="' + thumbnail + '" alt="Current Song Thumbnail" style="max-width:100%;">');
+                                 'Max Resolution Thumbnail: <img src="' + thumbnail + '" alt="Current Song Thumbnail" style="max-width:100%; max-height:100%;">');
     $("#channelNameDiv").text("Channel ID: " + id);
 
-    $("#downloadButtonDiv").html('<iframe id="downloadIframe" src="save?url=' + id + '" width="80%" height="50px" frameborder="0"></iframe>');
+    var downloadButton = $('<iframe id="downloadIframe" src="save?url=' + id + '" width="80%" height="50px" frameborder="0" border-radius="50px 10px 50px 10px"></iframe>');
+    $("#downloadButtonDiv").html(downloadButton);
+
+    downloadButton.on('click', function(event) {
+        event.preventDefault();
+    });
 
     $("#currentPlayingSongId").text("Current Playing Song ID: " + id);
 
     // ---- PLAY SONG ----
-    let url = play(id, ind); // play() function से audio URL return करवाओ
-    localStorage.setItem("lastSongUrl", url);   // ✅ save googlevideo url
-    localStorage.setItem("lastSongUrlTime", Date.now()); // ✅ कब save हुआ
+    play(id, indId);
 
-    // Save progress
+    // --- SAVE TIME PROGRESS ---
     var audio = document.getElementById("SAudio");
     if (audio) {
         audio.ontimeupdate = function () {
-            localStorage.setItem("lastSongTime", audio.currentTime);
+            var songsData = JSON.parse(localStorage.getItem("songsData") || "{}");
+            if (!songsData[id]) songsData[id] = {};
+            songsData[id].time = audio.currentTime;
+            songsData[id].title = title;
+            songsData[id].thumbnail = thumbnail;
+            songsData[id].lastUpdate = Date.now();
+            localStorage.setItem("songsData", JSON.stringify(songsData));
         };
     }
 }
 
 // ---- RESUME LAST SONG ON PAGE LOAD ----
 window.addEventListener("load", function () {
-    var id = localStorage.getItem("lastSongId");
-    var title = localStorage.getItem("lastSongTitle");
-    var thumbnail = localStorage.getItem("lastSongThumbnail");
-    var savedUrl = localStorage.getItem("lastSongUrl");
-    var savedUrlTime = localStorage.getItem("lastSongUrlTime");
-    var savedTime = localStorage.getItem("lastSongTime");
+    var lastId = localStorage.getItem("lastPlayedId");
+    if (!lastId) return;
 
-    if (id) {
-        var audio = document.getElementById("SAudio");
+    var songsData = JSON.parse(localStorage.getItem("songsData") || "{}");
+    var songInfo = songsData[lastId];
 
-        // Check if saved googlevideo URL is still fresh (usually ~6 hours valid)
-        if (savedUrl && savedUrlTime && (Date.now() - savedUrlTime < 6 * 60 * 60 * 1000)) {
-            // ✅ try to load saved URL
-            audio.src = savedUrl;
-            audio.addEventListener("loadedmetadata", function () {
-                if (savedTime) audio.currentTime = savedTime;
-                audio.play().catch(() => {
-                    // If autoplay blocked, user must click play
-                });
-            });
-        } else {
-            // ❌ expired → regenerate using videoId
-            var dummy = $('<div>')
-                .attr("vid", id)
-                .attr("index", 0)
-                .text(title || "Unknown Title");
-
-            loadSong(dummy, 0); // reload with fresh url
+    if (songInfo) {
+        // Expire check (20 min = 1200000 ms)
+        if (Date.now() - songInfo.lastUpdate > 1200000) {
+            delete songsData[lastId];
+            localStorage.setItem("songsData", JSON.stringify(songsData));
+            return; // expired, do nothing
         }
 
-        // UI restore
-        $("#thumbnail").attr("src", thumbnail);
-        $("#profileID").text("Profile ID: " + id);
-        $("#vfytitle").html('<marquee behavior="alternate" scrollamount="4">' + (title || "") + '</marquee>');
-        $("#currentSongTitle").html('<marquee behavior="alternate" scrollamount="1">' + (title || "") + '</marquee>');
+        // Dummy element with original title
+        var dummy = $('<div>')
+            .attr("vid", lastId)
+            .attr("index", 0)
+            .text(songInfo.title);
+
+        loadSong(dummy, 0);
+
+        var audio = document.getElementById("SAudio");
+        if (audio) {
+            audio.addEventListener("loadedmetadata", function () {
+                if (songInfo.time) {
+                    audio.currentTime = songInfo.time; // resume from saved
+                }
+                audio.play();
+            });
+        }
     }
-});    
+});
     
 
     
