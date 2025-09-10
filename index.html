@@ -1983,15 +1983,38 @@ window.addEventListener("load", function () {
 
         if (audio) {
             audio.addEventListener("loadedmetadata", function () {
-                if (savedTime) audio.currentTime = savedTime;
+                // ✅ Only last song resume hoga, baki reset hoga
+                if (savedTime && lastId === localStorage.getItem("lastPlayedId")) {
+                    audio.currentTime = savedTime;
+                } else {
+                    audio.currentTime = 0; // reset for other songs
+                }
                 audio.play();
             });
         }
     }
 });
-    
-        
 
+// ---- PLAY FUNCTION UPDATE FOR URL CACHE ----
+function play(videoId, index) {
+    var songsCache = JSON.parse(localStorage.getItem("songsCache") || "{}");
+
+    // Agar cache me URL available hai aur expire nahi hua hai
+    if (songsCache[videoId] && songsCache[videoId].url && Date.now() - songsCache[videoId].lastUpdate < 1000 * 60 * 30) {
+        // 30 min ke andar url valid maana
+        document.getElementById("SAudio").src = songsCache[videoId].url;
+    } else {
+        // Naya URL generate karna padega (API call se)
+        $.get("/getGooglePlaybackUrl?videoId=" + videoId, function (data) {
+            var playbackUrl = data.url; // API se jo url milega
+            songsCache[videoId].url = playbackUrl;
+            songsCache[videoId].lastUpdate = Date.now();
+            localStorage.setItem("songsCache", JSON.stringify(songsCache));
+
+            document.getElementById("SAudio").src = playbackUrl;
+        });
+    }
+}
     
 
 
