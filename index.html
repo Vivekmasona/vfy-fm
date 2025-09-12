@@ -1596,8 +1596,7 @@ $(document).ready(function(){
 
 	
 $(document).on('swiperight', '.ui-page', function(event){     
-    if(event.handled !== true) // This will prevent event triggering more then once
-    {      
+    if(event.handled !== true) {      
         var prevpage = $(this).prev('[data-role="page"]');
         if (prevpage.length > 0) {
             $.mobile.changePage(prevpage, {transition: "slide", reverse: true}, true, true);
@@ -1606,11 +1605,12 @@ $(document).on('swiperight', '.ui-page', function(event){
     }
     return false;            
 });
+
 var firstSearch = true;
 var currentQuery = "";
 var nextPageToken = "";
 var prevPageToken = "";
-var youtubeApiKey = "AIzaSyCucRPiYESnpi1fTrr3XOqAjIWr7J3Jcb8"; // Your YouTube API Key
+var youtubeApiKey = "IzaSyCucRPiYESnpi1fTrr3XOqAjIWr7J3Jcb8"; // Your YouTube API Key
 
 function search() {
     $("#homepage-content").html("");
@@ -1626,7 +1626,9 @@ function search() {
     let apiUrl;
 
     if (selectedAPI === "self") {
-        apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(q)}`;
+        apiUrl = `https://self-lac.vercel.app/v-api?q=${encodeURIComponent(q)}`;
+    } else if (selectedAPI === "self1") {
+        apiUrl = `https://self-lac.vercel.app/v-api1?q=${encodeURIComponent(q)}`;
     } else {
         apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=40&key=${youtubeApiKey}`;
     }
@@ -1645,7 +1647,7 @@ function fetchResults(apiUrl) {
         nextPageToken = data.nextPageToken || "";
         prevPageToken = data.prevPageToken || "";
 
-        $("#homepage-content").html(""); // Clear previous results
+        $("#homepage-content").html(""); 
         $.each(data.items, function (i, item) {
             var output = getOutput(item, i);
             if (output) {
@@ -1673,7 +1675,9 @@ function paginate(direction) {
 
     let apiUrl;
     if (selectedAPI === "self") {
-        apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
+        apiUrl = `https://self-lac.vercel.app/v-api?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
+    } else if (selectedAPI === "self1") {
+        apiUrl = `https://self-lac.vercel.app/v-api1?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
     } else {
         apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(currentQuery)}&type=video&maxResults=40&pageToken=${pageToken}&key=${youtubeApiKey}`;
     }
@@ -1681,15 +1685,11 @@ function paginate(direction) {
     fetchResults(apiUrl);
 }
 
-
-
-
-
+// --- Your Output Function ---
 let currentVideoListItem = null; 
 let ytPlayer = null;
 let isPlaying = false;
 
-// --- Your Output Function ---
 function getOutput(item, i) {
     var id = item.id?.videoId || item.id;
     var title = item.snippet?.title || "No title";
@@ -1728,6 +1728,8 @@ function getOutput(item, i) {
             </div>
         </b>`;
 }
+
+
 
 // --- Handle audio click ---
 function handleAudioClick(el) {
@@ -5327,14 +5329,15 @@ document.getElementById('search-btn').addEventListener('click', function() {
             <input type="radio" id="self" name="apiSelection" value="self">
             <label for="self">VFY</label>
 
+            <input type="radio" id="self1" name="apiSelection" value="self1">
+            <label for="self1">VFY2</label>
+
             <input type="radio" id="youtube" name="apiSelection" value="youtube">
             <label for="youtube">YT</label>
         </div>
     </div>
     <button class="close-btn" onclick="closePopup()">Close</button>
 </div>
-
-
 
 <script>
     function openPopup() {
@@ -5360,16 +5363,14 @@ document.getElementById('search-btn').addEventListener('click', function() {
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-        loadSelection(); // Load saved selection first
-
+        loadSelection();
         document.querySelectorAll('input[name="apiSelection"]').forEach((radio) => {
             radio.addEventListener("change", (event) => {
                 saveSelection(event.target.value);
             });
         });
     });
-</script> 
-
+</script>
 
     <script>
         async function fetchTrendingSongs() {
