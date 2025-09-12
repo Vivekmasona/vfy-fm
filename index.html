@@ -1626,9 +1626,9 @@ function search() {
     let apiUrl;
 
     if (selectedAPI === "self") {
-        apiUrl = `https://self-lac.vercel.app/v3-api2?q=${encodeURIComponent(q)}`;
+        apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(q)}`;
     } else if (selectedAPI === "self1") {
-        apiUrl = `https://self-lac.vercel.app/v3-api2?q=${encodeURIComponent(q)}`;
+        apiUrl = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(q)}`;
     } else {
         apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=40&key=${youtubeApiKey}`;
     }
