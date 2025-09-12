@@ -1610,7 +1610,7 @@ var firstSearch = true;
 var currentQuery = "";
 var nextPageToken = "";
 var prevPageToken = "";
-var youtubeApiKey = "IzaSyCucRPiYESnpi1fTrr3XOqAjIWr7J3Jcb8"; // Your YouTube API Key
+var youtubeApiKey = "AIzaSyCucRPiYESnpi1fTrr3XOqAjIWr7J3Jcb8"; // Your YouTube API Key
 
 function search() {
     $("#homepage-content").html("");
@@ -1626,9 +1626,9 @@ function search() {
     let apiUrl;
 
     if (selectedAPI === "self") {
-        apiUrl = `https://self-lac.vercel.app/v-api?q=${encodeURIComponent(q)}`;
+        apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(q)}`;
     } else if (selectedAPI === "self1") {
-        apiUrl = `https://self-lac.vercel.app/v-api1?q=${encodeURIComponent(q)}`;
+        apiUrl = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(q)}`;
     } else {
         apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=40&key=${youtubeApiKey}`;
     }
@@ -1675,9 +1675,9 @@ function paginate(direction) {
 
     let apiUrl;
     if (selectedAPI === "self") {
-        apiUrl = `https://self-lac.vercel.app/v-api?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
+        apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
     } else if (selectedAPI === "self1") {
-        apiUrl = `https://self-lac.vercel.app/v-api1?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
+        apiUrl = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
     } else {
         apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(currentQuery)}&type=video&maxResults=40&pageToken=${pageToken}&key=${youtubeApiKey}`;
     }
