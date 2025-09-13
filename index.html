@@ -908,19 +908,29 @@ border-radius: 15px;
     left: 5px;
     font-size: 28px;
     color: #E74C3C;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(15px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    border-radius: 10%;
-    padding: 5px;
+    background: rgba(255, 255, 255, 0.1); /* Slightly transparent for glow */
+    backdrop-filter: blur(20px); /* Blur background */
+    box-shadow: 
+        0 0 10px rgba(231, 76, 60, 0.7),   /* inner subtle glow */
+        0 0 20px rgba(231, 76, 60, 0.5),   /* outer soft glow */
+        0 0 30px rgba(231, 76, 60, 0.3);   /* extended glow */
+    border-radius: 50%; /* Circle for better glow effect */
+    padding: 10px;
     cursor: pointer;
     z-index: 10;
-    transition: color 0.3s;
+    transition: all 0.3s ease-in-out;
 }
 
+/* Hover effect for stronger glow */
 .save-icon:hover {
-    color: #ffff00;
+    color: #FF2D00;
+    box-shadow: 
+        0 0 15px rgba(255, 45, 0, 0.8),
+        0 0 30px rgba(255, 45, 0, 0.6),
+        0 0 45px rgba(255, 45, 0, 0.4);
 }
+
+
 
 .video-play-button {
     position: absolute;
