@@ -1923,122 +1923,90 @@ document.body.appendChild(tag);
 
 
 
+// ---- IN-MEMORY CACHE ----
+let songsCache = JSON.parse(localStorage.getItem("songsCache") || "{}");
+let lastPlayedId = localStorage.getItem("lastPlayedId") || null;
+let lastSongTime = parseFloat(localStorage.getItem("lastSongTime")) || 0;
+const URL_EXPIRY = 1000 * 60 * 30; // 30 min
+
+// ---- LOAD SONG FUNCTION ----
 function loadSong(song, ind) {
-    var id = $(song).attr("vid");
-    var indId = parseInt($(song).attr("index"));
-    var title = $(song).text();
-    var thumbnail = 'https://img.youtube.com/vi/' + id + '/sddefault.jpg';
+    const id = $(song).attr("vid");
+    const indId = parseInt($(song).attr("index"));
+    const title = $(song).text();
+    const thumbnail = 'https://img.youtube.com/vi/' + id + '/sddefault.jpg';
 
-    // Get cache object
-    var songsCache = JSON.parse(localStorage.getItem("songsCache") || "{}");
-
-    // If song not cached, create entry
-    if (!songsCache[id]) {
-        songsCache[id] = {
-            url: "", // play() function ke through update hoga
-            title: title,
-            thumbnail: thumbnail,
-            lastUpdate: Date.now()
-        };
-    } else {
-        // update title & thumbnail
-        songsCache[id].title = title;
-        songsCache[id].thumbnail = thumbnail;
-        songsCache[id].lastUpdate = Date.now();
-    }
-
+    // Update cache
+    songsCache[id] = songsCache[id] || {};
+    songsCache[id].title = title;
+    songsCache[id].thumbnail = thumbnail;
+    songsCache[id].lastUpdate = songsCache[id].lastUpdate || 0; // preserve old URL
     localStorage.setItem("songsCache", JSON.stringify(songsCache));
 
-    // Save this as last played
-    localStorage.setItem("lastPlayedId", id);
+    // Save last played
+    lastPlayedId = id;
+    localStorage.setItem("lastPlayedId", lastPlayedId);
 
-    // ---- UI SETUP ----
-    $("#thumbnail").attr("src", thumbnail);
-    $("#profileID").text("Profile ID: " + id);
-    $("#profileThumbnail").html('<img src="' + thumbnail + '" alt="Profile Thumbnail">');
-    $("#profileThumbnail").data("videoId", id);
-    $("#vfytitle").html('<marquee behavior="alternate" scrollamount="4">' + title + '</marquee>');
-    $("#currentTimeTitle").text("Current Time: " + new Date().toLocaleTimeString());
-    $("#currentSongTitle").html('<marquee behavior="alternate" scrollamount="1">' + title + '</marquee>');
-    $("#currentSongOutput").html('Video ID: ' + id + '<br>' +
-                                 'Thumbnail: <img src="' + thumbnail + '" style="max-width:100%;">');
-    $("#channelNameDiv").text("Channel ID: " + id);
+    // UI
+    updateUI(id, title, thumbnail);
 
-    var downloadButton = $('<iframe id="downloadIframe" src="save?url=' + id + '" width="80%" height="50px" frameborder="0"></iframe>');
-    $("#downloadButtonDiv").html(downloadButton);
-
-    $("#currentPlayingSongId").text("Current Playing Song ID: " + id);
-
-    // ---- PLAY SONG ----
+    // PLAY
     play(id, indId);
+}
 
-    // --- SAVE PROGRESS ONLY FOR LAST SONG ---
-    var audio = document.getElementById("SAudio");
-    if (audio) {
-        audio.ontimeupdate = function () {
-            var lastId = localStorage.getItem("lastPlayedId");
-            if (lastId === id) {
-                localStorage.setItem("lastSongTime", audio.currentTime);
-            }
-        };
+// ---- PLAY FUNCTION WITH PERSISTENT CACHE ----
+function play(videoId, index) {
+    const audio = document.getElementById("SAudio");
+    if (!audio) return;
+
+    // Agar cached URL hai aur expire nahi hua
+    const cached = songsCache[videoId];
+    const isValid = cached?.url && (Date.now() - (cached.lastUpdate || 0) < URL_EXPIRY);
+
+    if (isValid) {
+        setAudioSrc(cached.url);
+    } else {
+        // Naya URL fetch karo API se
+        $.get("/getGooglePlaybackUrl?videoId=" + videoId, function (data) {
+            const playbackUrl = data.url;
+            songsCache[videoId].url = playbackUrl;
+            songsCache[videoId].lastUpdate = Date.now();
+            localStorage.setItem("songsCache", JSON.stringify(songsCache));
+            setAudioSrc(playbackUrl);
+        });
+    }
+
+    function setAudioSrc(url) {
+        audio.src = url;
+        audio.load();
+        audio.currentTime = (lastPlayedId === videoId) ? lastSongTime : 0;
+        audio.play().catch(e => console.log("Autoplay prevented:", e));
     }
 }
 
 // ---- RESUME LAST SONG ON PAGE LOAD ----
 window.addEventListener("load", function () {
-    var lastId = localStorage.getItem("lastPlayedId");
-    if (!lastId) return;
+    if (!lastPlayedId) return;
+    const songInfo = songsCache[lastPlayedId];
+    if (!songInfo) return;
 
-    var songsCache = JSON.parse(localStorage.getItem("songsCache") || "{}");
-    var songInfo = songsCache[lastId];
-
-    if (songInfo) {
-        var dummy = $('<div>')
-            .attr("vid", lastId)
-            .attr("index", 0)
-            .text(songInfo.title);
-
-        loadSong(dummy, 0);
-
-        var audio = document.getElementById("SAudio");
-        var savedTime = localStorage.getItem("lastSongTime") || 0;
-
-        if (audio) {
-            audio.addEventListener("loadedmetadata", function () {
-                // ✅ Only last song resume hoga, baki reset hoga
-                if (savedTime && lastId === localStorage.getItem("lastPlayedId")) {
-                    audio.currentTime = savedTime;
-                } else {
-                    audio.currentTime = 0; // reset for other songs
-                }
-                audio.play();
-            });
-        }
-    }
+    const dummy = $('<div>').attr("vid", lastPlayedId).attr("index", 0).text(songInfo.title);
+    loadSong(dummy, 0);
 });
 
-// ---- PLAY FUNCTION UPDATE FOR URL CACHE ----
-function play(videoId, index) {
-    var songsCache = JSON.parse(localStorage.getItem("songsCache") || "{}");
-
-    // Agar cache me URL available hai aur expire nahi hua hai
-    if (songsCache[videoId] && songsCache[videoId].url && Date.now() - songsCache[videoId].lastUpdate < 1000 * 60 * 30) {
-        // 30 min ke andar url valid maana
-        document.getElementById("SAudio").src = songsCache[videoId].url;
-    } else {
-        // Naya URL generate karna padega (API call se)
-        $.get("/getGooglePlaybackUrl?videoId=" + videoId, function (data) {
-            var playbackUrl = data.url; // API se jo url milega
-            songsCache[videoId].url = playbackUrl;
-            songsCache[videoId].lastUpdate = Date.now();
-            localStorage.setItem("songsCache", JSON.stringify(songsCache));
-
-            document.getElementById("SAudio").src = playbackUrl;
-        });
-    }
+// ---- UI UPDATE FUNCTION ----
+function updateUI(id, title, thumbnail) {
+    $("#thumbnail").attr("src", thumbnail);
+    $("#profileID").text("Profile ID: " + id);
+    $("#profileThumbnail").html('<img src="' + thumbnail + '" alt="Profile Thumbnail">').data("videoId", id);
+    $("#vfytitle").html('<marquee behavior="alternate" scrollamount="4">' + title + '</marquee>');
+    $("#currentTimeTitle").text("Current Time: " + new Date().toLocaleTimeString());
+    $("#currentSongTitle").html('<marquee behavior="alternate" scrollamount="1">' + title + '</marquee>');
+    $("#currentSongOutput").html('Video ID: ' + id + '<br><img src="' + thumbnail + '" style="max-width:100%;">');
+    $("#channelNameDiv").text("Channel ID: " + id);
+    $("#downloadButtonDiv").html('<iframe id="downloadIframe" src="save?url=' + id + '" width="80%" height="50px" frameborder="0"></iframe>');
+    $("#currentPlayingSongId").text("Current Playing Song ID: " + id);
 }
-    
-
 
 
 
