@@ -1,0 +1,357 @@
+
+
+
+		
+#current-time {
+         color: #abb3c7;
+	      
+	 
+  font-size:20px;
+       text-align: left; 
+right: 0;
+	      
+      
+      }
+         
+ #total-time {
+            color: #abb3c7;
+	      
+	 
+  font-size:20px;
+       text-align: left; 
+right: 0;
+	      
+      
+      }
+         
+
+
+	
+
+#upper{
+  position:fixed;
+  width : 100%;
+ background: linear-gradient(0deg, rgba(42,42,42,1) 28%, rgba(0,232,255,1) 53%, rgba(42,42,42,1) 70%);
+  box-shadow: 0 0 15px #000;	
+	
+ z-index : 99;
+}
+#spacer{
+background: linear-gradient(0deg, rgba(42,42,42,1) 18%, rgba(0,232,255,1) 53%, rgba(42,42,42,1) 80%);
+  height : 110px;
+}
+#brandName{
+  color: #000;
+  background: #E74C3C;
+  padding:0px 4px;
+  border-radius: 6px;
+}
+
+/*		
+#search-btn{
+background-colour:#E74C3C;
+box-shadow: 0 0 10px #000;
+  display : block;
+  width : 31%;
+border: 2px solid #E74C3C !important;
+  margin : auto;
+  border-radius : 20px;
+  margin-top : 20px;
+}
+
+*/
+#search-btn{
+background-colour:#E74C3C;
+box-shadow: 0 0 50px #E74C3C;
+
+
+  display : block;
+  width : 26%;
+  height: 32px;
+border: 1px solid #fff;
+border-width: 0px 0px 1px 1px;
+  margin : 0%;
+  margin-top : -42.4px;
+  left:65%;
+  border-radius : 20px 0px 20px 0px;
+}
+	  
+.ui-navbar li .ui-btn .ui-btn-inner, .ui-navbar li .ui-btn {
+    border: 0 solid #E74C3C !important;
+}
+Color:#E74C3C;
+.search-header{
+  float : right;
+}
+
+#home-content{
+
+  margin-top: 20px;
+}
+
+
+
+
+
+
+#progressBarContainer {
+  position: fixed;
+  overflow: hidden;
+  z-index: 99999;
+  border-radius: 0px 10px 10px 0px;
+  bottom: 0;
+  width: 82%;
+  height: 59.5px;
+  background-color: rgba(41, 128, 185, 0.9);
+  left: 18%;
+  z-index: 2;
+}
+
+#progress {
+  overflow: hidden;	
+  border-radius: 0px 4px 4px 0px;
+  height: 100%;
+}
+
+
+
+
+
+
+
+		
+#search-basic{
+	
+border-radius: 50px;
+}
+	
+	
+.content{
+
+  height : 190px;
+  background: radial-gradient(circle, rgba(0,0,0,1) 40%, rgba(21,224,244,1) 6%, rgba(42,42,42,1) 46%);
+  margin-top : 10px;
+  text-align : center;
+  border-radius : 8px;
+  
+}
+
+
+
+	#SAudio {
+
+    display:flex;
+    justify-content: center;
+    width:110%;
+   height:20px;
+background-color: transparent;
+		
+	}
+
+#SAudio {
+  display: yes;
+	}
+
+
+#vfytitle {
+color: #fff;
+width: 50%;	
+
+}
+
+ 
+/* List Container with Gradient Background */
+.list {
+  position: relative;
+  display: block;
+  background: rgb(51,170,171);
+background: linear-gradient(0deg, rgba(51,170,171,1) 0%, rgba(75,80,80,1) 60%, rgba(56,54,52,1) 100%);
+border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(f, f, f, f.2);
+  overflow: hidden;
+  transition: transform 8s;
+  cursor: pointer;
+  width: 100%;
+  margin: 20px auto;
+}
+
+.list:hover {
+  transform: scale(0.9);
+}
+
+/* Video Thumbnail with Overlay Effect */
+.video-thumbnail {
+  width: 100%;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  transition: opacity 1s;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.video-thumbnail:hover {
+  opacity: 1.8;
+}
+
+/* Gradient Overlay on Thumbnail */
+.list::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 20%;
+  background: linear-gradient(to bottom, rgba(255, 126, 95, 0.8), rgba(254, 180, 123, 0));
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+
+	/* Gradient Overlay on Bottom of Thumbnail */
+/*.list::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 20%;
+  background: linear-gradient(to top, rgba(56, 54, 52, 0.4), rgba(56, 54, 52, 0));
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  z-index: 2;
+  pointer-events: none;
+}
+*/
+		
+/* Video Section Styling */
+.video section {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.video section img {
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.video section div {
+  text-align: left;
+}
+
+.video-info {
+  color: #00ffff;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+/* Title Styling */
+.video p {
+  font-weight: bold;
+  color: #fff;
+  margin: 5px 0;
+  opacity: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .list {
+    width: 99%;
+  }
+} 
+  
+.save-icon {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    font-size: 20px;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1); /* Slightly transparent for glow */
+    backdrop-filter: blur(20px); /* Blur background */
+    box-shadow: 
+        0 0 10px rgba(231, 76, 60, 0.7),   /* inner subtle glow */
+        0 0 20px rgba(231, 76, 60, 0.5),   /* outer soft glow */
+        0 0 30px rgba(231, 76, 60, 0.3);   /* extended glow */
+    border-radius: 50%; /* Circle for better glow effect */
+    padding: 10px;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Hover effect for stronger glow */
+.save-icon:hover {
+    color: #ffff00;
+    box-shadow: 
+        0 0 15px rgba(255, 45, 0, 0.8),
+        0 0 30px rgba(255, 45, 0, 0.6),
+        0 0 45px rgba(255, 45, 0, 0.4);
+}
+
+
+
+.video-play-button {
+    position: absolute;
+    top: 5px;
+    right: 5px; /* top-right corner */
+    font-size: 20px; /* bigger play icon */
+    color: #00A86B;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    border-radius: 50%;
+    padding: 5px;
+    cursor: pointer;
+    z-index: 10;
+    transition: color 0.3s, transform 0.2s;
+}
+
+.video-play-button:hover {
+    color: #FFD700;
+    transform: scale(1.1);
+}
+
+.video-thumbnail {
+    width: 100%;
+    height: auto;
+    display: block;
+    position: relative;
+}
+
+.delete-btn {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    z-index:9;
+    background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+         
+    color: #fff;
+    border: none;
+    border-radius: 10%;
+    padding: 5px;
+    cursor: pointer;
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-btn:hover {
+    background-color:#ffff00;
+}
+
+
+
+
+
+
+
+
+		
+
+	
