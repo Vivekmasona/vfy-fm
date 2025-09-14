@@ -1,4 +1,4 @@
-<script>
+
   // Page load hote hi sid check karo
   window.addEventListener("DOMContentLoaded", () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -17,4 +17,4 @@
       window.history.replaceState({}, document.title, newUrl);
     }
   });
-</script>
+
