@@ -191,6 +191,72 @@
 #uploadLabel {
     display: none !important;
 }
+
+/* 🔹 Header flex fix */
+.fixed-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: nowrap;    /* ab kabhi line break nahi hoga */
+    overflow: hidden;     /* overflow hide */
+}
+
+/* 🔹 SearchForm ek line me */
+.searchForm {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;              /* flexible space le */
+    min-width: 0;         /* shrink allow kare */
+    flex-wrap: nowrap;
+    overflow: hidden;
+}
+
+/* 🔹 Search input shrink */
+.searchForm input[type="text"] {
+    flex: 1;              /* full space le but shrink kare */
+    min-width: 80px;      /* minimum size */
+    max-width: 180px;     /* jyada bada na ho */
+}
+
+/* 🔹 Radio group inline fix */
+.radioGroup {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;       /* radio shrink na ho */
+}
+
+/* 🔹 Header buttons fix */
+.headerControls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;       /* buttons shrink na ho */
+}
+
+
+.fixed-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* left & right equal push */
+    padding: 10px 15px;             /* thoda equal space dono side */
+    flex-wrap: nowrap;
+    gap: 0;                         /* extra gap hata diya */
+    overflow: hidden;
+    box-sizing: border-box;         /* ensure padding include */
+}
+
+/* Controls right align fix */
+.headerControls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    margin-right: 0;                /* right side fix */
+}
+    
 </style>
 
 
