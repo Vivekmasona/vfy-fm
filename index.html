@@ -1524,6 +1524,18 @@ $(document).ready(function() {
   }
 });
 $(document).ready(function() {
+  // URL params se q nikal lo
+  const params = new URLSearchParams(window.location.search);
+  const query = params.get("q");
+
+  if (query) {
+    $(".search-bar").val(decodeURIComponent(query));
+    search(decodeURIComponent(query));
+    openModal(); // Saath me modal open ho
+  }
+});
+	
+$(document).ready(function() {
   // Get the hash from the URL (after #)
   const hash = window.location.hash.substring(1); 
 
