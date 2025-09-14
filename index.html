@@ -18,9 +18,9 @@
   <script src="connect/url/url.js" defer></script>
 
 <script src="trending/td.js" defer></script>
-<link rel="stylesheet" href="massage/ms.css" />
-  <script src="massage/ms.js" defer></script>
+
 <link rel="stylesheet" href="connect/player.css" />
+<link rel="stylesheet" href="attachment/download.css" />
   <script src="connect/player.js" defer></script>
 <script src="attachment/sharelink.js" defer></script>
 <link rel="stylesheet" href="attachment/customalert.css" />
@@ -3456,110 +3456,6 @@ var offlineMsg = document.getElementById("offline-message");
 
 
 
-
-
-
-
-	    
-	    
-
-
-
-
-
-
-	    
-
-
-
-<style>
-    
-    /* --- Button Styling --- */
-.download-popup-button {
-    position: fixed;
-    bottom: 15%;
-    right: 6%;
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    border: none;
-    background: linear-gradient(45deg, #ff416c, #ff4b2b);
-    color: white;
-    font-size: 30px;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 0 20px #ff416c, 0 0 40px #ff4b2b, 0 0 60px #ff416c;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    z-index: 9999;
-}
-
-/* Button hover effect */
-.download-popup-button:hover {
-    transform: scale(1.2) rotate(-5deg);
-    box-shadow: 0 0 30px #ff416c, 0 0 60px #ff4b2b, 0 0 90px #ff416c;
-}
-
-/* --- Button icon --- */
-.download-popup-button a {
-    color: white;
-    text-decoration: none;
-}
-
-/* --- Orbiting Icons Wrapper --- */
-.icon-wrapper {
-    position: fixed;
-    bottom: 15%;
-    right: 6%;
-    width: 70px;
-    height: 70px;
-    pointer-events: none;
-}
-
-/* --- Each Orbiting Icon --- */
-.icon-wrapper svg {
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    top: 50%;
-    left: 50%;
-    transform-origin: -50% -50%;
-    animation: spin 1.2s linear infinite;
-    fill: #00ffff;
-    filter: drop-shadow(0 0 8px #00ffff);
-}
-
-/* Slight delay for each icon for staggered orbit */
-.icon-wrapper svg:nth-child(1) { animation-delay: 0s; }
-.icon-wrapper svg:nth-child(2) { animation-delay: 0.2s; }
-.icon-wrapper svg:nth-child(3) { animation-delay: 0.4s; }
-.icon-wrapper svg:nth-child(4) { animation-delay: 0.6s; }
-.icon-wrapper svg:nth-child(5) { animation-delay: 0.8s; }
-.icon-wrapper svg:nth-child(6) { animation-delay: 1s; }
-
-/* --- Spin Animation --- */
-@keyframes spin {
-    0%   { transform: rotate(0deg) translate(40px) rotate(0deg); }
-    100% { transform: rotate(360deg) translate(40px) rotate(-360deg); }
-}
-
-/* --- Optional: Button shake on click --- */
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-8px); }
-    40%, 80% { transform: translateX(8px); }
-}
-
-/* Add shake effect on click */
-.download-popup-button.shake {
-    animation: shake 0.5s;
-}
-</style>
-
-            
-
-
   </div></div></div>
 
 <div id="share_titlevkm1m"></div>
@@ -3584,205 +3480,7 @@ var offlineMsg = document.getElementById("offline-message");
 
 	
 	
-	<script>
-
-
-
-$('#showAutoClose').click( function (){
-  showToast(
-    { 
-      eleWrapper: '#example',
-      msg: 'VFY:-Your Download Is In Process.',
-      theme: 'success',
-      closebutto: false,
-      autoClose: true
-    } 
-  );
-});
-
-function showToast(option){
-  var wrapper = $(option.eleWrapper);
-  var toast = createToast(option);
-  toast = $(toast).hide().fadeIn(750);
-  if(option.autoClose){
-    var outTime  = option.autoCloseTime || 3500;
-    if(outTime < 1000){
-      outTime =  1000;
-    }
-    var watch = setTimeout(function(){
-      toast.animate({ 'margin-top' : '-50px' , 'opacity': '0'},500, function(){
-        this.remove();
-        if(option.afterClose){
-          option.afterClose();
-        }
-      })
-    }, outTime);
-  }
-
-  $(wrapper).on('click', '.hs-close', function(){
-    $(this).closest('.hs-toast').remove();
-    //clearTimeout(watch);
-    if(option.afterClose){
-      option.afterClose();
-    }  
-  });
-
-  $(wrapper).append(toast);
-  if(option.afterShow){
-    option.afterShow();
-  }
-}
-
-function createToast(option){
-  var final = toastCaseValidation(option);
-  var html = `
-               <div class="hs-toast hs-theme-`+(option.theme).toLowerCase()+`">
-                <div class="hs-toast-inner">                
-                  <div class="hs-toast-icons">
-                    `+final.icon+`
-                  </div>
-                  <div class="hs-toast-msg">
-                    `+final.msg+`
-                  </div>
-                  <div class="hs-toast-action">
-                    `+final.close+`
-                  </div>
-                </div>
-               </div>`;
-  return html;
-}
-
-function toastCaseValidation(option){
-  var finalOption={};
-  var toastmsg;
-  var themeIco;
-  var closeBtn =  '<butto type="butto" class="hs-close">&#10006;</butto>';
-  switch(option.theme) {
-    case 'error':
-      themeIco = '<svg aria-hidden="true" focusable="false"  xmlns="http://www.w3.org/2000/svg" width="1.875em" height="1.875em" viewBox="0 0 30 30"> <circle fill="none" stroke="#fff" stroke-width="2"  cx="50%" cy="50%" r="13" stroke-dasharray="100"> <animate attributeName="stroke-dashoffset" from="100" to="0" dur="0.9s" /> </circle> <line fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"  x1="10.5" y1="10.5" x2="19.5" y2="19.5" stroke-dasharray="100"> <animate attributeName="stroke-dashoffset"  from="100" to="0" dur="4s" /> </line> <line fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"  x1="19.5" y1="10.5" x2="10.5" y2="19.5" stroke-dasharray="100"> <animate attributeName="stroke-dashoffset"  from="100" to="0" dur="4s" /> </line> </svg>';
-      break;
-    case 'success':
-      themeIco = '<svg aria-hidden="true" focusable="false"  xmlns="http://www.w3.org/2000/svg" width="1.875em" height="1.875em" viewBox="0 0 30 30"> <circle fill="none" stroke="#fff" stroke-width="2" cx="50%" cy="50%" r="13" stroke-dasharray="100"> <animate attributeName="stroke-dashoffset" from="100" to="0" dur="0.9s" /> </circle> <polyline fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" points="8,17 13,21 22,10" stroke-dasharray="100"> <animate attributeName="stroke-dashoffset"  from="100" to="0" dur="4s" /> </polyline> </svg>';
-      break;
-    case 'warning':
-      themeIco = '<svg aria-hidden="true" focusable="false"  xmlns="http://www.w3.org/2000/svg" width="1.875em" height="1.875em" viewBox="0 0 30 30" > <path  d="M 13 2 Q 15,0 17,2 L 26,23 Q 26,26 23,26 L 6,26 Q 2,26 3,22 L 13,2" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="100"> <animate attributeName="stroke-dashoffset"  from="100" to="0" dur="0.9s" /> </path> <line  fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" x1="15" y1="9" x2="15" y2="17" stroke-dasharray="100"> <animate attributeName="stroke-dashoffset"  from="100" to="0" dur="5s" /> </line> <line  fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" x1="15" y1="21" x2="15" y2="22" stroke-dasharray="100"> <animate attributeName="stroke-dashoffset"  from="100" to="0" dur="5s" /> </line> </svg>';
-      break;
-    default:
-      themeIco = '<svg aria-hidden="true" focusable="false"  xmlns="http://www.w3.org/2000/svg" width="1.875em" height="1.875em" viewBox="0 0 30 30"> <circle fill="none" stroke="#fff" stroke-width="2" cx="50%" cy="50%" r="13" stroke-dasharray="100"> <animate attributeName="stroke-dashoffset" from="100" to="0" dur="0.9s" /> </circle> <line fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" x1="15" y1="9" x2="15" y2="9" stroke-dasharray="100"> <animate attributeName="stroke-dashoffset"  from="100" to="0" dur="6s" /> </line> <line fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" x1="15" y1="15" x2="15" y2="22" stroke-dasharray="100"> <animate attributeName="stroke-dashoffset"  from="100" to="0" dur="6s" /> </line> </svg>';
-  }
-  if(option.closebutto == false){
-    closeBtn = '';
-  }
-  
-  if(option.msg == undefined ){ 
-    toastmsg = 'No Message';
-  }
-  else{
-    if(option.msg.length != 1  && typeof option.msg === "object" ){ 
-      toastmsg = '<ul>';            
-        option.msg.forEach(function(val,index){                     
-          toastmsg = toastmsg + '<li>'+val+'</li>';
-        });                
-      toastmsg = toastmsg +'</ul>';     
-    }
-    else{                                
-      toastmsg =option.msg;             
-    }
-	}
-  finalOption.icon = themeIco;
-  finalOption.close = closeBtn;
-  finalOption.msg = toastmsg;
-  return finalOption;
-}
-</script>
-
-<style>
- .hs-toast-fixed-top{
-    position: fixed;
-    top: 60px;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-  }
-
-  .hs-toast-absolute-top{
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-  }
-  
-  .hs-toast-wrapper{
-    margin: 0 auto;
-    max-width: 44rem;
-    padding-left: .75rem;
-    padding-right: .75rem;
-  }
-  .hs-toast{
-    margin: 0 auto;
-    border-radius: .25rem;
-    box-shadow: 0 .2rem .5rem rgba(0,0,0,.2);
-    background: #5b7e96;
-    padding: .5rem .75rem;
-    max-width: 40rem;
-    position: relative;
-  }
-
-  .hs-toast-inner{
-    display: flex;
-  }
-  .hs-toast-msg{
-    color: white;
-    line-height: 1.5rem;
-    flex: 1 1 0%;
-    min-width: 0;
-    padding-top: .2rem;
-    padding-left: .5rem;
-    padding-right: .75rem;
-        overflow-wrap: break-word;
-    word-wrap: break-word;
-    -webkit-hyphens: auto;
-    -ms-hyphens: auto;
-    hyphens: auto;
-  }
-  .hs-toast-msg ul{
-    margin: 0;
-    padding-left: .75rem;
-  }
-  .hs-toast-icons, .hs-toast-action{
-    flex: none;
-    color: white;
-  }
-  .hs-toast-action{
-    cursor: pointer;
-  }
-  
-  .hs-close{
-    border: none;
-    background: none;
-    color:white;
-    outline:none;
-    padding: 0;
-    font-family: 'Arial', Segoe UI Symbol;
-  }
-  .hs-toast + .hs-toast{
-    margin-top: .5rem;
-  }
-  .hs-theme-error{
-    background: #fe4a5d;
-  }
-  .hs-theme-success{
-    background: rgb(255,94,0);
-background: linear-gradient(90deg, rgba(255,94,0,1) 0%, rgba(0,212,255,1) 49%, rgba(225,41,17,1) 100%);
-  }
-  .hs-theme-warning{
-    background: #000;
-  }
-
-
-</style>
-
-
+	
 
 
 
@@ -5417,6 +5115,45 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
+
+
+	
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+
+    <div class="side-menu">
+        <div class="menu-item">
+            <i class="fas fa-cog" onclick="openPopup()" ></i>
+            
+        </div>
+        <div class="menu-item">
+            <i class="fas fa-microphone" onclick="startDictation()"></i>
+            
+          
+		</div>
+
+
+  <div class="menu-item" onclick="showDetail()">
+  <i id="heartDot" class="fas fa-heart"></i>
+</div>
+		
+    </div>
+
+    
+
+
+  
+
+
+
+<div id="customAlert"></div>
+
+
+
+
+
 <style>
         * {
             margin: 0;
@@ -5484,45 +5221,6 @@ document.getElementById('search-btn').addEventListener('click', function() {
             opacity: 0.8;
         }
 </style>
-
-	
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-</head>
-<body>
-
-    <div class="side-menu">
-        <div class="menu-item">
-            <i class="fas fa-cog" onclick="openPopup()" ></i>
-            
-        </div>
-        <div class="menu-item">
-            <i class="fas fa-microphone" onclick="startDictation()"></i>
-            
-          
-		</div>
-
-
-  <div class="menu-item" onclick="showDetail()">
-  <i id="heartDot" class="fas fa-heart"></i>
-</div>
-		
-    </div>
-
-    
-
-
-  
-
-
-
-<div id="customAlert"></div>
-
-
-
-
-
-
 
 
 
