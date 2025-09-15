@@ -2021,7 +2021,6 @@ document.body.appendChild(tag);
         
 
 
-
 // ---- IN-MEMORY CACHE ----
 let songsCache = JSON.parse(localStorage.getItem("songsCache") || "{}");
 let lastPlayedId = localStorage.getItem("lastPlayedId") || null;
@@ -2078,8 +2077,17 @@ function play(videoId, index) {
     function setAudioSrc(url) {
         audio.src = url;
         audio.load();
+        // Agar last played song hai to resume karo
         audio.currentTime = (lastPlayedId === videoId) ? lastSongTime : 0;
         audio.play().catch(e => console.log("Autoplay prevented:", e));
+
+        // ---- SAVE PROGRESS ----
+        audio.ontimeupdate = function () {
+            if (lastPlayedId === videoId) {
+                lastSongTime = audio.currentTime;
+                localStorage.setItem("lastSongTime", lastSongTime);
+            }
+        };
     }
 }
 
@@ -2107,6 +2115,7 @@ function updateUI(id, title, thumbnail) {
     $("#currentPlayingSongId").text("Current Playing Song ID: " + id);
 }
 
+    
 
 
 
