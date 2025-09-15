@@ -2018,8 +2018,6 @@ tag.src = "https://www.youtube.com/iframe_api";
 document.body.appendChild(tag);
 
 
-        
-
 // ---- IN-MEMORY CACHE ----
 let songsCache = JSON.parse(localStorage.getItem("songsCache") || "{}");
 let lastPlayedId = localStorage.getItem("lastPlayedId") || null;
@@ -2033,7 +2031,7 @@ function loadSong(song, ind) {
     const title = $(song).text();
     const thumbnail = "https://img.youtube.com/vi/" + id + "/sddefault.jpg";
 
-    // Update cache (title, thumbnail, link expiry)
+    // Cache update (title, thumbnail, link expiry ke liye)
     songsCache[id] = songsCache[id] || {};
     songsCache[id].title = title;
     songsCache[id].thumbnail = thumbnail;
@@ -2056,7 +2054,6 @@ function play(videoId, index) {
     const audio = document.getElementById("SAudio");
     if (!audio) return;
 
-    // Agar cached URL hai aur expire nahi hua
     const cached = songsCache[videoId];
     const isValid =
         cached?.url &&
@@ -2065,7 +2062,7 @@ function play(videoId, index) {
     if (isValid) {
         setAudioSrc(cached.url);
     } else {
-        // Naya URL fetch karo API se
+        // API se naya URL fetch
         $.get("/getGooglePlaybackUrl?videoId=" + videoId, function (data) {
             const playbackUrl = data.url;
             songsCache[videoId].url = playbackUrl;
@@ -2079,16 +2076,21 @@ function play(videoId, index) {
         audio.src = url;
         audio.load();
 
-        // Agar yehi last played song hai → resume karo
-        audio.currentTime = lastPlayedId === videoId ? lastSongTime : 0;
-
-        audio.play().catch((e) =>
-            console.log("Autoplay prevented:", e)
-        );
+        // Agar yehi last played song hai to usi time se resume karo
+        if (lastPlayedId === videoId && lastSongTime > 0) {
+            audio.addEventListener("loadedmetadata", () => {
+                if (lastSongTime < audio.duration) {
+                    audio.currentTime = lastSongTime;
+                }
+                audio.play().catch(e => console.log("Autoplay prevented:", e));
+            }, { once: true });
+        } else {
+            audio.play().catch(e => console.log("Autoplay prevented:", e));
+        }
 
         // Sirf last played song ka time save karo
         audio.ontimeupdate = function () {
-            if (lastPlayedId === videoId) {
+            if (lastPlayedId === videoId && !audio.paused) {
                 lastSongTime = audio.currentTime;
                 localStorage.setItem("lastSongTime", lastSongTime);
             }
@@ -2145,9 +2147,9 @@ function updateUI(id, title, thumbnail) {
     $("#currentPlayingSongId").text(
         "Current Playing Song ID: " + id
     );
-}
+}        
 
-    
+
     
 
 
