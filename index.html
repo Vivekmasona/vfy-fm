@@ -2025,6 +2025,7 @@ document.body.appendChild(tag);
 let songsCache = JSON.parse(localStorage.getItem("songsCache") || "{}");
 let lastPlayedId = localStorage.getItem("lastPlayedId") || null;
 let lastSongTime = parseFloat(localStorage.getItem("lastSongTime")) || 0;
+let lastDirection = localStorage.getItem("lastDirection") || "forward"; // forward/backward
 const URL_EXPIRY = 1000 * 60 * 30; // 30 min
 
 // ---- LOAD SONG FUNCTION ----
@@ -2077,8 +2078,22 @@ function play(videoId, index) {
     function setAudioSrc(url) {
         audio.src = url;
         audio.load();
+
         // Agar last played song hai to resume karo
         audio.currentTime = (lastPlayedId === videoId) ? lastSongTime : 0;
+
+        // Direction restore
+        if (lastDirection === "backward") {
+            try {
+                audio.playbackRate = -1; // ⚠️ reverse normally not supported
+            } catch (e) {
+                console.log("Reverse playback not supported, using forward.");
+                audio.playbackRate = 1;
+            }
+        } else {
+            audio.playbackRate = 1;
+        }
+
         audio.play().catch(e => console.log("Autoplay prevented:", e));
 
         // ---- SAVE PROGRESS ----
@@ -2086,9 +2101,32 @@ function play(videoId, index) {
             if (lastPlayedId === videoId) {
                 lastSongTime = audio.currentTime;
                 localStorage.setItem("lastSongTime", lastSongTime);
+                localStorage.setItem("lastDirection", lastDirection);
             }
         };
     }
+}
+
+// ---- DIRECTION TOGGLE BUTTON ----
+function toggleDirection() {
+    const audio = document.getElementById("SAudio");
+    if (!audio) return;
+
+    if (lastDirection === "forward") {
+        lastDirection = "backward";
+        try {
+            audio.playbackRate = -1;
+        } catch (e) {
+            console.log("Reverse not supported, fallback to forward.");
+            audio.playbackRate = 1;
+            lastDirection = "forward";
+        }
+    } else {
+        lastDirection = "forward";
+        audio.playbackRate = 1;
+    }
+
+    localStorage.setItem("lastDirection", lastDirection);
 }
 
 // ---- RESUME LAST SONG ON PAGE LOAD ----
@@ -2114,7 +2152,6 @@ function updateUI(id, title, thumbnail) {
     $("#downloadButtonDiv").html('<iframe id="downloadIframe" src="save?url=' + id + '" width="80%" height="50px" frameborder="0"></iframe>');
     $("#currentPlayingSongId").text("Current Playing Song ID: " + id);
 }
-
     
 
 
