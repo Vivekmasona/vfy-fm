@@ -17,9 +17,14 @@
 <link rel="stylesheet" href="connect/url/url.css" />
   <script src="connect/url/url.js" defer></script>
 
-<script src="trending/td.js" defer></script>
+<link rel="stylesheet" href="database/storage.css" />
 <link rel="stylesheet" href="connect/player.css" />
   <script src="connect/player.js" defer></script>
+
+<script src="database/storage.js" defer></script>
+
+
+
 
 <!-- Toggle button -->
 <input type="checkbox" id="modeToggleBtn" class="mode-toggle-checkbox" />
@@ -208,6 +213,24 @@ if (window !== window.top) {
 
 
 </script>
+
+
+
+<!-- Popup Box -->
+<div id="jsonPopup">
+    <div class="popup-header">
+        <button id="manualClearBtn"><i class="fa fa-trash"></i> Clear Now</button>
+        <button id="closeJsonPopup"><i class="fa fa-times"></i></button>
+    </div>
+    <pre id="localStorageJSONDiv"></pre>
+    <div class="popup-footer">
+        <div id="jsonPopupCountdown"></div>
+        <div id="jsonPopupSize"></div>
+    </div>
+</div>
+
+
+
 
 
 <style>
