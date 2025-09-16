@@ -3588,43 +3588,56 @@ var offlineMsg = document.getElementById("offline-message");
             });
         }
 
-        // Function to create playlist song element
+        // Function to Display Favorite Songs as Clickable List
+function displayFavorites() {
+    const favContainer = document.getElementById('fav-songs');
+    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+
+    favContainer.innerHTML = '';
+    favorites.forEach((song, index) => {
         let output =
-    '<b index="' + index + '" class="list" vid="' + videoId + '" style="position:relative;">' +
-        '<div class="video" style="position:relative;">' +
+            '<b onclick="loadFavoriteSong(\'' + song.id + '\')" index="' + index + '" class="list" vid="' + song.id + '" style="position:relative;">' +
+                '<div class="video" style="position:relative;">' +
 
-            // ❤️ Save button
-            '<i class="fas fa-heart save-icon" ' +
-                'onclick="event.stopPropagation(); saveFavorite(' + index + ', \'' + title.replace(/'/g, "\\'") + '\', \'' + thumbnailUrl + '\', \'' + videoId + '\')"></i>' +
+                    // Thumbnail
+                    '<img src="' + song.thumbUrl + '" alt="' + song.title + '" ' +
+                        'class="video-thumbnail" index="' + index + '" vid="' + song.id + '">' +
 
-            // Thumbnail
-            '<img src="' + thumbnailUrl + '" alt="' + title + '" ' +
-                'class="video-thumbnail" index="' + index + '" vid="' + videoId + '" ' +
-                'data-thumb="' + thumbnailUrl + '" style="width:100%;">' +
+                    // Overlay play button
+                    '<div class="overlay-play" style="position:absolute; top:10px; right:10px; ' +
+                        'width:40px; height:40px; background: transparent; border-radius:50%; ' +
+                        'display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10;" ' +
+                        'onclick="loadFavoriteSong(\'' + song.id + '\')">' +
+                        '<svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">' +
+                            '<path d="M3 22v-20l18 10-18 10z"/>' +
+                        '</svg>' +
+                    '</div>' +
 
-            // Overlay play button
-            '<div class="overlay-play" style="position:absolute; top:10px; right:10px; ' +
-                'width:40px; height:40px; background: transparent; border-radius:50%; ' +
-                'display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10;" ' +
-                'onclick="loadSong(this)" vid="' + videoId + '" index="' + index + '">' +
-                '<svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">' +
-                    '<path d="M3 22v-20l18 10-18 10z"/>' +
-                '</svg>' +
-            '</div>' +
+                    // Info section
+                    '<section>' +
+                        '<img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">' +
+                        '<div>' +
+                            '<p>V F Y ' + song.title + '</p>' +
+                            '<small class="video-info">' + (song.channelTitle || "Unknown Channel") + '</small>' +
+                            '<small class="video-info"> VFY </small>' +
+                            '<small class="video-info"> Ai </small>' +
+                            '<small class="video-info">Release Date: ' + (song.videoDate ? new Date(song.videoDate).toDateString() : "N/A") + '</small>' +
+                        '</div>' +
+                    '</section>' +
 
-            // Info Section
-            '<section>' +
-                '<img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">' +
-                '<div>' +
-                    '<p>V F Y ' + title + '</p>' +
-                    '<small class="video-info">' + channelTitle + '</small>' +
-                    '<small class="video-info"> VFY </small>' +
-                    '<small class="video-info"> Ai </small>' +
-                    '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +
+                    // Delete button
+                    '<b class="delete-btn" onclick="event.stopPropagation(); removeFavorite(\'' + song.id + '\')">' +
+                        '<i class="fas fa-trash"></i>' +
+                    '</b>' +
+
                 '</div>' +
-            '</section>' +
-        '</div>' +
-    '</b>';
+            '</b>';
+
+        const li = document.createElement('li');
+        li.innerHTML = output;
+        favContainer.appendChild(li);
+    });
+}
             let songElement = document.createElement('div');
             songElement.innerHTML = output;
 
