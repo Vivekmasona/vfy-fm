@@ -5480,67 +5480,103 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
   <style>
     
+#customAlert {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 320px;
+  background: rgba(34, 34, 34, 0.8); /* translucent dark background */
+  backdrop-filter: blur(10px); /* background blur */
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 255, 150, 0.4), 0 0 50px rgba(0, 255, 150, 0.2);
+  padding: 25px 30px;
+  display: none;
+  z-index: 9999;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  color: #fff;
+  overflow: hidden;
+}
 
-    #customAlert {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #222;
-      padding: 20px 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0,255,100,0.5);
-      display: none;
-      z-index: 9999;
-    }
+/* Profile image or thumbnail */
+#customAlert img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(0, 255, 150, 0.6);
+  margin-bottom: 15px;
+  box-shadow: 0 0 15px rgba(0,255,150,0.5);
+}
 
-    .line {
-      opacity: 0;
-      font-size: 18px;
-      margin: 10px 0;
-      animation: zoomIn 0.4s forwards;
-    }
+/* Each line of text */
+.line {
+  opacity: 0;
+  font-size: 18px;
+  margin: 10px 0;
+  animation: zoomIn 0.5s forwards;
+  background: linear-gradient(90deg, #00ffcc, #00aaff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
 
-    .line .dot {
-      display: inline-block;
-      height: 10px;
-      width: 10px;
-      background: lime;
-      border-radius: 50%;
-      box-shadow: 0 0 10px lime, 0 0 20px lime;
-      margin-right: 10px;
-    }
+/* Dot for bullet */
+.line .dot {
+  display: inline-block;
+  height: 12px;
+  width: 12px;
+  background: linear-gradient(45deg, #00ffcc, #00aaff);
+  border-radius: 50%;
+  box-shadow: 0 0 10px #00ffcc, 0 0 20px #00aaff;
+  margin-right: 10px;
+}
 
-    .highlight {
-      font-weight: bold;
-      font-size: 22px;
-      color: #00ffcc;
-      animation: glow 1s infinite alternate;
-    }
+/* Highlighted text */
+.highlight {
+  font-weight: 700;
+  font-size: 20px;
+  background: linear-gradient(45deg, #ff00ff, #00ffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: glow 1.2s infinite alternate;
+  display: inline-block;
+}
 
-    @keyframes zoomIn {
-      0% { opacity: 0; transform: scale(0.8); }
-      100% { opacity: 1; transform: scale(1.05); }
-    }
+/* Zoom in animation */
+@keyframes zoomIn {
+  0% { opacity: 0; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1.05); }
+}
 
-    @keyframes glow {
-      from { text-shadow: 0 0 5px #00ffcc; }
-      to { text-shadow: 0 0 20px #00ffcc; }
-    }
+/* Glow animation */
+@keyframes glow {
+  from { text-shadow: 0 0 5px #ff00ff, 0 0 10px #00ffff; }
+  to { text-shadow: 0 0 15px #ff00ff, 0 0 25px #00ffff; }
+}
 
-    button1 {
-      background: #00ffcc;
-      color: #000;
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
+/* Stylish button */
+button1 {
+  background: linear-gradient(45deg, #00ffcc, #00aaff);
+  color: #000;
+  padding: 12px 25px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-top: 15px;
+  box-shadow: 0 4px 15px rgba(0,255,150,0.6);
+  transition: all 0.3s ease;
+}
 
-    button:hover {
-      background: #00ffaa;
-    }
+button1:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(0,255,150,0.7);
+  background: linear-gradient(45deg, #00ffaa, #00ddff);
+	  }
+    
+    
   </style>
 
 
