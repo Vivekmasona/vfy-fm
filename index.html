@@ -1939,7 +1939,6 @@ if (thumb.length) {
         <div class="yt-wrapper" data-thumb="${thumbUrl}" style="position:relative; width:100%; height:250px;">  
             <img src="${thumbUrl}" class="thumb-img" style="width:100%; height:100%; object-fit:cover; display:block;"/>  
               
-            <!-- Loading overlay -->  
             <div class="loading-overlay" style="  
                 position:absolute; top:0; left:0; width:100%; height:100%;  
                 display:flex; align-items:center; justify-content:center;  
@@ -1981,13 +1980,17 @@ if (thumb.length) {
   
     thumb.replaceWith(wrapper);  
 
-    // ------------------ STOP AND CLEAN PREVIOUS AUDIO ------------------
+    // ------------------ HARD RESET PREVIOUS AUDIO/VIDEO ------------------
     if (window.currentAudioEl) {
         window.currentAudioEl.pause();
         window.currentAudioEl.src = "";
         window.currentAudioEl.load();
+        window.currentAudioEl = null;
     }
-    if (window.currentYtPlayer) window.currentYtPlayer.pauseVideo();
+    if (window.currentYtPlayer) {
+        window.currentYtPlayer.destroy(); // destroy iframe & free memory
+        window.currentYtPlayer = null;
+    }
     if (window.currentWrapper) window.currentWrapper.find('.loading-overlay').show();
 
     window.currentWrapper = wrapper;
@@ -2000,6 +2003,7 @@ if (thumb.length) {
         playerVars: { autoplay: 0, controls: 0, modestbranding: 1, rel: 0 },  
         events: { 'onReady': onYtReady, 'onStateChange': onYtStateChange }  
     });  
+    window.currentYtPlayer = ytPlayer;  
 
     // ------------------- Audio preload -------------------  
     let audioSources = [  
@@ -2054,12 +2058,8 @@ if (thumb.length) {
     });  
 
     window.togglePlayPause = () => {  
-        if (usingAudio) {  
-            audioEl.paused ? audioEl.play() : audioEl.pause();  
-        } else {  
-            let state = ytPlayer.getPlayerState();  
-            state === YT.PlayerState.PLAYING ? ytPlayer.pauseVideo() : ytPlayer.playVideo();  
-        }  
+        if (usingAudio) audioEl.paused ? audioEl.play() : audioEl.pause();  
+        else ytPlayer.getPlayerState() === YT.PlayerState.PLAYING ? ytPlayer.pauseVideo() : ytPlayer.playVideo();  
     };  
 
     document.getElementById("ytSeek").addEventListener('input', (e) => {  
@@ -2073,8 +2073,6 @@ if (thumb.length) {
         if (usingAudio) audioEl.volume = v / 100;  
         else ytPlayer.setVolume(v);  
     });  
-
-    window.currentYtPlayer = ytPlayer;  
 }  
 
 $('<style>@keyframes blink {0%,50% {opacity:1;} 50.01%,100% {opacity:0;}}</style>').appendTo('head');  
