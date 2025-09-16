@@ -216,18 +216,6 @@ if (window !== window.top) {
 
 
 
-<!-- Popup Box -->
-<div id="jsonPopup">
-    <div class="popup-header">
-        <button id="manualClearBtn"><i class="fa fa-trash"></i> Clear Now</button>
-        <button id="closeJsonPopup"><i class="fa fa-times"></i></button>
-    </div>
-    <pre id="localStorageJSONDiv"></pre>
-    <div class="popup-footer">
-        <div id="jsonPopupCountdown"></div>
-        <div id="jsonPopupSize"></div>
-    </div>
-</div>
 
 
 
@@ -5492,6 +5480,11 @@ document.getElementById('search-btn').addEventListener('click', function() {
 		</div>
 
 
+<div class="menu-item">
+            <i class="fa fa-database" id="openJsonPopup"></i>
+            </div>
+		
+
   <div class="menu-item" onclick="showDetail()">
   <i id="heartDot" class="fas fa-heart"></i>
 </div>
@@ -5767,5 +5760,17 @@ function showDetail() {
   }
 </script>
 
-
+<!-- Popup Box -->
+<div id="jsonPopup">
+    <div class="popup-header">
+        <button id="manualClearBtn"><i class="fa fa-trash"></i> Clear Now</button>
+        <button id="closeJsonPopup"><i class="fa fa-times"></i></button>
+    </div>
+    <pre id="localStorageJSONDiv"></pre>
+    <div class="popup-footer">
+        <div id="jsonPopupCountdown"></div>
+        <div id="jsonPopupSize"></div>
+    </div>
+</div>
+	
 	
