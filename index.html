@@ -3641,6 +3641,7 @@ function createPlaylistSongElement(videoId, title, thumbnailUrl, channelTitle, v
                 deleteSong(videoId, index);
             });
 
+		
             // Add long press event listener for touch devices
             let longPressTimer;
             songElement.addEventListener('touchstart', function(event) {
@@ -3656,48 +3657,38 @@ function createPlaylistSongElement(videoId, title, thumbnailUrl, channelTitle, v
             return songElement;
         }
 
-        // Function to create playlist song element
-function createPlaylistSongElement(videoId, title, thumbnailUrl, channelTitle, videoDate, index) {
-    let output = `
-        <b onclick="loadSong(this)" index="${index}" class="list" vid="${videoId}" style="position:relative;">
-            <div class="video" style="position:relative;">
-
-                <!-- Favorite button (heart) -->
-                <i class="fas fa-heart save-icon"
-                   onclick="event.stopPropagation(); saveFavorite(${index}, '${title}', '${thumbnailUrl}', '${videoId}')"></i>
-
-                <!-- Thumbnail -->
-                <img src="${thumbnailUrl}" alt="${title}" 
-                     class="video-thumbnail" index="${index}" vid="${videoId}"
-                     data-thumb="${thumbnailUrl}" style="width:100%;">
-
-                <!-- Overlay play button -->
-                <div class="overlay-play" style="
-                    position:absolute; top:10px; right:10px;
-                    width:40px; height:40px;
-                    background: transparent;
-                    border-radius:50%; display:flex;
-                    align-items:center; justify-content:center;
-                    cursor:pointer; z-index:10;"
-                    onclick="event.stopPropagation(); playVideo('${videoId}')">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
-                        <path d="M3 22v-20l18 10-18 10z"/>
-                    </svg>
-                </div>
-
-                <!-- Song info -->
-                <section>
-                    <img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">
-                    <div>
-                        <p>V F Y ${title}</p>
-                        <small class="video-info">${channelTitle}</small>
-                        <small class="video-info">VFY</small>
-                        <small class="video-info">Ai</small>
-                        <small class="video-info">Release Date: ${new Date(videoDate).toDateString()}</small>
-                    </div>
-                </section>
-            </div>
-			</b>`;
+// Function to create playlist song element    
+function createPlaylistSongElement(videoId, title, thumbnailUrl, channelTitle, videoDate, index) {    
+    let output =    
+        '<b onclick="loadSong(this)" index="' + index + '" class="list" vid="' + videoId + '">' +    
+            '<div class="video">' +    
+  
+                // Thumbnail with favorite + video buttons  
+                '<div style="position:relative; display:inline-block;">' +  
+                    '<img src="' + thumbnailUrl + '" alt="' + title + '" class="video-thumbnail" ' +  
+                        'onclick="loadSong(this)" index="' + index + '" vid="' + videoId + '">' +  
+  
+                    // Favorite button (heart)  
+                    '<i class="fas fa-heart save-icon" ' +  
+                        'onclick="event.stopPropagation(); saveFavorite(' + index + ', \'' + title + '\', \'' + thumbnailUrl + '\', \'' + videoId + '\')"></i>' +  
+  
+                    // Video button (play icon)  
+                    '<i class="fas fa-play video-icon" ' +  
+                        'onclick="event.stopPropagation(); playVideo(\'' + videoId + '\')"></i>' +  
+                '</div>' +  
+  
+                '<section>' +    
+                    '<img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">' +    
+                    '<div>' +    
+                        '<p>V F Y ' + title + '</p>' +    
+                        '<small class="video-info">' + channelTitle + '</small>' +    
+                        '<small class="video-info"> VFY </small>' +    
+                        '<small class="video-info"> Ai </small>' +    
+                        '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +    
+                    '</div>' +    
+                '</section>' +    
+            '</div>' +    
+        '</b>';    
     
             
             // Add long press to delete functionality
