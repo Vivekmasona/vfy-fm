@@ -5480,43 +5480,45 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
   <style>
     
-#customAlert {
+
+  #customAlert {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 320px;
-  background: rgba(34, 34, 34, 0.8); /* translucent dark background */
-  backdrop-filter: blur(10px); /* background blur */
+  background: rgba(255, 255, 255, 0.15); /* translucent white */
+  backdrop-filter: blur(15px) saturate(180%); /* blur + slightly saturated */
+  -webkit-backdrop-filter: blur(15px) saturate(180%);
   border-radius: 20px;
-  box-shadow: 0 8px 30px rgba(0, 255, 150, 0.4), 0 0 50px rgba(0, 255, 150, 0.2);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2), 0 0 50px rgba(255, 255, 255, 0.3);
   padding: 25px 30px;
   display: none;
   z-index: 9999;
   text-align: center;
   font-family: 'Poppins', sans-serif;
-  color: #fff;
   overflow: hidden;
 }
 
-/* Profile image or thumbnail */
+/* Optional thumbnail/profile */
 #customAlert img {
   width: 100px;
   height: 100px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid rgba(0, 255, 150, 0.6);
+  border: 2px solid rgba(255,255,255,0.6);
   margin-bottom: 15px;
-  box-shadow: 0 0 15px rgba(0,255,150,0.5);
+  box-shadow: 0 0 15px rgba(255,255,255,0.5);
 }
 
-/* Each line of text */
+/* Text lines with gradient and bold */
 .line {
   opacity: 0;
   font-size: 18px;
+  font-weight: 700;
   margin: 10px 0;
   animation: zoomIn 0.5s forwards;
-  background: linear-gradient(90deg, #00ffcc, #00aaff);
+  background: linear-gradient(90deg, #ff6ec4, #7873f5);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -5526,17 +5528,17 @@ document.getElementById('search-btn').addEventListener('click', function() {
   display: inline-block;
   height: 12px;
   width: 12px;
-  background: linear-gradient(45deg, #00ffcc, #00aaff);
+  background: linear-gradient(45deg, #ff6ec4, #7873f5);
   border-radius: 50%;
-  box-shadow: 0 0 10px #00ffcc, 0 0 20px #00aaff;
+  box-shadow: 0 0 8px #ff6ec4, 0 0 15px #7873f5;
   margin-right: 10px;
 }
 
 /* Highlighted text */
 .highlight {
-  font-weight: 700;
+  font-weight: 800;
   font-size: 20px;
-  background: linear-gradient(45deg, #ff00ff, #00ffff);
+  background: linear-gradient(45deg, #ff9a9e, #fad0c4);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: glow 1.2s infinite alternate;
@@ -5545,20 +5547,20 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 /* Zoom in animation */
 @keyframes zoomIn {
-  0% { opacity: 0; transform: scale(0.8); }
+  0% { opacity: 0; transform: scale(0.85); }
   100% { opacity: 1; transform: scale(1.05); }
 }
 
-/* Glow animation */
+/* Glow animation for highlight */
 @keyframes glow {
-  from { text-shadow: 0 0 5px #ff00ff, 0 0 10px #00ffff; }
-  to { text-shadow: 0 0 15px #ff00ff, 0 0 25px #00ffff; }
+  from { text-shadow: 0 0 5px #ff9a9e, 0 0 10px #fad0c4; }
+  to { text-shadow: 0 0 15px #ff9a9e, 0 0 25px #fad0c4; }
 }
 
 /* Stylish button */
 button1 {
-  background: linear-gradient(45deg, #00ffcc, #00aaff);
-  color: #000;
+  background: linear-gradient(45deg, #ff6ec4, #7873f5);
+  color: #fff;
   padding: 12px 25px;
   font-size: 16px;
   font-weight: bold;
@@ -5566,17 +5568,16 @@ button1 {
   border-radius: 12px;
   cursor: pointer;
   margin-top: 15px;
-  box-shadow: 0 4px 15px rgba(0,255,150,0.6);
+  box-shadow: 0 4px 15px rgba(255,110,196,0.5);
   transition: all 0.3s ease;
 }
 
 button1:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(0,255,150,0.7);
-  background: linear-gradient(45deg, #00ffaa, #00ddff);
-	  }
-    
-    
+  box-shadow: 0 6px 25px rgba(255,110,196,0.6);
+  background: linear-gradient(45deg, #ff85c1, #8b79f5);
+}
+
   </style>
 
 
