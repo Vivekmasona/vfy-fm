@@ -1927,12 +1927,18 @@ $(document).on('click', '.overlay-play', function(e) {
     
 		
 
-let thumb = listItem.find('.video-thumbnail');
+ let thumb = listItem.find('.video-thumbnail');
 if (thumb.length) {
     let thumbUrl = thumb.attr('src');
     let wrapper = $(`
         <div class="yt-wrapper" data-thumb="${thumbUrl}" style="position:relative; width:100%;">
-            <div id="yt-player-${videoId}"></div>
+            <div id="yt-player-${videoId}" style="display:none;"></div> <!-- hide iframe initially -->
+            <div class="loader" style="
+                position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);
+                width:50px; height:50px; border:5px solid rgba(0,0,0,0.1); border-top:5px solid orange;
+                border-radius:50%; animation:spin 1s linear infinite;">
+            </div>
+
             <div class="custom-controls" style="
                 position:absolute; bottom:-16px; left:50%; transform:translateX(-50%);
                 width:99%; display:flex; align-items:center; gap:15px;
@@ -1959,6 +1965,7 @@ if (thumb.length) {
             </div>
         </div>
     `);
+
     thumb.replaceWith(wrapper);
 
     ytPlayer = new YT.Player(`yt-player-${videoId}`, {
@@ -1966,13 +1973,16 @@ if (thumb.length) {
         width: '100%',
         videoId: videoId,
         playerVars: { autoplay: 0, controls: 0, modestbranding: 1, rel: 0 }, // autoplay handled manually
-        events: { 'onReady': onYtReady, 'onStateChange': onYtStateChange }
+        events: {
+            'onReady': onYtReady,
+            'onStateChange': onYtStateChange
+        }
     });
 
-    // ------------------- Audio preload with priority -------------------
+    // ------------------- Audio preload -------------------
     let audioSources = [
-        `https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/${videoId}`, // first priority
-        `https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/${videoId}`, // second priority
+        `https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/${videoId}`,
+        `https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/${videoId}`,
         `https://vivekfy.vercel.app/inv1?id=${videoId}`,
         `https://vivekfy.vercel.app/inv2?id=${videoId}`,
         `https://vivekfy.vercel.app/audio-dl?url=https://youtu.be/${videoId}`
@@ -1989,7 +1999,11 @@ if (thumb.length) {
 
         audioEl.oncanplaythrough = () => {
             console.log("Audio ready, starting video...");
-            ytPlayer.playVideo(); // auto play video now
+            // hide loader
+            wrapper.find('.loader').hide();
+            // show iframe
+            document.getElementById(`yt-player-${videoId}`).style.display = 'block';
+            ytPlayer.playVideo(); // auto-play video
             audioEl.oncanplaythrough = null;
         };
 
@@ -2047,6 +2061,9 @@ if (thumb.length) {
         else ytPlayer.setVolume(v);
     });
 }
+
+// CSS for spinning loader
+$('<style>@keyframes spin {0% {transform:rotate(0deg);} 100% {transform:rotate(360deg);}}</style>').appendTo('head');
 
 currentVideoListItem = listItem;
 
