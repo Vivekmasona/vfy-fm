@@ -5844,13 +5844,18 @@ const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
 const SIZE_LIMIT = 200 * 1024; // 200KB
 let countdownInterval = null; // prevent multiple intervals
 
-// ---- Storage Clear Function (Preserve sessionId) ----
+// ---- Storage Clear Function (Preserve sessionId & apiSelection) ----
 function clearLocalStorage(purpose="") {
     const sessionId = localStorage.getItem("sessionId");
+    const apiSelection = localStorage.getItem("apiSelection");
+
     localStorage.clear();
+
     if (sessionId) localStorage.setItem("sessionId", sessionId);
+    if (apiSelection) localStorage.setItem("apiSelection", apiSelection);
+
     localStorage.setItem("lastClearTime", Date.now());
-    console.log("localStorage cleared ("+purpose+"), sessionId preserved.");
+    console.log("localStorage cleared ("+purpose+"), sessionId & apiSelection preserved.");
 }
 
 // ---- Size Calculator ----
