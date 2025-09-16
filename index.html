@@ -1928,148 +1928,158 @@ $(document).on('click', '.overlay-play', function(e) {
 		
 
  
-// Keep track of currently playing elements
-let currentAudioEl = null;
-let currentYtPlayer = null;
-let currentWrapper = null;
 
-function setupVideo(listItem, videoId) {
-    let thumb = listItem.find('.video-thumbnail');
-    if (!thumb.length) return;
 
-    let thumbUrl = thumb.attr('src');
-    let wrapper = $(`
-        <div class="yt-wrapper" data-thumb="${thumbUrl}" style="position:relative; width:100%; height:250px;">
-            <img src="${thumbUrl}" class="thumb-img" style="width:100%; height:100%; object-fit:cover; display:block;"/>
-            <div class="loading-overlay" style="
-                position:absolute; top:0; left:0; width:100%; height:100%;
-                display:flex; align-items:center; justify-content:center;
-                background:rgba(0,0,0,0.3); color:white; font-weight:bold;
-                font-size:18px; text-align:center; flex-direction:column;">
-                <span class="loading-text" style="animation:blink 1s step-start infinite;">Loading...</span>
-            </div>
-            <div id="yt-player-${videoId}" style="position:absolute; top:0; left:0; width:100%; height:100%; display:none;"></div>
-            <div class="custom-controls" style="
-                position:absolute; bottom:-16px; left:50%; transform:translateX(-50%);
-                width:99%; display:flex; align-items:center; gap:15px;
-                padding:0px 0px; border-radius:50px;
-                background:rgba(255,165,0,0.1); backdrop-filter:blur(1px);
-                box-shadow:0 4px 20px rgba(255,165,0,0.1);">
-                <button class="play-pause-btn" style="
-                    width:45px; height:45px; border:none; border-radius:50%;
-                    background:linear-gradient(145deg,#ff9900,#3C8787);
-                    display:flex; align-items:center; justify-content:center; cursor:pointer;">
-                    <svg viewBox="0 0 24 24" fill="white" width="20" height="20">
-                        <path d="M3 22v-20l18 10-18 10z"/>
-                    </svg>
-                </button>
-                <input type="range" class="ytSeek" value="0" min="0" max="100" style="
-                    flex:1; appearance:none; height:6px; border-radius:10px;
-                    background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
-                <input type="range" class="ytVol" value="100" min="0" max="100" style="
-                    width:90px; appearance:none; height:6px; border-radius:10px;
-                    background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
-            </div>
-        </div>
-    `);
+let thumb = listItem.find('.video-thumbnail');  
+if (thumb.length) {  
+    let thumbUrl = thumb.attr('src');  
+    let wrapper = $(`  
+        <div class="yt-wrapper" data-thumb="${thumbUrl}" style="position:relative; width:100%; height:250px;">  
+            <img src="${thumbUrl}" class="thumb-img" style="width:100%; height:100%; object-fit:cover; display:block;"/>  
+              
+            <!-- Loading overlay -->  
+            <div class="loading-overlay" style="  
+                position:absolute; top:0; left:0; width:100%; height:100%;  
+                display:flex; align-items:center; justify-content:center;  
+                background:rgba(0,0,0,0.3); color:white; font-weight:bold;  
+                font-size:18px; text-align:center; flex-direction:column;">  
+                <span class="loading-text" style="animation:blink 1s step-start infinite;">Loading...</span>  
+            </div>  
+  
+            <div id="yt-player-${videoId}" style="  
+                position:absolute; top:0; left:0; width:100%; height:100%;  
+                display:none;"></div> <!-- iframe hidden initially -->  
+  
+            <div class="custom-controls" style="  
+                position:absolute; bottom:-16px; left:50%; transform:translateX(-50%);  
+                width:99%; display:flex; align-items:center; gap:15px;  
+                padding:0px 0px; border-radius:50px;  
+                background:rgba(255,165,0,0.1); backdrop-filter:blur(1px);  
+                box-shadow:0 4px 20px rgba(255,165,0,0.1);">  
+  
+                <button class="play-pause-btn" id="ytToggleBtn" style="  
+                    width:45px; height:45px; border:none; border-radius:50%;  
+                    background:linear-gradient(145deg,#ff9900,#3C8787);  
+                    display:flex; align-items:center; justify-content:center; cursor:pointer;">  
+                    <svg viewBox="0 0 24 24" id="ytToggleIcon" fill="white" width="20" height="20">  
+                        <path d="M3 22v-20l18 10-18 10z"/>  
+                    </svg>  
+                </button>  
+  
+                <input type="range" id="ytSeek" value="0" min="0" max="100" style="  
+                    flex:1; appearance:none; height:6px; border-radius:10px;  
+                    background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">  
+                  
+                <input type="range" id="ytVol" value="100" min="0" max="100" style="  
+                    width:90px; appearance:none; height:6px; border-radius:10px;  
+                    background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">  
+            </div>  
+        </div>  
+    `);  
+  
+    thumb.replaceWith(wrapper);  
 
-    thumb.replaceWith(wrapper);
+    // ------------------ STOP PREVIOUS AUDIO ------------------
+    if (window.currentAudioEl) window.currentAudioEl.pause();
+    if (window.currentYtPlayer) window.currentYtPlayer.pauseVideo();
 
-    // Stop previous audio/video
-    if (currentAudioEl) currentAudioEl.pause();
-    if (currentYtPlayer) currentYtPlayer.pauseVideo();
-    if (currentWrapper) currentWrapper.find('.loading-overlay').show();
+    // ------------------ YT PLAYER ------------------
+    ytPlayer = new YT.Player(`yt-player-${videoId}`, {  
+        height: '250',  
+        width: '100%',  
+        videoId: videoId,  
+        playerVars: { autoplay: 0, controls: 0, modestbranding: 1, rel: 0 },  
+        events: { 'onReady': onYtReady, 'onStateChange': onYtStateChange }  
+    });  
 
-    currentWrapper = wrapper;
+    // ------------------- Audio preload -------------------  
+    let audioSources = [  
+        `https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/${videoId}`,  
+        `https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/${videoId}`,  
+        `https://vivekfy.vercel.app/inv1?id=${videoId}`,  
+        `https://vivekfy.vercel.app/inv2?id=${videoId}`,  
+        `https://vivekfy.vercel.app/audio-dl?url=https://youtu.be/${videoId}`  
+    ];  
 
-    let ytPlayer = new YT.Player(`yt-player-${videoId}`, {
-        height: '250',
-        width: '100%',
-        videoId: videoId,
-        playerVars: { autoplay: 0, controls: 0, modestbranding: 1, rel: 0 },
-        events: { 'onReady': onYtReady, 'onStateChange': onYtStateChange }
-    });
+    let audioEl = new Audio();  
+    window.currentAudioEl = audioEl; // make global for stopping later
+    let usingAudio = false;  
 
-    // Audio preload
-    let audioSources = [
-        `https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/${videoId}`,
-        `https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/${videoId}`,
-        `https://vivekfy.vercel.app/inv1?id=${videoId}`,
-        `https://vivekfy.vercel.app/inv2?id=${videoId}`,
-        `https://vivekfy.vercel.app/audio-dl?url=https://youtu.be/${videoId}`
-    ];
+    function loadAudioSource(index) {  
+        if (index >= audioSources.length) return console.error("All audio sources failed.");  
+        audioEl.src = audioSources[index];  
+        audioEl.preload = "auto";  
+        audioEl.load();  
 
-    let audioEl = new Audio();
-    currentAudioEl = audioEl;
-    let usingAudio = false;
+        audioEl.oncanplaythrough = () => {  
+            console.log("Audio ready, starting video...");  
+            wrapper.find('.loading-overlay').fadeOut(300);  
+            document.getElementById(`yt-player-${videoId}`).style.display = 'block';  
+            ytPlayer.playVideo();  
+            audioEl.oncanplaythrough = null;  
+        };  
 
-    function loadAudioSource(index) {
-        if (index >= audioSources.length) return console.error("All audio sources failed.");
-        audioEl.src = audioSources[index];
-        audioEl.preload = "auto";
-        audioEl.load();
+        audioEl.onerror = () => {  
+            console.warn(`Audio source failed: ${audioSources[index]}, trying next...`);  
+            loadAudioSource(index + 1);  
+        };  
+    }  
 
-        audioEl.oncanplaythrough = () => {
-            console.log("Audio ready, starting video...");
-            wrapper.find('.loading-overlay').fadeOut(300);
-            document.getElementById(`yt-player-${videoId}`).style.display = 'block';
-            ytPlayer.playVideo();
-            audioEl.oncanplaythrough = null;
-        };
+    loadAudioSource(0);  
 
-        audioEl.onerror = () => {
-            loadAudioSource(index + 1);
-        };
-    }
+    // ------------------- Visibility / audio fallback -------------------  
+    function switchToAudio() {  
+        if (usingAudio) return;  
+        let t = ytPlayer.getCurrentTime();  
+        ytPlayer.pauseVideo();  
+        audioEl.currentTime = t;  
+        audioEl.volume = ytPlayer.getVolume() / 100;  
+        audioEl.play();  
+        usingAudio = true;  
+    }  
 
-    loadAudioSource(0);
+    document.addEventListener('visibilitychange', () => {  
+        if (document.hidden) switchToAudio();  
+        else if (usingAudio) {  
+            let t = audioEl.currentTime;  
+            audioEl.pause();  
+            ytPlayer.seekTo(t, true);  
+            ytPlayer.playVideo();  
+            usingAudio = false;  
+        }  
+    });  
 
-    // Visibility fallback
-    function switchToAudio() {
-        if (usingAudio) return;
-        let t = ytPlayer.getCurrentTime();
-        ytPlayer.pauseVideo();
-        audioEl.currentTime = t;
-        audioEl.volume = ytPlayer.getVolume() / 100;
-        audioEl.play();
-        usingAudio = true;
-    }
+    window.togglePlayPause = () => {  
+        if (usingAudio) {  
+            if (audioEl.paused) audioEl.play();  
+            else audioEl.pause();  
+        } else {  
+            let state = ytPlayer.getPlayerState();  
+            if (state === YT.PlayerState.PLAYING) ytPlayer.pauseVideo();  
+            else ytPlayer.playVideo();  
+        }  
+    };  
 
-    document.addEventListener('visibilitychange', () => {
-        if (document.hidden) switchToAudio();
-        else if (usingAudio) {
-            let t = audioEl.currentTime;
-            audioEl.pause();
-            ytPlayer.seekTo(t, true);
-            ytPlayer.playVideo();
-            usingAudio = false;
-        }
-    });
+    document.getElementById("ytSeek").addEventListener('input', (e) => {  
+        let percent = e.target.value;  
+        if (usingAudio) audioEl.currentTime = (audioEl.duration * percent) / 100;  
+        else ytPlayer.seekTo((ytPlayer.getDuration() * percent) / 100, true);  
+    });  
 
-    wrapper.find('.play-pause-btn').on('click', () => {
-        if (usingAudio) {
-            audioEl.paused ? audioEl.play() : audioEl.pause();
-        } else {
-            let state = ytPlayer.getPlayerState();
-            state === YT.PlayerState.PLAYING ? ytPlayer.pauseVideo() : ytPlayer.playVideo();
-        }
-    });
+    document.getElementById("ytVol").addEventListener('input', (e) => {  
+        let v = e.target.value;  
+        if (usingAudio) audioEl.volume = v / 100;  
+        else ytPlayer.setVolume(v);  
+    });  
 
-    wrapper.find('.ytSeek').on('input', (e) => {
-        let percent = e.target.value;
-        if (usingAudio) audioEl.currentTime = (audioEl.duration * percent) / 100;
-        else ytPlayer.seekTo((ytPlayer.getDuration() * percent) / 100, true);
-    });
+    window.currentYtPlayer = ytPlayer; // global for stopping previous
+}  
 
-    wrapper.find('.ytVol').on('input', (e) => {
-        let v = e.target.value;
-        if (usingAudio) audioEl.volume = v / 100;
-        else ytPlayer.setVolume(v);
-    });
+// CSS for blinking text  
+$('<style>@keyframes blink {0%,50% {opacity:1;} 50.01%,100% {opacity:0;}}</style>').appendTo('head');  
 
-    currentYtPlayer = ytPlayer;
-}
-currentVideoListItem = listItem;
+currentVideoListItem = listItem;    
+        
 });	
 	
 	
