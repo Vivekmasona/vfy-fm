@@ -1927,16 +1927,24 @@ $(document).on('click', '.overlay-play', function(e) {
     
 		
 
- let thumb = listItem.find('.video-thumbnail');
+ 
+    
+let thumb = listItem.find('.video-thumbnail');
 if (thumb.length) {
     let thumbUrl = thumb.attr('src');
     let wrapper = $(`
         <div class="yt-wrapper" data-thumb="${thumbUrl}" style="position:relative; width:100%;">
-            <div id="yt-player-${videoId}" style="display:none;"></div> <!-- hide iframe initially -->
-            <div class="loader" style="
-                position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);
-                width:50px; height:50px; border:5px solid rgba(0,0,0,0.1); border-top:5px solid orange;
-                border-radius:50%; animation:spin 1s linear infinite;">
+            <img src="${thumbUrl}" class="thumb-img" style="width:100%; display:block;"/>
+            <div id="yt-player-${videoId}" style="display:none;"></div> <!-- iframe hidden -->
+            
+            <!-- Loading overlay -->
+            <div class="loading-overlay" style="
+                position:absolute; top:0; left:0; width:100%; height:100%;
+                display:flex; align-items:center; justify-content:center;
+                background:rgba(0,0,0,0.3); color:white; font-weight:bold;
+                font-size:18px; text-align:center; flex-direction:column;">
+                <span class="loading-text" style="animation:blink 1s step-start infinite;">123 123</span>
+                <span style="margin-top:5px; font-size:14px;">Loading audio...</span>
             </div>
 
             <div class="custom-controls" style="
@@ -1972,11 +1980,8 @@ if (thumb.length) {
         height: '250',
         width: '100%',
         videoId: videoId,
-        playerVars: { autoplay: 0, controls: 0, modestbranding: 1, rel: 0 }, // autoplay handled manually
-        events: {
-            'onReady': onYtReady,
-            'onStateChange': onYtStateChange
-        }
+        playerVars: { autoplay: 0, controls: 0, modestbranding: 1, rel: 0 },
+        events: { 'onReady': onYtReady, 'onStateChange': onYtStateChange }
     });
 
     // ------------------- Audio preload -------------------
@@ -1999,9 +2004,9 @@ if (thumb.length) {
 
         audioEl.oncanplaythrough = () => {
             console.log("Audio ready, starting video...");
-            // hide loader
-            wrapper.find('.loader').hide();
-            // show iframe
+            // hide loading overlay
+            wrapper.find('.loading-overlay').fadeOut(300);
+            // show iframe (optional)
             document.getElementById(`yt-player-${videoId}`).style.display = 'block';
             ytPlayer.playVideo(); // auto-play video
             audioEl.oncanplaythrough = null;
@@ -2062,8 +2067,8 @@ if (thumb.length) {
     });
 }
 
-// CSS for spinning loader
-$('<style>@keyframes spin {0% {transform:rotate(0deg);} 100% {transform:rotate(360deg);}}</style>').appendTo('head');
+// CSS for blinking text
+$('<style>@keyframes blink {0%,50% {opacity:1;} 50.01%,100% {opacity:0;}}</style>').appendTo('head');
 
 currentVideoListItem = listItem;
 
