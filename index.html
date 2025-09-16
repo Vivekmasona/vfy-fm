@@ -1924,7 +1924,10 @@ $(document).on('click', '.overlay-play', function(e) {
         stopVideoIfPlaying();
     }
 
-    let thumb = listItem.find('.video-thumbnail');
+    
+		
+
+let thumb = listItem.find('.video-thumbnail');
 if (thumb.length) {
     let thumbUrl = thumb.attr('src');
     let wrapper = $(`
@@ -1962,24 +1965,22 @@ if (thumb.length) {
         height: '250',
         width: '100%',
         videoId: videoId,
-        playerVars: { autoplay: 0, controls: 0, modestbranding: 1, rel: 0 }, // autoplay off for now
+        playerVars: { autoplay: 0, controls: 0, modestbranding: 1, rel: 0 }, // autoplay handled manually
         events: { 'onReady': onYtReady, 'onStateChange': onYtStateChange }
     });
 
-    // ------------------- Audio preload -------------------
+    // ------------------- Audio preload with priority -------------------
     let audioSources = [
+        `https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/${videoId}`, // first priority
+        `https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/${videoId}`, // second priority
         `https://vivekfy.vercel.app/inv1?id=${videoId}`,
         `https://vivekfy.vercel.app/inv2?id=${videoId}`,
-        `https://vivekfy.vercel.app/audio-dl?url=https://youtu.be/${videoId}`,
-        `https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/${videoId}`,
-        `https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/${videoId}`
+        `https://vivekfy.vercel.app/audio-dl?url=https://youtu.be/${videoId}`
     ];
 
     let audioEl = new Audio();
     let usingAudio = false;
 
-    // Try to load audio from sources one by one
-    let currentSourceIndex = 0;
     function loadAudioSource(index) {
         if (index >= audioSources.length) return console.error("All audio sources failed.");
         audioEl.src = audioSources[index];
@@ -1988,7 +1989,7 @@ if (thumb.length) {
 
         audioEl.oncanplaythrough = () => {
             console.log("Audio ready, starting video...");
-            ytPlayer.playVideo(); // now start video
+            ytPlayer.playVideo(); // auto play video now
             audioEl.oncanplaythrough = null;
         };
 
@@ -1997,7 +1998,8 @@ if (thumb.length) {
             loadAudioSource(index + 1);
         };
     }
-    loadAudioSource(currentSourceIndex);
+
+    loadAudioSource(0);
 
     // ------------------- Visibility / audio fallback -------------------
     function switchToAudio() {
@@ -2047,6 +2049,9 @@ if (thumb.length) {
 }
 
 currentVideoListItem = listItem;
+
+	
+		
 });
 
 // --- Ensure audio never plays with video ---
