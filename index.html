@@ -1928,27 +1928,19 @@ $(document).on('click', '.overlay-play', function(e) {
 		
 
  
-let currentVideoListItem = null;
+// Keep track of currently playing elements
 let currentAudioEl = null;
-let usingAudio = false;
+let currentYtPlayer = null;
+let currentWrapper = null;
 
 function setupVideo(listItem, videoId) {
-    // Stop previous audio
-    if (currentAudioEl) {
-        currentAudioEl.pause();
-        currentAudioEl = null;
-        usingAudio = false;
-    }
-
-    currentVideoListItem = listItem;
-
     let thumb = listItem.find('.video-thumbnail');
     if (!thumb.length) return;
-    let thumbUrl = thumb.attr('src');
 
+    let thumbUrl = thumb.attr('src');
     let wrapper = $(`
         <div class="yt-wrapper" data-thumb="${thumbUrl}" style="position:relative; width:100%; height:250px;">
-            <img src="${thumbUrl}" style="width:100%; height:100%; object-fit:cover;" />
+            <img src="${thumbUrl}" class="thumb-img" style="width:100%; height:100%; object-fit:cover; display:block;"/>
             <div class="loading-overlay" style="
                 position:absolute; top:0; left:0; width:100%; height:100%;
                 display:flex; align-items:center; justify-content:center;
@@ -1960,10 +1952,10 @@ function setupVideo(listItem, videoId) {
             <div class="custom-controls" style="
                 position:absolute; bottom:-16px; left:50%; transform:translateX(-50%);
                 width:99%; display:flex; align-items:center; gap:15px;
-                padding:0; border-radius:50px;
-                background:rgba(255,165,0,0.1); backdrop-filter:blur(1);
+                padding:0px 0px; border-radius:50px;
+                background:rgba(255,165,0,0.1); backdrop-filter:blur(1px);
                 box-shadow:0 4px 20px rgba(255,165,0,0.1);">
-                <button class="play-pause-btn" onclick="togglePlayPause()" style="
+                <button class="play-pause-btn" style="
                     width:45px; height:45px; border:none; border-radius:50%;
                     background:linear-gradient(145deg,#ff9900,#3C8787);
                     display:flex; align-items:center; justify-content:center; cursor:pointer;">
@@ -1971,10 +1963,10 @@ function setupVideo(listItem, videoId) {
                         <path d="M3 22v-20l18 10-18 10z"/>
                     </svg>
                 </button>
-                <input type="range" id="ytSeek" value="0" min="0" max="100" style="
+                <input type="range" class="ytSeek" value="0" min="0" max="100" style="
                     flex:1; appearance:none; height:6px; border-radius:10px;
                     background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
-                <input type="range" id="ytVol" value="100" min="0" max="100" style="
+                <input type="range" class="ytVol" value="100" min="0" max="100" style="
                     width:90px; appearance:none; height:6px; border-radius:10px;
                     background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
             </div>
@@ -1983,7 +1975,14 @@ function setupVideo(listItem, videoId) {
 
     thumb.replaceWith(wrapper);
 
-    ytPlayer = new YT.Player(`yt-player-${videoId}`, {
+    // Stop previous audio/video
+    if (currentAudioEl) currentAudioEl.pause();
+    if (currentYtPlayer) currentYtPlayer.pauseVideo();
+    if (currentWrapper) currentWrapper.find('.loading-overlay').show();
+
+    currentWrapper = wrapper;
+
+    let ytPlayer = new YT.Player(`yt-player-${videoId}`, {
         height: '250',
         width: '100%',
         videoId: videoId,
@@ -1991,6 +1990,7 @@ function setupVideo(listItem, videoId) {
         events: { 'onReady': onYtReady, 'onStateChange': onYtStateChange }
     });
 
+    // Audio preload
     let audioSources = [
         `https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/${videoId}`,
         `https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/${videoId}`,
@@ -2001,52 +2001,43 @@ function setupVideo(listItem, videoId) {
 
     let audioEl = new Audio();
     currentAudioEl = audioEl;
-    let audioLoaded = false;
-
-    // Timeout fallback: video start after 6s if audio not ready
-    let timeoutStartVideo = setTimeout(() => {
-        if (!audioLoaded) {
-            wrapper.find('.loading-overlay').fadeOut(300);
-            document.getElementById(`yt-player-${videoId}`).style.display = 'block';
-            ytPlayer.playVideo();
-        }
-    }, 6000);
+    let usingAudio = false;
 
     function loadAudioSource(index) {
-        if (index >= audioSources.length) return;
+        if (index >= audioSources.length) return console.error("All audio sources failed.");
         audioEl.src = audioSources[index];
         audioEl.preload = "auto";
         audioEl.load();
 
         audioEl.oncanplaythrough = () => {
-            audioLoaded = true;
-            clearTimeout(timeoutStartVideo);
+            console.log("Audio ready, starting video...");
             wrapper.find('.loading-overlay').fadeOut(300);
             document.getElementById(`yt-player-${videoId}`).style.display = 'block';
             ytPlayer.playVideo();
-            audioEl.play();
-            usingAudio = true;
+            audioEl.oncanplaythrough = null;
         };
 
         audioEl.onerror = () => {
-            loadAudioSource(index + 1); // try next source
+            loadAudioSource(index + 1);
         };
     }
 
     loadAudioSource(0);
 
+    // Visibility fallback
+    function switchToAudio() {
+        if (usingAudio) return;
+        let t = ytPlayer.getCurrentTime();
+        ytPlayer.pauseVideo();
+        audioEl.currentTime = t;
+        audioEl.volume = ytPlayer.getVolume() / 100;
+        audioEl.play();
+        usingAudio = true;
+    }
+
     document.addEventListener('visibilitychange', () => {
-        if (!audioEl) return;
-        if (document.hidden) {
-            if (!usingAudio) {
-                let t = ytPlayer.getCurrentTime();
-                ytPlayer.pauseVideo();
-                audioEl.currentTime = t;
-                audioEl.volume = ytPlayer.getVolume() / 100;
-                audioEl.play();
-                usingAudio = true;
-            }
-        } else if (usingAudio) {
+        if (document.hidden) switchToAudio();
+        else if (usingAudio) {
             let t = audioEl.currentTime;
             audioEl.pause();
             ytPlayer.seekTo(t, true);
@@ -2055,35 +2046,31 @@ function setupVideo(listItem, videoId) {
         }
     });
 
-    window.togglePlayPause = () => {
+    wrapper.find('.play-pause-btn').on('click', () => {
         if (usingAudio) {
-            if (audioEl.paused) audioEl.play();
-            else audioEl.pause();
+            audioEl.paused ? audioEl.play() : audioEl.pause();
         } else {
             let state = ytPlayer.getPlayerState();
-            if (state === YT.PlayerState.PLAYING) ytPlayer.pauseVideo();
-            else ytPlayer.playVideo();
+            state === YT.PlayerState.PLAYING ? ytPlayer.pauseVideo() : ytPlayer.playVideo();
         }
-    };
+    });
 
-    document.getElementById("ytSeek").addEventListener('input', (e) => {
+    wrapper.find('.ytSeek').on('input', (e) => {
         let percent = e.target.value;
         if (usingAudio) audioEl.currentTime = (audioEl.duration * percent) / 100;
         else ytPlayer.seekTo((ytPlayer.getDuration() * percent) / 100, true);
     });
 
-    document.getElementById("ytVol").addEventListener('input', (e) => {
+    wrapper.find('.ytVol').on('input', (e) => {
         let v = e.target.value;
         if (usingAudio) audioEl.volume = v / 100;
         else ytPlayer.setVolume(v);
     });
+
+    currentYtPlayer = ytPlayer;
 }
 
-// CSS for blinking text
-$('<style>@keyframes blink {0%,50% {opacity:1;} 50.01%,100% {opacity:0;}}</style>').appendTo('head');
-
-    
-});
+	
 	
 		
 
