@@ -3657,22 +3657,40 @@ function createPlaylistSongElement(videoId, title, thumbnailUrl, channelTitle, v
             return songElement;
         }
 
-        // Function to create single song element
-        function createSongElement(videoId, title, index) {
-            let songElement = document.createElement('div');
-            songElement.innerHTML = `
-                <b onclick="loadSong(this)" class="list" vid="${videoId}" index="${index}" id="song-element-${index}">
-                    <div class="video">
-                        <img src="https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg" alt="${title}" class="video-thumbnail" vid="${videoId}">
-                        <section>
-                            <section>
-                                <div>
-                                    <p>${title}</p>
-                                </div>
-                            </section>
-                        </section>
-                    </div>
-                </b>`;
+        // Function to create playlist song element  
+function createPlaylistSongElement(videoId, title, thumbnailUrl, channelTitle, videoDate, index) {  
+    let output =  
+        '<b onclick="loadSong(this)" index="' + index + '" class="list" vid="' + videoId + '">' +  
+            '<div class="video">' +  
+
+                // Thumbnail with favorite + video buttons
+                '<div style="position:relative; display:inline-block;">' +
+                    '<img src="' + thumbnailUrl + '" alt="' + title + '" class="video-thumbnail" ' +
+                        'onclick="loadSong(this)" index="' + index + '" vid="' + videoId + '">' +
+
+                    // Favorite button (heart)
+                    '<i class="fas fa-heart save-icon" ' +
+                        'onclick="event.stopPropagation(); saveFavorite(' + index + ', \'' + title + '\', \'' + thumbnailUrl + '\', \'' + videoId + '\')"></i>' +
+
+                    // Video button (play icon)
+                    '<i class="fas fa-play video-icon" ' +
+                        'onclick="event.stopPropagation(); playVideo(\'' + videoId + '\')"></i>' +
+                '</div>' +
+
+                '<section>' +  
+                    '<img src="/img/newdp.png" alt="Vivekfy" width="10%" padding="20">' +  
+                    '<div>' +  
+                        '<p>V F Y ' + title + '</p>' +  
+                        '<small class="video-info">' + channelTitle + '</small>' +  
+                        '<small class="video-info"> VFY </small>' +  
+                        '<small class="video-info"> Ai </small>' +  
+                        '<small class="video-info">Release Date: ' + videoDate.toDateString() + '</small>' +  
+                    '</div>' +  
+                '</section>' +  
+            '</div>' +  
+        '</b>';  
+
+    
             
             // Add long press to delete functionality
             songElement.querySelector('.video-thumbnail').addEventListener('contextmenu', function(event) {
