@@ -216,7 +216,42 @@ if (window !== window.top) {
 
 
 
+<style>
+/* Common Track Style */
+#ytSeek,
+#ytVol {
+  appearance: none;
+  height: 6px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, orange, #3C8787);
+  outline: none;
+  cursor: pointer;
+}
 
+/* Chrome Thumb */
+#ytSeek::-webkit-slider-thumb,
+#ytVol::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid yellow;
+  background: linear-gradient(135deg, #ff9a00, #ff2e63, #3C8787);
+  cursor: pointer;
+}
+
+/* Firefox Thumb */
+#ytSeek::-moz-range-thumb,
+#ytVol::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid yellow;
+  background: linear-gradient(135deg, #ff9a00, #ff2e63, #3C8787);
+  cursor: pointer;
+}
+	
+</style>
 
 
 
