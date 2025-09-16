@@ -1924,51 +1924,129 @@ $(document).on('click', '.overlay-play', function(e) {
         stopVideoIfPlaying();
     }
 
-    // Replace thumbnail with player
     let thumb = listItem.find('.video-thumbnail');
-    if (thumb.length) {
-        let thumbUrl = thumb.attr('src');
-        let wrapper = $(`
-            <div class="yt-wrapper" data-thumb="${thumbUrl}" style="position:relative; width:100%;">
-                <div id="yt-player-${videoId}"></div>
-                <div class="custom-controls" style="
-                    position:absolute; bottom:-16px; left:50%; transform:translateX(-50%);
-                    width:99%; display:flex; align-items:center; gap:15px;
-                    padding:0px 0px; border-radius:50px;
-                    background:rgba(255,165,0,0.1); backdrop-filter:blur(1px);
-                    box-shadow:0 4px 20px rgba(255,165,0,0.1);">
+if (thumb.length) {
+    let thumbUrl = thumb.attr('src');
+    let wrapper = $(`
+        <div class="yt-wrapper" data-thumb="${thumbUrl}" style="position:relative; width:100%;">
+            <div id="yt-player-${videoId}"></div>
+            <div class="custom-controls" style="
+                position:absolute; bottom:-16px; left:50%; transform:translateX(-50%);
+                width:99%; display:flex; align-items:center; gap:15px;
+                padding:0px 0px; border-radius:50px;
+                background:rgba(255,165,0,0.1); backdrop-filter:blur(1px);
+                box-shadow:0 4px 20px rgba(255,165,0,0.1);">
 
-                    <button class="play-pause-btn" id="ytToggleBtn" onclick="togglePlayPause()" style="
-                        width:45px; height:45px; border:none; border-radius:50%;
-                        background:linear-gradient(145deg,#ff9900,#3C8787);
-                        display:flex; align-items:center; justify-content:center; cursor:pointer;">
-                        <svg viewBox="0 0 24 24" id="ytToggleIcon" fill="white" width="20" height="20">
-                            <path d="M3 22v-20l18 10-18 10z"/>
-                        </svg>
-                    </button>
+                <button class="play-pause-btn" id="ytToggleBtn" onclick="togglePlayPause()" style="
+                    width:45px; height:45px; border:none; border-radius:50%;
+                    background:linear-gradient(145deg,#ff9900,#3C8787);
+                    display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <svg viewBox="0 0 24 24" id="ytToggleIcon" fill="white" width="20" height="20">
+                        <path d="M3 22v-20l18 10-18 10z"/>
+                    </svg>
+                </button>
 
-                    <input type="range" id="ytSeek" value="0" min="0" max="100" style="
-                        flex:1; appearance:none; height:6px; border-radius:10px;
-                        background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
-                    
-                    <input type="range" id="ytVol" value="100" min="0" max="100" style="
-                        width:90px; appearance:none; height:6px; border-radius:10px;
-                        background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
-                </div>
+                <input type="range" id="ytSeek" value="0" min="0" max="100" style="
+                    flex:1; appearance:none; height:6px; border-radius:10px;
+                    background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
+                
+                <input type="range" id="ytVol" value="100" min="0" max="100" style="
+                    width:90px; appearance:none; height:6px; border-radius:10px;
+                    background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
             </div>
-        `);
-        thumb.replaceWith(wrapper);
+        </div>
+    `);
+    thumb.replaceWith(wrapper);
 
-        ytPlayer = new YT.Player(`yt-player-${videoId}`, {
-            height: '250',
-            width: '100%',
-            videoId: videoId,
-            playerVars: { autoplay: 1, controls: 0, modestbranding: 1, rel: 0 },
-            events: { 'onReady': onYtReady, 'onStateChange': onYtStateChange }
-        });
+    ytPlayer = new YT.Player(`yt-player-${videoId}`, {
+        height: '250',
+        width: '100%',
+        videoId: videoId,
+        playerVars: { autoplay: 0, controls: 0, modestbranding: 1, rel: 0 }, // autoplay off for now
+        events: { 'onReady': onYtReady, 'onStateChange': onYtStateChange }
+    });
+
+    // ------------------- Audio preload -------------------
+    let audioSources = [
+        `https://vivekfy.vercel.app/inv1?id=${videoId}`,
+        `https://vivekfy.vercel.app/inv2?id=${videoId}`,
+        `https://vivekfy.vercel.app/audio-dl?url=https://youtu.be/${videoId}`,
+        `https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/${videoId}`,
+        `https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/${videoId}`
+    ];
+
+    let audioEl = new Audio();
+    let usingAudio = false;
+
+    // Try to load audio from sources one by one
+    let currentSourceIndex = 0;
+    function loadAudioSource(index) {
+        if (index >= audioSources.length) return console.error("All audio sources failed.");
+        audioEl.src = audioSources[index];
+        audioEl.preload = "auto";
+        audioEl.load();
+
+        audioEl.oncanplaythrough = () => {
+            console.log("Audio ready, starting video...");
+            ytPlayer.playVideo(); // now start video
+            audioEl.oncanplaythrough = null;
+        };
+
+        audioEl.onerror = () => {
+            console.warn(`Audio source failed: ${audioSources[index]}, trying next...`);
+            loadAudioSource(index + 1);
+        };
+    }
+    loadAudioSource(currentSourceIndex);
+
+    // ------------------- Visibility / audio fallback -------------------
+    function switchToAudio() {
+        if (usingAudio) return;
+        let t = ytPlayer.getCurrentTime();
+        ytPlayer.pauseVideo();
+        audioEl.currentTime = t;
+        audioEl.volume = ytPlayer.getVolume() / 100;
+        audioEl.play();
+        usingAudio = true;
     }
 
-    currentVideoListItem = listItem;
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            switchToAudio();
+        } else if (usingAudio) {
+            let t = audioEl.currentTime;
+            audioEl.pause();
+            ytPlayer.seekTo(t, true);
+            ytPlayer.playVideo();
+            usingAudio = false;
+        }
+    });
+
+    window.togglePlayPause = () => {
+        if (usingAudio) {
+            if (audioEl.paused) audioEl.play();
+            else audioEl.pause();
+        } else {
+            let state = ytPlayer.getPlayerState();
+            if (state === YT.PlayerState.PLAYING) ytPlayer.pauseVideo();
+            else ytPlayer.playVideo();
+        }
+    };
+
+    document.getElementById("ytSeek").addEventListener('input', (e) => {
+        let percent = e.target.value;
+        if (usingAudio) audioEl.currentTime = (audioEl.duration * percent) / 100;
+        else ytPlayer.seekTo((ytPlayer.getDuration() * percent) / 100, true);
+    });
+
+    document.getElementById("ytVol").addEventListener('input', (e) => {
+        let v = e.target.value;
+        if (usingAudio) audioEl.volume = v / 100;
+        else ytPlayer.setVolume(v);
+    });
+}
+
+currentVideoListItem = listItem;
 });
 
 // --- Ensure audio never plays with video ---
