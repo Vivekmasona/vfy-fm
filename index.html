@@ -2024,82 +2024,78 @@ if (thumb.length) {
             <!-- Player -->
             <div id="yt-player-${videoId}"></div>
 
-            <!-- Speed Slider (hidden by default) -->
-            <div id="fastSlider" style="
-                position:absolute; right:10px; bottom:50px;
-                width:140px; height:30px; display:none;
-                background:rgba(0,0,0,0.55);
-                border-radius:8px; padding:6px;
-                backdrop-filter:blur(6px);
-                display:flex; align-items:center; justify-content:center;
-                z-index:20;
-            ">
-                <input type="range" id="ytSpeed" value="100" min="25" max="400" step="25" style="
-                    flex:1; appearance:none; height:6px; border-radius:10px;
-                    background:linear-gradient(90deg,orange,#3C8787);
-                    outline:none; cursor:pointer;
-                ">
-            </div>
-
-            <!-- Custom Controls at Bottom -->
+            <!-- Custom Controls at Bottom (Patla) -->
             <div class="custom-controls" style="
                 position:absolute; bottom:0; left:0; width:100%;
-                display:flex; align-items:center; gap:10px;
-                padding:8px; box-sizing:border-box;
-                background:rgba(0,0,0,0.45);
-                backdrop-filter:blur(10px);
-                -webkit-backdrop-filter:blur(10px);
+                display:flex; align-items:center; gap:8px;
+                padding:5px 10px; box-sizing:border-box;
+                background:rgba(0,0,0,0.35);
+                backdrop-filter:blur(8px);
+                -webkit-backdrop-filter:blur(8px);
                 border-top:1px solid rgba(255,255,255,0.2);
             ">
                 <!-- Play / Pause -->
-                <button class="play-pause-btn" id="ytToggleBtn" onclick="togglePlayPause()" style="
-                    width:36px; height:36px; border:none; border-radius:50%;
+                <button id="ytToggleBtn" onclick="togglePlayPause()" style="
+                    width:30px; height:30px; border:none; border-radius:50%;
                     background:linear-gradient(145deg,#ff9900,#3C8787);
                     display:flex; align-items:center; justify-content:center; cursor:pointer;">
-                    <svg viewBox="0 0 24 24" id="ytToggleIcon" fill="white" width="16" height="16">
+                    <svg viewBox="0 0 24 24" id="ytToggleIcon" fill="white" width="14" height="14">
                         <path d="M3 22v-20l18 10-18 10z"/>
                     </svg>
                 </button>
 
-                <!-- Seek -->
+                <!-- Seek (bada) -->
                 <input type="range" id="ytSeek" value="0" min="0" max="100" style="
                     flex:1; appearance:none; height:6px; border-radius:10px;
                     background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
 
-                <!-- Volume -->
+                <!-- Volume (chhota) -->
                 <input type="range" id="ytVol" value="100" min="0" max="100" style="
-                    width:70px; appearance:none; height:6px; border-radius:10px;
+                    width:60px; appearance:none; height:6px; border-radius:10px;
                     background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
 
-                <!-- Mute Button -->
-                <button class="mute-btn" onclick="toggleMute()" style="
-                    width:32px; height:32px; border:none; border-radius:50%;
-                    background:linear-gradient(145deg,#3C8787,#222);
+                <!-- Mute -->
+                <button id="ytMuteBtn" onclick="toggleMute()" style="
+                    width:28px; height:28px; border:none; border-radius:50%;
+                    background:linear-gradient(145deg,#222,#3C8787);
                     display:flex; align-items:center; justify-content:center; cursor:pointer;">
-                    <svg viewBox="0 0 24 24" id="ytMuteIcon" fill="white" width="16" height="16">
+                    <svg viewBox="0 0 24 24" id="ytMuteIcon" fill="white" width="12" height="12">
                         <path d="M5 9v6h4l5 5V4l-5 5H5z"/>
                     </svg>
                 </button>
 
-                <!-- Fast Button -->
-                <button class="fast-btn" onclick="toggleFastSlider()" style="
-                    width:32px; height:32px; border:none; border-radius:50%;
-                    background:linear-gradient(145deg,#ff9900,#ff3300);
+                <!-- Speed -->
+                <button id="ytSpeedBtn" onclick="toggleSpeedSlider()" style="
+                    width:28px; height:28px; border:none; border-radius:50%;
+                    background:linear-gradient(145deg,#222,#3C8787);
                     display:flex; align-items:center; justify-content:center; cursor:pointer;">
-                    <svg viewBox="0 0 24 24" fill="white" width="16" height="16">
-                        <path d="M3 6h18v2H3V6zm0 5h12v2H3v-2zm0 5h8v2H3v-2z"/> <!-- fast icon -->
+                    <svg viewBox="0 0 24 24" fill="white" width="12" height="12">
+                        <path d="M12 8v8l5-4-5-4zM4 6h2v12H4V6z"/>
                     </svg>
                 </button>
 
                 <!-- Fullscreen -->
-                <button class="fullscreen-btn" onclick="toggleFullscreen('yt-player-${videoId}')" style="
-                    width:32px; height:32px; border:none; border-radius:50%;
+                <button onclick="toggleFullscreen('yt-player-${videoId}')" style="
+                    width:28px; height:28px; border:none; border-radius:50%;
                     background:linear-gradient(145deg,#3C8787,#222);
                     display:flex; align-items:center; justify-content:center; cursor:pointer;">
-                    <svg viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <svg viewBox="0 0 24 24" fill="white" width="12" height="12">
                         <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zm-3-9h3v3h2V5h-5v2z"/>
                     </svg>
                 </button>
+            </div>
+
+            <!-- Speed Slider (hidden by default, vertical right) -->
+            <div id="speedSliderWrapper" style="
+                position:absolute; right:5px; top:50%; transform:translateY(-50%);
+                height:140px; display:none; align-items:center; z-index:15;
+            ">
+                <input type="range" id="ytSpeedSlider" value="50" min="0" max="100" style="
+                    writing-mode: bt-lr; -webkit-appearance: slider-vertical;
+                    width:6px; height:100%; border-radius:10px;
+                    background: linear-gradient(orange,#3C8787);
+                    outline:none; cursor:pointer;
+                ">
             </div>
         </div>
     `);
@@ -2110,17 +2106,17 @@ if (thumb.length) {
         height: '250',
         width: '100%',
         videoId: videoId,
-        playerVars: {
-            autoplay: 1,
-            controls: 0,
-            modestbranding: 1,
-            rel: 0,
-            fs: 0,
-            iv_load_policy: 3,
-            disablekb: 1,
-            showinfo: 0
+        playerVars: { 
+            autoplay: 1, 
+            controls: 0, 
+            modestbranding: 1, 
+            rel: 0, 
+            fs: 0, 
+            iv_load_policy: 3, 
+            disablekb: 1, 
+            showinfo: 0 
         },
-        events: {
+        events: { 
             'onReady': function(event) {
                 onYtReady(event);
                 document.addEventListener("click", function onceClick() {
@@ -2128,7 +2124,7 @@ if (thumb.length) {
                     document.removeEventListener("click", onceClick);
                 });
             },
-            'onStateChange': function(event) {
+            'onStateChange': function (event) {
                 onYtStateChange(event);
                 if (event.data === YT.PlayerState.PLAYING) {
                     setTimeout(() => {
@@ -2141,55 +2137,34 @@ if (thumb.length) {
                         setTimeout(() => overlay.remove(), 1200);
                     }, 1000);
                 }
-            }
-        }
-    });
+            } 
+        }    
+    });    
 }
 
 currentVideoListItem = listItem;
+
+            
 });
 
-// Mute / Unmute
-function toggleMute() {
-    if (ytPlayer.isMuted()) {
-        ytPlayer.unMute();
-        $("#ytMuteIcon").html('<path d="M5 9v6h4l5 5V4l-5 5H5z"/>');
-    } else {
-        ytPlayer.mute();
-        $("#ytMuteIcon").html('<path d="M16.5 12c0-1.77-.77-3.29-2-4.3v8.59c1.23-1 2-2.52 2-4.29zM5 9v6h4l5 5V4l-5 5H5z"/>');
-    }
-}
+let speedSliderTimeout;
 
-// Speed Slider
-let fastTimeout;
-function toggleFastSlider() {
-    let slider = document.getElementById("fastSlider");
-    slider.style.display = "flex";
-    clearTimeout(fastTimeout);
-    fastTimeout = setTimeout(() => {
-        slider.style.display = "none";
+function toggleSpeedSlider() {
+    const sliderWrapper = $("#speedSliderWrapper");
+    sliderWrapper.fadeIn(200);
+
+    clearTimeout(speedSliderTimeout);
+    speedSliderTimeout = setTimeout(() => {
+        sliderWrapper.fadeOut(400);
     }, 2000);
 }
 
-// Speed change
-document.getElementById("ytSpeed").addEventListener("input", function() {
-    let rate = this.value / 100; // 0.25x to 4x
-    ytPlayer.setPlaybackRate(rate);
-
-    clearTimeout(fastTimeout);
-    fastTimeout = setTimeout(() => {
-        document.getElementById("fastSlider").style.display = "none";
-    }, 2000);
+// Map slider 0-100 → speed 0.5x – 2x
+$("#ytSpeedSlider").on("input", function() {
+    let val = parseInt(this.value);
+    let speed = 0.5 + (val / 100) * 1.5; // 0.5x to 2x
+    if (ytPlayer) ytPlayer.setPlaybackRate(speed);
 });
-
-// Hide slider if clicked outside
-document.addEventListener("click", function(e) {
-    let slider = document.getElementById("fastSlider");
-    let fastBtn = document.querySelector(".fast-btn");
-    if (slider.style.display === "flex" && !slider.contains(e.target) && !fastBtn.contains(e.target)) {
-        slider.style.display = "none";
-    }
-});	
             
                 
 
