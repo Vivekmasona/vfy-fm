@@ -1993,32 +1993,45 @@ $(document).on('click', '.overlay-play', function(e) {
 
 
 
-// Replace thumbnail with player
+
+                // Replace thumbnail with player
 let thumb = listItem.find('.video-thumbnail');
 if (thumb.length) {
     let thumbUrl = thumb.attr('src');
     let wrapper = $(`
-        <div class="yt-wrapper" data-thumb="${thumbUrl}" style="position:relative; width:100%;">
+        <div class="yt-wrapper" data-thumb="${thumbUrl}" style="position:relative; width:100%; overflow:hidden;">
+            <!-- Loader Overlay -->
+            <div class="yt-loader-overlay" style="
+                position:absolute; top:0; left:0; width:100%; height:100%;
+                display:flex; align-items:center; justify-content:center;
+                backdrop-filter:blur(15px);
+                background:rgba(0,0,0,0.4);
+                z-index:10; overflow:hidden;
+            ">
+                <h2 class="loading-text" style="font-size:26px; font-weight:bold; display:flex; gap:5px;">
+                    <span style="color:#4285F4">L</span>
+                    <span style="color:#EA4335">o</span>
+                    <span style="color:#FBBC05">a</span>
+                    <span style="color:#34A853">d</span>
+                    <span style="color:#EA4335">i</span>
+                    <span style="color:#4285F4">n</span>
+                    <span style="color:#FBBC05">g</span>
+                    <span style="color:#34A853">.</span>
+                    <span style="color:#EA4335">.</span>
+                    <span style="color:#4285F4">.</span>
+                </h2>
+            </div>
+
+            <!-- Player -->
             <div id="yt-player-${videoId}"></div>
-            <div class="custom-controls" style="
-                position:absolute; bottom:-16px; left:50%; transform:translateX(-50%);
-                width:99%; display:flex; align-items:center; gap:15px;
-                padding:0px 0px; border-radius:50px;
-                
-                background:linear-gradient(
-                    to top,
-                    rgba(255, 255, 255, 0.25) 0%, 
-                    rgba(255, 255, 255, 0.05) 30%,
-                    rgba(0, 0, 0, 0.2) 100%
-                ), rgba(255, 255, 255, 0.08);
-                
-                backdrop-filter:blur(10px) saturate(160%);
-                -webkit-backdrop-filter:blur(10px) saturate(160%);
-                
-                border:1px solid rgba(255, 255, 255, 0.25);
-                box-shadow:0 8px 20px rgba(0,0,0,0.6),
-                        inset 0 2px 6px rgba(255,255,255,0.2),
-                        inset 0 -4px 8px rgba(0,0,0,0.3);
+
+            <!-- Custom Controls -->
+            <div class="custom-controls" style="position:absolute; bottom:-16px; left:50%; transform:translateX(-50%);
+                width:99%; display:flex; align-items:center; gap:15px; padding:0px; border-radius:50px;
+                background:linear-gradient(to top,rgba(255,255,255,0.25) 0%,rgba(255,255,255,0.05) 30%,rgba(0,0,0,0.2) 100%), rgba(255,255,255,0.08);
+                backdrop-filter:blur(10px) saturate(160%); -webkit-backdrop-filter:blur(10px) saturate(160%);
+                border:1px solid rgba(255,255,255,0.25);
+                box-shadow:0 8px 20px rgba(0,0,0,0.6), inset 0 2px 6px rgba(255,255,255,0.2), inset 0 -4px 8px rgba(0,0,0,0.3);
             ">
                 <!-- Play / Pause -->
                 <button class="play-pause-btn" id="ytToggleBtn" onclick="togglePlayPause()" style="
@@ -2052,6 +2065,7 @@ if (thumb.length) {
             </div>
         </div>
     `);
+
     thumb.replaceWith(wrapper);
 
     ytPlayer = new YT.Player(`yt-player-${videoId}`, {
@@ -2059,23 +2073,30 @@ if (thumb.length) {
         width: '100%',
         videoId: videoId,
         playerVars: { 
-            autoplay: 1, 
-            controls: 0, 
-            modestbranding: 1, 
-            rel: 0, 
-            fs: 0, 
-            iv_load_policy: 3, 
-            disablekb: 1, 
-            showinfo: 0 
+            autoplay: 1, controls: 0, modestbranding: 1, rel: 0, fs: 0,
+            iv_load_policy: 3, disablekb: 1, showinfo: 0 
         },
         events: { 
             'onReady': onYtReady, 
-            'onStateChange': onYtStateChange 
+            'onStateChange': function (event) {
+                onYtStateChange(event);
+                if (event.data === YT.PlayerState.PLAYING) {
+                    setTimeout(() => {
+                        let overlay = $(wrapper).find('.yt-loader-overlay');
+                        overlay.css({
+                            transition: "all 1s ease",
+                            transform: "translateX(-100%)",
+                            opacity: 0
+                        });
+                        setTimeout(() => overlay.remove(), 1200);
+                    }, 1000); // 1 second after play
+                }
+            } 
         }    
     });    
 }    
-    
-currentVideoListItem = listItem;    
+
+currentVideoListItem = listItem; 
 });
 
 // --- Fullscreen function ---
