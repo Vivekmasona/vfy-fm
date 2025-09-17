@@ -6354,4 +6354,56 @@ window.addEventListener("appinstalled",(evt)=>{
 </script>
 </body>
 </html>
+
+
+
+
+	<script>
+let deferredPrompt;
+const installBtn = document.getElementById("vivek_maurya");
+const landingPage = document.getElementById("raje_ide");
+
+// Check localStorage if app is installed
+if(localStorage.getItem("vfy_installed") === "yes"){
+    landingPage.style.display = "none";
+}
+
+// Typing feature function (same as before)
+function typeFeatures(){ /* ... */ } 
+typeFeatures();
+
+// Show install button on any click
+landingPage.addEventListener("click",()=>{
+    if(deferredPrompt){
+        installBtn.style.display="block";
+    }
+});
+
+// PWA beforeinstallprompt
+window.addEventListener("beforeinstallprompt",(e)=>{
+    e.preventDefault();
+    deferredPrompt=e;
+});
+
+// Install button click
+installBtn.addEventListener("click",()=>{
+    if(!deferredPrompt) return;
+    deferredPrompt.prompt();
+    installBtn.disabled=true;
+    deferredPrompt.userChoice.then(choice=>{
+        if(choice.outcome==="accepted"){
+            landingPage.style.display="none";
+            localStorage.setItem("vfy_installed","yes"); // mark installed
+        }
+        installBtn.disabled=false;
+        deferredPrompt=null;
+    });
+});
+
+// Installed event
+window.addEventListener("appinstalled",(evt)=>{
+    landingPage.style.display="none";
+    localStorage.setItem("vfy_installed","yes");
+});
+	</script>
     
