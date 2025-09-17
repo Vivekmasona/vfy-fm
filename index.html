@@ -2000,18 +2000,15 @@ if (thumb.length) {
     let wrapper = $(`
         <div class="yt-wrapper" data-thumb="${thumbUrl}" style="position:relative; width:100%; overflow:hidden;">
             
-            <!-- Loader Overlay + Controls -->
+            <!-- Loader Overlay -->
             <div class="yt-loader-overlay" style="
                 position:absolute; top:0; left:0; width:100%; height:100%;
-                display:flex; flex-direction:column; align-items:center; justify-content:center;
+                display:flex; align-items:center; justify-content:center;
                 backdrop-filter:blur(15px);
                 background:rgba(0,0,0,0.55);
                 z-index:10;
-                padding:20px;
-                box-sizing:border-box;
             ">
-                <!-- Loading Text -->
-                <h2 class="loading-text" style="font-size:26px; font-weight:bold; display:flex; gap:5px; margin-bottom:25px;">
+                <h2 class="loading-text" style="font-size:26px; font-weight:bold; display:flex; gap:5px;">
                     <span style="color:#4285F4">L</span>
                     <span style="color:#EA4335">o</span>
                     <span style="color:#FBBC05">a</span>
@@ -2023,51 +2020,51 @@ if (thumb.length) {
                     <span style="color:#EA4335">.</span>
                     <span style="color:#4285F4">.</span>
                 </h2>
-
-                <!-- Controls Inside Overlay -->
-                <div class="custom-controls" style="
-                    width:100%; display:flex; align-items:center; gap:15px;
-                    padding:10px; border-radius:50px;
-                    background:linear-gradient(to top,rgba(255,255,255,0.25) 0%,rgba(255,255,255,0.05) 30%,rgba(0,0,0,0.2) 100%), rgba(255,255,255,0.08);
-                    backdrop-filter:blur(10px) saturate(160%);
-                    -webkit-backdrop-filter:blur(10px) saturate(160%);
-                    border:1px solid rgba(255,255,255,0.25);
-                    box-shadow:0 8px 20px rgba(0,0,0,0.6), inset 0 2px 6px rgba(255,255,255,0.2), inset 0 -4px 8px rgba(0,0,0,0.3);
-                ">
-                    <!-- Play / Pause -->
-                    <button class="play-pause-btn" id="ytToggleBtn" onclick="togglePlayPause()" style="
-                        width:45px; height:45px; border:none; border-radius:50%;
-                        background:linear-gradient(145deg,#ff9900,#3C8787);
-                        display:flex; align-items:center; justify-content:center; cursor:pointer;">
-                        <svg viewBox="0 0 24 24" id="ytToggleIcon" fill="white" width="20" height="20">
-                            <path d="M3 22v-20l18 10-18 10z"/>
-                        </svg>
-                    </button>
-
-                    <!-- Seek -->
-                    <input type="range" id="ytSeek" value="0" min="0" max="100" style="
-                        flex:1; appearance:none; height:6px; border-radius:10px;
-                        background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
-                    
-                    <!-- Volume -->
-                    <input type="range" id="ytVol" value="100" min="0" max="100" style="
-                        width:90px; appearance:none; height:6px; border-radius:10px;
-                        background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
-
-                    <!-- Fullscreen -->
-                    <button class="fullscreen-btn" onclick="toggleFullscreen('yt-player-${videoId}')" style="
-                        width:40px; height:40px; border:none; border-radius:50%;
-                        background:linear-gradient(145deg,#3C8787,#222);
-                        display:flex; align-items:center; justify-content:center; cursor:pointer;">
-                        <svg viewBox="0 0 24 24" fill="white" width="18" height="18">
-                            <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zm-3-9h3v3h2V5h-5v2z"/>
-                        </svg>
-                    </button>
-                </div>
             </div>
 
             <!-- Player -->
             <div id="yt-player-${videoId}"></div>
+
+            <!-- Custom Controls at Bottom -->
+            <div class="custom-controls" style="
+                position:absolute; bottom:0; left:0; width:100%;
+                display:flex; align-items:center; gap:12px;
+                padding:10px; box-sizing:border-box;
+                background:rgba(0,0,0,0.45);
+                backdrop-filter:blur(10px);
+                -webkit-backdrop-filter:blur(10px);
+                border-top:1px solid rgba(255,255,255,0.2);
+            ">
+                <!-- Play / Pause -->
+                <button class="play-pause-btn" id="ytToggleBtn" onclick="togglePlayPause()" style="
+                    width:40px; height:40px; border:none; border-radius:50%;
+                    background:linear-gradient(145deg,#ff9900,#3C8787);
+                    display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <svg viewBox="0 0 24 24" id="ytToggleIcon" fill="white" width="18" height="18">
+                        <path d="M3 22v-20l18 10-18 10z"/>
+                    </svg>
+                </button>
+
+                <!-- Seek -->
+                <input type="range" id="ytSeek" value="0" min="0" max="100" style="
+                    flex:1; appearance:none; height:6px; border-radius:10px;
+                    background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
+                
+                <!-- Volume -->
+                <input type="range" id="ytVol" value="100" min="0" max="100" style="
+                    width:80px; appearance:none; height:6px; border-radius:10px;
+                    background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
+
+                <!-- Fullscreen -->
+                <button class="fullscreen-btn" onclick="toggleFullscreen('yt-player-${videoId}')" style="
+                    width:35px; height:35px; border:none; border-radius:50%;
+                    background:linear-gradient(145deg,#3C8787,#222);
+                    display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <svg viewBox="0 0 24 24" fill="white" width="16" height="16">
+                        <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zm-3-9h3v3h2V5h-5v2z"/>
+                    </svg>
+                </button>
+            </div>
         </div>
     `);
 
@@ -2090,7 +2087,7 @@ if (thumb.length) {
         events: { 
             'onReady': function(event) {
                 onYtReady(event);
-                // autoplay ke liye ek bar user click anywhere
+                // ek click ke baad autoplay
                 document.addEventListener("click", function onceClick() {
                     event.target.playVideo();
                     document.removeEventListener("click", onceClick);
@@ -2107,14 +2104,15 @@ if (thumb.length) {
                             opacity: 0
                         });
                         setTimeout(() => overlay.remove(), 1200);
-                    }, 1000); // 1 sec ke baad hata do
+                    }, 1000); // 1 sec ke baad overlay remove
                 }
             } 
         }    
     });    
 }    
 
-currentVideoListItem = listItem; 
+currentVideoListItem = listItem;
+            
             
                 
 });
