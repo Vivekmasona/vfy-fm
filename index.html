@@ -1993,20 +1993,20 @@ $(document).on('click', '.overlay-play', function(e) {
 
 
 
-
-                // Replace thumbnail with player
+// Replace thumbnail with player
 let thumb = listItem.find('.video-thumbnail');
 if (thumb.length) {
     let thumbUrl = thumb.attr('src');
     let wrapper = $(`
         <div class="yt-wrapper" data-thumb="${thumbUrl}" style="position:relative; width:100%; overflow:hidden;">
+            
             <!-- Loader Overlay -->
             <div class="yt-loader-overlay" style="
                 position:absolute; top:0; left:0; width:100%; height:100%;
                 display:flex; align-items:center; justify-content:center;
                 backdrop-filter:blur(15px);
-                background:rgba(0,0,0,0.4);
-                z-index:10; overflow:hidden;
+                background:rgba(0,0,0,0.5);
+                z-index:10;
             ">
                 <h2 class="loading-text" style="font-size:26px; font-weight:bold; display:flex; gap:5px;">
                     <span style="color:#4285F4">L</span>
@@ -2073,11 +2073,24 @@ if (thumb.length) {
         width: '100%',
         videoId: videoId,
         playerVars: { 
-            autoplay: 1, controls: 0, modestbranding: 1, rel: 0, fs: 0,
-            iv_load_policy: 3, disablekb: 1, showinfo: 0 
+            autoplay: 1, 
+            controls: 0, 
+            modestbranding: 1, 
+            rel: 0, 
+            fs: 0, 
+            iv_load_policy: 3, 
+            disablekb: 1, 
+            showinfo: 0 
         },
         events: { 
-            'onReady': onYtReady, 
+            'onReady': function(event) {
+                onYtReady(event);
+                // auto start on first user click anywhere
+                document.addEventListener("click", function onceClick() {
+                    event.target.playVideo();
+                    document.removeEventListener("click", onceClick);
+                });
+            },
             'onStateChange': function (event) {
                 onYtStateChange(event);
                 if (event.data === YT.PlayerState.PLAYING) {
@@ -2085,18 +2098,19 @@ if (thumb.length) {
                         let overlay = $(wrapper).find('.yt-loader-overlay');
                         overlay.css({
                             transition: "all 1s ease",
-                            transform: "translateX(-100%)",
+                            transform: "translateY(-100%)",
                             opacity: 0
                         });
                         setTimeout(() => overlay.remove(), 1200);
-                    }, 1000); // 1 second after play
+                    }, 1000); // remove after 1 sec of play
                 }
             } 
         }    
     });    
 }    
 
-currentVideoListItem = listItem; 
+currentVideoListItem = listItem;
+                
 });
 
 // --- Fullscreen function ---
