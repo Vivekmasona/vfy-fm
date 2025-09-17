@@ -1992,13 +1992,13 @@ $(document).on('click', '.overlay-play', function(e) {
     }
 
 
+
 // Replace thumbnail with player
 let thumb = listItem.find('.video-thumbnail');
 if (thumb.length) {
     let thumbUrl = thumb.attr('src');
     let wrapper = $(`
         <div class="yt-wrapper" data-thumb="${thumbUrl}" style="position:relative; width:100%; overflow:hidden;">
-
             <!-- Loader Overlay -->
             <div class="yt-loader-overlay" style="
                 position:absolute; top:0; left:0; width:100%; height:100%;
@@ -2024,7 +2024,7 @@ if (thumb.length) {
             <!-- Player -->
             <div id="yt-player-${videoId}"></div>
 
-            <!-- Custom Controls at Bottom (Patla) -->
+            <!-- Custom Controls -->
             <div class="custom-controls" style="
                 position:absolute; bottom:0; left:0; width:100%;
                 display:flex; align-items:center; gap:8px;
@@ -2044,17 +2044,17 @@ if (thumb.length) {
                     </svg>
                 </button>
 
-                <!-- Seek (bada) -->
+                <!-- Seek -->
                 <input type="range" id="ytSeek" value="0" min="0" max="100" style="
                     flex:1; appearance:none; height:6px; border-radius:10px;
                     background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
 
-                <!-- Volume (chhota) -->
+                <!-- Volume -->
                 <input type="range" id="ytVol" value="100" min="0" max="100" style="
                     width:60px; appearance:none; height:6px; border-radius:10px;
                     background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
 
-                <!-- Mute -->
+                <!-- Mute / Unmute -->
                 <button id="ytMuteBtn" onclick="toggleMute()" style="
                     width:28px; height:28px; border:none; border-radius:50%;
                     background:linear-gradient(145deg,#222,#3C8787);
@@ -2064,14 +2064,13 @@ if (thumb.length) {
                     </svg>
                 </button>
 
-                <!-- Speed -->
-                <button id="ytSpeedBtn" onclick="toggleSpeedSlider()" style="
+                <!-- Speed / Fast -->
+                <button id="ytSpeedBtn" onclick="cycleSpeed()" style="
                     width:28px; height:28px; border:none; border-radius:50%;
                     background:linear-gradient(145deg,#222,#3C8787);
-                    display:flex; align-items:center; justify-content:center; cursor:pointer;">
-                    <svg viewBox="0 0 24 24" fill="white" width="12" height="12">
-                        <path d="M12 8v8l5-4-5-4zM4 6h2v12H4V6z"/>
-                    </svg>
+                    display:flex; align-items:center; justify-content:center; cursor:pointer;
+                    color:white; font-size:10px; font-weight:bold;">
+                    1x
                 </button>
 
                 <!-- Fullscreen -->
@@ -2083,19 +2082,6 @@ if (thumb.length) {
                         <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zm-3-9h3v3h2V5h-5v2z"/>
                     </svg>
                 </button>
-            </div>
-
-            <!-- Speed Slider (hidden by default, vertical right) -->
-            <div id="speedSliderWrapper" style="
-                position:absolute; right:5px; top:50%; transform:translateY(-50%);
-                height:140px; display:none; align-items:center; z-index:15;
-            ">
-                <input type="range" id="ytSpeedSlider" value="50" min="0" max="100" style="
-                    writing-mode: bt-lr; -webkit-appearance: slider-vertical;
-                    width:6px; height:100%; border-radius:10px;
-                    background: linear-gradient(orange,#3C8787);
-                    outline:none; cursor:pointer;
-                ">
             </div>
         </div>
     `);
@@ -2124,7 +2110,7 @@ if (thumb.length) {
                     document.removeEventListener("click", onceClick);
                 });
             },
-            'onStateChange': function (event) {
+            'onStateChange': function(event) {
                 onYtStateChange(event);
                 if (event.data === YT.PlayerState.PLAYING) {
                     setTimeout(() => {
@@ -2137,34 +2123,37 @@ if (thumb.length) {
                         setTimeout(() => overlay.remove(), 1200);
                     }, 1000);
                 }
-            } 
+            }
         }    
-    });    
+    });
 }
 
 currentVideoListItem = listItem;
-
             
 });
 
-let speedSliderTimeout;
-
-function toggleSpeedSlider() {
-    const sliderWrapper = $("#speedSliderWrapper");
-    sliderWrapper.fadeIn(200);
-
-    clearTimeout(speedSliderTimeout);
-    speedSliderTimeout = setTimeout(() => {
-        sliderWrapper.fadeOut(400);
-    }, 2000);
+// Mute / Unmute toggle
+function toggleMute() {
+    if (!ytPlayer) return;
+    if (ytPlayer.isMuted()) {
+        ytPlayer.unMute();
+        $("#ytMuteIcon").html('<path d="M5 9v6h4l5 5V4l-5 5H5z"/>'); // speaker icon
+    } else {
+        ytPlayer.mute();
+        $("#ytMuteIcon").html('<path d="M16 12c0-1.1-.9-2-2-2v4c1.1 0 2-.9 2-2zM5 9v6h4l5 5V4l-5 5H5z"/>'); // muted speaker
+    }
 }
 
-// Map slider 0-100 → speed 0.5x – 2x
-$("#ytSpeedSlider").on("input", function() {
-    let val = parseInt(this.value);
-    let speed = 0.5 + (val / 100) * 1.5; // 0.5x to 2x
-    if (ytPlayer) ytPlayer.setPlaybackRate(speed);
-});
+// Speed / Fast cycle 0.5x → 1x → 1.5x → 2x
+let speeds = [0.5, 1, 1.5, 2];
+let speedIndex = 1; // default 1x
+
+function cycleSpeed() {
+    if (!ytPlayer) return;
+    speedIndex = (speedIndex + 1) % speeds.length;
+    ytPlayer.setPlaybackRate(speeds[speedIndex]);
+    $("#ytSpeedBtn").text(speeds[speedIndex] + "x");
+}
             
                 
 
