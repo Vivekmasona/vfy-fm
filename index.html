@@ -1993,7 +1993,6 @@ $(document).on('click', '.overlay-play', function(e) {
 
 
 
-
 // Replace thumbnail with player
 let thumb = listItem.find('.video-thumbnail');
 if (thumb.length) {
@@ -2026,46 +2025,82 @@ if (thumb.length) {
             <!-- Player -->
             <div id="yt-player-${videoId}"></div>
 
-            <!-- Custom Controls at Bottom -->
-<div class="custom-controls" style="
-    position:absolute; bottom:0; left:0; width:100%;
-    display:flex; align-items:center; gap:6px;
-    padding:5px 8px; box-sizing:border-box;
-    background:rgba(0,0,0,0.45);
-    backdrop-filter:blur(6px);
-    -webkit-backdrop-filter:blur(6px);
-    border-top:1px solid rgba(255,255,255,0.15);
-">
-    <!-- Play / Pause -->
-    <button class="play-pause-btn" id="ytToggleBtn" onclick="togglePlayPause()" style="
-        width:30px; height:30px; border:none; border-radius:50%;
-        background:linear-gradient(145deg,#ff9900,#3C8787);
-        display:flex; align-items:center; justify-content:center; cursor:pointer;">
-        <svg viewBox="0 0 24 24" id="ytToggleIcon" fill="white" width="14" height="14">
-            <path d="M3 22v-20l18 10-18 10z"/>
-        </svg>
-    </button>
+            <!-- Custom Controls -->
+            <div class="custom-controls" style="
+                position:absolute; bottom:0; left:0; width:100%;
+                display:flex; align-items:center; gap:10px;
+                padding:6px; box-sizing:border-box;
+                background:rgba(0,0,0,0.45);
+                backdrop-filter:blur(8px);
+                border-top:1px solid rgba(255,255,255,0.2);
+            ">
+                <!-- Play / Pause -->
+                <button class="play-pause-btn" id="ytToggleBtn" onclick="togglePlayPause()" style="
+                    width:34px; height:34px; border:none; border-radius:50%;
+                    background:linear-gradient(145deg,#ff9900,#3C8787);
+                    display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <svg viewBox="0 0 24 24" id="ytToggleIcon" fill="white" width="16" height="16">
+                        <path d="M3 22v-20l18 10-18 10z"/>
+                    </svg>
+                </button>
 
-    <!-- Seek -->
-    <input type="range" id="ytSeek" value="0" min="0" max="100" style="
-        flex:1; appearance:none; height:4px; border-radius:8px;
-        background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
+                <!-- Seek -->
+                <input type="range" id="ytSeek" value="0" min="0" max="100" style="
+                    flex:1; appearance:none; height:5px; border-radius:10px;
+                    background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
 
-    <!-- Volume -->
-    <input type="range" id="ytVol" value="100" min="0" max="100" style="
-        width:70px; appearance:none; height:4px; border-radius:8px;
-        background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
+                <!-- Volume -->
+                <input type="range" id="ytVol" value="100" min="0" max="100" style="
+                    width:70px; appearance:none; height:5px; border-radius:10px;
+                    background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
 
-    <!-- Fullscreen -->
-    <button class="fullscreen-btn" onclick="toggleFullscreen('yt-player-${videoId}')" style="
-        width:28px; height:28px; border:none; border-radius:50%;
-        background:linear-gradient(145deg,#3C8787,#222);
-        display:flex; align-items:center; justify-content:center; cursor:pointer;">
-        <svg viewBox="0 0 24 24" fill="white" width="12" height="12">
-            <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zm-3-9h3v3h2V5h-5v2z"/>
-        </svg>
-    </button>
-</div>
+                <!-- Mute -->
+                <button class="mute-btn" onclick="toggleMute()" style="
+                    width:32px; height:32px; border:none; border-radius:50%;
+                    background:linear-gradient(145deg,#3C8787,#222);
+                    display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <svg id="ytMuteIcon" viewBox="0 0 24 24" fill="white" width="15" height="15">
+                        <path d="M5 9v6h4l5 5V4l-5 5H5z"/>
+                    </svg>
+                </button>
+
+                <!-- Fast -->
+                <button class="fast-btn" onclick="toggleFastSlider()" style="
+                    width:32px; height:32px; border:none; border-radius:50%;
+                    background:linear-gradient(145deg,#ff9900,#222);
+                    display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <svg viewBox="0 0 24 24" fill="white" width="15" height="15">
+                        <path d="M4 4l8 8-8 8V4zm8 0l8 8-8 8V4z"/>
+                    </svg>
+                </button>
+
+                <!-- Fullscreen -->
+                <button class="fullscreen-btn" onclick="toggleFullscreen('yt-player-${videoId}')" style="
+                    width:32px; height:32px; border:none; border-radius:50%;
+                    background:linear-gradient(145deg,#3C8787,#222);
+                    display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <svg viewBox="0 0 24 24" fill="white" width="14" height="14">
+                        <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zm-3-9h3v3h2V5h-5v2z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Fast Speed Slider (hidden by default) -->
+            <div id="fastSlider" style="
+                position:absolute; right:10px; bottom:50px;
+                width:30px; height:120px; display:none;
+                background:rgba(0,0,0,0.6); padding:6px;
+                border-radius:10px; backdrop-filter:blur(6px);
+                display:flex; align-items:center; justify-content:center;
+            ">
+                <input type="range" id="ytSpeed" value="100" min="50" max="200" step="25" orient="vertical" style="
+                    writing-mode: bt-lr; -webkit-appearance: slider-vertical;
+                    width:120px; height:8px; transform:rotate(270deg);
+                    background:linear-gradient(90deg,orange,#3C8787);
+                    border-radius:8px; cursor:pointer;
+                ">
+            </div>
+        </div>
     `);
 
     thumb.replaceWith(wrapper);
@@ -2074,20 +2109,19 @@ if (thumb.length) {
         height: '250',
         width: '100%',
         videoId: videoId,
-        playerVars: { 
-            autoplay: 1, 
-            controls: 0, 
-            modestbranding: 1, 
-            rel: 0, 
-            fs: 0, 
-            iv_load_policy: 3, 
-            disablekb: 1, 
-            showinfo: 0 
+        playerVars: {
+            autoplay: 1,
+            controls: 0,
+            modestbranding: 1,
+            rel: 0,
+            fs: 0,
+            iv_load_policy: 3,
+            disablekb: 1,
+            showinfo: 0
         },
-        events: { 
+        events: {
             'onReady': function(event) {
                 onYtReady(event);
-                // ek click ke baad autoplay
                 document.addEventListener("click", function onceClick() {
                     event.target.playVideo();
                     document.removeEventListener("click", onceClick);
@@ -2104,17 +2138,50 @@ if (thumb.length) {
                             opacity: 0
                         });
                         setTimeout(() => overlay.remove(), 1200);
-                    }, 1000); // 1 sec ke baad overlay remove
+                    }, 1000);
                 }
-            } 
-        }    
-    });    
-}    
+            }
+        }
+    });
+}
 
 currentVideoListItem = listItem;
+	});
+
+/* ==== Extra JS for Mute & Speed ==== */
+function toggleMute() {
+    if (ytPlayer.isMuted()) {
+        ytPlayer.unMute();
+        $("#ytMuteIcon").html('<path d="M5 9v6h4l5 5V4l-5 5H5z"/>');
+    } else {
+        ytPlayer.mute();
+        $("#ytMuteIcon").html('<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.74 2.5-2.26 2.5-4.02zM19 12c0 3.31-2.69 6-6 6v2c4.42 0 8-3.58 8-8h-2zm-6-8v2c-3.31 0-6 2.69-6 6h-2c0-4.42 3.58-8 8-8z"/>');
+    }
+}
+
+let fastTimeout;
+function toggleFastSlider() {
+    let slider = document.getElementById("fastSlider");
+    slider.style.display = "flex";
+    clearTimeout(fastTimeout);
+    fastTimeout = setTimeout(() => {
+        slider.style.display = "none";
+    }, 2000);
+}
+
+document.addEventListener("input", function(e) {
+    if (e.target.id === "ytSpeed") {
+        let rate = e.target.value / 100; // 50=0.5x, 200=2x
+        ytPlayer.setPlaybackRate(rate);
+        clearTimeout(fastTimeout);
+        fastTimeout = setTimeout(() => {
+            document.getElementById("fastSlider").style.display = "none";
+        }, 2000);
+    }
+});
 
                 
-});
+
 
 // --- Fullscreen function ---
 function toggleFullscreen(playerId) {
