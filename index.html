@@ -23,7 +23,28 @@
 
 <script src="database/storage.js" defer></script>
 
+<style>
+/* Overlay styling */
+.yt-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    pointer-events: none; /* click block nahi hoga */
+}
 
+/* Force hide some YouTube UI */
+.ytp-chrome-top,
+.ytp-chrome-bottom,
+.ytp-show-cards-title,
+.ytp-watermark {
+    display: none !important;
+}
+
+	
+</style>
 
 
 <!-- Toggle button -->
