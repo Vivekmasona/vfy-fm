@@ -1991,7 +1991,9 @@ $(document).on('click', '.overlay-play', function(e) {
         stopVideoIfPlaying();
     }
 
-    // Replace thumbnail with player
+
+
+// Replace thumbnail with player
 let thumb = listItem.find('.video-thumbnail');
 if (thumb.length) {
     let thumbUrl = thumb.attr('src');
@@ -2064,19 +2066,49 @@ if (thumb.length) {
 currentVideoListItem = listItem;
 });
 
-// --- Add this function for fullscreen ---
+// --- Fullscreen function ---
 function toggleFullscreen(playerId) {
     let iframe = document.getElementById(playerId);
     if (iframe.requestFullscreen) {
         iframe.requestFullscreen();
-    } else if (iframe.mozRequestFullScreen) { // Firefox
+    } else if (iframe.mozRequestFullScreen) {
         iframe.mozRequestFullScreen();
-    } else if (iframe.webkitRequestFullscreen) { // Chrome, Safari, Opera
+    } else if (iframe.webkitRequestFullscreen) {
         iframe.webkitRequestFullscreen();
-    } else if (iframe.msRequestFullscreen) { // IE/Edge
+    } else if (iframe.msRequestFullscreen) {
         iframe.msRequestFullscreen();
     }
 }
+
+// --- Auto PiP when page goes background ---
+document.addEventListener("visibilitychange", async () => {
+    if (document.hidden) {
+        let iframe = document.querySelector("iframe[id^='yt-player']");
+        if (!iframe) return;
+
+        try {
+            let iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            let video = iframeDoc.querySelector("video");
+
+            if (video && document.pictureInPictureEnabled && !document.pictureInPictureElement) {
+                await video.requestPictureInPicture();
+            }
+        } catch (err) {
+            console.log("PiP error:", err);
+        }
+    } else {
+        if (document.pictureInPictureElement) {
+            try {
+                await document.exitPictureInPicture();
+            } catch (err) {
+                console.log("Exit PiP error:", err);
+            }
+        }
+    }
+});
+
+
+	
 
 // --- Ensure audio never plays with video ---
 document.querySelectorAll("#SAudio").forEach(audio => {
