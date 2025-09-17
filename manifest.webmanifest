@@ -1,5 +1,5 @@
 {
-  "name": "VFY AI",
+  "name": "Your Choice",
   "short_name": "𝐕𝐅𝐘 𝐌𝐮𝐬𝐢𝐜",
     "share_target": {
     "action": "/",
@@ -23,23 +23,23 @@
   ],
 "screenshots": [
 {
-      "src": "./img/s.jpg",
+      "src": "./img/1.jpg",
       "type": "image/jpeg",
       "sizes": "320x640"
     },
 {
-      "src": "./img/s1.jpg",
+      "src": "./img/2.jpg",
       "type": "image/jpeg",
       "sizes": "320x640"
     },
 {
-      "src": "./img/d.jpg",
+      "src": "./img/4.jpg",
       "type": "image/jpeg",
       "sizes": "320x640"
     },
     
     {
-      "src": "./img/d1.jpg",
+      "src": "./img/5.jpg",
       "type": "image/jpeg",
       "sizes": "320x640"
     }
@@ -47,7 +47,7 @@
   "shortcuts": [
 
     {
-      "name": "CDN-MUSIC",
+      "name": "Sawan music",
       "url": "/sawan",
       "icons": [
         {
@@ -58,7 +58,7 @@
       ]
     }
   ],
- "description": "VFy:Support:- YouTube music background play and downloads ||copy link download method long press vfy app & get download option|| Developer:-vivek💞masona || "
+ "description": "VFy:Support:- YouTube music background play, Share to download, Copy detect, Call with session id, Shake ai voice control, Ad free video,|| Developer:-vivek💞masona || "
 }
     
  
