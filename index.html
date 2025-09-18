@@ -4083,7 +4083,7 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
   function speakWithAudio(textToSpeak) {
     if (!textToSpeak) return;
 
-    const ttsUrl = `https://apple-puddle-cattle.glitch.me/tts?text=${encodeURIComponent(textToSpeak)}`;
+    const ttsUrl = `https://vivekfy.vercel.app/read?text=${encodeURIComponent(textToSpeak)}`;
     const audio = new Audio(ttsUrl);
 
     audio.volume = 1;
