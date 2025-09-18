@@ -2,13 +2,21 @@ const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
 const SIZE_LIMIT = 200 * 1024; // 200KB
 let countdownInterval = null; // prevent multiple intervals
 
-// ---- Storage Clear Function (Preserve sessionId) ----
+
+    // ---- Storage Clear Function (Preserve sessionId, apiSelection & favorites) ----
 function clearLocalStorage(purpose="") {
     const sessionId = localStorage.getItem("sessionId");
+    const apiSelection = localStorage.getItem("apiSelection");
+    const favorites = localStorage.getItem("favorites"); // preserve favorites
+
     localStorage.clear();
+
     if (sessionId) localStorage.setItem("sessionId", sessionId);
+    if (apiSelection) localStorage.setItem("apiSelection", apiSelection);
+    if (favorites) localStorage.setItem("favorites", favorites);
+
     localStorage.setItem("lastClearTime", Date.now());
-    console.log("localStorage cleared ("+purpose+"), sessionId preserved.");
+    console.log("localStorage cleared (" + purpose + "), sessionId, apiSelection & favorites preserved.");
 }
 
 // ---- Size Calculator ----
