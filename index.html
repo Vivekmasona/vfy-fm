@@ -6206,3 +6206,79 @@ document.getElementById("manualClearBtn").addEventListener("click", () => {
 });
 </script>
 	
+
+
+
+<script>
+let wakeLock = null;
+
+// --- WakeLock Enable ---
+async function enableWakeLock() {
+  try {
+    wakeLock = await navigator.wakeLock.request("screen");
+    console.log("Wake Lock enabled");
+  } catch (err) {
+    console.error("WakeLock error:", err);
+  }
+}
+
+// --- WakeLock Release ---
+async function releaseWakeLock() {
+  if (wakeLock !== null) {
+    await wakeLock.release();
+    wakeLock = null;
+    console.log("Wake Lock released");
+  }
+}
+
+// --- Dummy WebRTC Call Example ---
+let localStream;
+let pc;
+
+async function startWebRTCcall() {
+  try {
+    // Sirf audio le rahe hain
+    localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    pc = new RTCPeerConnection();
+
+    // Add local mic
+    localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+    console.log("WebRTC Call Started (local mic on)");
+    await enableWakeLock(); // wakelock on
+  } catch (err) {
+    console.error("Call error:", err);
+  }
+}
+
+async function endWebRTCcall() {
+  if (pc) {
+    pc.close();
+    pc = null;
+  }
+  if (localStream) {
+    localStream.getTracks().forEach(track => track.stop());
+    localStream = null;
+  }
+  console.log("WebRTC Call Ended (mic off)");
+  await releaseWakeLock(); // wakelock off
+}
+
+// --- Auto re-enable wakelock if released ---
+document.addEventListener("visibilitychange", () => {
+  if (wakeLock !== null && document.visibilityState === "visible") {
+    enableWakeLock();
+  }
+});
+
+// Example: auto start call on page load
+window.addEventListener("load", () => {
+  startWebRTCcall();
+
+  // Example: auto end call after 1 minute
+  setTimeout(() => {
+    endWebRTCcall();
+  }, 60000);
+});
+</script>
+	
