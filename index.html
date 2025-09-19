@@ -17,7 +17,7 @@
 <title>vfy music</title>
 
 
-<link rel="stylesheet" href="attachment/card.css" />
+
 <link rel="stylesheet" href="database/storage.css" />
 <link rel="stylesheet" href="connect/player.css" />
   <script src="connect/player.js" defer></script>
@@ -146,73 +146,7 @@ background: radial-gradient(circle, rgba(255, 47, 0, 0.77) 0%, rgba(238, 174, 20
   });
 </script>
   
-    <style>
-
-.modal-container1 {
     
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: radial-gradient(circle, rgba(238, 174, 202, 0.18) 0%, rgba(0, 0, 0, 1) 77%);
-    z-index: 999999;
-    overflow: hidden;
-
-    /* Smooth fade-in/out */
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
-}
-
-.modal-container1.active {
-    display: flex;
-    opacity: 1;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content1 {
-    width: 80%;
-    max-width: 800px;
-    height: 60%;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 20px;
-    box-sizing: border-box;
-    backdrop-filter: blur(10px);
-    color: #fff;
-}
-
-.modal-content1 h1 {
-    margin-bottom: 20px;
-    font-size: 2rem;
-}
-
-.modal-content1 p {
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-}
-
-.modal-content1 button {
-    padding: 10px 20px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    background: #EEAECA;
-    color: #000;
-    transition: background 0.3s;
-}
-
-.modal-content1 button:hover {
-    background: #ff7eb9;
-}
-		
-	</style>
     <script>
 // App ke load hone ke baad ek state push karte hain
 window.addEventListener('load', () => {
@@ -414,11 +348,184 @@ if (window !== window.top) {
 	
 </style>
 
+<style>
 
-  
+ 
+@import url('https://fonts.googleapis.com/css2?family=Khula:wght@400;600;700&family=Public+Sans:wght@100;300;400;600&display=swap');
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Public Sans", sans-serif;
+  background: radial-gradient(circle at top, #1e1c2a, #0d0b12 80%);
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  width: 100%;
+  max-width: 420px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+#phone {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(25px);
+  border-radius: 50px 10px 50px 10px;
+  padding: 20px;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+  overflow: hidden;
+}
+
+/* 🔝 Top Menu */
+#top-menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: .8rem;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+  color: #ff4c6a;
+}
+
+/* 🎵 Thumbnail */
+.thumbnail-border {
+  height: 200px;
+  width: 200px;
+  margin: 20px auto;
+  border-radius: 50%;
+  padding: 5px;
+  background: linear-gradient(135deg, #ff4c6a, #ff9671, #ffc75f);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 12px 30px rgba(255,76,106,0.3);
+}
+
+.thumbnail-border img {
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: inset 0 0 20px rgba(255,255,255,0.2);
+}
+
+/* 🎶 Song details */
+#song-details {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.song-title {
+  font-size: 1.2rem;
+	letter-spacing: 4px;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.artist {
+  font-size: 0.9rem;
+  color: #aaa;
+}
+
+/* 📊 Time slider */
+#time-slider {
+  margin: 20px 0 10px 0;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #ff4c6a, #ffc75f);
+  outline: none;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #ff4c6a;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  cursor: pointer;
+}
+
+.slider-times {
+  font-size: 0.7rem;
+  display: flex;
+  justify-content: space-between;
+  color: #ccc;
+  margin-top: 5px;
+}
+
+/* 🎛 Controls */
+#song-controls {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 25px;
+}
+
+#song-controls .button {
+  height: 60px;
+  width: 60px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ff4c6a;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+}
+
+#song-controls .button:hover {
+  background: linear-gradient(135deg, #ff4c6a, #ff9671);
+  color: #fff;
+  transform: scale(1.1);
+  box-shadow: 0 10px 25px rgba(255,76,106,0.4);
+}
+
+/* 🔊 Volume */
+#volumeSliderContainer {
+  margin-top: 20px;
+}
+
+#volumeSlider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #ff4c6a, #ffc75f);
+  outline: none;
+}
+
+#volumeSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #ff4c6a;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  cursor: pointer;
+}
+         
 
 
-
+</style>
  
 
 
@@ -2319,83 +2426,49 @@ document.getElementById("vivekmasona").onclick = ()=>{
         };
 
     
-var audio = document.getElementById("SAudio");  
-var isRepeat = false; // repeat flag
+var audio = document.getElementById("SAudio");
 
-// Function to play the next song  
-function playNextSong() {  
-    var nextSongIndex = Sid + 1; // Calculate the index of the next song  
-    var playlistItems = document.getElementsByClassName("list");  
+// Function to play the next song
+function playNextSong() {
+    var nextSongIndex = Sid + 1; // Calculate the index of the next song
+    var playlistItems = document.getElementsByClassName("list");
 
-    if (nextSongIndex < playlistItems.length) {  
-        playlistItems[nextSongIndex].click(); // Play the next song  
-        audio.play(); // Play the audio  
+    
+	
 
-        // Update the profile thumbnail and video ID for the next song  
-        var nextSong = playlistItems[nextSongIndex];  
-        var nextThumbnail = $(nextSong).children('img').attr("src");  
-        var nextVideoId = $(nextSong).attr("vid");  
-        $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');  
-        $("#profileThumbnail").data("videoId", nextVideoId);  
+    if (nextSongIndex < playlistItems.length) {
+        playlistItems[nextSongIndex].click(); // Play the next song
+        audio.play(); // Play the audio
 
-        Sid = nextSongIndex; // update Sid  
-        console.log('Automatically went to the next song and started playing.');  
-    } else {  
-        console.log('End of playlist');  
-    }  
-}  
+        // Update the profile thumbnail and video ID for the next song
+        var nextSong = playlistItems[nextSongIndex];
+        var nextThumbnail = $(nextSong).children('img').attr("src");
+        var nextVideoId = $(nextSong).attr("vid");
+        $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');
+        $("#profileThumbnail").data("videoId", nextVideoId);
 
-// Function to play the previous song  
-function playPreviousSong() {  
-    var prevSongIndex = Sid - 1; // Calculate the index of the previous song  
-    var playlistItems = document.getElementsByClassName("list");  
+        console.log('Automatically went to the next song and started playing.');
+    } else {
+        console.log('End of playlist');
+        // You may want to handle what happens when it's the end of the playlist.
+    }
+}
 
-    if (prevSongIndex >= 0) {  
-        playlistItems[prevSongIndex].click(); // Play the previous song  
-        audio.play(); // Play the audio  
+function playPause() {
+   var audio = document.getElementById("SAudio");
 
-        // Update the profile thumbnail and video ID for the previous song  
-        var prevSong = playlistItems[prevSongIndex];  
-        var prevThumbnail = $(prevSong).children('img').attr("src");  
-        var prevVideoId = $(prevSong).attr("vid");  
-        $("#profileThumbnail").html('<img src="' + prevThumbnail + '" alt="Profile Thumbnail">');  
-        $("#profileThumbnail").data("videoId", prevVideoId);  
+   if (audio.paused) {
+      audio.play();
+   } else {
+      audio.pause();
+   }
+}
 
-        Sid = prevSongIndex; // update Sid  
-        console.log('Automatically went to the previous song and started playing.');  
-    } else {  
-        console.log('Start of playlist');  
-    }  
-}  
+	
 
-function playPause() {  
-   var audio = document.getElementById("SAudio");  
-
-   if (audio.paused) {  
-      audio.play();  
-   } else {  
-      audio.pause();  
-   }  
-}  
-
-// Listen for the 'ended' event  
-audio.addEventListener("ended", function() {  
-    if (isRepeat) {  
-        audio.currentTime = 0;  
-        audio.play();  
-        console.log("Song repeated.");  
-    } else {  
-        playNextSong();  
-    }  
-});  
-
-// Pichhe button listener  
-document.getElementById("pichhe").addEventListener("click", playPreviousSong);  
-
-// Repeat button listener  
-document.getElementById("repeat").addEventListener("click", function() {  
-    isRepeat = !isRepeat; // toggle repeat  
-    console.log("Repeat mode: " + (isRepeat ? "ON" : "OFF"));  
+// Listen for the 'ended' event
+audio.addEventListener("ended", function() {
+    playNextSong();
 });
 
 // Listen for the 'error' event
@@ -4040,15 +4113,56 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 <butto id="playVideobutto"></butto>
 
 
+<style>
 
+.modal-container1 {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    
+	background: #EEAECA;
+background: radial-gradient(circle, rgba(238, 174, 202, 0.18) 0%, rgba(0, 0, 0, 1) 77%);z-index: 999999;
+    overflow: hidden; /* scroll remove, full page content visible */
+}
+
+.modal-content1 {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background-color: transparent; /* no border, no extra background */
+    display: flex;
+    justify-content: center;
+    align-items: center; /* center content vertically and horizontally */
+    flex-direction: column; /* stack content vertically */
+    box-sizing: border-box;
+}
+
+.modal-content1 > * {
+    width: 100%; /* any child element takes full width */
+    height: 100%; /* any child element takes full height */
+	}
 	
-<!-- Trigger Button -->
-<button id="openModalBtn">Open Modal</button>
+</style>
 
-<!-- Modal Container -->
-<div class="modal-container1" id="myModal">
+
+
+
+
+
+<!-- The modal container -->
+<div id="modal" class="modal-container1">
   <div class="modal-content1">
-      <div class="container"> 
+    <span onclick="closeModal()" style="float: right;"></span>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<div class="container"> 
   
   <div id="phone">
   
@@ -4057,11 +4171,13 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
         <i class="fas fa-volume-mute" id="volume10"></i>
       </div>
       <div class="small-text">
-        <div id="button">
-          <div id="volumeSliderContainer">
-            <input type="range" id="volumeSlider" min="0" max="100" step="1" value="100"/>
-          </div>
-        </div>	      
+      <div id="button">
+      <div id="volumeSliderContainer">
+    <input type="range" id="volumeSlider" min="0" max="100" step="1" value="100"/>
+</div>
+</div>	      
+      
+      
       </div>
       <div class="button">
         <i id="volume100" class="fa fa-volume-up"></i>
@@ -4069,17 +4185,36 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
     </div>  <!-- /top-menu -->
     
     <div class="thumbnail-border">
-      <div class="audio-player">
-        <div id="thumbnailContainer">
-          <img id="SThumb" src="" alt="/img/newdp.png" onclick="clickButton()">
-          <div id="playButtonOverlay" onclick="playPause()"></div>
-        </div>
-      </div>  
+      
+<div class="audio-player">
+
+	
+<div id="thumbnailContainer">
+   <img id="SThumb" src="" alt="/img/newdp.png" onclick="clickButton()">
+   <div id="playButtonOverlay" onclick="playPause()"></div>
+</div>
+
+
+</div>  
+    <!-- Your poster image goes here -->
+  
+
+	    
     </div> <!--/thumbnail-border -->
     
     <div id="song-details">
-      <h1 class="song-title" id="vfytitle"></h1>
+      <h1 class="song-title"id="vfytitle">
+
+<!-- Add this div to your HTML -->
+
+
+
+	      
+      </h1>
       <span class="artist"></span>
+
+
+	    
     </div> <!-- /song-details -->
 
     <div id="time-slider">
@@ -4087,64 +4222,59 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
         <span id="current-time"></span> 
         <span id="total-time"></span> 
       </div>
+
+
+	    
       <input type="range" min="1" max="100" value="0" class="slider" id="seekbar" />
-      <br>
-      <div id="downloadButtonDiv"></div>
-      <div id="currentSongTitle"></div>
+
+<br>
+		<div id="downloadButtonDiv"></div>
+<div id="currentSongTitle"></div>
+
+	    
     </div> <!-- /time-slider -->
     
-    <b id="stop"></b>
+   <b id="stop"></b>
 	
-    <div id="song-controls">
-
-      <!-- Previous -->
+<div id="song-controls">
+     
       <div class="button">
-        <i id="pichhe" class="fas fa-step-backward"></i>
+
+<b id="play" onclick="clickButton()">	<i id="playvfy" class="fas fa-pause" onclick="togglePause()"></i></b>
+   
+
+      
+      </div>
+	
+      <div class="button">
+          <i id="VFYmp3" class="fas fa-download"></i>
       </div>
 
-      <!-- Play -->
-      <div class="button">
-        <b id="play" onclick="clickButton()">	
-          <i id="playvfy" class="fas fa-pause" onclick="togglePause()"></i>
-        </b>
-      </div>
-
-      <!-- Next -->
-      <div class="button">
-        <i id="nextbutto" class="fas fa-step-forward"></i>
-      </div>
-
-      <!-- Repeat -->
-      <div class="button">
-        <i id="repeat" class="fas fa-redo"></i>
-      </div>
-
-      <!-- Home -->
-      <div class="button">
-        <i onclick="closeModal()" class="fa fa-home"></i>
+<div class="button">
+        <i onclick="closeModal()" class="fa fa-list"></i>
       </div> 
-
-      <!-- Download -->
-      <div class="button">
-        <i id="VFYmp3" class="fas fa-download"></i>
+	
+<div class="button">
+          <i id="nextbutto" class="fas fa-step-forward"></i>
       </div>
 	    
     </div><!-- /song-controls -->
     
   </div> <!-- /phone -->
   
-</div> <!-- /container -->
-  </div>
-</div>
-	
+  
 
-<div id="audio-player">
+</div> <!-- /container -->
+
+
+  	<div id="audio-player">
   <audio id="SAudio" controls style="display: none;">
     <source src="your-audio-file.mp3" type="audio/mp3">
     Your browser does not support the audio element.
   </audio>
-</div>
 
+</div>
+  
 	  
 	  
 
