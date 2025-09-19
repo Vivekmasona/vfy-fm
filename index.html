@@ -2325,7 +2325,7 @@ function loadSong(song, ind) {
     $("#profileThumbnail").data("videoId", id);
     $("#vfytitle").html('<marquee behavior="alternate" scrollamount="4">' + title + '</marquee>');
     $("#currentTimeTitle").text("Current Time: " + new Date().toLocaleTimeString());
-    $("#currentSongTitle").html('<marquee behavior="alternate" scrollamount="1">' + title + '</marquee>');
+    $("#currentSongTitle").html(title);
     $("#currentSongOutput").html('Video ID: ' + id + '<br>' +
                                  'Thumbnail: <img src="' + thumbnail + '" style="max-width:100%;">');
     $("#channelNameDiv").text("Channel ID: " + id);
@@ -4247,23 +4247,36 @@ background: radial-gradient(circle, rgba(238, 174, 202, 0.18) 0%, rgba(0, 0, 0, 
       </div>  
     </div> <!--/thumbnail-border -->
     
+    <br>
+    
+    
     <div id="song-details">
       <h1 class="song-title" id="vfytitle"></h1>
       <span class="artist"></span>
     </div> <!-- /song-details -->
 
+    
+    
+    <b id="stop"></b>
+    
+    
+    
     <div id="time-slider">
+    	
+    <br>
+    	<div id="currentSongTitle"></div>
+    <br>
       <div class="slider-times">
         <span id="current-time"></span> 
         <span id="total-time"></span> 
       </div>
       <input type="range" min="1" max="100" value="0" class="slider" id="seekbar" />
-      <br>
-      <div id="downloadButtonDiv"></div>
-      <div id="currentSongTitle"></div>
+      
+      
+      
     </div> <!-- /time-slider -->
     
-    <b id="stop"></b>
+    
 	
     <div id="song-controls">
 
