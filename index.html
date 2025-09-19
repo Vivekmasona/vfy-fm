@@ -2253,49 +2253,83 @@ document.getElementById("vivekmasona").onclick = ()=>{
         };
 
     
-var audio = document.getElementById("SAudio");
+var audio = document.getElementById("SAudio");  
+var isRepeat = false; // repeat flag
 
-// Function to play the next song
-function playNextSong() {
-    var nextSongIndex = Sid + 1; // Calculate the index of the next song
-    var playlistItems = document.getElementsByClassName("list");
+// Function to play the next song  
+function playNextSong() {  
+    var nextSongIndex = Sid + 1; // Calculate the index of the next song  
+    var playlistItems = document.getElementsByClassName("list");  
 
-    
-	
+    if (nextSongIndex < playlistItems.length) {  
+        playlistItems[nextSongIndex].click(); // Play the next song  
+        audio.play(); // Play the audio  
 
-    if (nextSongIndex < playlistItems.length) {
-        playlistItems[nextSongIndex].click(); // Play the next song
-        audio.play(); // Play the audio
+        // Update the profile thumbnail and video ID for the next song  
+        var nextSong = playlistItems[nextSongIndex];  
+        var nextThumbnail = $(nextSong).children('img').attr("src");  
+        var nextVideoId = $(nextSong).attr("vid");  
+        $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');  
+        $("#profileThumbnail").data("videoId", nextVideoId);  
 
-        // Update the profile thumbnail and video ID for the next song
-        var nextSong = playlistItems[nextSongIndex];
-        var nextThumbnail = $(nextSong).children('img').attr("src");
-        var nextVideoId = $(nextSong).attr("vid");
-        $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');
-        $("#profileThumbnail").data("videoId", nextVideoId);
+        Sid = nextSongIndex; // update Sid  
+        console.log('Automatically went to the next song and started playing.');  
+    } else {  
+        console.log('End of playlist');  
+    }  
+}  
 
-        console.log('Automatically went to the next song and started playing.');
-    } else {
-        console.log('End of playlist');
-        // You may want to handle what happens when it's the end of the playlist.
-    }
-}
+// Function to play the previous song  
+function playPreviousSong() {  
+    var prevSongIndex = Sid - 1; // Calculate the index of the previous song  
+    var playlistItems = document.getElementsByClassName("list");  
 
-function playPause() {
-   var audio = document.getElementById("SAudio");
+    if (prevSongIndex >= 0) {  
+        playlistItems[prevSongIndex].click(); // Play the previous song  
+        audio.play(); // Play the audio  
 
-   if (audio.paused) {
-      audio.play();
-   } else {
-      audio.pause();
-   }
-}
+        // Update the profile thumbnail and video ID for the previous song  
+        var prevSong = playlistItems[prevSongIndex];  
+        var prevThumbnail = $(prevSong).children('img').attr("src");  
+        var prevVideoId = $(prevSong).attr("vid");  
+        $("#profileThumbnail").html('<img src="' + prevThumbnail + '" alt="Profile Thumbnail">');  
+        $("#profileThumbnail").data("videoId", prevVideoId);  
 
-	
+        Sid = prevSongIndex; // update Sid  
+        console.log('Automatically went to the previous song and started playing.');  
+    } else {  
+        console.log('Start of playlist');  
+    }  
+}  
 
-// Listen for the 'ended' event
-audio.addEventListener("ended", function() {
-    playNextSong();
+function playPause() {  
+   var audio = document.getElementById("SAudio");  
+
+   if (audio.paused) {  
+      audio.play();  
+   } else {  
+      audio.pause();  
+   }  
+}  
+
+// Listen for the 'ended' event  
+audio.addEventListener("ended", function() {  
+    if (isRepeat) {  
+        audio.currentTime = 0;  
+        audio.play();  
+        console.log("Song repeated.");  
+    } else {  
+        playNextSong();  
+    }  
+});  
+
+// Pichhe button listener  
+document.getElementById("pichhe").addEventListener("click", playPreviousSong);  
+
+// Repeat button listener  
+document.getElementById("repeat").addEventListener("click", function() {  
+    isRepeat = !isRepeat; // toggle repeat  
+    console.log("Repeat mode: " + (isRepeat ? "ON" : "OFF"));  
 });
 
 // Listen for the 'error' event
@@ -3940,48 +3974,15 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 <butto id="playVideobutto"></butto>
 
 
-<style>
 
-.modal-container1 {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    
-	background: #EEAECA;
-background: radial-gradient(circle, rgba(238, 174, 202, 0.18) 0%, rgba(0, 0, 0, 1) 77%);z-index: 999999;
-    overflow: hidden; /* scroll remove, full page content visible */
-}
-
-.modal-content1 {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    text-align: center;
-    background-color: transparent; /* no border, no extra background */
-    display: flex;
-    justify-content: center;
-    align-items: center; /* center content vertically and horizontally */
-    flex-direction: column; /* stack content vertically */
-    box-sizing: border-box;
-}
-
-.modal-content1 > * {
-    width: 100%; /* any child element takes full width */
-    height: 100%; /* any child element takes full height */
-	}
 	
-</style>
+<!-- Trigger Button -->
+<button id="openModalBtn">Open Modal</button>
 
-
-
-
-
-
-<div class="container"> 
+<!-- Modal Container -->
+<div class="modal-container1" id="myModal">
+  <div class="modal-content1">
+      <div class="container"> 
   
   <div id="phone">
   
@@ -4067,6 +4068,9 @@ background: radial-gradient(circle, rgba(238, 174, 202, 0.18) 0%, rgba(0, 0, 0, 
   </div> <!-- /phone -->
   
 </div> <!-- /container -->
+  </div>
+</div>
+	
 
 <div id="audio-player">
   <audio id="SAudio" controls style="display: none;">
