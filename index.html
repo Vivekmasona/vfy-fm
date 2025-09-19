@@ -2426,49 +2426,83 @@ document.getElementById("vivekmasona").onclick = ()=>{
         };
 
     
-var audio = document.getElementById("SAudio");
+var audio = document.getElementById("SAudio");  
+var isRepeat = false; // repeat flag
 
-// Function to play the next song
-function playNextSong() {
-    var nextSongIndex = Sid + 1; // Calculate the index of the next song
-    var playlistItems = document.getElementsByClassName("list");
+// Function to play the next song  
+function playNextSong() {  
+    var nextSongIndex = Sid + 1; // Calculate the index of the next song  
+    var playlistItems = document.getElementsByClassName("list");  
 
-    
-	
+    if (nextSongIndex < playlistItems.length) {  
+        playlistItems[nextSongIndex].click(); // Play the next song  
+        audio.play(); // Play the audio  
 
-    if (nextSongIndex < playlistItems.length) {
-        playlistItems[nextSongIndex].click(); // Play the next song
-        audio.play(); // Play the audio
+        // Update the profile thumbnail and video ID for the next song  
+        var nextSong = playlistItems[nextSongIndex];  
+        var nextThumbnail = $(nextSong).children('img').attr("src");  
+        var nextVideoId = $(nextSong).attr("vid");  
+        $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');  
+        $("#profileThumbnail").data("videoId", nextVideoId);  
 
-        // Update the profile thumbnail and video ID for the next song
-        var nextSong = playlistItems[nextSongIndex];
-        var nextThumbnail = $(nextSong).children('img').attr("src");
-        var nextVideoId = $(nextSong).attr("vid");
-        $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');
-        $("#profileThumbnail").data("videoId", nextVideoId);
+        Sid = nextSongIndex; // update Sid  
+        console.log('Automatically went to the next song and started playing.');  
+    } else {  
+        console.log('End of playlist');  
+    }  
+}  
 
-        console.log('Automatically went to the next song and started playing.');
-    } else {
-        console.log('End of playlist');
-        // You may want to handle what happens when it's the end of the playlist.
-    }
-}
+// Function to play the previous song  
+function playPreviousSong() {  
+    var prevSongIndex = Sid - 1; // Calculate the index of the previous song  
+    var playlistItems = document.getElementsByClassName("list");  
 
-function playPause() {
-   var audio = document.getElementById("SAudio");
+    if (prevSongIndex >= 0) {  
+        playlistItems[prevSongIndex].click(); // Play the previous song  
+        audio.play(); // Play the audio  
 
-   if (audio.paused) {
-      audio.play();
-   } else {
-      audio.pause();
-   }
-}
+        // Update the profile thumbnail and video ID for the previous song  
+        var prevSong = playlistItems[prevSongIndex];  
+        var prevThumbnail = $(prevSong).children('img').attr("src");  
+        var prevVideoId = $(prevSong).attr("vid");  
+        $("#profileThumbnail").html('<img src="' + prevThumbnail + '" alt="Profile Thumbnail">');  
+        $("#profileThumbnail").data("videoId", prevVideoId);  
 
-	
+        Sid = prevSongIndex; // update Sid  
+        console.log('Automatically went to the previous song and started playing.');  
+    } else {  
+        console.log('Start of playlist');  
+    }  
+}  
 
-// Listen for the 'ended' event
-audio.addEventListener("ended", function() {
-    playNextSong();
+function playPause() {  
+   var audio = document.getElementById("SAudio");  
+
+   if (audio.paused) {  
+      audio.play();  
+   } else {  
+      audio.pause();  
+   }  
+}  
+
+// Listen for the 'ended' event  
+audio.addEventListener("ended", function() {  
+    if (isRepeat) {  
+        audio.currentTime = 0;  
+        audio.play();  
+        console.log("Song repeated.");  
+    } else {  
+        playNextSong();  
+    }  
+});  
+
+// Pichhe button listener  
+document.getElementById("pichhe").addEventListener("click", playPreviousSong);  
+
+// Repeat button listener  
+document.getElementById("repeat").addEventListener("click", function() {  
+    isRepeat = !isRepeat; // toggle repeat  
+    console.log("Repeat mode: " + (isRepeat ? "ON" : "OFF"));  
 });
 
 // Listen for the 'error' event
@@ -4171,13 +4205,11 @@ background: radial-gradient(circle, rgba(238, 174, 202, 0.18) 0%, rgba(0, 0, 0, 
         <i class="fas fa-volume-mute" id="volume10"></i>
       </div>
       <div class="small-text">
-      <div id="button">
-      <div id="volumeSliderContainer">
-    <input type="range" id="volumeSlider" min="0" max="100" step="1" value="100"/>
-</div>
-</div>	      
-      
-      
+        <div id="button">
+          <div id="volumeSliderContainer">
+            <input type="range" id="volumeSlider" min="0" max="100" step="1" value="100"/>
+          </div>
+        </div>	      
       </div>
       <div class="button">
         <i id="volume100" class="fa fa-volume-up"></i>
@@ -4185,36 +4217,17 @@ background: radial-gradient(circle, rgba(238, 174, 202, 0.18) 0%, rgba(0, 0, 0, 
     </div>  <!-- /top-menu -->
     
     <div class="thumbnail-border">
-      
-<div class="audio-player">
-
-	
-<div id="thumbnailContainer">
-   <img id="SThumb" src="" alt="/img/newdp.png" onclick="clickButton()">
-   <div id="playButtonOverlay" onclick="playPause()"></div>
-</div>
-
-
-</div>  
-    <!-- Your poster image goes here -->
-  
-
-	    
+      <div class="audio-player">
+        <div id="thumbnailContainer">
+          <img id="SThumb" src="" alt="/img/newdp.png" onclick="clickButton()">
+          <div id="playButtonOverlay" onclick="playPause()"></div>
+        </div>
+      </div>  
     </div> <!--/thumbnail-border -->
     
     <div id="song-details">
-      <h1 class="song-title"id="vfytitle">
-
-<!-- Add this div to your HTML -->
-
-
-
-	      
-      </h1>
+      <h1 class="song-title" id="vfytitle"></h1>
       <span class="artist"></span>
-
-
-	    
     </div> <!-- /song-details -->
 
     <div id="time-slider">
@@ -4222,57 +4235,59 @@ background: radial-gradient(circle, rgba(238, 174, 202, 0.18) 0%, rgba(0, 0, 0, 
         <span id="current-time"></span> 
         <span id="total-time"></span> 
       </div>
-
-
-	    
       <input type="range" min="1" max="100" value="0" class="slider" id="seekbar" />
-
-<br>
-		<div id="downloadButtonDiv"></div>
-<div id="currentSongTitle"></div>
-
-	    
+      <br>
+      <div id="downloadButtonDiv"></div>
+      <div id="currentSongTitle"></div>
     </div> <!-- /time-slider -->
     
-   <b id="stop"></b>
+    <b id="stop"></b>
 	
-<div id="song-controls">
-     
-      <div class="button">
+    <div id="song-controls">
 
-<b id="play" onclick="clickButton()">	<i id="playvfy" class="fas fa-pause" onclick="togglePause()"></i></b>
-   
-
-      
-      </div>
-	
+      <!-- Previous -->
       <div class="button">
-          <i id="VFYmp3" class="fas fa-download"></i>
+        <i id="pichhe" class="fas fa-step-backward"></i>
       </div>
 
-<div class="button">
-        <i onclick="closeModal()" class="fa fa-list"></i>
+      <!-- Play -->
+      <div class="button">
+        <b id="play" onclick="clickButton()">	
+          <i id="playvfy" class="fas fa-pause" onclick="togglePause()"></i>
+        </b>
+      </div>
+
+      <!-- Next -->
+      <div class="button">
+        <i id="nextbutto" class="fas fa-step-forward"></i>
+      </div>
+
+      <!-- Repeat -->
+      <div class="button">
+        <i id="repeat" class="fas fa-redo"></i>
+      </div>
+
+      <!-- Home -->
+      <div class="button">
+        <i onclick="closeModal()" class="fa fa-home"></i>
       </div> 
-	
-<div class="button">
-          <i id="nextbutto" class="fas fa-step-forward"></i>
+
+      <!-- Download -->
+      <div class="button">
+        <i id="VFYmp3" class="fas fa-download"></i>
       </div>
 	    
     </div><!-- /song-controls -->
     
   </div> <!-- /phone -->
   
-  
-
 </div> <!-- /container -->
 
-
-  	<div id="audio-player">
+<div id="audio-player">
   <audio id="SAudio" controls style="display: none;">
     <source src="your-audio-file.mp3" type="audio/mp3">
     Your browser does not support the audio element.
   </audio>
-
 </div>
   
 	  
