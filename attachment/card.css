@@ -3,16 +3,18 @@
  
 @import url('https://fonts.googleapis.com/css2?family=Khula:wght@400;600;700&family=Public+Sans:wght@100;300;400;600&display=swap');
 
-body {
+  body {
   margin: 0;
   padding: 0;
   font-family: "Public Sans", sans-serif;
   background: radial-gradient(circle at top, #1e1c2a, #0d0b12 80%);
   color: #fff;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
   height: 100vh;
+  overflow: hidden;
 }
 
 .container {
@@ -20,33 +22,35 @@ body {
   max-width: 420px;
   padding: 20px;
   box-sizing: border-box;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 #phone {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(25px);
-  border-radius: 50px 10px 50px 10px;
-  padding: 20px;
-  box-shadow: 0 25px 50px rgba(0,0,0,0.4);
-  overflow: hidden;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-/* 🔝 Top Menu */
+/* 🔝 Top Menu - Volume */
 #top-menu {
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: .8rem;
-  letter-spacing: 1px;
-  margin-bottom: 20px;
   color: #ff4c6a;
+  margin-bottom: 10px;
 }
 
-/* 🎵 Thumbnail */
+/* 🎵 Thumbnail Center */
 .thumbnail-border {
-  height: 200px;
-  width: 200px;
-  margin: 20px auto;
+  height: 220px;
+  width: 220px;
+  margin: 0 auto;
+  margin-top: 20px; /* center se thoda upar */
   border-radius: 50%;
   padding: 5px;
   background: linear-gradient(135deg, #ff4c6a, #ff9671, #ffc75f);
@@ -64,14 +68,15 @@ body {
   box-shadow: inset 0 0 20px rgba(255,255,255,0.2);
 }
 
-/* 🎶 Song details */
+/* 🎶 Title & Artist */
 #song-details {
   text-align: center;
-  margin-top: 15px;
+  margin-top: 20px;
 }
 
 .song-title {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
+  letter-spacing: 3px;
   font-weight: 600;
   color: #fff;
   text-shadow: 0 2px 10px rgba(0,0,0,0.5);
@@ -80,11 +85,13 @@ body {
 .artist {
   font-size: 0.9rem;
   color: #aaa;
+  margin-top: 5px;
+  display: block;
 }
 
-/* 📊 Time slider */
+/* 📊 Seekbar */
 #time-slider {
-  margin: 20px 0 10px 0;
+  margin: 20px 0;
 }
 
 .slider {
@@ -116,12 +123,12 @@ body {
   margin-top: 5px;
 }
 
-/* 🎛 Controls */
+/* 🎛 Controls Bottom */
 #song-controls {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  margin-top: 25px;
+  margin-bottom: 15px;
 }
 
 #song-controls .button {
@@ -146,30 +153,3 @@ body {
   transform: scale(1.1);
   box-shadow: 0 10px 25px rgba(255,76,106,0.4);
 }
-
-/* 🔊 Volume */
-#volumeSliderContainer {
-  margin-top: 20px;
-}
-
-#volumeSlider {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 6px;
-  border-radius: 5px;
-  background: linear-gradient(90deg, #ff4c6a, #ffc75f);
-  outline: none;
-}
-
-#volumeSlider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: #fff;
-  border: 2px solid #ff4c6a;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  cursor: pointer;
-}
-         
-
