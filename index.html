@@ -2587,7 +2587,111 @@ nextbutto.addEventListener("click", function () {
 
 
 
-
+// ---- Visualizer JS ----  
+var audio = document.getElementById("SAudio");  
+var img = document.getElementById("SThumb");  
+  
+// create canvas dynamically  
+var canvas = document.createElement("canvas");  
+canvas.id = "vizCanvas";  
+canvas.style.position = "absolute";  
+canvas.style.top = "0";  
+canvas.style.left = "0";  
+canvas.style.width = "100%";  
+canvas.style.height = "100%";  
+canvas.style.zIndex = "1";  
+canvas.style.pointerEvents = "none";  
+document.body.appendChild(canvas);  
+  
+var ctx = canvas.getContext("2d");  
+  
+canvas.width = window.innerWidth;  
+canvas.height = window.innerHeight;  
+  
+var audioCtx, analyser, source, dataArray, bufferLength;  
+var smoothLevel = 0;  
+var hue = 0;  
+  
+function setupVisualizer() {  
+    if (!audioCtx) {  
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();  
+        analyser = audioCtx.createAnalyser();  
+        source = audioCtx.createMediaElementSource(audio);  
+        source.connect(analyser);  
+        analyser.connect(audioCtx.destination);  
+  
+        analyser.fftSize = 512;  
+        bufferLength = analyser.frequencyBinCount;  
+        dataArray = new Uint8Array(bufferLength);  
+  
+        drawVisualizer();  
+    }  
+}  
+  
+// start visualizer when audio plays  
+audio.addEventListener("play", function() {  
+    setupVisualizer();  
+    if (audioCtx.state === "suspended") audioCtx.resume();  
+});  
+  
+function drawVisualizer() {  
+    requestAnimationFrame(drawVisualizer);  
+    analyser.getByteFrequencyData(dataArray);  
+  
+    ctx.clearRect(0, 0, canvas.width, canvas.height);  
+    var cx = canvas.width / 2;  
+    var cy = canvas.height / 2;  
+  
+    var avg = dataArray.reduce((a,b)=>a+b)/dataArray.length;  
+    smoothLevel = smoothLevel*0.85 + avg*0.15;  
+  
+    var minSize = canvas.width * 0.1;  
+    var maxSize = canvas.width * 0.8;  
+    var imgSize = minSize + (smoothLevel/255)*(maxSize-minSize);  
+    var radius = imgSize/2;  
+  
+    hue = (hue + 2) % 360;  
+  
+    // glow aura  
+    var size = radius + smoothLevel/2;  
+    var gradient = ctx.createRadialGradient(cx, cy, radius*0.4, cx, cy, size);  
+    gradient.addColorStop(0, `hsla(${hue},100%,60%,0.9)`);  
+    gradient.addColorStop(0.5, `hsla(${(hue+120)%360},100%,50%,0.6)`);  
+    gradient.addColorStop(1, "rgba(0,0,0,0)");  
+    ctx.fillStyle = gradient;  
+    ctx.beginPath();  
+    ctx.arc(cx, cy, size, 0, Math.PI*2);  
+    ctx.fill();  
+  
+    // fan-style aura streaks  
+    for (var i=0;i<6;i++){  
+        var angle = (i/6)*Math.PI*2 + hue*0.02;  
+        var px = cx + Math.cos(angle)*size*0.8;  
+        var py = cy + Math.sin(angle)*size*0.8;  
+  
+        var g2 = ctx.createRadialGradient(px, py, 0, px, py, size*0.8);  
+        g2.addColorStop(0, `hsla(${(hue+i*60)%360},100%,60%,0.5)`);  
+        g2.addColorStop(1,"rgba(0,0,0,0)");  
+        ctx.fillStyle = g2;  
+        ctx.beginPath();  
+        ctx.arc(px, py, size*0.8, 0, Math.PI*2);  
+        ctx.fill();  
+    }  
+  
+    // draw thumbnail image  
+    ctx.save();  
+    ctx.beginPath();  
+    ctx.arc(cx, cy, radius, 0, Math.PI*2);  
+    ctx.closePath();  
+    ctx.clip();  
+    ctx.drawImage(img, cx-radius, cy-radius, radius*2, radius*2);  
+    ctx.restore();  
+}  
+  
+window.addEventListener("resize", function(){  
+    canvas.width = window.innerWidth;  
+    canvas.height = window.innerHeight;  
+});  
 
 
 
