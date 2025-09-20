@@ -7,16 +7,18 @@ let countdownInterval = null; // prevent multiple intervals
 function clearLocalStorage(purpose="") {
     const sessionId = localStorage.getItem("sessionId");
     const apiSelection = localStorage.getItem("apiSelection");
+    const apiSelection = localStorage.getItem("songQuery");
     const favorites = localStorage.getItem("favorites"); // preserve favorites
 
     localStorage.clear();
 
     if (sessionId) localStorage.setItem("sessionId", sessionId);
     if (apiSelection) localStorage.setItem("apiSelection", apiSelection);
+    if (apiSelection) localStorage.setItem("songQuery", apiSelection);
     if (favorites) localStorage.setItem("favorites", favorites);
 
     localStorage.setItem("lastClearTime", Date.now());
-    console.log("localStorage cleared (" + purpose + "), sessionId, apiSelection & favorites preserved.");
+    console.log("localStorage cleared (" + purpose + "), sessionId, apiSelection, songQuery & favorites preserved.");
 }
 
 // ---- Size Calculator ----
