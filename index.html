@@ -46,7 +46,97 @@
 <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
 
 
+<style>
 
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  font-family: 'Arial', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+#slider{
+  width:99%;
+  margin:20px auto;
+  perspective:1500px;
+  position: relative;
+  overflow:hidden;
+  border-radius:5px;
+  box-shadow:0 15px 50px rgba(0,255,255,0.2), inset 0 0 30px rgba(0,255,255,0.1);
+}
+
+.slides{
+  width:100%;
+  border-radius:5px;
+  display:block; /* images visible */
+  transition: transform 1s ease, filter 1s ease, box-shadow 1s ease;
+  transform-style: preserve-3d;
+  margin-bottom: 2px;
+}
+
+.slides img{
+  width:100%;
+  border-radius:5px;
+  display:block;
+  transition: transform 0.5s ease, filter 0.5s ease, box-shadow 0.5s ease;
+  box-shadow:0 10px 30px rgba(0,255,255,0.2);
+}
+
+/* Hover 3D effect on images */
+.slides img:hover{
+  transform: scale(1.05) rotateY(15deg) rotateX(5deg);
+  filter: brightness(1.2) contrast(1.1);
+  box-shadow:0 20px 60px rgba(0,255,255,0.5);
+}
+
+/* Shine overlay */
+.slides::before{
+  content:'';
+  position:absolute;
+  top:0;
+  left:-50%;
+  width:200%;
+  height:100%;
+  background: linear-gradient(120deg, rgba(255,255,255,0.2), rgba(255,255,255,0));
+  transform: skewX(-25deg);
+  animation: shine 3s infinite;
+  border-radius:20px;
+  pointer-events:none;
+}
+
+@keyframes shine{
+  0%{ left:-200%; }
+  50%{ left:100%; }
+  100%{ left:200%; }
+}
+
+/* Heading */
+#heading1{
+  display:block;
+  text-align:center;
+  font-size:2em;
+  margin:10px 0px;
+  color:#00ffff;
+  text-shadow:0 0 10px #0ff, 0 0 20px #0ff;
+}
+
+@media (max-width:567px){
+  #slider{ width:99%; }
+  #heading1{ font-size:1.5em; }
+}	
+  
+
+	
+</style>
 <!-- Toggle button -->
 <input type="checkbox" id="modeToggleBtn" class="mode-toggle-checkbox" />
 
