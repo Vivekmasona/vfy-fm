@@ -7,7 +7,7 @@ let countdownInterval = null; // prevent multiple intervals
 function clearLocalStorage(purpose="") {
     const sessionId = localStorage.getItem("sessionId");
     const apiSelection = localStorage.getItem("apiSelection");
-    const apiSelection = localStorage.getItem("songQuery");
+    const songQuery = localStorage.getItem("songQuery");
     const favorites = localStorage.getItem("favorites"); // preserve favorites
 
     localStorage.clear();
