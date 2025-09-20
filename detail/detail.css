@@ -53,7 +53,7 @@
 .highlight {
   font-weight: 800;
   font-size: 20px;
-  background: linear-gradient(45deg, #ffffff, #ffffff); /* yellow → green */
+  color:#ff0000;
   
 }
 
