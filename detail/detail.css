@@ -54,10 +54,7 @@
   font-weight: 800;
   font-size: 20px;
   background: linear-gradient(45deg, #ffffff, #ffffff); /* yellow → green */
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: inline-block;
-  animation: glow 1.2s infinite alternate;
+  
 }
 
 
