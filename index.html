@@ -19,6 +19,7 @@
 
 
 <link rel="stylesheet" href="database/storage.css" />
+<link rel="stylesheet" href="setting/setting.css" />
 <link rel="stylesheet" href="menu/sidemenu.css" />
 <link rel="stylesheet" href="detail/detail.css" />
 <link rel="stylesheet" href="home/trending.css" />
@@ -28,6 +29,7 @@
 <script src="home/trending.js" defer></script>
 <script src="attachment/online.js" defer></script>
 <script src="detail/detail.js" defer></script>
+<script src="setting/setting.js" defer></script>
 
 
 
@@ -5495,116 +5497,9 @@ function stopCallTimer() {
 
 
  
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: #121212;
-            margin: 0;
-        }
-        .popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
-            display: none;
-            border-radius: 10px;
-            z-index: 999999;
-            color: white;
-            width: 250px;
-            text-align: center;
-        }
-        .popup.active {
-            display: block;
-        }
-        .small-popup {
-            margin-top: 10px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-        }
-        .custom-radio input {
-            display: none;
-        }
-        .custom-radio {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .custom-radio label {
-            position: relative;
-            padding-left: 30px;
-            cursor: pointer;
-            font-size: 16px;
-            color: white;
-        }
-        .custom-radio label:before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 20px;
-            height: 20px;
-            border: 2px solid white;
-            border-radius: 50%;
-            transition: 0.3s;
-        }
-        .custom-radio input:checked + label:before {
-            background: linear-gradient(45deg, #ff416c, #ff4b2b);
-            border: none;
-            box-shadow: 0 0 10px rgba(255, 65, 108, 0.8);
-        }
-        .close-btn {
-  position: absolute; /* popup ke upar right corner me fix kare */
-  top: 10px;
-  right: 15px;
-  padding: 5px 10px;
-  font-size: 14px;
-  font-weight: bold;
-  color: #fff;
-  background: rgba(255, 0, 0, 0.7);
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  z-index: 1001;
-  transition: 0.3s;
-}
 
-.close-btn:hover {
-  background: rgba(255, 0, 0, 1);
-  transform: scale(1.05);
-}
-        .settings-btn {
-            position: fixed;
-		z-index:999999;
-            bottom: 2px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: none;
-            color: white;
-            padding: 15px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 20px;
-            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
-            transition: 0.3s;
-        }
-        .settings-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-    </style>
-</head>
-<body>
+    
+            
 
    
 
@@ -5636,64 +5531,11 @@ function stopCallTimer() {
     <button class="close-btn" onclick="closePopup()">Close</button>
 </div>
 
-<script>
-    function openPopup() {
-        document.getElementById("popup").classList.add("active");
-    }
-
-    function closePopup() {
-        document.getElementById("popup").classList.remove("active");
-    }
-
-    function saveSelection(value) {
-        localStorage.setItem("apiSelection", value);
-    }
-
-    function loadSelection() {
-        let savedValue = localStorage.getItem("apiSelection");
-        if (savedValue) {
-            let radio = document.querySelector(`input[value="${savedValue}"]`);
-            if (radio) {
-                radio.checked = true;
-            }
-        }
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-        loadSelection();
-        document.querySelectorAll('input[name="apiSelection"]').forEach((radio) => {
-            radio.addEventListener("change", (event) => {
-                saveSelection(event.target.value);
-            });
-        });
-    });
-</script>
 
 
 
  
 
-<script>
-/* ⚙️ Toggle Popup */
-document.getElementById("settingsBtn").addEventListener("click", () => {
-  const box = document.getElementById("settingsBox");
-  box.style.display = box.style.display === "flex" ? "none" : "flex";
-
-  // input pre-fill with saved query
-  const saved = localStorage.getItem("songQuery");
-  if (saved) document.getElementById("songQuery").value = saved;
-});
-
-/* 💾 Save Preference */
-function savePreference() {
-  const input = document.getElementById("songQuery").value.trim();
-  if (input) {
-    localStorage.setItem("songQuery", input);
-    loadTrendingSongs(); // reload trending with new query
-    document.getElementById("settingsBox").style.display = "none";
-  }
-}
-</script>
 
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
