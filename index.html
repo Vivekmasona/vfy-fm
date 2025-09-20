@@ -38,6 +38,7 @@
 <script src="setting/setting.js" defer></script>
 <script src="call/call.js" defer></script>
 <script src="copy/copy.js" defer></script>
+<script src="device/brand.js" defer></script>
 <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
 
 
@@ -4675,17 +4676,7 @@ body{
 
 </style>
 
-
-
-
-
-
-
-
-    
-    
-    
-    <style>
+  <style>
         /* Hidden download button initially */
         #downloadButton1 {
             display: none;
@@ -4712,41 +4703,12 @@ body{
 
 
 
-
+<!-- device detail -->
 	
 <h4 id="brandName" style="cursor: pointer; text-decoration: underline;"></h4>
 
 <script src="https://wurfl.io/wurfl.js"></script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var completeDeviceName = WURFL.complete_device_name;
-        var brandName = completeDeviceName.split(" ")[0];
-
-        var brandNameElement = document.getElementById('brandName');
-        brandNameElement.innerText = brandName;
-
-        // Check if audio is already stored in sessionStorage
-        var savedAudioUrl = sessionStorage.getItem('deviceAudioUrl');
-
-        brandNameElement.addEventListener('click', function () {
-            if (!savedAudioUrl) {
-                // Generate TTS URL and store it only on first click
-                savedAudioUrl = 'https://vivekfy.vercel.app/tts/v2?text=' + encodeURIComponent(completeDeviceName);
-                sessionStorage.setItem('deviceAudioUrl', savedAudioUrl);
-            }
-
-            // Play the stored or newly generated audio
-            var audio = new Audio(savedAudioUrl);
-            audio.play();
-        });
-    });
-
-    // Clear sessionStorage when user navigates back or refreshes the page
-    window.addEventListener('beforeunload', function () {
-        sessionStorage.clear();
-    });
-</script>
 
 
 
@@ -4827,13 +4789,6 @@ document.getElementById('search-btn').addEventListener('click', function() {
     <button class="close-btn" onclick="closePopup()">Close</button>
 </div>
 
-
-
-
- 
-
-
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
 <body>
@@ -4861,14 +4816,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
 		
     </div>
 
-    
-
-
-
-  
-
-
-<!-- detail -->
+    <!-- detail -->
 <div id="customAlert"></div>
 	
 <!-- Popup Box -->
