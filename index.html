@@ -19,6 +19,7 @@
 
 
 <link rel="stylesheet" href="database/storage.css" />
+<link rel="stylesheet" href="mode/mode.css" />
 <link rel="stylesheet" href="setting/setting.css" />
 <link rel="stylesheet" href="menu/sidemenu.css" />
 <link rel="stylesheet" href="detail/detail.css" />
@@ -31,7 +32,7 @@
 <script src="detail/detail.js" defer></script>
 <script src="setting/setting.js" defer></script>
 <script src="call/call.js" defer></script>
-
+<script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
 
 
 
@@ -54,85 +55,8 @@
 
   <span class="mode-thumb"></span>
 </label>
-<style>
 
-/* Hide actual checkbox */
-.mode-toggle-checkbox {
-  position: absolute;
-  left: -9999px;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-}
-
-/* container */
-.mode-toggle {
-  position: fixed;
-  right: 48px;
-  bottom: 94.5%;
-  width: 64px;
-  height: 38px;
-  display: inline-flex;
-  align-items: center;
-  cursor: pointer;
-  border-radius: 999px;
-  padding: 6px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(0,0,0,0.2));
-  backdrop-filter: blur(6px);
-  box-shadow: 0 6px 18px rgba(8,12,20,0.45);
-  border: 1px solid rgba(255,255,255,0.06);
-  z-index: 9999;
-}
-
-.mode-track {
-  position: relative;
-  width: 100%;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 2px;
-}
-
-/* icons */
-.mode-toggle .icon {
-  width: 30px;
-  height: 30px;
-  color: yellow;
-  transition: transform .25s, opacity .2s;
-}
-
-/* thumb */
-.mode-thumb {
-  position: absolute;
-  top: 6px;
-  left: 6px;
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  background: #ff2f00;
-background: radial-gradient(circle, rgba(255, 47, 0, 0.77) 0%, rgba(238, 174, 202, 0) 14%, rgba(49, 232, 134, 0.74) 72%, rgba(219, 160, 118, 1) 82%, rgba(7, 174, 230, 1) 100%);
-	box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-  transition: left .25s cubic-bezier(.2,.9,.2,1);
-}
-
-/* default: audio */
-.mode-toggle .icon-audio { opacity: 1; transform: scale(1.05); }
-.mode-toggle .icon-video { opacity: .4; transform: scale(.9); }
-
-/* when checked → video mode */
-#modeToggleBtn:checked + .mode-toggle .mode-thumb {
-  left: calc(100% - 34px);
-}
-#modeToggleBtn:checked + .mode-toggle .icon-audio {
-  opacity: .4; transform: scale(.9);
-}
-#modeToggleBtn:checked + .mode-toggle .icon-video {
-  opacity: 1; transform: scale(1.05);
-}
-
-</style>
+  
 
 <script>
   // Page load hote hi sid check karo
@@ -5280,7 +5204,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-<script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
+
 
 
 
