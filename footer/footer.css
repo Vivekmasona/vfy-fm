@@ -1,0 +1,27 @@
+#thumbnailContainer {
+   position: relative;
+}
+
+#playButtonOverlay {
+   position: absolute;
+   z-index: -1;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+   width: 465px;
+   height: 465px;
+   background: url('/img/mwave.gif') no-repeat;
+   background-size: cover;
+   cursor: pointer;
+}
+
+@-webkit-keyframes hue {
+   100% { -webkit-filter: hue-rotate(360deg); }
+}
+
+#playButtonOverlay:hover {
+   -webkit-animation: hue 1s linear infinite;
+}
+
+
+	
