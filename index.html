@@ -22,6 +22,7 @@
 <link rel="stylesheet" href="connect/player.css" />
   <script src="connect/player.js" defer></script>
 <script src="database/storage.js" defer></script>
+<script src="attachment/online.js" defer></script>
 
 
 
@@ -6092,78 +6093,6 @@ function showDetail() {
 }
 </script>
 
-
-
-
-
-
-
-
-
-<script>
-  const heart = document.getElementById("heartDot");
-
-  // Default styling
-  heart.style.color = "#00ffff";
-  heart.style.transition = "all 0.3s ease";
-  heart.style.textShadow = "0 0 0 rgba(0,0,0,0)";
-
-  const API_BASE = "https://vfycall.onrender.com"; // आपका server
-  const HEARTBEAT_MS = 5000;
-  const sessionId = localStorage.getItem("sessionId");
-  const deviceId = "DEV-" + Math.random().toString(36).slice(2,10);
-
-  // Sound setup
-  const SOUND_ONLINE = new Audio("https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/Sound.mp3");
-  const SOUND_OFFLINE = new Audio("https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/Sound2.mp3");
-
-  let lastOnline = false; // Previous state
-
-  if (sessionId) {
-    async function ping() {
-      try {
-        const res = await fetch(`${API_BASE}/ping?sessionId=${encodeURIComponent(sessionId)}&deviceId=${encodeURIComponent(deviceId)}`);
-        const data = await res.json();
-
-        if (data.ok && data.onlineCount >= 2) {
-          // Online → red heart glow
-          heart.style.color = "red";
-          heart.style.textShadow = "0 0 10px red";
-
-          if (!lastOnline) {
-            SOUND_ONLINE.play().catch(() => {});
-            lastOnline = true;
-          }
-        } else {
-          // Offline → grey
-          heart.style.color = "#bbb";
-          heart.style.textShadow = "0 0 0 rgba(0,0,0,0)";
-
-          if (lastOnline) {
-            SOUND_OFFLINE.play().catch(() => {});
-            lastOnline = false;
-          }
-        }
-      } catch (e) {
-        // Error → treat as offline
-        heart.style.color = "#bbb";
-        heart.style.textShadow = "0 0 0 rgba(0,0,0,0)";
-        if (lastOnline) {
-          SOUND_OFFLINE.play().catch(() => {});
-          lastOnline = false;
-        }
-      }
-    }
-
-    ping(); // first call
-    setInterval(ping, HEARTBEAT_MS);
-  }
-</script>
-
-
-
-        
-	
 	
 <!-- Popup Box -->
 <div id="jsonPopup">
