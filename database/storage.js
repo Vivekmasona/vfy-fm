@@ -14,7 +14,7 @@ function clearLocalStorage(purpose="") {
 
     if (sessionId) localStorage.setItem("sessionId", sessionId);
     if (apiSelection) localStorage.setItem("apiSelection", apiSelection);
-    if (apiSelection) localStorage.setItem("songQuery", apiSelection);
+    if (apiSelection) localStorage.setItem("songQuery", songQuery);
     if (favorites) localStorage.setItem("favorites", favorites);
 
     localStorage.setItem("lastClearTime", Date.now());
