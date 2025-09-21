@@ -19,8 +19,6 @@
 
 
 <link rel="stylesheet" href="database/storage.css" />
-<link rel="stylesheet" href="autocomplate/suggestion.css" />
-<link rel="stylesheet" href="uimodal/modal.css" />
 <link rel="stylesheet" href="remote/remote.css" />
 <link rel="stylesheet" href="slideshow/slide.css" />
 <link rel="stylesheet" href="thumbnail/thumbnail.css" />
@@ -38,7 +36,6 @@
 
 
   <script src="connect/player.js" defer></script>
-<script src="autocomplate/suggestion.js" defer></script>
 <script src="fullscreen/fs.js" defer></script>
 <script src="remote/remote.js" defer></script>
 <script src="database/storage.js" defer></script>
@@ -52,8 +49,6 @@
 <script src="device/brand.js" defer></script>
 <script src="globlealert/alert.js" defer></script>
 <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 
 <b onclick="alert('This is a stylish alert!')"></b>
 
@@ -824,31 +819,18 @@ width: 50%;
 
 
 
-</div>
+	
+    
+    </div>
 
 <div id="progressBarContainer">
     <div id="progress"></div>
   </div>
 		
     <div data-role="main" class="ui-content">
-     <div id="search-container" style="position: relative; display: inline-block; width: 100%;">
-  <input type="search"  
-         name="search"   
-         id="search-basic" 
-         class="search-bar"
-         placeholder="VIVEKFY: Type songs name artists...."
-         style="width: 100%; padding: 8px; font-size: 16px; color: #000; background: transparent; position: relative; z-index: 2; box-sizing: border-box;"
-         data-suggestion=""/>
-  <span id="ghost-text"
-        style="position: absolute; top: 8px; left: 8px; color: red; font-size: 16px; font-family: inherit; pointer-events: none; white-space: pre; z-index: 1;"></span>
-</div>
-
-<button onclick="search(),speakSearchText()" 
-        data-role="button" data-icon="search" 
-        data-mini="true" data-inline="true" data-theme="b" 
-        id="search-btn">
-  Search
-</button>
+     <input type="search"  name="search"   id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
+ <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">search</button></sr>
+	    
 	
 	
 
@@ -862,11 +844,13 @@ width: 50%;
 <div id="popupContainer" style="display:none;">
     <button id="closePopup">Close</button>
 </div>
-</div> 
- </div>
-	
+
+ 
+
     
-    
+    </div> 
+	 
+   </div>
 
 
 
@@ -3726,7 +3710,43 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 <butto id="playVideobutto"></butto>
 
 
+<style>
 
+.modal-container1 {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+	z-index: 99999;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 8%, rgba(0, 0, 0, 0.94) 14%, rgba(0, 0, 0, 1) 100%);
+	
+
+	overflow: hidden; /* scroll remove, full page content visible */
+}
+
+.modal-content1 {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background-color: transparent; /* no border, no extra background */
+    display: flex;
+    justify-content: center;
+    align-items: center; /* center content vertically and horizontally */
+    flex-direction: column; /* stack content vertically */
+    box-sizing: border-box;
+}
+
+.modal-content1 > * {
+    width: 100%; /* any child element takes full width */
+    height: 100%; /* any child element takes full height */
+	}
+	
+</style>
 
 
 
@@ -3909,7 +3929,74 @@ for (let i = 0; i < 5; i++) {
 
  
 	
-	
+	<script>
+
+
+$(document).ready(function () {
+  var searchField = $("input.search-bar");
+  var autocompleteResults = $("#autocomplete-results");
+  var typingTimer;
+
+  searchField.autocomplete({
+    source: function (request, response) {
+      var term = request.term;
+      var s = {
+        client: "youtube",
+        ds: "yt"
+      };
+
+      $.ajax({
+        url: "//clients1.google.com/complete/search",
+        dataType: "jsonp",
+        data: {
+          q: term,
+          nolabels: "t",
+          client: s.client,
+          ds: s.ds
+        },
+        success: function (r) {
+          var data = r[1].map(function (item) {
+            return item[0];
+          });
+
+          autocompleteResults.empty();
+          $.each(data, function (index, value) {
+            autocompleteResults.append("<p class='autocomplete-suggestion'>" + value + "</p>");
+          });
+        }
+      });
+    }
+  });
+
+  autocompleteResults.on("click", ".autocomplete-suggestion", function () {
+    var suggestion = $(this).text();
+    searchField.val(suggestion);
+    hideAutocompleteResults();
+    $("#search-btn").click();
+  });
+
+  searchField.keypress(function (event) {
+    if (event.which === 8) {
+      searchField.autocomplete("disable");
+    }
+  });
+
+  searchField.on("input", function () {
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(function () {
+      hideAutocompleteResults();
+    }, 5000);
+  });
+
+  function hideAutocompleteResults() {
+    autocompleteResults.empty();
+  }
+});
+
+
+
+		
+      </script>
 	
 
 
@@ -4195,75 +4282,4 @@ document.getElementById('search-btn').addEventListener('click', function() {
     </div>
 </div>
 	
-
-
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-$(function(){
-  var $input = $("#search-basic");
-  var $ghost = $("#ghost-text");
-  var suggestion = "";
-
-  function fetchSuggestion(query){
-    if(!query){
-      $ghost.text('');
-      return;
-    }
-    $.ajax({
-      url: "//clients1.google.com/complete/search",
-      dataType: "jsonp",
-      data: {q: query, nolabels:"t", client:"youtube", ds:"yt"},
-      success: function(r){
-        var list = r[1].map(item => item[0]);
-        suggestion = list.find(s => s.toLowerCase().startsWith(query.toLowerCase())) || '';
-        updateGhost(query);
-      }
-    });
-  }
-
-  function updateGhost(typed){
-    if(!typed){
-      $ghost.text('');
-      return;
-    }
-    if(suggestion && suggestion.toLowerCase() !== typed.toLowerCase()){
-      $ghost.text(suggestion.substring(typed.length));
-    } else {
-      $ghost.text('');
-    }
-  }
-
-  $input.on("input", function(){
-    var val = $(this).val();
-    if(!val){
-      $ghost.text(''); // hide ghost if input cleared
-    }
-    fetchSuggestion(val);
-  });
-
-  $input.on("keydown", function(e){
-    if((e.key === "ArrowRight" || e.key === "Tab") && suggestion){
-      e.preventDefault();
-      $(this).val(suggestion);
-      $ghost.text('');
-      suggestion='';
-      $("#search-btn").click(); // trigger search
-    }
-  });
-
-  // Click on ghost / input → complete suggestion
-  $input.on("click", function(){
-    if(suggestion){
-      $(this).val(suggestion);
-      $ghost.text('');
-      suggestion='';
-      $("#search-btn").click(); // trigger search
-    }
-  });
-
-  // Scroll alignment
-  $input.on("scroll", function(){
-    $ghost.scrollLeft($input.scrollLeft());
-  });
-});
-</script>
+    
