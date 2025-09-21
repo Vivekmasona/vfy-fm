@@ -1992,112 +1992,85 @@ document.getElementById("vivekmasona").onclick = ()=>{
 
     
 
- var audio = document.getElementById("SAudio");    
-var isRepeat = false; // repeat flag  
+var audio = document.getElementById("SAudio");    
+var isRepeat = false;    
 var Sid = 0; // current song index
 var playlistItems = document.getElementsByClassName("list");
-var preloadedAudio = null; // next song audio object for preloading
+var preloadedAudio = null; // next song audio object
 
-// Function to preload next song
+// Preload next song
 function preloadNextSong() {
-    var nextSongIndex = Sid + 1;
-    if (nextSongIndex < playlistItems.length) {
-        var nextSong = playlistItems[nextSongIndex];
-        var nextUrl = $(nextSong).attr("data-url"); // yaha aapke API ka audio URL
+    var nextIndex = Sid + 1;
+    if (nextIndex < playlistItems.length) {
+        var nextSong = playlistItems[nextIndex];
+        var nextUrl = $(nextSong).attr("data-url");
         preloadedAudio = new Audio(nextUrl);
         preloadedAudio.preload = "auto";
-        console.log("Next song preloaded: ", nextUrl);
+        console.log("Preloaded song index:", nextIndex);
     }
 }
 
-// Function to play the next song
-function playNextSong() {    
-    var nextSongIndex = Sid + 1;    
+// Play specific song by index
+function playSong(index) {
+    if (index < 0 || index >= playlistItems.length) return;
 
-    if (nextSongIndex < playlistItems.length) {    
-        var nextSong = playlistItems[nextSongIndex];
+    var song = playlistItems[index];
+    var songUrl = preloadedAudio ? preloadedAudio.src : $(song).attr("data-url");
 
-        // Agar preloaded audio ready hai to use karo
-        if (preloadedAudio) {
-            audio.src = preloadedAudio.src;
-            audio.play();
-            preloadedAudio = null;
-        } else {
-            audio.src = $(nextSong).attr("data-url");
-            audio.play();
-        }
+    audio.src = songUrl;
+    audio.play();
 
-        // Update the profile thumbnail and video ID
-        var nextThumbnail = $(nextSong).children('img').attr("src");    
-        var nextVideoId = $(nextSong).attr("vid");    
-        $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');    
-        $("#profileThumbnail").data("videoId", nextVideoId);    
+    // Update thumbnail and videoId
+    var thumb = $(song).children('img').attr("src");
+    var vid = $(song).attr("vid");
+    $("#profileThumbnail").html('<img src="' + thumb + '" alt="Profile Thumbnail">');
+    $("#profileThumbnail").data("videoId", vid);
 
-        Sid = nextSongIndex;    
-        console.log('Automatically went to the next song and started playing.');    
+    Sid = index;
 
-        // Preload the following song
-        preloadNextSong();
-    } else {    
-        console.log('End of playlist');    
-    }    
-}    
+    console.log("Playing song index:", Sid);
 
-// Function to play the previous song    
-function playPreviousSong() {    
-    var prevSongIndex = Sid - 1;    
+    // Preload next song
+    preloadNextSong();
+}
 
-    if (prevSongIndex >= 0) {    
-        var prevSong = playlistItems[prevSongIndex];
-        audio.src = $(prevSong).attr("data-url");
+// Next song
+function playNextSong() {
+    playSong(Sid + 1);
+}
+
+// Previous song
+function playPreviousSong() {
+    playSong(Sid - 1);
+}
+
+// Play/Pause
+function playPause() {
+    if (audio.paused) audio.play();
+    else audio.pause();
+}
+
+// Audio ended
+audio.addEventListener("ended", function() {
+    if (isRepeat) {
+        audio.currentTime = 0;
         audio.play();
+        console.log("Song repeated");
+    } else {
+        playNextSong();
+    }
+});
 
-        // Update the profile thumbnail and video ID
-        var prevThumbnail = $(prevSong).children('img').attr("src");    
-        var prevVideoId = $(prevSong).attr("vid");    
-        $("#profileThumbnail").html('<img src="' + prevThumbnail + '" alt="Profile Thumbnail">');    
-        $("#profileThumbnail").data("videoId", prevVideoId);    
+// Buttons
+document.getElementById("pichhe").addEventListener("click", playPreviousSong);
+document.getElementById("repeat").addEventListener("click", function() {
+    isRepeat = !isRepeat;
+    console.log("Repeat mode:", isRepeat ? "ON" : "OFF");
+});
 
-        Sid = prevSongIndex;    
-        console.log('Automatically went to the previous song and started playing.');    
-
-        // Preload the next song
-        preloadNextSong();
-    } else {    
-        console.log('Start of playlist');    
-    }    
-}    
-
-function playPause() {    
-   if (audio.paused) {    
-      audio.play();    
-   } else {    
-      audio.pause();    
-   }    
-}    
-
-// Listen for the 'ended' event    
-audio.addEventListener("ended", function() {    
-    if (isRepeat) {    
-        audio.currentTime = 0;    
-        audio.play();    
-        console.log("Song repeated.");    
-    } else {    
-        playNextSong();    
-    }    
-});    
-
-// Pichhe button listener    
-document.getElementById("pichhe").addEventListener("click", playPreviousSong);    
-
-// Repeat button listener    
-document.getElementById("repeat").addEventListener("click", function() {    
-    isRepeat = !isRepeat;    
-    console.log("Repeat mode: " + (isRepeat ? "ON" : "OFF"));    
-});    
-
-// Page load pe first song preload
+// Initial preload
 preloadNextSong(); 
+        
 
     
 
