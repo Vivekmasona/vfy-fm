@@ -19,6 +19,7 @@
 
 
 <link rel="stylesheet" href="database/storage.css" />
+<link rel="stylesheet" href="autocomplate/suggestion.css" />
 <link rel="stylesheet" href="uimodal/modal.css" />
 <link rel="stylesheet" href="remote/remote.css" />
 <link rel="stylesheet" href="slideshow/slide.css" />
@@ -831,15 +832,42 @@ width: 50%;
     <div id="progress"></div>
   </div>
 		
-    <div data-role="main" class="ui-content">
-     <input type="search"  name="search"   id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
- <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">search</button></sr>
-	    
+      
 	
 	
 
-   <div id="autocomplete-results"></div>
-<!-- Mode Toggle -->
+
+		
+		
+		
+<link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+<div data-role="main" class="ui-content">
+  <div class="autocomplete-wrapper" style="position:relative; display:inline-block; width:100%;">
+    <!-- Ghost overlay -->
+    <div class="autocomplete-ghost"></div>
+    <!-- Search input -->
+    <input type="search" name="search" id="search-basic"
+      class="search-bar"
+      placeholder="VIVEKFY: Type songs name artists...."/>
+  </div>
+
+  <button onclick="search(),speakSearchText()" 
+    data-role="button" data-icon="search" 
+    data-mini="true" data-inline="true" data-theme="b" id="search-btn">
+    Search
+  </button>
+</div>		
+		
+		
+		
+		
+		
+		
+		
+		<!-- Mode Toggle -->
 <div id="videoListContainer">
     <!-- Your generated list items go here -->
 </div>
