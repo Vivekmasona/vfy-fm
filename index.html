@@ -4195,7 +4195,9 @@ document.getElementById('search-btn').addEventListener('click', function() {
     </div>
 </div>
 	
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(function(){
   var $input = $("#search-basic");
@@ -4220,6 +4222,10 @@ $(function(){
   }
 
   function updateGhost(typed){
+    if(!typed){
+      $ghost.text('');
+      return;
+    }
     if(suggestion && suggestion.toLowerCase() !== typed.toLowerCase()){
       $ghost.text(suggestion.substring(typed.length));
     } else {
@@ -4227,28 +4233,30 @@ $(function(){
     }
   }
 
-  // Input typing
   $input.on("input", function(){
-    fetchSuggestion($(this).val());
+    var val = $(this).val();
+    if(!val){
+      $ghost.text(''); // hide ghost if input cleared
+    }
+    fetchSuggestion(val);
   });
 
-  // Accept suggestion on ArrowRight or Tab
   $input.on("keydown", function(e){
     if((e.key === "ArrowRight" || e.key === "Tab") && suggestion){
       e.preventDefault();
-      $input.val(suggestion);
+      $(this).val(suggestion);
       $ghost.text('');
-      suggestion = '';
+      suggestion='';
       $("#search-btn").click(); // trigger search
     }
   });
 
-  // Click on input → complete suggestion
+  // Click on ghost / input → complete suggestion
   $input.on("click", function(){
     if(suggestion){
-      $input.val(suggestion);
+      $(this).val(suggestion);
       $ghost.text('');
-      suggestion = '';
+      suggestion='';
       $("#search-btn").click(); // trigger search
     }
   });
@@ -4258,4 +4266,4 @@ $(function(){
     $ghost.scrollLeft($input.scrollLeft());
   });
 });
-</script>  
+</script>
