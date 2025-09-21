@@ -1993,45 +1993,44 @@ document.getElementById("vivekmasona").onclick = ()=>{
     
 
 
+
 var audio = document.getElementById("SAudio");  
-var isRepeat = false; // repeat flag
+var isRepeat = false;  
 var Sid = 0; // current song index
 var playlistItems = document.getElementsByClassName("list");
-var preloadedAudio = null; // next song audio object
 
-function preloadNextSong() {
-    var nextSongIndex = Sid + 1;
-    if (nextSongIndex < playlistItems.length) {
-        var nextSong = playlistItems[nextSongIndex];
-        var nextUrl = $(nextSong).attr("data-url");
-        preloadedAudio = new Audio(nextUrl);
-        preloadedAudio.preload = "auto";
-        console.log("Next song preloaded:", nextSongIndex);
-    }
-}
+// Alternative audio URLs (example, aap id ke saath replace kar dena)
+var alternativeAudioSources = [
+    "https://vivekfy.vercel.app/inv1?id=" + id,
+    "https://vivekfy.vercel.app/inv2?id=" + id,
+    "https://vivekfy.vercel.app/stream?url=https://youtu.be/" + id,
+    "https://vivekfy.vercel.app/tokyo?id=" + id,   
+    "https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/" + id,
+    "https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + id
+];
+var currentAlternativeIndex = 0;
 
+// Play song by index
 function playSong(index) {
     if (index < 0 || index >= playlistItems.length) return;
 
-    Sid = index;
+    Sid = index; // update current index
     var song = playlistItems[index];
+    var url = $(song).attr("data-url"); // primary audio URL
 
-    // Direct assign src instead of click to avoid repeated ended event
-    audio.src = $(song).attr("data-url");
+    audio.src = url;
     audio.play();
 
-    // Update thumbnail & video ID
+    // Update thumbnail & videoId
     var thumb = $(song).children('img').attr("src");
     var vid = $(song).attr("vid");
     $("#profileThumbnail").html('<img src="' + thumb + '" alt="Profile Thumbnail">');
     $("#profileThumbnail").data("videoId", vid);
 
     console.log("Playing song index:", Sid);
-
-    // Preload next song
-    preloadNextSong();
 }
 
+// Next / Previous
 function playNextSong() {
     if (Sid + 1 < playlistItems.length) {
         playSong(Sid + 1);
@@ -2048,6 +2047,7 @@ function playPreviousSong() {
     }
 }
 
+// Play/Pause
 function playPause() {
     if (audio.paused) audio.play();
     else audio.pause();
@@ -2058,42 +2058,34 @@ audio.addEventListener("ended", function() {
     if (isRepeat) {
         audio.currentTime = 0;
         audio.play();
-        console.log("Song repeated.");
+        console.log("Song repeated");
     } else {
         playNextSong();
     }
 });
 
-// Repeat button
-document.getElementById("repeat").addEventListener("click", function() {
-    isRepeat = !isRepeat;
-    console.log("Repeat mode: " + (isRepeat ? "ON" : "OFF"));
-});
-
-// Previous / Next buttons
-document.getElementById("pichhe").addEventListener("click", playPreviousSong);
-document.getElementById("nextbutto").addEventListener("click", playNextSong);
-
-// Fallback URLs
-var alternativeAudioSources = [
-    "https://vivekfy.vercel.app/inv1?id=" + id,
-    "https://vivekfy.vercel.app/inv2?id=" + id,
-    "https://vivekfy.vercel.app/stream?url=https://youtu.be/" + id,
-];
-var currentAlternativeIndex = 0;
-
+// Error fallback to alternative APIs
 audio.addEventListener("error", function () {
     setTimeout(function () {
         audio.src = alternativeAudioSources[currentAlternativeIndex];
         audio.load();
         audio.play();
-        currentAlternativeIndex = (currentAlternativeIndex + 1) % alternativeAudioSources.length;
         console.log("Fallback audio playing:", audio.src);
+
+        currentAlternativeIndex = (currentAlternativeIndex + 1) % alternativeAudioSources.length;
     }, 1000);
 });
 
-// Initial preload
-preloadNextSong();
+// Buttons
+document.getElementById("pichhe").addEventListener("click", playPreviousSong);
+document.getElementById("nextbutto").addEventListener("click", playNextSong);
+document.getElementById("repeat").addEventListener("click", function() {
+    isRepeat = !isRepeat;
+    console.log("Repeat mode: " + (isRepeat ? "ON" : "OFF"));
+});
+
+// Initial song
+playSong(Sid);
 
 
 
