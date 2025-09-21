@@ -4197,51 +4197,82 @@ document.getElementById('search-btn').addEventListener('click', function() {
 	
 
 
+<style>
+#search-basic {
+  width: 100%;
+  font-size: 16px;
+  color: #000; /* typed text white/black */
+  background: transparent;
+  position: relative;
+  z-index: 2;
+}
+
+#ghost-text {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: red; /* suggestion color */
+  font-size: 16px;
+  font-family: inherit;
+  padding: 8px; /* same as input padding */
+  pointer-events: none;
+  white-space: pre;
+  z-index: 1;
+}
+</style>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-$(function () {
+$(function(){
   var searchField = $("#search-basic");
   var ghost = $("#ghost-text");
   var activeSuggestion = "";
 
-  function fetchSuggestions(query) {
-    if (!query) {
+  function fetchSuggestions(query){
+    if(!query){
       ghost.text('');
       return;
     }
+
     $.ajax({
       url: "//clients1.google.com/complete/search",
       dataType: "jsonp",
-      data: { q: query, nolabels: "t", client: "youtube", ds: "yt" },
-      success: function (r) {
-        var list = r[1].map(item => item[0]);
-        activeSuggestion = list.find(s => s.toLowerCase().startsWith(query.toLowerCase())) || '';
+      data: {q: query, nolabels:"t", client:"youtube", ds:"yt"},
+      success:function(r){
+        var list = r[1].map(item=>item[0]);
+        // find first suggestion starting with typed text
+        activeSuggestion = list.find(s=>s.toLowerCase().startsWith(query.toLowerCase())) || '';
         updateGhost(query);
       }
     });
   }
 
-  function updateGhost(typed) {
-    if (activeSuggestion && activeSuggestion.toLowerCase() !== typed.toLowerCase()) {
-      ghost.text(activeSuggestion);
+  function updateGhost(typed){
+    if(activeSuggestion && activeSuggestion.toLowerCase() !== typed.toLowerCase()){
+      // only show remaining part in ghost
+      ghost.text(activeSuggestion.substring(typed.length));
     } else {
       ghost.text('');
     }
   }
 
-  searchField.on("input", function () {
+  searchField.on("input", function(){
     fetchSuggestions($(this).val());
   });
 
-  searchField.on("keydown", function(e) {
-    if ((e.key === "ArrowRight" || e.key === "Tab") && activeSuggestion) {
+  // Accept suggestion on Right Arrow or Tab
+  searchField.on("keydown", function(e){
+    if((e.key === "ArrowRight" || e.key === "Tab") && activeSuggestion){
       e.preventDefault();
-      searchField.val(activeSuggestion);
+      $(this).val(activeSuggestion);
       ghost.text('');
-      activeSuggestion = '';
+      activeSuggestion='';
     }
+  });
+
+  // Align ghost text with typed text
+  searchField.on("scroll", function(){
+    ghost.scrollLeft($(this).scrollLeft());
   });
 });
 </script>
-	
