@@ -2170,222 +2170,54 @@ volumeSlider.addEventListener('input', function () {
    
 
  
- const titleaudio = document.getElementById('SAudio');
-const songTitleElement = document.getElementById('vfytitle');
-const thumbnailElement = document.getElementById('SThumb');
-const nextButtonElement = document.getElementById('nextbutto');
-const prevButtonElement = document.getElementById('VFYmp3'); // Previous button
-const heartButtonElement = document.getElementById('VFYmp3v2');
-const downloadButtonElement = document.getElementById('VFYmp3');
+ 
+ (function() {
 
-// Global title variable
-let title = "Vivekfy Har Dil Ki Dhadkan";
+  const titleaudio = document.getElementById('SAudio');
+  const songTitleElement = document.getElementById('vfytitle');
+  const thumbnailElement = document.getElementById('SThumb');
+  const nextButtonElement = document.getElementById('nextbutto');
+  const prevButtonElement = document.getElementById('VFYmp3'); // Previous button
+  const heartButtonElement = document.getElementById('VFYmp3v2');
+  const downloadButtonElement = document.getElementById('VFYmp3');
 
-// Notification + marquee variables
-let currentNotification = null;
-let marqueeInterval = null;
-let marqueeIndex = 0;
-let titleParts = [];
-
-// Function to update the song title
-function updateTitle() {
-    title = songTitleElement ? songTitleElement.textContent.trim() : "Unknown Title"; 
-    console.log("Updated Title:", title);
-}
-
-// Function to update Media Session metadata
-function updateMediaSessionMetadata() {
-    updateTitle();
-    const thumbnailUrl = thumbnailElement ? thumbnailElement.src : '';
+  // ---------------- Media Session API ----------------
+  function updateMediaSession() {
+    const title = songTitleElement ? songTitleElement.textContent.trim() : "Unknown Title";
+    const thumbnailUrl = thumbnailElement ? thumbnailElement.src : "";
 
     if ('mediaSession' in navigator) {
-        navigator.mediaSession.metadata = new MediaMetadata({
-            title: title,
-            artist: 'www.vivekmasona.com',
-            album: 'VivekFy',
-            artwork: [
-                { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '192x192', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '256x256', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
-            ]
-        });
-
-        // Media session action handlers
-        navigator.mediaSession.setActionHandler('play', () => titleaudio.play());
-        navigator.mediaSession.setActionHandler('pause', () => titleaudio.pause());
-        navigator.mediaSession.setActionHandler('nexttrack', () => nextButtonElement.click());
-        navigator.mediaSession.setActionHandler('previoustrack', () => prevButtonElement.click());
-        navigator.mediaSession.setActionHandler('seekbackward', () => {
-            titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
-        });
-        navigator.mediaSession.setActionHandler('seekforward', () => {
-            titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
-        });
-    }
-}
-
-// Function to split title into 4 parts
-function splitTitleForMarquee(fullTitle) {
-    const length = fullTitle.length;
-    const partSize = Math.ceil(length / 4);
-    titleParts = [];
-
-    for (let i = 0; i < 4; i++) {
-        const start = i * partSize;
-        const end = start + partSize;
-        titleParts.push(fullTitle.substring(start, end));
-    }
-
-    if (titleParts.length < 4) {
-        while (titleParts.length < 4) titleParts.push("");
-    }
-
-    marqueeIndex = 0;
-}
-
-// Function to create or replace notification
-function createNotification(part, thumbnailUrl) {
-    const options = {
-        body: 'Audio is playing',
-        icon: thumbnailUrl,
-        tag: "song-marquee", // same tag => replaces old notification
-        renotify: true,
-        actions: [
-            { action: 'prev', title: 'Previous', icon: 'path/to/prev-icon.png' },
-            { action: 'seekbackward', title: 'Rewind', icon: 'path/to/seek-back-icon.png' },
-            { action: 'seekforward', title: 'Fast Forward', icon: 'path/to/seek-forward-icon.png' },
-            { action: 'heart', title: 'Favorite', icon: 'path/to/heart-icon.png' },
-            { action: 'next', title: 'Next', icon: 'path/to/next-icon.png' },
-            { action: 'download', title: 'Download', icon: 'path/to/download-icon.png' }
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: title,
+        artist: "Vivekfy",
+        album: "PWA Player",
+        artwork: [
+          { src: thumbnailUrl, sizes: "96x96", type: "image/png" },
+          { src: thumbnailUrl, sizes: "192x192", type: "image/png" },
+          { src: thumbnailUrl, sizes: "512x512", type: "image/png" }
         ]
-    };
+      });
 
-    currentNotification = new Notification(part, options);
-
-    // Handle actions
-    currentNotification.addEventListener('click', (event) => {
-        if (event.action === 'next') nextButtonElement.click();
-        else if (event.action === 'prev') prevButtonElement.click();
-        else if (event.action === 'heart') heartButtonElement.click();
-        else if (event.action === 'download') downloadButtonElement.click();
-        else if (event.action === 'seekbackward') titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
-        else if (event.action === 'seekforward') titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
-    });
-}
-
-// Function to show marquee notification
-function showNotification() {
-    updateTitle();
-    const thumbnailUrl = thumbnailElement ? thumbnailElement.src : '';
-
-    // Split title
-    splitTitleForMarquee(title);
-
-    if (Notification.permission === 'granted') {
-        // First part
-        createNotification(titleParts[marqueeIndex], thumbnailUrl);
-
-        // Clear old interval if any
-        if (marqueeInterval) clearInterval(marqueeInterval);
-
-        // Rotate parts every 2 sec
-        marqueeInterval = setInterval(() => {
-            marqueeIndex = (marqueeIndex + 1) % titleParts.length;
-            createNotification(titleParts[marqueeIndex], thumbnailUrl);
-        }, 2000);
-    } else if (Notification.permission !== 'denied') {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                showNotification();
-            }
-        });
+      navigator.mediaSession.setActionHandler('play', () => titleaudio.play());
+      navigator.mediaSession.setActionHandler('pause', () => titleaudio.pause());
+      navigator.mediaSession.setActionHandler('previoustrack', () => prevButtonElement.click());
+      navigator.mediaSession.setActionHandler('nexttrack', () => nextButtonElement.click());
+      navigator.mediaSession.setActionHandler('seekbackward', () => {
+        titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
+      });
+      navigator.mediaSession.setActionHandler('seekforward', () => {
+        titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
+      });
     }
-}
+  }
 
-// Update the Media Session metadata initially
-updateMediaSessionMetadata();
+  // Event listeners
+  titleaudio.addEventListener('play', updateMediaSession);
+  titleaudio.addEventListener('loadedmetadata', updateMediaSession);
+  nextButtonElement.addEventListener('click', updateMediaSession);
+  prevButtonElement.addEventListener('click', updateMediaSession);
 
-// Event listener when audio plays
-titleaudio.addEventListener('play', () => {
-    updateTitle();
-    document.title = `${title} - ${Math.floor(titleaudio.currentTime)} seconds`;
-    showNotification();
-});
-
-// Event listener when audio pauses
-titleaudio.addEventListener('pause', () => {
-    document.title = 'VIVEKFY-AI';
-});
-
-// Next button
-nextButtonElement.addEventListener('click', () => {
-    updateTitle();
-    updateMediaSessionMetadata();
-    showNotification();
-    console.log('Next song button clicked:', title);
-});
-
-// Previous button
-prevButtonElement.addEventListener('click', () => {
-    updateTitle();
-    updateMediaSessionMetadata();
-    showNotification();
-    console.log('Previous song button clicked:', title);
-});
-
-// Heart button
-heartButtonElement.addEventListener('click', () => {
-    console.log('Heart button clicked:', title);
-});
-
-// Download button
-downloadButtonElement.addEventListener('click', () => {
-    console.log('Download button clicked:', title);
-});
-
-
-
-
-
-	
-
-const audioPlayer = document.getElementById("SAudio");
-const customTimeContainer = document.getElementById("custom-time-container");
-const currentTimeDisplay = document.getElementById("current-time");
-const totalTimeDisplay = document.getElementById("total-time");
-
-audioPlayer.addEventListener("loadedmetadata", () => {
-  const totalDuration = audioPlayer.duration;
-  totalTimeDisplay.textContent = formatTime(totalDuration);
-});
-
-audioPlayer.addEventListener("timeupdate", () => {
-  const currentTime = audioPlayer.currentTime;
-  currentTimeDisplay.textContent = formatTime(currentTime);
-});
-
-function formatTime(seconds) {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = Math.floor(seconds % 60);
-  return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
-}
-
-// Function to convert time in format '0:00' to seconds
-function convertTimeToSeconds(time) {
-  var parts = time.split(":");
-  var minutes = parseInt(parts[0]);
-  var seconds = parseInt(parts[1]);
-  return (minutes * 60) + seconds;
-}
-
-
-
-// --- DPiP + Enable Button ---
-(function() {
-
+  // ---------------- Document PiP (Custom Buttons) ----------------
   async function openDPiP() {
     if (!("documentPictureInPicture" in window)) {
       alert("Document PiP not supported in this browser!");
@@ -2442,7 +2274,7 @@ function convertTimeToSeconds(time) {
     }
   }
 
-  // Create enable button
+  // ---------------- Enable DPiP Button ----------------
   const pipBtn = document.createElement("button");
   pipBtn.id = "enableDPiP";
   pipBtn.textContent = "Enable PiP Controls";
@@ -2460,7 +2292,47 @@ function convertTimeToSeconds(time) {
 
   pipBtn.addEventListener("click", openDPiP);
 
-})();  
+})();   
+
+
+
+
+
+
+	
+
+const audioPlayer = document.getElementById("SAudio");
+const customTimeContainer = document.getElementById("custom-time-container");
+const currentTimeDisplay = document.getElementById("current-time");
+const totalTimeDisplay = document.getElementById("total-time");
+
+audioPlayer.addEventListener("loadedmetadata", () => {
+  const totalDuration = audioPlayer.duration;
+  totalTimeDisplay.textContent = formatTime(totalDuration);
+});
+
+audioPlayer.addEventListener("timeupdate", () => {
+  const currentTime = audioPlayer.currentTime;
+  currentTimeDisplay.textContent = formatTime(currentTime);
+});
+
+function formatTime(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.floor(seconds % 60);
+  return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+}
+
+// Function to convert time in format '0:00' to seconds
+function convertTimeToSeconds(time) {
+  var parts = time.split(":");
+  var minutes = parseInt(parts[0]);
+  var seconds = parseInt(parts[1]);
+  return (minutes * 60) + seconds;
+}
+
+
+
+
 
 
 
