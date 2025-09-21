@@ -1991,66 +1991,107 @@ document.getElementById("vivekmasona").onclick = ()=>{
         };
 
     
+
 var audio = document.getElementById("SAudio");  
 var isRepeat = false; // repeat flag
+var Sid = 0; // current song index
+var playlistBuffer = []; // preloaded audio objects
+const BUFFER_SIZE = 1; // how many songs ahead to preload
 
-// Function to play the next song  
-function playNextSong() {  
-    var nextSongIndex = Sid + 1; // Calculate the index of the next song  
-    var playlistItems = document.getElementsByClassName("list");  
+// Preload next songs
+function preloadSongs(startIndex) {
+    var playlistItems = document.getElementsByClassName("list");
 
-    if (nextSongIndex < playlistItems.length) {  
-        playlistItems[nextSongIndex].click(); // Play the next song  
-        audio.play(); // Play the audio  
+    for (let i = 1; i <= BUFFER_SIZE; i++) {
+        let index = startIndex + i;
+        if (index < playlistItems.length) {
+            let songElem = playlistItems[index];
+            let url = songElem.getAttribute("data-audio-url"); // your API URL
+            if (!playlistBuffer[index]) {
+                let preAudio = new Audio();
+                preAudio.src = url;
+                preAudio.preload = "auto";
+                playlistBuffer[index] = preAudio;
+                console.log("Preloaded song index:", index);
+            }
+        }
+    }
+}
 
-        // Update the profile thumbnail and video ID for the next song  
-        var nextSong = playlistItems[nextSongIndex];  
-        var nextThumbnail = $(nextSong).children('img').attr("src");  
-        var nextVideoId = $(nextSong).attr("vid");  
-        $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');  
-        $("#profileThumbnail").data("videoId", nextVideoId);  
+// Function to play the next song
+function playNextSong() {
+    var nextSongIndex = Sid + 1;
+    var playlistItems = document.getElementsByClassName("list");
 
-        Sid = nextSongIndex; // update Sid  
-        console.log('Automatically went to the next song and started playing.');  
+    if (nextSongIndex < playlistItems.length) {
+        let nextAudio = playlistBuffer[nextSongIndex];
+
+        if (nextAudio) {
+            audio.src = nextAudio.src; // use preloaded audio
+            audio.play();
+        } else {
+            // fallback if not preloaded
+            let nextSongElem = playlistItems[nextSongIndex];
+            audio.src = nextSongElem.getAttribute("data-audio-url");
+            audio.play();
+            console.log("Next audio not preloaded, fetching now!");
+        }
+
+        // Update thumbnail and video ID
+        let nextSong = playlistItems[nextSongIndex];
+        let nextThumbnail = $(nextSong).children('img').attr("src");
+        let nextVideoId = $(nextSong).attr("vid");
+        $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');
+        $("#profileThumbnail").data("videoId", nextVideoId);
+
+        Sid = nextSongIndex;
+
+        // Preload upcoming songs
+        preloadSongs(Sid);
+
+        console.log('Automatically went to the next song and started playing.');
+    } else {
+        console.log('End of playlist');
+    }
+}
+
+// Function to play the previous song
+function playPreviousSong() {
+    var prevSongIndex = Sid - 1;
+    var playlistItems = document.getElementsByClassName("list");
+
+    if (prevSongIndex >= 0) {
+        let prevSong = playlistItems[prevSongIndex];
+        let prevAudioUrl = prevSong.getAttribute("data-audio-url");
+        audio.src = prevAudioUrl;
+        audio.play();
+
+        let prevThumbnail = $(prevSong).children('img').attr("src");
+        let prevVideoId = $(prevSong).attr("vid");
+        $("#profileThumbnail").html('<img src="' + prevThumbnail + '" alt="Profile Thumbnail">');
+        $("#profileThumbnail").data("videoId", prevVideoId);
+
+        Sid = prevSongIndex;
+
+        // Preload upcoming songs
+        preloadSongs(Sid);
+
+        console.log('Automatically went to the previous song and started playing.');
+    } else {
+        console.log('Start of playlist');
+    }
+}
+
+// Play/pause toggle
+function playPause() {
+    if (audio.paused) {  
+        audio.play();  
     } else {  
-        console.log('End of playlist');  
+        audio.pause();  
     }  
-}  
+}
 
-// Function to play the previous song  
-function playPreviousSong() {  
-    var prevSongIndex = Sid - 1; // Calculate the index of the previous song  
-    var playlistItems = document.getElementsByClassName("list");  
-
-    if (prevSongIndex >= 0) {  
-        playlistItems[prevSongIndex].click(); // Play the previous song  
-        audio.play(); // Play the audio  
-
-        // Update the profile thumbnail and video ID for the previous song  
-        var prevSong = playlistItems[prevSongIndex];  
-        var prevThumbnail = $(prevSong).children('img').attr("src");  
-        var prevVideoId = $(prevSong).attr("vid");  
-        $("#profileThumbnail").html('<img src="' + prevThumbnail + '" alt="Profile Thumbnail">');  
-        $("#profileThumbnail").data("videoId", prevVideoId);  
-
-        Sid = prevSongIndex; // update Sid  
-        console.log('Automatically went to the previous song and started playing.');  
-    } else {  
-        console.log('Start of playlist');  
-    }  
-}  
-
-function playPause() {  
-   var audio = document.getElementById("SAudio");  
-
-   if (audio.paused) {  
-      audio.play();  
-   } else {  
-      audio.pause();  
-   }  
-}  
-
-// Listen for the 'ended' event  
+// Listen for the 'ended' event
 audio.addEventListener("ended", function() {  
     if (isRepeat) {  
         audio.currentTime = 0;  
@@ -2061,15 +2102,24 @@ audio.addEventListener("ended", function() {
     }  
 });  
 
-// Pichhe button listener  
+// Pichhe button listener
 document.getElementById("pichhe").addEventListener("click", playPreviousSong);  
 
-// Repeat button listener  
+// Repeat button listener
 document.getElementById("repeat").addEventListener("click", function() {  
     isRepeat = !isRepeat; // toggle repeat  
     console.log("Repeat mode: " + (isRepeat ? "ON" : "OFF"));  
 });
 
+// Initial preload on page load
+window.addEventListener("load", () => {
+    preloadSongs(Sid);
+});
+
+
+
+
+		
 // Listen for the 'error' event
 var alternativeAudioSources = [
 //"https://vivekfy.vercel.app/tokyo?id=" + id,
