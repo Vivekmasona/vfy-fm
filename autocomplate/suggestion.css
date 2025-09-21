@@ -1,23 +1,23 @@
-.autocomplete-wrapper {
-    position: relative;
-  }
-  .autocomplete-ghost {
-    position: absolute;
-    top: 0;
-    left: 0;
-    padding: 6px 10px; /* match input padding */
-    color: #aaa;       /* halka grey */
-    font-size: 16px;
-    font-family: inherit;
-    height: 100%;
-    width: 100%;
-    pointer-events: none;
-    white-space: pre;
-    box-sizing: border-box;
-    overflow: hidden;
-  }
-  .search-bar {
-    position: relative;
-    background: transparent;
-    font-size: 16px;
-  }
+/* Input styling */
+#search-basic {
+  position: relative;
+  font-size: 16px;
+  color: #000; /* typed text color */
+  background-color: transparent;
+  caret-color: #000;
+}
+
+/* Ghost suggestion using pseudo-element */
+#search-basic::after {
+  content: attr(data-suggestion);
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #aaa; /* faded grey */
+  pointer-events: none;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0 2px;
+  white-space: pre;
+  overflow: hidden;
+}
