@@ -1,59 +1,49 @@
 $(function () {
-  var searchField = $(".search-bar");
-  var ghost = $(".autocomplete-ghost");
-  var suggestionList = [];
+  var searchField = $("#search-basic");
   var activeSuggestion = "";
 
-  // Google suggestion fetch
+  // Fetch suggestions from Google YouTube
   function fetchSuggestions(query) {
     if (!query) {
-      ghost.text("");
+      searchField.attr("data-suggestion", "");
       return;
     }
+
     $.ajax({
       url: "//clients1.google.com/complete/search",
       dataType: "jsonp",
       data: { q: query, nolabels: "t", client: "youtube", ds: "yt" },
       success: function (r) {
-        suggestionList = r[1].map(item => item[0]);
-        showGhost(query);
+        var list = r[1].map(item => item[0]);
+        activeSuggestion = list.find(s =>
+          s.toLowerCase().startsWith(query.toLowerCase())
+        ) || "";
+        updateGhost(query);
       }
     });
   }
 
-  // Show faded suggestion
-  function showGhost(query) {
-    activeSuggestion = suggestionList.find(s =>
-      s.toLowerCase().startsWith(query.toLowerCase())
-    ) || "";
-    if (activeSuggestion) {
-      ghost.text(activeSuggestion);
+  // Update ghost suggestion inside input
+  function updateGhost(typed) {
+    if (activeSuggestion && activeSuggestion.toLowerCase() !== typed.toLowerCase()) {
+      searchField.attr("data-suggestion", activeSuggestion);
     } else {
-      ghost.text("");
+      searchField.attr("data-suggestion", "");
     }
   }
 
   // On typing
   searchField.on("input", function () {
-    var val = $(this).val();
-    ghost.text("");
-    fetchSuggestions(val);
+    fetchSuggestions($(this).val());
   });
 
-  // Right arrow or Tab = accept suggestion
+  // Accept suggestion on Right Arrow / Tab
   searchField.on("keydown", function (e) {
     if ((e.key === "ArrowRight" || e.key === "Tab") && activeSuggestion) {
       e.preventDefault();
       $(this).val(activeSuggestion);
-      ghost.text("");
-    }
-  });
-
-  // Click inside input = accept suggestion
-  searchField.on("click", function () {
-    if (activeSuggestion) {
-      $(this).val(activeSuggestion);
-      ghost.text("");
+      $(this).attr("data-suggestion", "");
+      activeSuggestion = "";
     }
   });
 });
