@@ -1,49 +1,55 @@
-$(function () {
-  var searchField = $("#search-basic");
-  var activeSuggestion = "";
+$(document).ready(function () {
+  var searchField = $("input.search-bar");
+  var autocompleteResults = $("#autocomplete-results");
+  var typingTimer;
+  var hideTimer;
 
-  // Fetch suggestions from Google YouTube
-  function fetchSuggestions(query) {
-    if (!query) {
-      searchField.attr("data-suggestion", "");
+  searchField.on("input", function () {
+    var term = $(this).val();
+
+    // Clear previous timers
+    clearTimeout(typingTimer);
+    clearTimeout(hideTimer);
+
+    if (term.length < 1) {
+      autocompleteResults.empty();
       return;
     }
 
-    $.ajax({
-      url: "//clients1.google.com/complete/search",
-      dataType: "jsonp",
-      data: { q: query, nolabels: "t", client: "youtube", ds: "yt" },
-      success: function (r) {
-        var list = r[1].map(item => item[0]);
-        activeSuggestion = list.find(s =>
-          s.toLowerCase().startsWith(query.toLowerCase())
-        ) || "";
-        updateGhost(query);
-      }
-    });
-  }
+    // Fetch autocomplete suggestions
+    typingTimer = setTimeout(function() {
+      $.ajax({
+        url: "//clients1.google.com/complete/search",
+        dataType: "jsonp",
+        data: {
+          q: term,
+          nolabels: "t",
+          client: "youtube",
+          ds: "yt"
+        },
+        success: function (r) {
+          var data = r[1].map(function (item) {
+            return item[0];
+          });
 
-  // Update ghost suggestion inside input
-  function updateGhost(typed) {
-    if (activeSuggestion && activeSuggestion.toLowerCase() !== typed.toLowerCase()) {
-      searchField.attr("data-suggestion", activeSuggestion);
-    } else {
-      searchField.attr("data-suggestion", "");
-    }
-  }
+          autocompleteResults.empty();
+          $.each(data, function (index, value) {
+            autocompleteResults.append("<p class='autocomplete-suggestion'>" + value + "</p>");
+          });
 
-  // On typing
-  searchField.on("input", function () {
-    fetchSuggestions($(this).val());
+          // Hide suggestions 2 seconds after typing stops
+          hideTimer = setTimeout(function() {
+            autocompleteResults.empty();
+          }, 2000);
+        }
+      });
+    }, 0); // fetch immediately
   });
 
-  // Accept suggestion on Right Arrow / Tab
-  searchField.on("keydown", function (e) {
-    if ((e.key === "ArrowRight" || e.key === "Tab") && activeSuggestion) {
-      e.preventDefault();
-      $(this).val(activeSuggestion);
-      $(this).attr("data-suggestion", "");
-      activeSuggestion = "";
-    }
+  autocompleteResults.on("click", ".autocomplete-suggestion", function () {
+    var suggestion = $(this).text();
+    searchField.val(suggestion);
+    autocompleteResults.empty();
+    $("#search-btn").click();
   });
 });
