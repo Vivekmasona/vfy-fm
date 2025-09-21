@@ -19,6 +19,7 @@
 
 
 <link rel="stylesheet" href="database/storage.css" />
+<link rel="stylesheet" href="remote/remote.css" />
 <link rel="stylesheet" href="slideshow/slide.css" />
 <link rel="stylesheet" href="thumbnail/thumbnail.css" />
 <link rel="stylesheet" href="ui/ui.css" />
@@ -35,6 +36,8 @@
 
 
   <script src="connect/player.js" defer></script>
+<script src="fullscreen/fs.js" defer></script>
+<script src="remote/remote.js" defer></script>
 <script src="database/storage.js" defer></script>
 <script src="home/trending.js" defer></script>
 <script src="attachment/online.js" defer></script>
@@ -4123,60 +4126,7 @@ $(document).ready(function () {
 
   
 
-  <script>
-    var fullscreen = false;
-
-    // Trigger fullscreen on page load
-    window.onload = function() {
-      enterFullScreen();
-      fullscreen = true;
-    };
-
-    // Toggle button click event
-    document.getElementById('toggleButton').addEventListener('click', function() {
-      if (fullscreen) {
-        exitFullScreen();
-      } else {
-        enterFullScreen();
-      }
-      fullscreen = !fullscreen; // Toggle fullscreen variable
-    });
-
-    // Full screen mode activate karne ke liye
-    function enterFullScreen() {
-      var element = document.documentElement;
-      if (element.requestFullscreen) {
-        element.requestFullscreen();
-      } else if (element.mozRequestFullScreen) {
-        element.mozRequestFullScreen();
-      } else if (element.webkitRequestFullscreen) {
-        element.webkitRequestFullscreen();
-      } else if (element.msRequestFullscreen) {
-        element.msRequestFullscreen();
-      }
-
-      // Toggle icons
-      document.getElementById('fullscreenIcon').style.display = 'none';
-      document.getElementById('exitFullscreenIcon').style.display = 'inline';
-    }
-
-    // Full screen mode se bahar nikalne ke liye
-    function exitFullScreen() {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-      }
-
-      // Toggle icons
-      document.getElementById('fullscreenIcon').style.display = 'inline';
-      document.getElementById('exitFullscreenIcon').style.display = 'none';
-    }
-</script>
+  
 
 
 
@@ -4215,217 +4165,13 @@ $(document).ready(function () {
     }
   </script>
 
-
+<--remote-->
 <div class="modal-content" data-modal-id="1">
-
-	
-    <iframe src="/connect/v2/Cpanel.html" style="position:fixed; top:20; left:0; bottom:0; right:0; width:100%; height:96%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999; "></iframe>  
- 
-</div>
-
-<script>const modalContents = Array.from(
-  document.getElementsByClassName("modal-content")
-);
-
-const modalBtns = Array.from(document.getElementsByClassName("modal-btn"));
-
-modalBtns.forEach((modalBtn) => {
-  const buttonId = modalBtn.getAttribute("data-modal-btn-id");
-
-  modalBtn.addEventListener("click", () => {
-    removeAllmodals();
-    createmodal(buttonId);
-  });
-});
-
-function removeAllmodals() {
-  let modals = Array.from(document.getElementsByClassName("modal"));
-
-  modals.forEach((modal) => {
-    removemodal(modal);
-  });
-}
-
-function removemodal(modal) {
-  document.body.style.overflow = "";
-  modal.classList.add("hidden");
-
-  setTimeout(() => {
-    if (modal.parentNode) {
-      document.body.removeChild(
-        document.getElementsByClassName("modal-backdrop")[0]
-      );
-      document.body.removeChild(modal);
-    }
-  }, 400);
-}
-
-function createmodal(id) {
-  const modal = document.createElement("div");
-  modal.className = "modal hidden";
-  document.body.append(modal);
-  document.body.style.overflow = "hidden";
-
-  const modalInner = document.createElement("div");
-  modalInner.innerHTML = document.querySelector(
-    `[data-modal-id="${id}"]`
-  ).innerHTML;
-  modalInner.className = "modal-inner";
-  modal.append(modalInner);
-
-  const modalBackdrop = document.createElement("div");
-  modalBackdrop.className = "modal-backdrop";
-  modalBackdrop.innerHTML = "";
-  document.body.append(modalBackdrop);
-
-  let lastTop = null;
-
-  function checkmodalTop() {
-    const modalTop = modal.getBoundingClientRect().top;
-
-    if (modalTop !== lastTop) {
-      modalBackdrop.style.opacity =
-        0.7 - modal.getBoundingClientRect().top / window.innerHeight + 0.1;
-
-      lastTop = modalTop;
-    }
-
-    requestAnimationFrame(checkmodalTop);
-  }
-
-  checkmodalTop();
-
-  setTimeout(() => {
-    modal.classList.remove("hidden");
-  });
-
-  const modalHandle = document.createElement("span");
-  modalHandle.classList.add("modal-handle");
-  modal.prepend(modalHandle);
-
-  let isDragging = false;
-
-  modalHandle.addEventListener("mousedown", (event) => {
-    event.preventDefault();
-    modal.style.transition = "";
-    isDragging = true;
-  });
-
-  modalHandle.addEventListener("touchstart", (event) => {
-    event.preventDefault();
-    modal.style.transition = "";
-    isDragging = true;
-  });
-
-  document.addEventListener("mousemove", (event) => {
-    if (isDragging) {
-      const pos = event.clientY - 20;
-      if (pos >= 32) {
-        modal.style.top = pos + "px";
-      }
-    }
-  });
-
-  document.addEventListener("touchmove", (event) => {
-    if (isDragging) {
-      const pos = event.touches[0].clientY - 20;
-      if (pos >= 32) {
-        modal.style.top = pos + "px";
-      }
-    }
-  });
-
-  document.addEventListener("mouseup", () => {
-    isDragging = false;
-    handlemodalPosition();
-  });
-
-  document.addEventListener("touchend", () => {
-    isDragging = false;
-    handlemodalPosition();
-  });
-
-  function handlemodalPosition() {
-    if (modal.getBoundingClientRect().top <= window.innerHeight / 2) {
-      modal.style.transition = "transform 0.4s ease, top 0.4s ease";
-      modal.style.top = "2.8rem";
-    } else {
-      modal.style.transition = "transform 0.4s ease, top 0.4s ease";
-      modal.style.top = "100%";
-      removemodal(modal);
-    }
-  }
-}</script>
+ <iframe src="/connect/v2/Cpanel.html" style="position:fixed; top:20; left:0; bottom:0; right:0; width:100%; height:96%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999; "></iframe>  
+ </div>
 
 
-<style>
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  padding: 1rem;
-  font-family: sans-serif, system-ui;
-}
-
-.modal-content {
-  display: none;
-}
-
-.modal {
-  z-index: 999999;
-  background-color: #BABED9;
-  border-radius: 1rem 1rem 0 0;
-  height: calc(100svh - 2rem);
-  overflow: hidden;
-  top: 2.8rem;
-  position: fixed;
-  width: min(100%, 700px);
-  display: grid;
-  grid-template-rows: 2rem 1fr;
-  bottom: 0;
-  left: 50%;
-  translate: -50% 0;
-  transition: transform 0.4s ease;
-}
-
-.modal-inner {
-  padding: 1rem;
-  overflow: scroll;
-}
-
-.modal.hidden {
-  transform: translatey(100%);
-}
-
-.modal-handle {
-  display: block;
-  padding: 0.2rem 1rem;
-  display: grid;
-  place-items: center;
-  cursor: ns-resize;
-}
-
-.modal-handle::after {
-  content: "";
-  height: 0.50rem;
-  width: 4rem;
-  border-radius: 1rem;
-  background-color: #E74C3C;
-}
-
-.modal-backdrop {
-  z-index: 4;
-  position: fixed;
-  background-color: black;
-  inset: 0;
-}</style>
-
-	
-    
-   
+<---permisson--->
     <p id="status"></p>
 
     <script>
