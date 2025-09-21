@@ -2108,47 +2108,155 @@ nextbutto.addEventListener("click", function () {
 
 
 
-// Do audio elements
-const mainAudio = new Audio();
-const preloadAudio = new Audio();
 
-let currentIndex = 0; // song list index
-let songs = []; // yahan API se songs list bharte ho
+// === Full JS Player with Preload & Alternative URLs ===
 
-// Function to play current song
+// Current & preload audio elements
+var mainAudio = document.getElementById("SAudio"); // existing audio element
+var preloadAudio = new Audio(); // next song preload
+
+var isRepeat = false; // repeat flag
+var Sid = 0; // current song index
+
+// Playlist items
+var playlistItems = document.getElementsByClassName("list");
+
+// Function to get all URLs for a video (main + alternatives)
+function getAllAudioUrls(id) {
+    return [
+        "https://vivekfy.vercel.app/inv?id=" + id,
+        "https://vivekfy.vercel.app/inv1?id=" + id,
+        "https://vivekfy.vercel.app/inv2?id=" + id,
+        "https://vivekfy.vercel.app/stream?url=https://youtu.be/" + id,
+        "https://vivekfy.vercel.app/tokyo?id=" + id,
+        "https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/" + id,
+        "https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + id
+    ];
+}
+
+// Preload next song
+var preloadIndex = 0;
+function preloadNextSong() {
+    var nextIndex = Sid + 1;
+    if (nextIndex < playlistItems.length) {
+        var nextId = $(playlistItems[nextIndex]).attr("vid");
+        var urls = getAllAudioUrls(nextId);
+
+        preloadAudioList = [];
+        urls.forEach(function(url) {
+            var a = document.createElement("audio");
+            a.src = url;
+            a.preload = "auto";
+            preloadAudioList.push(a);
+        });
+
+        preloadAudio.src = preloadAudioList[0].src; // primary preload
+        preloadAudio.load();
+        preloadIndex = 0;
+        console.log("Preloading next song:", preloadAudio.src);
+    }
+}
+
+// Play current song by index
 function playSong(index) {
-    currentIndex = index;
-    mainAudio.src = songs[index].url;
+    Sid = index;
+    var songId = $(playlistItems[index]).attr("vid");
+    var urls = getAllAudioUrls(songId);
+
+    mainAudio.src = urls[0]; // primary URL
     mainAudio.play();
 
-    // Jaise hi play start ho, preload next song
+    // Setup thumbnail
+    document.getElementById("SThumb").src = "https://i.ytimg.com/vi/"+songId+"/mqdefault.jpg";
+    document.getElementById("Fimg").src = "https://i.ytimg.com/vi/"+songId+"/mqdefault.jpg";
+    $("#profileThumbnail").html('<img src="https://i.ytimg.com/vi/'+songId+'/mqdefault.jpg" alt="Profile Thumbnail">');
+    $("#profileThumbnail").data("videoId", songId);
+
+    // Preload next song
     preloadNextSong();
 }
 
-// Function to preload next song
-function preloadNextSong() {
-    const nextIndex = currentIndex + 1;
-    if (nextIndex < songs.length) {
-        preloadAudio.src = songs[nextIndex].url;
-        preloadAudio.load(); // preload karega but play nahi karega
-    }
-}
-
-// Jab current song khatam ho
-mainAudio.addEventListener("ended", () => {
-    const nextIndex = currentIndex + 1;
-    if (nextIndex < songs.length) {
-        // preloadAudio ko hi main bana do
-        mainAudio.src = preloadAudio.src;
+// Listen for current song end
+mainAudio.addEventListener("ended", function() {
+    if (isRepeat) {
+        mainAudio.currentTime = 0;
         mainAudio.play();
-        currentIndex = nextIndex;
+        console.log("Song repeated.");
+    } else {
+        var nextIndex = Sid + 1;
+        if (nextIndex < playlistItems.length) {
+            // Play preloaded audio instantly
+            mainAudio.src = preloadAudio.src;
+            mainAudio.play();
+            Sid = nextIndex;
+            console.log("Next song started instantly:", mainAudio.src);
 
-        // aur agla next preload karo
-        preloadNextSong();
+            // Preload next song after this
+            preloadNextSong();
+        } else {
+            console.log("End of playlist");
+        }
     }
 });
 
+// Error handling fallback for mainAudio
+mainAudio.addEventListener("error", function() {
+    if (preloadAudioList && preloadIndex < preloadAudioList.length - 1) {
+        preloadIndex++;
+        mainAudio.src = preloadAudioList[preloadIndex].src;
+        mainAudio.load();
+        mainAudio.play();
+        console.log("Fallback playing:", mainAudio.src);
+    }
+});
+
+// Play/Pause toggle
+function playPause() {
+    if (mainAudio.paused) mainAudio.play();
+    else mainAudio.pause();
+}
+
+// Next / Previous buttons
+document.getElementById("nextbutto").addEventListener("click", function() {
+    var nextIndex = Sid + 1;
+    if (nextIndex < playlistItems.length) playSong(nextIndex);
+});
+
+document.getElementById("pichhe").addEventListener("click", function() {
+    var prevIndex = Sid - 1;
+    if (prevIndex >= 0) playSong(prevIndex);
+});
+
+// Repeat button
+document.getElementById("repeat").addEventListener("click", function() {
+    isRepeat = !isRepeat;
+    console.log("Repeat mode:", isRepeat ? "ON" : "OFF");
+});
+
+// Optional: download / stream buttons
+document.getElementById("pahilagana").onclick = () => {
+    var id = $(playlistItems[Sid]).attr("vid");
+    location.href = "https://vivekfy.vercel.app/dl?url=https://youtu.be/"+id;
+};
+document.getElementById("VFYmp3").onclick = () => {
+    var id = $(playlistItems[Sid]).attr("vid");
+    location.href = "https://vivekfy.vercel.app/stream?url=https://youtu.be/"+id;
+};
+document.getElementById("VFYmp3v2").onclick = () => {
+    var id = $(playlistItems[Sid]).attr("vid");
+    location.href = "https://vivekfy.vercel.app/stream?url=https://youtu.be/"+id;
+};
+document.getElementById("vivekmasona").onclick = () => {
+    var id = $(playlistItems[Sid]).attr("vid");
+    location.href = "https://vivekfy.vercel.app/api?url=https://youtu.be/"+id;
+};
+
+// Initial play if needed
+if (playlistItems.length > 0) playSong(0);
+
+
 	
+
 
 
 
