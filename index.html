@@ -831,18 +831,24 @@ width: 50%;
   </div>
 		
     <div data-role="main" class="ui-content">
-     <input type="search"  
-       name="search"   
-       id="search-basic" 
-       class="search-bar"
-       placeholder="VIVEKFY: Type songs name artists...."
-       data-suggestion=""/>
+     <div id="search-container" style="position: relative; display: inline-block; width: 100%;">
+  <input type="search"  
+         name="search"   
+         id="search-basic" 
+         class="search-bar"
+         placeholder="VIVEKFY: Type songs name artists...."
+         style="width: 100%; padding: 8px; font-size: 16px; color: #000; background: transparent; position: relative; z-index: 2; box-sizing: border-box;"
+         data-suggestion=""/>
+  <span id="ghost-text"
+        style="position: absolute; top: 8px; left: 8px; color: red; font-size: 16px; font-family: inherit; pointer-events: none; white-space: pre; z-index: 1;"></span>
+</div>
+
 <button onclick="search(),speakSearchText()" 
         data-role="button" data-icon="search" 
         data-mini="true" data-inline="true" data-theme="b" 
         id="search-btn">
   Search
-</button>    
+</button>
 	
 	
 
@@ -4189,4 +4195,67 @@ document.getElementById('search-btn').addEventListener('click', function() {
     </div>
 </div>
 	
-    
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(function(){
+  var $input = $("#search-basic");
+  var $ghost = $("#ghost-text");
+  var suggestion = "";
+
+  function fetchSuggestion(query){
+    if(!query){
+      $ghost.text('');
+      return;
+    }
+    $.ajax({
+      url: "//clients1.google.com/complete/search",
+      dataType: "jsonp",
+      data: {q: query, nolabels:"t", client:"youtube", ds:"yt"},
+      success: function(r){
+        var list = r[1].map(item => item[0]);
+        suggestion = list.find(s => s.toLowerCase().startsWith(query.toLowerCase())) || '';
+        updateGhost(query);
+      }
+    });
+  }
+
+  function updateGhost(typed){
+    if(suggestion && suggestion.toLowerCase() !== typed.toLowerCase()){
+      $ghost.text(suggestion.substring(typed.length));
+    } else {
+      $ghost.text('');
+    }
+  }
+
+  // Input typing
+  $input.on("input", function(){
+    fetchSuggestion($(this).val());
+  });
+
+  // Accept suggestion on ArrowRight or Tab
+  $input.on("keydown", function(e){
+    if((e.key === "ArrowRight" || e.key === "Tab") && suggestion){
+      e.preventDefault();
+      $input.val(suggestion);
+      $ghost.text('');
+      suggestion = '';
+      $("#search-btn").click(); // trigger search
+    }
+  });
+
+  // Click on input → complete suggestion
+  $input.on("click", function(){
+    if(suggestion){
+      $input.val(suggestion);
+      $ghost.text('');
+      suggestion = '';
+      $("#search-btn").click(); // trigger search
+    }
+  });
+
+  // Scroll alignment
+  $input.on("scroll", function(){
+    $ghost.scrollLeft($input.scrollLeft());
+  });
+});
+</script>  
