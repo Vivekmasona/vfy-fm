@@ -1,0 +1,23 @@
+.autocomplete-wrapper {
+    position: relative;
+  }
+  .autocomplete-ghost {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 6px 10px; /* match input padding */
+    color: #aaa;       /* halka grey */
+    font-size: 16px;
+    font-family: inherit;
+    height: 100%;
+    width: 100%;
+    pointer-events: none;
+    white-space: pre;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  .search-bar {
+    position: relative;
+    background: transparent;
+    font-size: 16px;
+  }
