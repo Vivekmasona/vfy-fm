@@ -829,27 +829,24 @@ width: 50%;
     <div id="progress"></div>
   </div>
 		
-    <div data-role="main" class="ui-content">
-     
-		
-		<div style="position: relative; display: inline-block; width: 100%;">
-  <input type="search"  
-         name="search"   
-         id="search-basic" 
+<div style="position: relative; display: inline-block; width: 100%;">
+  <input type="search"
+         name="search"
+         id="search-basic"
          class="search-bar"
          placeholder="VIVEKFY: Type songs name artists...."
-         style="width: 100%; padding: 8px; font-size: 16px; position: relative; background: transparent; z-index: 2; color: #000;"/>
-  <span id="ghost-text" 
+         style="width: 100%; padding: 8px; font-size: 16px; color: #000; position: relative; background: transparent; z-index: 2; box-sizing: border-box;"/>
+  <span id="ghost-text"
         style="position: absolute; top: 8px; left: 8px; color: red; font-size: 16px; font-family: inherit; pointer-events: none; white-space: pre; z-index: 1;"></span>
 </div>
 
-<button onclick="search(),speakSearchText()" 
-        data-role="button" data-icon="search" 
-        data-mini="true" data-inline="true" data-theme="b" 
+<button onclick="search(),speakSearchText()"
+        data-role="button" data-icon="search"
+        data-mini="true" data-inline="true" data-theme="b"
         id="search-btn">
   Search
 </button>
-	
+
 	
 
    <div id="autocomplete-results"></div>
@@ -4199,54 +4196,55 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(function(){
-  var searchField = $("#search-basic");
-  var ghost = $("#ghost-text");
-  var activeSuggestion = "";
+  var $input = $("#search-basic");
+  var $ghost = $("#ghost-text");
+  var suggestion = "";
 
-  function fetchSuggestions(query){
+  function fetchSuggestion(query){
     if(!query){
-      ghost.text('');
+      $ghost.text('');
       return;
     }
     $.ajax({
       url: "//clients1.google.com/complete/search",
       dataType: "jsonp",
       data: {q: query, nolabels:"t", client:"youtube", ds:"yt"},
-      success:function(r){
+      success: function(r){
         var list = r[1].map(item=>item[0]);
-        activeSuggestion = list.find(s=>s.toLowerCase().startsWith(query.toLowerCase())) || '';
+        suggestion = list.find(s => s.toLowerCase().startsWith(query.toLowerCase())) || '';
         updateGhost(query);
       }
     });
   }
 
   function updateGhost(typed){
-    if(activeSuggestion && activeSuggestion.toLowerCase() !== typed.toLowerCase()){
-      ghost.text(activeSuggestion.substring(typed.length));
+    if(suggestion && suggestion.toLowerCase() !== typed.toLowerCase()){
+      $ghost.text(suggestion.substring(typed.length));
     } else {
-      ghost.text('');
+      $ghost.text('');
     }
   }
 
-  searchField.on("input", function(){
-    fetchSuggestions($(this).val());
+  $input.on("input", function(){
+    fetchSuggestion($(this).val());
   });
 
-  searchField.on("keydown", function(e){
-    if((e.key === "ArrowRight" || e.key === "Tab") && activeSuggestion){
+  $input.on("keydown", function(e){
+    if((e.key === "ArrowRight" || e.key === "Tab") && suggestion){
       e.preventDefault();
-      $(this).val(activeSuggestion);
-      ghost.text('');
-      activeSuggestion='';
+      $(this).val(suggestion);
+      $ghost.text('');
+      suggestion='';
     }
   });
 
-  // Align ghost text scroll with input
-  searchField.on("scroll", function(){
-    ghost.scrollLeft($(this).scrollLeft());
+  // Align ghost scroll with input
+  $input.on("scroll", function(){
+    $ghost.scrollLeft($(this).scrollLeft());
   });
 });
 </script>
