@@ -2170,130 +2170,181 @@ volumeSlider.addEventListener('input', function () {
    
 
  
- 
- (function() {
+ const titleaudio = document.getElementById('SAudio');
+const songTitleElement = document.getElementById('vfytitle');
+const thumbnailElement = document.getElementById('SThumb');
+const nextButtonElement = document.getElementById('nextbutto');
+const prevButtonElement = document.getElementById('VFYmp3'); // Previous button
+const heartButtonElement = document.getElementById('VFYmp3v2');
+const downloadButtonElement = document.getElementById('VFYmp3');
 
-  const titleaudio = document.getElementById('SAudio');
-  const songTitleElement = document.getElementById('vfytitle');
-  const thumbnailElement = document.getElementById('SThumb');
-  const nextButtonElement = document.getElementById('nextbutto');
-  const prevButtonElement = document.getElementById('VFYmp3'); // Previous button
-  const heartButtonElement = document.getElementById('VFYmp3v2');
-  const downloadButtonElement = document.getElementById('VFYmp3');
+// Global title variable
+let title = "Vivekfy Har Dil Ki Dhadkan";
 
-  // ---------------- Media Session API ----------------
-  function updateMediaSession() {
-    const title = songTitleElement ? songTitleElement.textContent.trim() : "Unknown Title";
-    const thumbnailUrl = thumbnailElement ? thumbnailElement.src : "";
+// Notification + marquee variables
+let currentNotification = null;
+let marqueeInterval = null;
+let marqueeIndex = 0;
+let titleParts = [];
+
+// Function to update the song title
+function updateTitle() {
+    title = songTitleElement ? songTitleElement.textContent.trim() : "Unknown Title"; 
+    console.log("Updated Title:", title);
+}
+
+// Function to update Media Session metadata
+function updateMediaSessionMetadata() {
+    updateTitle();
+    const thumbnailUrl = thumbnailElement ? thumbnailElement.src : '';
 
     if ('mediaSession' in navigator) {
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: title,
-        artist: "Vivekfy",
-        album: "PWA Player",
-        artwork: [
-          { src: thumbnailUrl, sizes: "96x96", type: "image/png" },
-          { src: thumbnailUrl, sizes: "192x192", type: "image/png" },
-          { src: thumbnailUrl, sizes: "512x512", type: "image/png" }
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: title,
+            artist: 'www.vivekmasona.com',
+            album: 'VivekFy',
+            artwork: [
+                { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '192x192', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '256x256', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
+            ]
+        });
+
+        // Media session action handlers
+        navigator.mediaSession.setActionHandler('play', () => titleaudio.play());
+        navigator.mediaSession.setActionHandler('pause', () => titleaudio.pause());
+        navigator.mediaSession.setActionHandler('nexttrack', () => nextButtonElement.click());
+        navigator.mediaSession.setActionHandler('previoustrack', () => prevButtonElement.click());
+        navigator.mediaSession.setActionHandler('seekbackward', () => {
+            titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
+        });
+        navigator.mediaSession.setActionHandler('seekforward', () => {
+            titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
+        });
+    }
+}
+
+// Function to split title into 4 parts
+function splitTitleForMarquee(fullTitle) {
+    const length = fullTitle.length;
+    const partSize = Math.ceil(length / 4);
+    titleParts = [];
+
+    for (let i = 0; i < 4; i++) {
+        const start = i * partSize;
+        const end = start + partSize;
+        titleParts.push(fullTitle.substring(start, end));
+    }
+
+    if (titleParts.length < 4) {
+        while (titleParts.length < 4) titleParts.push("");
+    }
+
+    marqueeIndex = 0;
+}
+
+// Function to create or replace notification
+function createNotification(part, thumbnailUrl) {
+    const options = {
+        body: 'Audio is playing',
+        icon: thumbnailUrl,
+        tag: "song-marquee", // same tag => replaces old notification
+        renotify: true,
+        actions: [
+            { action: 'prev', title: 'Previous', icon: 'path/to/prev-icon.png' },
+            { action: 'seekbackward', title: 'Rewind', icon: 'path/to/seek-back-icon.png' },
+            { action: 'seekforward', title: 'Fast Forward', icon: 'path/to/seek-forward-icon.png' },
+            { action: 'heart', title: 'Favorite', icon: 'path/to/heart-icon.png' },
+            { action: 'next', title: 'Next', icon: 'path/to/next-icon.png' },
+            { action: 'download', title: 'Download', icon: 'path/to/download-icon.png' }
         ]
-      });
+    };
 
-      navigator.mediaSession.setActionHandler('play', () => titleaudio.play());
-      navigator.mediaSession.setActionHandler('pause', () => titleaudio.pause());
-      navigator.mediaSession.setActionHandler('previoustrack', () => prevButtonElement.click());
-      navigator.mediaSession.setActionHandler('nexttrack', () => nextButtonElement.click());
-      navigator.mediaSession.setActionHandler('seekbackward', () => {
-        titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
-      });
-      navigator.mediaSession.setActionHandler('seekforward', () => {
-        titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
-      });
-    }
-  }
+    currentNotification = new Notification(part, options);
 
-  // Event listeners
-  titleaudio.addEventListener('play', updateMediaSession);
-  titleaudio.addEventListener('loadedmetadata', updateMediaSession);
-  nextButtonElement.addEventListener('click', updateMediaSession);
-  prevButtonElement.addEventListener('click', updateMediaSession);
-
-  // ---------------- Document PiP (Custom Buttons) ----------------
-  async function openDPiP() {
-    if (!("documentPictureInPicture" in window)) {
-      alert("Document PiP not supported in this browser!");
-      return;
-    }
-
-    const pipWindow = await documentPictureInPicture.requestWindow({
-      width: 350,
-      height: 200
+    // Handle actions
+    currentNotification.addEventListener('click', (event) => {
+        if (event.action === 'next') nextButtonElement.click();
+        else if (event.action === 'prev') prevButtonElement.click();
+        else if (event.action === 'heart') heartButtonElement.click();
+        else if (event.action === 'download') downloadButtonElement.click();
+        else if (event.action === 'seekbackward') titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
+        else if (event.action === 'seekforward') titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
     });
+}
 
-    pipWindow.document.body.style.display = "flex";
-    pipWindow.document.body.style.flexDirection = "column";
-    pipWindow.document.body.style.alignItems = "center";
-    pipWindow.document.body.style.justifyContent = "center";
-    pipWindow.document.body.style.background = "#111";
-    pipWindow.document.body.style.color = "#fff";
-    pipWindow.document.body.style.fontFamily = "sans-serif";
-    pipWindow.document.body.style.gap = "10px";
+// Function to show marquee notification
+function showNotification() {
+    updateTitle();
+    const thumbnailUrl = thumbnailElement ? thumbnailElement.src : '';
 
-    const titleEl = pipWindow.document.createElement("p");
-    titleEl.textContent = songTitleElement ? songTitleElement.textContent.trim() : "Unknown Title";
-    titleEl.style.fontSize = "14px";
-    titleEl.style.textAlign = "center";
-    pipWindow.document.body.appendChild(titleEl);
+    // Split title
+    splitTitleForMarquee(title);
 
-    function createButton(txt, handler) {
-      const btn = pipWindow.document.createElement("button");
-      btn.textContent = txt;
-      btn.style.padding = "8px 12px";
-      btn.style.border = "none";
-      btn.style.borderRadius = "6px";
-      btn.style.cursor = "pointer";
-      btn.style.fontSize = "14px";
-      btn.onclick = handler;
-      return btn;
+    if (Notification.permission === 'granted') {
+        // First part
+        createNotification(titleParts[marqueeIndex], thumbnailUrl);
+
+        // Clear old interval if any
+        if (marqueeInterval) clearInterval(marqueeInterval);
+
+        // Rotate parts every 2 sec
+        marqueeInterval = setInterval(() => {
+            marqueeIndex = (marqueeIndex + 1) % titleParts.length;
+            createNotification(titleParts[marqueeIndex], thumbnailUrl);
+        }, 2000);
+    } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                showNotification();
+            }
+        });
     }
+}
 
-    const playBtn = createButton("▶ Play", () => titleaudio.play());
-    const pauseBtn = createButton("⏸ Pause", () => titleaudio.pause());
-    const prevBtn = createButton("⏮ Prev", () => prevButtonElement.click());
-    const nextBtn = createButton("⏭ Next", () => nextButtonElement.click());
-    const favBtn = createButton("❤️ Fav", () => heartButtonElement.click());
-    const dlBtn = createButton("⬇ Download", () => downloadButtonElement.click());
+// Update the Media Session metadata initially
+updateMediaSessionMetadata();
 
-    pipWindow.document.body.append(playBtn, pauseBtn, prevBtn, nextBtn, favBtn, dlBtn);
+// Event listener when audio plays
+titleaudio.addEventListener('play', () => {
+    updateTitle();
+    document.title = `${title} - ${Math.floor(titleaudio.currentTime)} seconds`;
+    showNotification();
+});
 
-    // Observe song title changes
-    if (songTitleElement) {
-      const observer = new MutationObserver(() => {
-        titleEl.textContent = songTitleElement.textContent.trim();
-      });
-      observer.observe(songTitleElement, { childList: true, characterData: true, subtree: true });
-    }
-  }
+// Event listener when audio pauses
+titleaudio.addEventListener('pause', () => {
+    document.title = 'VIVEKFY-AI';
+});
 
-  // ---------------- Enable DPiP Button ----------------
-  const pipBtn = document.createElement("button");
-  pipBtn.id = "enableDPiP";
-  pipBtn.textContent = "Enable PiP Controls";
-  pipBtn.style.position = "fixed";
-  pipBtn.style.bottom = "20px";
-  pipBtn.style.right = "20px";
-  pipBtn.style.zIndex = "9999";
-  pipBtn.style.padding = "10px 15px";
-  pipBtn.style.background = "#2196f3";
-  pipBtn.style.color = "#fff";
-  pipBtn.style.border = "none";
-  pipBtn.style.borderRadius = "8px";
-  pipBtn.style.cursor = "pointer";
-  document.body.appendChild(pipBtn);
+// Next button
+nextButtonElement.addEventListener('click', () => {
+    updateTitle();
+    updateMediaSessionMetadata();
+    showNotification();
+    console.log('Next song button clicked:', title);
+});
 
-  pipBtn.addEventListener("click", openDPiP);
+// Previous button
+prevButtonElement.addEventListener('click', () => {
+    updateTitle();
+    updateMediaSessionMetadata();
+    showNotification();
+    console.log('Previous song button clicked:', title);
+});
 
-})();   
+// Heart button
+heartButtonElement.addEventListener('click', () => {
+    console.log('Heart button clicked:', title);
+});
 
+// Download button
+downloadButtonElement.addEventListener('click', () => {
+    console.log('Download button clicked:', title);
+});
 
 
 
@@ -2332,11 +2383,7 @@ function convertTimeToSeconds(time) {
 
 
 
-
-
-
-
-	
+    
     
 const mainAudio = document.getElementById('SAudio');
 const watermarkAudio1 = document.getElementById('watermarkAudio1');
