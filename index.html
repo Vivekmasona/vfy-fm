@@ -830,18 +830,25 @@ width: 50%;
   </div>
 		
     <div data-role="main" class="ui-content">
-     <input type="search"  
-       name="search"   
-       id="search-basic" 
-       class="search-bar"
-       placeholder="VIVEKFY: Type songs name artists...."
-       data-suggestion=""/>
+     
+		
+		<div style="position: relative; display: inline-block; width: 100%;">
+  <input type="search"  
+         name="search"   
+         id="search-basic" 
+         class="search-bar"
+         placeholder="VIVEKFY: Type songs name artists...."
+         style="width: 100%; position: relative; background: transparent; z-index: 2;"/>
+  <span id="ghost-text" 
+        style="position: absolute; top: 0; left: 0; color: #aaa; padding: 8px; pointer-events: none; font-size: 16px; font-family: inherit; z-index: 1; white-space: pre;"></span>
+</div>
+
 <button onclick="search(),speakSearchText()" 
         data-role="button" data-icon="search" 
         data-mini="true" data-inline="true" data-theme="b" 
         id="search-btn">
   Search
-</button>    
+</button>
 	
 	
 
@@ -4188,55 +4195,53 @@ document.getElementById('search-btn').addEventListener('click', function() {
     </div>
 </div>
 	
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(function () {
   var searchField = $("#search-basic");
+  var ghost = $("#ghost-text");
   var activeSuggestion = "";
 
-  // Fetch suggestions from Google YouTube
   function fetchSuggestions(query) {
     if (!query) {
-      searchField.attr("data-suggestion", "");
+      ghost.text('');
       return;
     }
-
     $.ajax({
       url: "//clients1.google.com/complete/search",
       dataType: "jsonp",
       data: { q: query, nolabels: "t", client: "youtube", ds: "yt" },
       success: function (r) {
         var list = r[1].map(item => item[0]);
-        activeSuggestion = list.find(s =>
-          s.toLowerCase().startsWith(query.toLowerCase())
-        ) || "";
+        activeSuggestion = list.find(s => s.toLowerCase().startsWith(query.toLowerCase())) || '';
         updateGhost(query);
       }
     });
   }
 
-  // Update ghost suggestion inside input
   function updateGhost(typed) {
     if (activeSuggestion && activeSuggestion.toLowerCase() !== typed.toLowerCase()) {
-      searchField.attr("data-suggestion", activeSuggestion);
+      ghost.text(activeSuggestion);
     } else {
-      searchField.attr("data-suggestion", "");
+      ghost.text('');
     }
   }
 
-  // On typing
   searchField.on("input", function () {
     fetchSuggestions($(this).val());
   });
 
-  // Accept suggestion on Right Arrow / Tab
-  searchField.on("keydown", function (e) {
+  searchField.on("keydown", function(e) {
     if ((e.key === "ArrowRight" || e.key === "Tab") && activeSuggestion) {
       e.preventDefault();
-      $(this).val(activeSuggestion);
-      $(this).attr("data-suggestion", "");
-      activeSuggestion = "";
+      searchField.val(activeSuggestion);
+      ghost.text('');
+      activeSuggestion = '';
     }
   });
 });
-</script>  
+</script>
+	
