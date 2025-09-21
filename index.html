@@ -2382,7 +2382,96 @@ function convertTimeToSeconds(time) {
 }
 
 
+const titleaudio = document.getElementById('SAudio');
+const songTitleElement = document.getElementById('vfytitle');
+const thumbnailElement = document.getElementById('SThumb');
+const nextButtonElement = document.getElementById('nextbutto');
+const prevButtonElement = document.getElementById('VFYmp3'); // Previous button
+const heartButtonElement = document.getElementById('VFYmp3v2');
+const downloadButtonElement = document.getElementById('VFYmp3');
 
+// ---------------- Document PiP (Custom Buttons) ----------------
+async function openDPiP() {
+  if (!("documentPictureInPicture" in window)) {
+    alert("Document PiP not supported in this browser!");
+    return;
+  }
+
+  const pipWindow = await documentPictureInPicture.requestWindow({
+    width: 350,
+    height: 200
+  });
+
+  // PiP window styling
+  pipWindow.document.body.style.display = "flex";
+  pipWindow.document.body.style.flexDirection = "column";
+  pipWindow.document.body.style.alignItems = "center";
+  pipWindow.document.body.style.justifyContent = "center";
+  pipWindow.document.body.style.background = "#111";
+  pipWindow.document.body.style.color = "#fff";
+  pipWindow.document.body.style.fontFamily = "sans-serif";
+  pipWindow.document.body.style.gap = "10px";
+
+  // Song title in PiP
+  const titleEl = pipWindow.document.createElement("p");
+  titleEl.textContent = songTitleElement ? songTitleElement.textContent.trim() : "Unknown Title";
+  titleEl.style.fontSize = "14px";
+  titleEl.style.textAlign = "center";
+  pipWindow.document.body.appendChild(titleEl);
+
+  // Buttons
+  function createButton(txt, handler) {
+    const btn = pipWindow.document.createElement("button");
+    btn.textContent = txt;
+    btn.style.padding = "8px 12px";
+    btn.style.border = "none";
+    btn.style.borderRadius = "6px";
+    btn.style.cursor = "pointer";
+    btn.style.fontSize = "14px";
+    btn.onclick = handler;
+    return btn;
+  }
+
+  const playBtn = createButton("▶ Play", () => titleaudio.play());
+  const pauseBtn = createButton("⏸ Pause", () => titleaudio.pause());
+  const prevBtn = createButton("⏮ Prev", () => prevButtonElement.click());
+  const nextBtn = createButton("⏭ Next", () => nextButtonElement.click());
+  const favBtn = createButton("❤️ Fav", () => heartButtonElement.click());
+  const dlBtn = createButton("⬇ Download", () => downloadButtonElement.click());
+
+  pipWindow.document.body.append(playBtn, pauseBtn, prevBtn, nextBtn, favBtn, dlBtn);
+
+  // Update song title dynamically
+  if (songTitleElement) {
+    const observer = new MutationObserver(() => {
+      titleEl.textContent = songTitleElement.textContent.trim();
+    });
+    observer.observe(songTitleElement, { childList: true, characterData: true, subtree: true });
+  }
+}
+
+// ---------------- Enable Button ----------------
+function addDPiPButton() {
+  const pipBtn = document.createElement("button");
+  pipBtn.id = "enableDPiP";
+  pipBtn.textContent = "Enable PiP Controls";
+  pipBtn.style.position = "fixed";
+  pipBtn.style.bottom = "20px";
+  pipBtn.style.right = "20px";
+  pipBtn.style.zIndex = "9999";
+  pipBtn.style.padding = "10px 15px";
+  pipBtn.style.background = "#2196f3";
+  pipBtn.style.color = "#fff";
+  pipBtn.style.border = "none";
+  pipBtn.style.borderRadius = "8px";
+  pipBtn.style.cursor = "pointer";
+  document.body.appendChild(pipBtn);
+
+  pipBtn.addEventListener("click", openDPiP);
+}
+
+// Call this function once on page load
+addDPiPButton();
     
     
 const mainAudio = document.getElementById('SAudio');
