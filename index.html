@@ -1994,10 +1994,12 @@ document.getElementById("vivekmasona").onclick = ()=>{
 
 
     
+
+
 var audio = document.getElementById("SAudio");  
+var nextAudio = new Audio(); // next song preloader
 var isRepeat = false;  
-var preloadAudio = new Audio(); // preload ke liye
-var preloadedIndex = -1;  
+var preloadedIndex = -1;
 
 // ---- Next Song Play ----
 function playNextSong() {  
@@ -2006,8 +2008,8 @@ function playNextSong() {
 
     if (nextSongIndex < playlistItems.length) {  
         // Agar preload ready hai
-        if (preloadedIndex === nextSongIndex && preloadAudio.src) {
-            audio.src = preloadAudio.src;  
+        if (preloadedIndex === nextSongIndex && nextAudio.src) {
+            audio.src = nextAudio.src;  
             audio.currentTime = 0;  
             audio.play();  
             console.log("Instantly played preloaded song");  
@@ -2052,31 +2054,6 @@ function playPreviousSong() {
     }  
 }  
 
-// ---- Play/Pause ----
-function playPause() {  
-   if (audio.paused) {  
-      audio.play();  
-   } else {  
-      audio.pause();  
-   }  
-}  
-
-// ---- Repeat ----
-document.getElementById("repeat").addEventListener("click", function() {  
-    isRepeat = !isRepeat;  
-    console.log("Repeat mode: " + (isRepeat ? "ON" : "OFF"));  
-});  
-
-// ---- Next Button ----
-document.getElementById("nextbutto").addEventListener("click", function () {  
-    playNextSong();  
-});  
-
-// ---- Previous Button ----
-document.getElementById("pichhe").addEventListener("click", function () {  
-    playPreviousSong();  
-});  
-
 // ---- Ended Event ----
 audio.addEventListener("ended", function() {  
     if (isRepeat) {  
@@ -2086,6 +2063,11 @@ audio.addEventListener("ended", function() {
     } else {  
         playNextSong();  
     }  
+});  
+
+// ---- Next Button ----
+document.getElementById("nextbutto").addEventListener("click", function () {  
+    playNextSong();  
 });  
 
 // ---- Preload Next ----
@@ -2106,19 +2088,24 @@ function prepareNextSong() {
             "https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + id
         ];
 
-        var i = 0;  
+        let i = 0;  
+        let startTime = performance.now();
+
         function trySource() {  
             if (i < sources.length) {  
-                preloadAudio.src = sources[i];  
-                preloadAudio.load();  
+                nextAudio.src = sources[i];  
+                nextAudio.load();  
 
-                preloadAudio.oncanplaythrough = function () {  
-                    console.log("Preloaded next:", preloadAudio.src);  
-                    alert("Next song ready:\n" + preloadAudio.currentSrc);  
+                nextAudio.oncanplaythrough = function () {  
+                    let endTime = performance.now();
+                    let loadTime = ((endTime - startTime)/1000).toFixed(2);
+                    let cleanUrl = nextAudio.currentSrc.replace("https://vivekfy.vercel.app","");  
+                    alert("Next song preloaded in " + loadTime + "s:\n" + cleanUrl);  
+                    console.log("Next preloaded:", cleanUrl);
                     preloadedIndex = nextSongIndex;  
                 };  
 
-                preloadAudio.onerror = function () {  
+                nextAudio.onerror = function () {  
                     console.warn("Preload fail:", sources[i]);  
                     i++;  
                     trySource();  
@@ -2134,18 +2121,17 @@ function prepareNextSong() {
     }  
 }  
 
-// ---- Jab bhi koi song play ho, uska final redirect URL show karo ----
+// ---- Jab bhi koi song play ho, final URL alert + next preload ----
 audio.addEventListener("play", function() {  
     setTimeout(() => {
-        alert("Now playing:\n" + audio.currentSrc);  
-        console.log("Final audio URL:", audio.currentSrc);  
+        let cleanUrl = audio.currentSrc.replace("https://vivekfy.vercel.app","");  
+        alert("Now Playing:\n" + cleanUrl);  
+        console.log("Final URL:", audio.currentSrc);  
     }, 500);  
 
-    // Saath hi agla song preload bhi chalu
-    prepareNextSong();
-});    
-
-
+    prepareNextSong();  
+});
+        
 
 
         
