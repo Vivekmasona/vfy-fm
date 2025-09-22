@@ -2130,7 +2130,23 @@ if(playlistItems.length>1){
 });
 
     
+var audio = document.getElementById('SAudio');
+var fastForwardbutto = document.getElementById('fastForwardbutto');
 
+fastForwardbutto.addEventListener('click', function () {
+    audio.currentTime += 10;
+});
+var audio = document.getElementById('SAudio');
+var rewindbutto = document.getElementById('rewindbutto');
+
+rewindbutto.addEventListener('click', function () {
+    if (audio.currentTime >= 5) {
+        audio.currentTime -= 5;
+    } else {
+        audio.currentTime = 0;
+    }
+});
+	
 
         
 var audio = document.getElementById("SAudio");
