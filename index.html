@@ -1996,48 +1996,81 @@ document.getElementById("vivekmasona").onclick = ()=>{
     
 
 
- var audio = document.getElementById("SAudio");  
-var nextAudio = new Audio(); // preloader
+var audio = document.getElementById("SAudio");  
+var nextAudio = new Audio(); // next song preloader
 var isRepeat = false;  
-var preloadedIndex = -1;  
-var Sid = 0; // current index
+var preloadedIndex = -1;
 
-// ---- Next Song ----
+// ---- Current Song Thumbnail Update ----
+function updateThumbnail(index) {
+    var playlistItems = document.getElementsByClassName("list");
+    if(index >= 0 && index < playlistItems.length){
+        var song = playlistItems[index];
+        var thumbnail = $(song).children('img').attr("src");
+        var videoId = $(song).attr("vid");
+        $("#profileThumbnail").html('<img src="' + thumbnail + '" alt="Profile Thumbnail">');
+        $("#profileThumbnail").data("videoId", videoId);
+    }
+}
+
+// ---- Next Song Play ----
 function playNextSong() {  
     var nextSongIndex = Sid + 1;  
     var playlistItems = document.getElementsByClassName("list");  
 
     if (nextSongIndex < playlistItems.length) {  
-        // ✅ Agar preload ready hai to usi ko use karo (API dubara call NAHI hogi)
         if (preloadedIndex === nextSongIndex && nextAudio.src) {
             audio.src = nextAudio.src;  
             audio.currentTime = 0;  
             audio.play();  
             console.log("Instantly played preloaded song");  
         } else {
-            // ❌ Ye part sirf backup hai, agar preload fail ho gaya to
-            var nextSong = playlistItems[nextSongIndex];  
-            var id = $(nextSong).attr("vid");  
-            audio.src = "https://vivekfy.vercel.app/stream?url=https://youtu.be/" + id;  
+            playlistItems[nextSongIndex].click();  
             audio.play();  
-            console.warn("Preload missing, fetched fresh URL");  
+            console.log("Fallback normal next play");  
         }
 
-        // Update Thumbnail + Sid
-        var nextSong = playlistItems[nextSongIndex];  
-        var nextThumbnail = $(nextSong).children('img').attr("src");  
-        var nextVideoId = $(nextSong).attr("vid");  
-        $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');  
-        $("#profileThumbnail").data("videoId", nextVideoId);  
-
         Sid = nextSongIndex;  
-        prepareNextSong(); // preload agla song
+        updateThumbnail(Sid);  // <--- update thumbnail here
+        prepareNextSong();  
     } else {  
         console.log('End of playlist');  
     }  
 }  
 
-// ---- Preload Next Song ----
+// ---- Previous Song ----
+function playPreviousSong() {  
+    var prevSongIndex = Sid - 1;  
+    var playlistItems = document.getElementsByClassName("list");  
+
+    if (prevSongIndex >= 0) {  
+        playlistItems[prevSongIndex].click();  
+        audio.play();  
+        Sid = prevSongIndex;  
+        updateThumbnail(Sid);  // <--- update thumbnail here
+        prepareNextSong();  
+    } else {  
+        console.log('Start of playlist');  
+    }  
+}  
+
+// ---- Ended Event ----
+audio.addEventListener("ended", function() {  
+    if (isRepeat) {  
+        audio.currentTime = 0;  
+        audio.play();  
+        console.log("Song repeated.");  
+    } else {  
+        playNextSong();  
+    }  
+});  
+
+// ---- Next Button ----
+document.getElementById("nextbutto").addEventListener("click", function () {  
+    playNextSong();  
+});  
+
+// ---- Preload Next ----
 function prepareNextSong() {  
     var playlistItems = document.getElementsByClassName("list");  
     var nextSongIndex = Sid + 1;  
@@ -2050,6 +2083,8 @@ function prepareNextSong() {
             "https://vivekfy.vercel.app/inv1?id=" + id,
             "https://vivekfy.vercel.app/inv2?id=" + id,
             "https://vivekfy.vercel.app/stream?url=https://youtu.be/" + id,
+            "https://vivekfy.vercel.app/tokyo?id=" + id,
+            "https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/" + id,
             "https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + id
         ];
 
@@ -2065,16 +2100,8 @@ function prepareNextSong() {
                     let endTime = performance.now();
                     let loadTime = ((endTime - startTime)/1000).toFixed(2);
                     let cleanUrl = nextAudio.currentSrc.replace("https://vivekfy.vercel.app","");  
-
-                    // duration
-                    let duration = nextAudio.duration;
-                    let minutes = Math.floor(duration / 60);
-                    let seconds = Math.floor(duration % 60).toString().padStart(2,'0');
-                    let durationText = minutes + ":" + seconds;
-
-                    alert("Next song preloaded in " + loadTime + "s\nDuration: " + durationText + "\n" + cleanUrl);  
-                    console.log("Next preloaded:", cleanUrl, "Duration:", durationText);
-
+                    alert("Next song preloaded in " + loadTime + "s:\n" + cleanUrl);  
+                    console.log("Next preloaded:", cleanUrl);
                     preloadedIndex = nextSongIndex;  
                 };  
 
@@ -2094,7 +2121,7 @@ function prepareNextSong() {
     }  
 }  
 
-// ---- Final URL Alert ----
+// ---- Jab bhi koi song play ho, final URL alert + next preload ----
 audio.addEventListener("play", function() {  
     setTimeout(() => {
         let cleanUrl = audio.currentSrc.replace("https://vivekfy.vercel.app","");  
@@ -2102,8 +2129,9 @@ audio.addEventListener("play", function() {
         console.log("Final URL:", audio.currentSrc);  
     }, 500);  
 
+    updateThumbnail(Sid);  // <--- update thumbnail on any play
     prepareNextSong();  
-});
+});  
 
         
         
