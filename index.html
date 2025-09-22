@@ -2002,41 +2002,7 @@ var isRepeat = false;
 var preloadedIndex = -1;
 var Sid = 0; // current index
 
-// ---- Next Song ----
-function playNextSong() {
-    var nextSongIndex = Sid + 1;
-    var playlistItems = document.getElementsByClassName("list");
-
-    if (nextSongIndex < playlistItems.length) {
-        // ✅ Agar preload ready hai to usi ko use karo
-        if (preloadedIndex === nextSongIndex && nextAudio.src) {
-            audio.src = nextAudio.src;
-            audio.currentTime = 0;
-            audio.play();
-            console.log("Instantly played preloaded song");
-        } else {
-            // ❌ Agar preload fail hua to APIs se dubara try karo
-            var nextSong = playlistItems[nextSongIndex];
-            var id = $(nextSong).attr("vid");
-            playWithFallback(audio, id);
-            console.warn("Preload missing, fetched fresh URL");
-        }
-
-        // Update Thumbnail + Sid
-        var nextSong = playlistItems[nextSongIndex];
-        var nextThumbnail = $(nextSong).children("img").attr("src");
-        var nextVideoId = $(nextSong).attr("vid");
-        $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');
-        $("#profileThumbnail").data("videoId", nextVideoId);
-
-        Sid = nextSongIndex;
-        prepareNextSong(); // preload agla song
-    } else {
-        console.log("End of playlist");
-    }
-}
-
-// ---- Fallback Function ----
+// -------- Helper: Fallback Loader --------
 function playWithFallback(player, id) {
     var sources = [
         "https://vivekfy.vercel.app/inv1?id=" + id,
@@ -2046,24 +2012,91 @@ function playWithFallback(player, id) {
     ];
 
     let i = 0;
+
     function trySource() {
         if (i < sources.length) {
             player.src = sources[i];
             player.load();
-            player.play().catch(() => {}); // autoplay block avoid
+
+            player.oncanplaythrough = function () {
+                player.play();
+                console.log("Playing with:", sources[i]);
+            };
+
             player.onerror = function () {
-                console.warn("Fallback fail:", sources[i]);
+                console.warn("Fail:", sources[i]);
                 i++;
                 trySource();
             };
         } else {
-            console.error("All sources failed for", id);
+            console.error("All sources failed for id:", id);
         }
     }
+
     trySource();
 }
 
-// ---- Preload Next Song ----
+// -------- Next Song --------
+function playNextSong() {
+    var nextSongIndex = Sid + 1;
+    var playlistItems = document.getElementsByClassName("list");
+
+    if (nextSongIndex < playlistItems.length) {
+        // ✅ Agar preload ready hai to usi ko use karo (0s delay)
+        if (preloadedIndex === nextSongIndex && nextAudio.src) {
+            audio.src = nextAudio.src;
+            audio.currentTime = 0;
+            audio.play();
+            console.log("Instantly played preloaded song");
+        } else {
+            // ❌ Agar preload fail hua to APIs se try karo
+            var nextSong = playlistItems[nextSongIndex];
+            var id = $(nextSong).attr("vid");
+            playWithFallback(audio, id);
+            console.warn("Preload missing, fetched fresh URL");
+
+            // Thumbnail update backup
+            var nextThumbnail = $(nextSong).children("img").attr("src");
+            var nextVideoId = $(nextSong).attr("vid");
+            $("#profileThumbnail").html(
+                '<img src="' + nextThumbnail + '" alt="Profile Thumbnail">'
+            );
+            $("#profileThumbnail").data("videoId", nextVideoId);
+        }
+
+        Sid = nextSongIndex;
+        prepareNextSong(); // preload agla song
+    } else {
+        console.log("End of playlist");
+    }
+}
+
+// -------- Previous Song --------
+function playPreviousSong() {
+    var prevSongIndex = Sid - 1;
+    var playlistItems = document.getElementsByClassName("list");
+
+    if (prevSongIndex >= 0) {
+        var prevSong = playlistItems[prevSongIndex];
+        var id = $(prevSong).attr("vid");
+        playWithFallback(audio, id);
+
+        // Thumbnail update
+        var prevThumbnail = $(prevSong).children("img").attr("src");
+        var prevVideoId = $(prevSong).attr("vid");
+        $("#profileThumbnail").html(
+            '<img src="' + prevThumbnail + '" alt="Profile Thumbnail">'
+        );
+        $("#profileThumbnail").data("videoId", prevVideoId);
+
+        Sid = prevSongIndex;
+        prepareNextSong();
+    } else {
+        console.log("Start of playlist");
+    }
+}
+
+// -------- Preload Next Song --------
 function prepareNextSong() {
     var playlistItems = document.getElementsByClassName("list");
     var nextSongIndex = Sid + 1;
@@ -2090,13 +2123,26 @@ function prepareNextSong() {
                 nextAudio.oncanplaythrough = function () {
                     let endTime = performance.now();
                     let loadTime = ((endTime - startTime) / 1000).toFixed(2);
-                    let cleanUrl = nextAudio.currentSrc.replace("https://vivekfy.vercel.app", "");
+                    let cleanUrl = nextAudio.currentSrc.replace(
+                        "https://vivekfy.vercel.app",
+                        ""
+                    );
 
                     // duration
                     let duration = nextAudio.duration;
                     let minutes = Math.floor(duration / 60);
-                    let seconds = Math.floor(duration % 60).toString().padStart(2, "0");
+                    let seconds = Math.floor(duration % 60)
+                        .toString()
+                        .padStart(2, "0");
                     let durationText = minutes + ":" + seconds;
+
+                    // ✅ Thumbnail update yahin pe
+                    var nextThumbnail = $(nextSong).children("img").attr("src");
+                    var nextVideoId = $(nextSong).attr("vid");
+                    $("#profileThumbnail").html(
+                        '<img src="' + nextThumbnail + '" alt="Profile Thumbnail">'
+                    );
+                    $("#profileThumbnail").data("videoId", nextVideoId);
 
                     alert(
                         "Next song preloaded in " +
@@ -2106,7 +2152,12 @@ function prepareNextSong() {
                             "\n" +
                             cleanUrl
                     );
-                    console.log("Next preloaded:", cleanUrl, "Duration:", durationText);
+                    console.log(
+                        "Next preloaded:",
+                        cleanUrl,
+                        "Duration:",
+                        durationText
+                    );
 
                     preloadedIndex = nextSongIndex;
                 };
@@ -2127,24 +2178,41 @@ function prepareNextSong() {
     }
 }
 
-// ---- Final URL Alert ----
+// -------- Final URL Alert --------
 audio.addEventListener("play", function () {
     setTimeout(() => {
         let cleanUrl = audio.currentSrc.replace("https://vivekfy.vercel.app", "");
         alert("Now Playing:\n" + cleanUrl);
         console.log("Final URL:", audio.currentSrc);
-    }, 500);
+    }, 100);
 
     prepareNextSong();
 });
 
-// ---- Autoplay Next ----
+// -------- Song End --------
 audio.addEventListener("ended", function () {
-    if (!isRepeat) {
+    if (isRepeat) {
+        audio.currentTime = 0;
+        audio.play();
+        console.log("Song repeated.");
+    } else {
         playNextSong();
     }
-});        
-        
+});
+
+// -------- Buttons --------
+document.getElementById("pichhe").addEventListener("click", playPreviousSong);
+
+document.getElementById("repeat").addEventListener("click", function () {
+    isRepeat = !isRepeat;
+    console.log("Repeat mode: " + (isRepeat ? "ON" : "OFF"));
+});
+
+var nextbutto = document.getElementById("nextbutto");
+nextbutto.addEventListener("click", function () {
+    playNextSong();
+});
+                    
 
 
         
