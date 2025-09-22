@@ -1994,7 +1994,6 @@ document.getElementById("vivekmasona").onclick = ()=>{
 
 
     
-    
 var audio = document.getElementById("SAudio");  
 var isRepeat = false;  
 var preloadAudio = new Audio(); // preload ke liye
@@ -2006,7 +2005,7 @@ function playNextSong() {
     var playlistItems = document.getElementsByClassName("list");  
 
     if (nextSongIndex < playlistItems.length) {  
-        // Agar already preload ready hai
+        // Agar preload ready hai
         if (preloadedIndex === nextSongIndex && preloadAudio.src) {
             audio.src = preloadAudio.src;  
             audio.currentTime = 0;  
@@ -2025,7 +2024,7 @@ function playNextSong() {
         $("#profileThumbnail").data("videoId", nextVideoId);  
 
         Sid = nextSongIndex;  
-        prepareNextSong(); // next ke aage wala preload
+        prepareNextSong(); // preload agla song
     } else {  
         console.log('End of playlist');  
     }  
@@ -2115,7 +2114,7 @@ function prepareNextSong() {
 
                 preloadAudio.oncanplaythrough = function () {  
                     console.log("Preloaded next:", preloadAudio.src);  
-                    alert("Next song ready for instant play");  
+                    alert("Next song ready:\n" + preloadAudio.currentSrc);  
                     preloadedIndex = nextSongIndex;  
                 };  
 
@@ -2135,13 +2134,22 @@ function prepareNextSong() {
     }  
 }  
 
-// ---- Jab bhi koi song play ho, turant agla preload ----
+// ---- Jab bhi koi song play ho, uska final redirect URL show karo ----
 audio.addEventListener("play", function() {  
-    prepareNextSong();  
-});
+    setTimeout(() => {
+        alert("Now playing:\n" + audio.currentSrc);  
+        console.log("Final audio URL:", audio.currentSrc);  
+    }, 500);  
+
+    // Saath hi agla song preload bhi chalu
+    prepareNextSong();
+});    
 
 
-    
+
+
+        
+        
 
 
 	
