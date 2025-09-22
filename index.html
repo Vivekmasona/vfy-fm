@@ -1995,48 +1995,109 @@ document.getElementById("vivekmasona").onclick = ()=>{
 
     
     
-var audio = document.getElementById("SAudio");
-var isRepeat = false;
-var preloadAudio = new Audio(); // preload container
-var nextSongIndex = -1; // next song index
+var audio = document.getElementById("SAudio");  
+var isRepeat = false;  
+var preloadAudio = new Audio(); // preload ke liye
+var preloadedIndex = -1;  
 
-// Function to play the next song instantly
-function playNextSong() {
-    var playlistItems = document.getElementsByClassName("list");
-    if (nextSongIndex >= 0 && nextSongIndex < playlistItems.length) {
-        var nextSong = playlistItems[nextSongIndex];
-        var nextThumbnail = $(nextSong).children("img").attr("src");
-        var nextVideoId = $(nextSong).attr("vid");
+// ---- Next Song Play ----
+function playNextSong() {  
+    var nextSongIndex = Sid + 1;  
+    var playlistItems = document.getElementsByClassName("list");  
 
-        // Switch audio to preloaded one
-        audio.src = preloadAudio.src;
-        audio.currentTime = 0;
-        audio.play();
+    if (nextSongIndex < playlistItems.length) {  
+        // Agar already preload ready hai
+        if (preloadedIndex === nextSongIndex && preloadAudio.src) {
+            audio.src = preloadAudio.src;  
+            audio.currentTime = 0;  
+            audio.play();  
+            console.log("Instantly played preloaded song");  
+        } else {
+            playlistItems[nextSongIndex].click();  
+            audio.play();  
+            console.log("Fallback normal next play");  
+        }
 
-        // Update UI
-        $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');
-        $("#profileThumbnail").data("videoId", nextVideoId);
+        var nextSong = playlistItems[nextSongIndex];  
+        var nextThumbnail = $(nextSong).children('img').attr("src");  
+        var nextVideoId = $(nextSong).attr("vid");  
+        $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');  
+        $("#profileThumbnail").data("videoId", nextVideoId);  
 
-        Sid = nextSongIndex; // update Sid
-        console.log("Playing preloaded next song instantly.");
+        Sid = nextSongIndex;  
+        prepareNextSong(); // next ke aage wala preload
+    } else {  
+        console.log('End of playlist');  
+    }  
+}  
 
-        // Preload the song after this
-        prepareNextSong();
-    } else {
-        console.log("End of playlist");
-    }
-}
+// ---- Previous Song ----
+function playPreviousSong() {  
+    var prevSongIndex = Sid - 1;  
+    var playlistItems = document.getElementsByClassName("list");  
 
-// Function to preload next song
-function prepareNextSong() {
-    var playlistItems = document.getElementsByClassName("list");
-    var upcomingIndex = Sid + 1;
+    if (prevSongIndex >= 0) {  
+        playlistItems[prevSongIndex].click();  
+        audio.play();  
 
-    if (upcomingIndex < playlistItems.length) {
-        var nextSong = playlistItems[upcomingIndex];
-        var id = $(nextSong).attr("vid");
+        var prevSong = playlistItems[prevSongIndex];  
+        var prevThumbnail = $(prevSong).children('img').attr("src");  
+        var prevVideoId = $(prevSong).attr("vid");  
+        $("#profileThumbnail").html('<img src="' + prevThumbnail + '" alt="Profile Thumbnail">');  
+        $("#profileThumbnail").data("videoId", prevVideoId);  
 
-        // All fallback sources
+        Sid = prevSongIndex;  
+        prepareNextSong();  
+    } else {  
+        console.log('Start of playlist');  
+    }  
+}  
+
+// ---- Play/Pause ----
+function playPause() {  
+   if (audio.paused) {  
+      audio.play();  
+   } else {  
+      audio.pause();  
+   }  
+}  
+
+// ---- Repeat ----
+document.getElementById("repeat").addEventListener("click", function() {  
+    isRepeat = !isRepeat;  
+    console.log("Repeat mode: " + (isRepeat ? "ON" : "OFF"));  
+});  
+
+// ---- Next Button ----
+document.getElementById("nextbutto").addEventListener("click", function () {  
+    playNextSong();  
+});  
+
+// ---- Previous Button ----
+document.getElementById("pichhe").addEventListener("click", function () {  
+    playPreviousSong();  
+});  
+
+// ---- Ended Event ----
+audio.addEventListener("ended", function() {  
+    if (isRepeat) {  
+        audio.currentTime = 0;  
+        audio.play();  
+        console.log("Song repeated.");  
+    } else {  
+        playNextSong();  
+    }  
+});  
+
+// ---- Preload Next ----
+function prepareNextSong() {  
+    var playlistItems = document.getElementsByClassName("list");  
+    var nextSongIndex = Sid + 1;  
+
+    if (nextSongIndex < playlistItems.length) {  
+        var nextSong = playlistItems[nextSongIndex];  
+        var id = $(nextSong).attr("vid");  
+
         var sources = [
             "https://vivekfy.vercel.app/inv1?id=" + id,
             "https://vivekfy.vercel.app/inv2?id=" + id,
@@ -2046,67 +2107,38 @@ function prepareNextSong() {
             "https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + id
         ];
 
-        // Start with first source
-        var preloadIndex = 0;
-        function tryPreload() {
-            if (preloadIndex < sources.length) {
-                preloadAudio.src = sources[preloadIndex];
-                preloadAudio.load();
+        var i = 0;  
+        function trySource() {  
+            if (i < sources.length) {  
+                preloadAudio.src = sources[i];  
+                preloadAudio.load();  
 
-                preloadAudio.oncanplaythrough = function () {
-                    console.log("Preloaded next song ready:", preloadAudio.src);
-                    alert("Next song cached & ready for instant play!");
-                    nextSongIndex = upcomingIndex;
-                };
+                preloadAudio.oncanplaythrough = function () {  
+                    console.log("Preloaded next:", preloadAudio.src);  
+                    alert("Next song ready for instant play");  
+                    preloadedIndex = nextSongIndex;  
+                };  
 
-                preloadAudio.onerror = function () {
-                    console.warn("Preload failed, trying alternative:", sources[preloadIndex]);
-                    preloadIndex++;
-                    tryPreload(); // try next fallback
-                };
-            } else {
-                console.error("All preload sources failed.");
-                nextSongIndex = -1;
-            }
-        }
-        tryPreload();
-    } else {
-        nextSongIndex = -1;
-    }
-}
+                preloadAudio.onerror = function () {  
+                    console.warn("Preload fail:", sources[i]);  
+                    i++;  
+                    trySource();  
+                };  
+            } else {  
+                preloadedIndex = -1;  
+                console.error("All preload failed");  
+            }  
+        }  
+        trySource();  
+    } else {  
+        preloadedIndex = -1;  
+    }  
+}  
 
-// Event: Song ended
-audio.addEventListener("ended", function () {
-    if (isRepeat) {
-        audio.currentTime = 0;
-        audio.play();
-        console.log("Song repeated.");
-    } else {
-        playNextSong();
-    }
+// ---- Jab bhi koi song play ho, turant agla preload ----
+audio.addEventListener("play", function() {  
+    prepareNextSong();  
 });
-
-// Manual next button
-document.getElementById("nextbutto").addEventListener("click", function () {
-    playNextSong();
-});
-
-// Manual previous button
-document.getElementById("pichhe").addEventListener("click", function () {
-    playPreviousSong();
-});
-
-// Repeat toggle
-document.getElementById("repeat").addEventListener("click", function () {
-    isRepeat = !isRepeat;
-    console.log("Repeat mode: " + (isRepeat ? "ON" : "OFF"));
-});
-
-// First song play होने पर ही अगला preload शुरू करो
-audio.addEventListener("play", function () {
-    prepareNextSong();
-});
-
 
 
     
