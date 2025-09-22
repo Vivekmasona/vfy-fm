@@ -1993,209 +1993,157 @@ document.getElementById("vivekmasona").onclick = ()=>{
     
 
 
+    
 
-var audio = document.getElementById("SAudio");
-var nextAudio = new Audio(); // Preloader
-var isRepeat = false;
-var Sid = 0; // Current song index
+
+var audio = document.getElementById("SAudio");  
+var nextAudio = new Audio(); // next song preloader
+var isRepeat = false;  
 var preloadedIndex = -1;
 
-// Preload storage: each song index -> { src, thumbnail, title, duration }
-var preloadData = [];
+// ---- Next Song Play ----
+function playNextSong() {  
+    var nextSongIndex = Sid + 1;  
+    var playlistItems = document.getElementsByClassName("list");  
 
-// -------- Helper: Fallback loader --------
-function loadWithFallback(audioEl, id, callback) {
-    var sources = [
-        "https://vivekfy.vercel.app/inv1?id=" + id,
-        "https://vivekfy.vercel.app/inv2?id=" + id,
-        "https://vivekfy.vercel.app/stream?url=https://youtu.be/" + id,
-        "https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + id
-    ];
-
-    let i = 0;
-
-    function trySource() {
-        if (i >= sources.length) {
-            console.error("All sources failed for id:", id);
-            callback(null);
-            return;
+    if (nextSongIndex < playlistItems.length) {  
+        // Agar preload ready hai
+        if (preloadedIndex === nextSongIndex && nextAudio.src) {
+            audio.src = nextAudio.src;  
+            audio.currentTime = 0;  
+            audio.play();  
+            console.log("Instantly played preloaded song");  
+        } else {
+            playlistItems[nextSongIndex].click();  
+            audio.play();  
+            console.log("Fallback normal next play");  
         }
 
-        audioEl.src = sources[i];
-        audioEl.load();
+        var nextSong = playlistItems[nextSongIndex];  
+        var nextThumbnail = $(nextSong).children('img').attr("src");  
+        var nextVideoId = $(nextSong).attr("vid");  
+        $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');  
+        $("#profileThumbnail").data("videoId", nextVideoId);  
 
-        audioEl.oncanplaythrough = function () {
-            callback(audioEl.src);
-        };
+        Sid = nextSongIndex;  
+        prepareNextSong(); // preload agla song
+    } else {  
+        console.log('End of playlist');  
+    }  
+}  
 
-        audioEl.onerror = function () {
-            i++;
-            trySource();
-        };
-    }
+// ---- Previous Song ----
+function playPreviousSong() {  
+    var prevSongIndex = Sid - 1;  
+    var playlistItems = document.getElementsByClassName("list");  
 
-    trySource();
-}
+    if (prevSongIndex >= 0) {  
+        playlistItems[prevSongIndex].click();  
+        audio.play();  
 
-// -------- Preload next song --------
-function prepareNextSong() {
-    var playlistItems = document.getElementsByClassName("list");
-    var nextSongIndex = Sid + 1;
+        var prevSong = playlistItems[prevSongIndex];  
+        var prevThumbnail = $(prevSong).children('img').attr("src");  
+        var prevVideoId = $(prevSong).attr("vid");  
+        $("#profileThumbnail").html('<img src="' + prevThumbnail + '" alt="Profile Thumbnail">');  
+        $("#profileThumbnail").data("videoId", prevVideoId);  
 
-    if (nextSongIndex >= playlistItems.length) {
-        preloadedIndex = -1;
-        return;
-    }
+        Sid = prevSongIndex;  
+        prepareNextSong();  
+    } else {  
+        console.log('Start of playlist');  
+    }  
+}  
 
-    var nextSong = playlistItems[nextSongIndex];
-    var id = $(nextSong).attr("vid");
-    var thumbnail = $(nextSong).children("img").attr("src");
-    var title = $(nextSong).attr("title") || "Unknown Title";
+// ---- Ended Event ----
+audio.addEventListener("ended", function() {  
+    if (isRepeat) {  
+        audio.currentTime = 0;  
+        audio.play();  
+        console.log("Song repeated.");  
+    } else {  
+        playNextSong();  
+    }  
+});  
 
-    let startTime = performance.now();
+// ---- Next Button ----
+document.getElementById("nextbutto").addEventListener("click", function () {  
+    playNextSong();  
+});  
 
-    loadWithFallback(nextAudio, id, function (finalSrc) {
-        if (!finalSrc) return;
+// ---- Preload Next ----
+function prepareNextSong() {  
+    var playlistItems = document.getElementsByClassName("list");  
+    var nextSongIndex = Sid + 1;  
 
-        let endTime = performance.now();
-        let loadTime = ((endTime - startTime) / 1000).toFixed(2);
+    if (nextSongIndex < playlistItems.length) {  
+        var nextSong = playlistItems[nextSongIndex];  
+        var id = $(nextSong).attr("vid");  
 
-        // Store preload data
-        preloadData[nextSongIndex] = {
-            src: finalSrc,
-            thumbnail: thumbnail,
-            title: title,
-            loadTime: loadTime,
-            duration: nextAudio.duration
-        };
+        var sources = [
+            "https://vivekfy.vercel.app/inv1?id=" + id,
+            "https://vivekfy.vercel.app/inv2?id=" + id,
+            "https://vivekfy.vercel.app/stream?url=https://youtu.be/" + id,
+            "https://vivekfy.vercel.app/tokyo?id=" + id,
+            "https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/" + id,
+            "https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + id
+        ];
 
-        preloadedIndex = nextSongIndex;
+        let i = 0;  
+        let startTime = performance.now();
 
-        let duration = nextAudio.duration;
-        let minutes = Math.floor(duration / 60);
-        let seconds = Math.floor(duration % 60).toString().padStart(2, "0");
-        let durationText = minutes + ":" + seconds;
+        function trySource() {  
+            if (i < sources.length) {  
+                nextAudio.src = sources[i];  
+                nextAudio.load();  
 
-        alert(
-            "Next song preloaded in " +
-                loadTime +
-                "s\nDuration: " +
-                durationText +
-                "\n" +
-                finalSrc.replace("https://vivekfy.vercel.app", "")
-        );
+                nextAudio.oncanplaythrough = function () {  
+                    let endTime = performance.now();
+                    let loadTime = ((endTime - startTime)/1000).toFixed(2);
+                    let cleanUrl = nextAudio.currentSrc.replace("https://vivekfy.vercel.app","");  
+                    alert("Next song preloaded in " + loadTime + "s:\n" + cleanUrl);  
+                    console.log("Next preloaded:", cleanUrl);
+                    preloadedIndex = nextSongIndex;  
+                };  
 
-        console.log("Preloaded:", title, finalSrc, "Duration:", durationText);
-    });
-}
+                nextAudio.onerror = function () {  
+                    console.warn("Preload fail:", sources[i]);  
+                    i++;  
+                    trySource();  
+                };  
+            } else {  
+                preloadedIndex = -1;  
+                console.error("All preload failed");  
+            }  
+        }  
+        trySource();  
+    } else {  
+        preloadedIndex = -1;  
+    }  
+}  
 
-// -------- Play Next Song --------
-function playNextSong() {
-    var playlistItems = document.getElementsByClassName("list");
-    var nextSongIndex = Sid + 1;
-
-    if (nextSongIndex >= playlistItems.length) {
-        console.log("End of playlist");
-        return;
-    }
-
-    var pre = preloadData[nextSongIndex];
-
-    if (pre && pre.src) {
-        audio.src = pre.src;
-        audio.currentTime = 0;
-        audio.play(); // 0s delay
-        $("#profileThumbnail").html('<img src="' + pre.thumbnail + '" alt="Profile Thumbnail">');
-        $("#profileThumbnail").data("videoId", $(playlistItems[nextSongIndex]).attr("vid"));
-        console.log("Instantly playing preloaded song:", pre.title);
-    } else {
-        // fallback: directly fetch via APIs
-        var id = $(playlistItems[nextSongIndex]).attr("vid");
-        loadWithFallback(audio, id, function (src) {
-            if (src) {
-                audio.src = src;
-                audio.play();
-            }
-        });
-    }
-
-    Sid = nextSongIndex;
-    prepareNextSong(); // preload next-next song
-}
-
-// -------- Play Previous Song --------
-function playPreviousSong() {
-    var playlistItems = document.getElementsByClassName("list");
-    var prevSongIndex = Sid - 1;
-
-    if (prevSongIndex < 0) return;
-
-    var pre = preloadData[prevSongIndex];
-
-    if (pre && pre.src) {
-        audio.src = pre.src;
-        audio.currentTime = 0;
-        audio.play();
-        $("#profileThumbnail").html('<img src="' + pre.thumbnail + '" alt="Profile Thumbnail">');
-        $("#profileThumbnail").data("videoId", $(playlistItems[prevSongIndex]).attr("vid"));
-        console.log("Playing previous preloaded song:", pre.title);
-    } else {
-        var id = $(playlistItems[prevSongIndex]).attr("vid");
-        loadWithFallback(audio, id, function (src) {
-            if (src) {
-                audio.src = src;
-                audio.play();
-            }
-        });
-    }
-
-    Sid = prevSongIndex;
-    prepareNextSong(); // preload next
-}
-
-// -------- Play/Pause --------
-function playPause() {
-    if (audio.paused) audio.play();
-    else audio.pause();
-}
-
-// -------- Song End --------
-audio.addEventListener("ended", function () {
-    if (isRepeat) {
-        audio.currentTime = 0;
-        audio.play();
-    } else {
-        playNextSong();
-    }
-});
-
-// -------- Buttons --------
-document.getElementById("pichhe").addEventListener("click", playPreviousSong);
-document.getElementById("nextbutto").addEventListener("click", playNextSong);
-document.getElementById("repeat").addEventListener("click", function () {
-    isRepeat = !isRepeat;
-    console.log("Repeat mode:", isRepeat ? "ON" : "OFF");
-});
-
-// -------- Final URL Alert --------
-audio.addEventListener("play", function () {
+// ---- Jab bhi koi song play ho, final URL alert + next preload ----
+audio.addEventListener("play", function() {  
     setTimeout(() => {
-        let cleanUrl = audio.currentSrc.replace("https://vivekfy.vercel.app", "");
-        alert("Now Playing:\n" + cleanUrl);
-        console.log("Final URL:", audio.currentSrc);
-    }, 50);
-});
+        let cleanUrl = audio.currentSrc.replace("https://vivekfy.vercel.app","");  
+        alert("Now Playing:\n" + cleanUrl);  
+        console.log("Final URL:", audio.currentSrc);  
+    }, 500);  
 
-// -------- Initial Preload --------
-prepareNextSong();
-    
+    prepareNextSong();  
+});
+        
+
+
+        
         
 
 
 	
-    
 
-    
+
+
+
+	
 var audio = document.getElementById('SAudio');
 var fastForwardbutto = document.getElementById('fastForwardbutto');
 
@@ -2212,9 +2160,7 @@ rewindbutto.addEventListener('click', function () {
         audio.currentTime = 0;
     }
 });
-	
 
-        
 var audio = document.getElementById("SAudio");
   var seekbar = document.getElementById("seekbar");
 
