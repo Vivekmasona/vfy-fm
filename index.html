@@ -1991,11 +1991,6 @@ document.getElementById("vivekmasona").onclick = ()=>{
         };
 
     
-
-
-    
-
-
 var audio = document.getElementById("SAudio");
 var nextAudio = new Audio(); // Preloader
 var isRepeat = false;
@@ -2130,37 +2125,14 @@ document.getElementById("pichhe").addEventListener("click", playPreviousSong);
 loadSong(Sid,false);
 if(playlistItems.length>1){
     loadSong(Sid+1,true); // preload next
-		}
-                    
+}
+
+});
+
+    
 
 
         
-        
-
-
-	
-
-
-
-
-	
-var audio = document.getElementById('SAudio');
-var fastForwardbutto = document.getElementById('fastForwardbutto');
-
-fastForwardbutto.addEventListener('click', function () {
-    audio.currentTime += 10;
-});
-var audio = document.getElementById('SAudio');
-var rewindbutto = document.getElementById('rewindbutto');
-
-rewindbutto.addEventListener('click', function () {
-    if (audio.currentTime >= 5) {
-        audio.currentTime -= 5;
-    } else {
-        audio.currentTime = 0;
-    }
-});
-
 var audio = document.getElementById("SAudio");
   var seekbar = document.getElementById("seekbar");
 
