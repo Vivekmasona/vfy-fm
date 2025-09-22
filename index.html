@@ -50,7 +50,7 @@
 <script src="device/brand.js" defer></script>
 <script src="globlealert/alert.js" defer></script>
 <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <b onclick="alert('This is a stylish alert!')"></b>
 
 
@@ -1991,70 +1991,66 @@ document.getElementById("vivekmasona").onclick = ()=>{
         };
 
     
-
-
-    
-
-
 var audio = document.getElementById("SAudio");  
-var nextAudio = new Audio(); // next song preloader
-var isRepeat = false;  
-var preloadedIndex = -1;
+var isRepeat = false; // repeat flag
 
-// ---- Current Song Thumbnail Update ----
-function updateThumbnail(index) {
-    var playlistItems = document.getElementsByClassName("list");
-    if(index >= 0 && index < playlistItems.length){
-        var song = playlistItems[index];
-        var thumbnail = $(song).children('img').attr("src");
-        var videoId = $(song).attr("vid");
-        $("#profileThumbnail").html('<img src="' + thumbnail + '" alt="Profile Thumbnail">');
-        $("#profileThumbnail").data("videoId", videoId);
-    }
-}
-
-// ---- Next Song Play ----
+// Function to play the next song  
 function playNextSong() {  
-    var nextSongIndex = Sid + 1;  
+    var nextSongIndex = Sid + 1; // Calculate the index of the next song  
     var playlistItems = document.getElementsByClassName("list");  
 
     if (nextSongIndex < playlistItems.length) {  
-        if (preloadedIndex === nextSongIndex && nextAudio.src) {
-            audio.src = nextAudio.src;  
-            audio.currentTime = 0;  
-            audio.play();  
-            console.log("Instantly played preloaded song");  
-        } else {
-            playlistItems[nextSongIndex].click();  
-            audio.play();  
-            console.log("Fallback normal next play");  
-        }
+        playlistItems[nextSongIndex].click(); // Play the next song  
+        audio.play(); // Play the audio  
 
-        Sid = nextSongIndex;  
-        updateThumbnail(Sid);  // <--- update thumbnail here
-        prepareNextSong();  
+        // Update the profile thumbnail and video ID for the next song  
+        var nextSong = playlistItems[nextSongIndex];  
+        var nextThumbnail = $(nextSong).children('img').attr("src");  
+        var nextVideoId = $(nextSong).attr("vid");  
+        $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');  
+        $("#profileThumbnail").data("videoId", nextVideoId);  
+
+        Sid = nextSongIndex; // update Sid  
+        console.log('Automatically went to the next song and started playing.');  
     } else {  
         console.log('End of playlist');  
     }  
 }  
 
-// ---- Previous Song ----
+// Function to play the previous song  
 function playPreviousSong() {  
-    var prevSongIndex = Sid - 1;  
+    var prevSongIndex = Sid - 1; // Calculate the index of the previous song  
     var playlistItems = document.getElementsByClassName("list");  
 
     if (prevSongIndex >= 0) {  
-        playlistItems[prevSongIndex].click();  
-        audio.play();  
-        Sid = prevSongIndex;  
-        updateThumbnail(Sid);  // <--- update thumbnail here
-        prepareNextSong();  
+        playlistItems[prevSongIndex].click(); // Play the previous song  
+        audio.play(); // Play the audio  
+
+        // Update the profile thumbnail and video ID for the previous song  
+        var prevSong = playlistItems[prevSongIndex];  
+        var prevThumbnail = $(prevSong).children('img').attr("src");  
+        var prevVideoId = $(prevSong).attr("vid");  
+        $("#profileThumbnail").html('<img src="' + prevThumbnail + '" alt="Profile Thumbnail">');  
+        $("#profileThumbnail").data("videoId", prevVideoId);  
+
+        Sid = prevSongIndex; // update Sid  
+        console.log('Automatically went to the previous song and started playing.');  
     } else {  
         console.log('Start of playlist');  
     }  
 }  
 
-// ---- Ended Event ----
+function playPause() {  
+   var audio = document.getElementById("SAudio");  
+
+   if (audio.paused) {  
+      audio.play();  
+   } else {  
+      audio.pause();  
+   }  
+}  
+
+// Listen for the 'ended' event  
 audio.addEventListener("ended", function() {  
     if (isRepeat) {  
         audio.currentTime = 0;  
@@ -2065,79 +2061,52 @@ audio.addEventListener("ended", function() {
     }  
 });  
 
-// ---- Next Button ----
-document.getElementById("nextbutto").addEventListener("click", function () {  
-    playNextSong();  
-});  
+// Pichhe button listener  
+document.getElementById("pichhe").addEventListener("click", playPreviousSong);  
 
-// ---- Preload Next ----
-function prepareNextSong() {  
-    var playlistItems = document.getElementsByClassName("list");  
-    var nextSongIndex = Sid + 1;  
+// Repeat button listener  
+document.getElementById("repeat").addEventListener("click", function() {  
+    isRepeat = !isRepeat; // toggle repeat  
+    console.log("Repeat mode: " + (isRepeat ? "ON" : "OFF"));  
+});
 
-    if (nextSongIndex < playlistItems.length) {  
-        var nextSong = playlistItems[nextSongIndex];  
-        var id = $(nextSong).attr("vid");  
+// Listen for the 'error' event
+var alternativeAudioSources = [
+//"https://vivekfy.vercel.app/tokyo?id=" + id,
+//"https://vivekfy.vercel.app/audio-dl?url=https://youtu.be/" + id,
+"https://vivekfy.vercel.app/inv1?id=" + id,
+"https://vivekfy.vercel.app/inv2?id=" + id,
+"https://vivekfy.vercel.app/stream?url=https://youtu.be/" + id,
+"https://vivekfy.vercel.app/tokyo?id=" + id,   
+//"https://vivekfy.vercel.app/mp3?url=https://vkrdownloader.xyz/download.php?vkr=https://youtu.be/" + id,
+//"https://vivekfy.vercel.app/mp3?url=https://vkrdownloader.xyz/download.php?vkr=https://youtu.be/" + id,
+//"https://distinctive-netta-vivekfy-608ee81c.koyeb.app/play?url=https://youtu.be/" + id,	
+//"https://distinctive-netta-vivekfy-608ee81c.koyeb.app/play?url=https://youtu.be/" + id,
+"https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/" + id,
+"https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + id,
+    
+];
 
-        var sources = [
-            "https://vivekfy.vercel.app/inv1?id=" + id,
-            "https://vivekfy.vercel.app/inv2?id=" + id,
-            "https://vivekfy.vercel.app/stream?url=https://youtu.be/" + id,
-            "https://vivekfy.vercel.app/tokyo?id=" + id,
-            "https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/" + id,
-            "https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + id
-        ];
+var currentAlternativeIndex = 0;
 
-        let i = 0;  
-        let startTime = performance.now();
-
-        function trySource() {  
-            if (i < sources.length) {  
-                nextAudio.src = sources[i];  
-                nextAudio.load();  
-
-                nextAudio.oncanplaythrough = function () {  
-                    let endTime = performance.now();
-                    let loadTime = ((endTime - startTime)/1000).toFixed(2);
-                    let cleanUrl = nextAudio.currentSrc.replace("https://vivekfy.vercel.app","");  
-                    alert("Next song preloaded in " + loadTime + "s:\n" + cleanUrl);  
-                    console.log("Next preloaded:", cleanUrl);
-                    preloadedIndex = nextSongIndex;  
-                };  
-
-                nextAudio.onerror = function () {  
-                    console.warn("Preload fail:", sources[i]);  
-                    i++;  
-                    trySource();  
-                };  
-            } else {  
-                preloadedIndex = -1;  
-                console.error("All preload failed");  
-            }  
-        }  
-        trySource();  
-    } else {  
-        preloadedIndex = -1;  
-    }  
-}  
-
-// ---- Jab bhi koi song play ho, final URL alert + next preload ----
-audio.addEventListener("play", function() {  
-    setTimeout(() => {
-        let cleanUrl = audio.currentSrc.replace("https://vivekfy.vercel.app","");  
-        alert("Now Playing:\n" + cleanUrl);  
-        console.log("Final URL:", audio.currentSrc);  
-    }, 500);  
-
-    updateThumbnail(Sid);  // <--- update thumbnail on any play
-    prepareNextSong();  
-});  
-
-        
-        
+audio.addEventListener("error", function () {
+    setTimeout(function () {
+        audio.src = alternativeAudioSources[currentAlternativeIndex];
+        audio.load();
+        audio.play();
+        currentAlternativeIndex = (currentAlternativeIndex + 1) % alternativeAudioSources.length;
+    }, 1000);
+});
 
 
-	
+// butto click event
+var nextbutto = document.getElementById("nextbutto");
+nextbutto.addEventListener("click", function () {
+    playNextSong();
+});
+
+
+
 
 
 
@@ -3961,6 +3930,74 @@ for (let i = 0; i < 5; i++) {
 
  
 	
+	<script>
+
+
+$(document).ready(function () {
+  var searchField = $("input.search-bar");
+  var autocompleteResults = $("#autocomplete-results");
+  var typingTimer;
+
+  searchField.autocomplete({
+    source: function (request, response) {
+      var term = request.term;
+      var s = {
+        client: "youtube",
+        ds: "yt"
+      };
+
+      $.ajax({
+        url: "//clients1.google.com/complete/search",
+        dataType: "jsonp",
+        data: {
+          q: term,
+          nolabels: "t",
+          client: s.client,
+          ds: s.ds
+        },
+        success: function (r) {
+          var data = r[1].map(function (item) {
+            return item[0];
+          });
+
+          autocompleteResults.empty();
+          $.each(data, function (index, value) {
+            autocompleteResults.append("<p class='autocomplete-suggestion'>" + value + "</p>");
+          });
+        }
+      });
+    }
+  });
+
+  autocompleteResults.on("click", ".autocomplete-suggestion", function () {
+    var suggestion = $(this).text();
+    searchField.val(suggestion);
+    hideAutocompleteResults();
+    $("#search-btn").click();
+  });
+
+  searchField.keypress(function (event) {
+    if (event.which === 8) {
+      searchField.autocomplete("disable");
+    }
+  });
+
+  searchField.on("input", function () {
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(function () {
+      hideAutocompleteResults();
+    }, 5000);
+  });
+
+  function hideAutocompleteResults() {
+    autocompleteResults.empty();
+  }
+});
+
+
+
+		
+      </script>
 	
 
 
@@ -4246,4 +4283,5 @@ document.getElementById('search-btn').addEventListener('click', function() {
     </div>
 </div>
 	
-    
+ 
+	
