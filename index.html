@@ -1994,17 +1994,16 @@ document.getElementById("vivekmasona").onclick = ()=>{
 
 
 
-
 var audio = document.getElementById("SAudio");
 var nextAudio = new Audio(); // Preloader
 var isRepeat = false;
-var Sid = 0; // current index
+var Sid = 0; // Current song index
 var preloadedIndex = -1;
 
-// Preload storage for next song
+// Preload storage: each song index -> { src, thumbnail, title, duration }
 var preloadData = [];
 
-// -------- Helper: fallback loader --------
+// -------- Helper: Fallback loader --------
 function loadWithFallback(audioEl, id, callback) {
     var sources = [
         "https://vivekfy.vercel.app/inv1?id=" + id,
@@ -2061,6 +2060,7 @@ function prepareNextSong() {
         let endTime = performance.now();
         let loadTime = ((endTime - startTime) / 1000).toFixed(2);
 
+        // Store preload data
         preloadData[nextSongIndex] = {
             src: finalSrc,
             thumbnail: thumbnail,
@@ -2188,7 +2188,8 @@ audio.addEventListener("play", function () {
 
 // -------- Initial Preload --------
 prepareNextSong();
-
+    
+        
 
 
 	
