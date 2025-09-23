@@ -4297,6 +4297,8 @@ document.getElementById('search-btn').addEventListener('click', function() {
 	<script>
 let wakeLock = null;
 const currentTimeElem = document.getElementById('current-time'); // tera song time element
+let lastUpdate = Date.now();
+let checkInterval = null;
 
 // Request wake lock
 async function keepScreenOn() {
@@ -4322,17 +4324,24 @@ async function releaseWakeLock() {
     }
 }
 
-// Monitor song time updates
-const observer = new MutationObserver(() => {
-    // Jab current-time update ho → wake lock on
-    keepScreenOn();
-});
-
-// Start observing current-time changes
+// Observe changes in current-time
 if (currentTimeElem) {
+    const observer = new MutationObserver(() => {
+        lastUpdate = Date.now();
+        keepScreenOn();
+    });
     observer.observe(currentTimeElem, { childList: true, characterData: true, subtree: true });
 }
 
-// Optional: release wake lock on page unload
+// Check every second if current-time stopped updating
+checkInterval = setInterval(() => {
+    const now = Date.now();
+    // Agar 2 seconds se update nahi hua → release wake lock
+    if (wakeLock && now - lastUpdate > 2000) {
+        releaseWakeLock();
+    }
+}, 1000);
+
+// Release wake lock on page unload
 window.addEventListener('beforeunload', releaseWakeLock);
 	</script>
