@@ -4296,8 +4296,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 	<script>
 let wakeLock = null;
-let lastTime = null;
-let checkInterval = null;
+const currentTimeElem = document.getElementById('current-time'); // tera song time element
 
 // Request wake lock
 async function keepScreenOn() {
@@ -4323,47 +4322,17 @@ async function releaseWakeLock() {
     }
 }
 
-// Update current time
-function updateTime() {
-    const timeElem = document.getElementById('current-time');
-    if (!timeElem) return;
-
-    const now = new Date();
-    timeElem.textContent = now.toLocaleTimeString();
-
-    // Track last updated time
-    lastTime = now.getTime();
-
-    // Ensure wake lock is active
+// Monitor song time updates
+const observer = new MutationObserver(() => {
+    // Jab current-time update ho → wake lock on
     keepScreenOn();
+});
+
+// Start observing current-time changes
+if (currentTimeElem) {
+    observer.observe(currentTimeElem, { childList: true, characterData: true, subtree: true });
 }
 
-// Start updating time every second
-function startTime() {
-    updateTime(); // update immediately
-    if (!checkInterval) {
-        checkInterval = setInterval(() => {
-            updateTime();
-
-            // If time stopped updating (1 second delay here), release wake lock
-            const now = new Date().getTime();
-            if (lastTime && now - lastTime > 2000) { // 2 seconds without update
-                releaseWakeLock();
-            }
-        }, 1000);
-    }
-}
-
-// Stop updating time manually
-function stopTime() {
-    if (checkInterval) {
-        clearInterval(checkInterval);
-        checkInterval = null;
-        releaseWakeLock();
-    }
-}
-
-// Start the timer automatically
-startTime();
-</script>
-
+// Optional: release wake lock on page unload
+window.addEventListener('beforeunload', releaseWakeLock);
+	</script>
