@@ -4283,5 +4283,66 @@ document.getElementById('search-btn').addEventListener('click', function() {
     </div>
 </div>
 	
- 
+ <script>
+let wakeLock = null;
+let lockTimeout = null;
+
+// Function to request Wake Lock
+async function requestWakeLock() {
+  try {
+    if ("wakeLock" in navigator) {
+      wakeLock = await navigator.wakeLock.request("screen");
+      console.log("Wake Lock active: screen will stay awake");
+
+      wakeLock.addEventListener("release", () => {
+        console.log("Wake Lock released by system, requesting again...");
+        if (!audio.paused) {
+          requestWakeLock(); // agar song chal raha tha to dubara request karo
+        }
+      });
+    } else {
+      console.log("Wake Lock API not supported in this browser");
+    }
+  } catch (err) {
+    console.error(`${err.name}, ${err.message}`);
+  }
+}
+
+// Function to release Wake Lock
+function releaseWakeLock() {
+  if (wakeLock) {
+    wakeLock.release();
+    wakeLock = null;
+    console.log("Wake Lock released");
+  }
+}
+
+// Jab audio play ho → Wake Lock ON
+audio.addEventListener("play", () => {
+  if (lockTimeout) {
+    clearTimeout(lockTimeout); // agar koi timer chal raha tha use hata do
+  }
+  requestWakeLock();
+});
+
+// Jab audio pause ho → 6 second ke baad Wake Lock OFF
+audio.addEventListener("pause", () => {
+  if (lockTimeout) {
+    clearTimeout(lockTimeout);
+  }
+  lockTimeout = setTimeout(() => {
+    releaseWakeLock();
+  }, 6000); // 6 sec delay
+});
+
+// Jab song end ho → 6 second ke baad Wake Lock OFF
+audio.addEventListener("ended", () => {
+  if (lockTimeout) {
+    clearTimeout(lockTimeout);
+  }
+  lockTimeout = setTimeout(() => {
+    releaseWakeLock();
+  }, 6000);
+});
+ </script>
 	
