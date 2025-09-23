@@ -4289,36 +4289,102 @@ document.getElementById('search-btn').addEventListener('click', function() {
 </div>
 	
  
-<script>let wakeLock = null;
+<script>
+let wakeLock = null;
+const audio = document.getElementById("SAudio");
 
-// Request screen wake lock
+// ---- Overlay Lock Setup ----
+const overlay = document.createElement('div');
+overlay.id = 'overlayLock';
+overlay.style.cssText = `
+    position: fixed;
+    top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.7);
+    display:flex; justify-content:center; align-items:center;
+    flex-direction:column; z-index:9999; visibility:hidden;
+`;
+const lockImage = document.createElement('img');
+lockImage.style.cssText = `width:200px;height:200px;border-radius:20px;margin-bottom:20px;object-fit:cover;`;
+const unlockBtn = document.createElement('div');
+unlockBtn.innerText = "🔓";
+unlockBtn.style.cssText = `
+    width:60px;height:60px;border-radius:50%;background:white;
+    display:flex;justify-content:center;align-items:center;
+    cursor:pointer;font-size:30px;user-select:none;
+`;
+overlay.appendChild(lockImage);
+overlay.appendChild(unlockBtn);
+document.body.appendChild(overlay);
+
+// ---- Wake Lock Functions ----
 async function keepScreenOn() {
-    try {
-        if ('wakeLock' in navigator) {
+    if (!audio.paused && 'wakeLock' in navigator && !wakeLock) {
+        try {
             wakeLock = await navigator.wakeLock.request('screen');
             console.log('Wake Lock active!');
             wakeLock.addEventListener('release', () => {
                 console.log('Wake Lock released');
+                wakeLock = null;
             });
-        } else {
-            console.warn('Wake Lock API not supported in this browser.');
+        } catch (err) {
+            console.error(`Wake Lock request failed: ${err.name}, ${err.message}`);
         }
-    } catch (err) {
-        console.error(`Wake Lock request failed: ${err.name}, ${err.message}`);
     }
 }
 
-// Automatically try to acquire wake lock every 10 seconds in case it gets released
-setInterval(() => {
-    if (!wakeLock) keepScreenOn();
-}, 10000);
-
-// Optional: release wake lock on page unload
-window.addEventListener('beforeunload', () => {
+async function releaseWakeLock() {
     if (wakeLock) {
-        wakeLock.release().then(() => wakeLock = null);
+        await wakeLock.release();
+        wakeLock = null;
+        console.log('Wake Lock manually released');
     }
+}
+
+// ---- Overlay Functions ----
+function showOverlay() {
+    if (audio.paused) return; // Only show when audio is playing
+    const fimgEl = document.getElementById("Fimg");
+    if (fimgEl) {
+        lockImage.src = fimgEl.src || fimgEl.dataset.src || "https://via.placeholder.com/200";
+    }
+    overlay.style.visibility = 'visible';
+}
+
+function hideOverlay() {
+    overlay.style.visibility = 'hidden';
+    resetTimer();
+}
+
+unlockBtn.addEventListener('click', hideOverlay);
+
+// ---- Inactivity Timer ----
+let inactivityTimer;
+function resetTimer() {
+    clearTimeout(inactivityTimer);
+    if (audio.paused) return; // Don't show overlay if audio stopped
+    inactivityTimer = setTimeout(showOverlay, 10000); // 10 sec
+}
+
+// ---- Monitor Audio & Wake Lock ----
+setInterval(() => {
+    if (!audio.paused) {
+        keepScreenOn(); // Audio playing → screen always on
+        resetTimer();   // Start inactivity timer for overlay
+    } else {
+        releaseWakeLock(); // Audio stopped → release wake lock
+        hideOverlay();     // Hide overlay
+        clearTimeout(inactivityTimer);
+    }
+}, 1000);
+
+// ---- User interaction resets overlay timer ----
+['mousemove','mousedown','touchstart','keydown'].forEach(evt => {
+    document.addEventListener(evt, resetTimer);
 });
 
-// Call it initially
-keepScreenOn();</script>
+// Start timer initially if audio is playing
+if (!audio.paused) resetTimer();
+
+// Release wake lock on page unload
+window.addEventListener('beforeunload', releaseWakeLock);
+</script>
