@@ -4283,66 +4283,91 @@ document.getElementById('search-btn').addEventListener('click', function() {
     </div>
 </div>
 	
- <script>
-let wakeLock = null;
-let lockTimeout = null;
+ <style>
+/* Overlay CSS */
+#lockOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  display: none; /* initially hidden */
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 9999; /* sabse upar */
+}
 
-// Function to request Wake Lock
-async function requestWakeLock() {
-  try {
-    if ("wakeLock" in navigator) {
-      wakeLock = await navigator.wakeLock.request("screen");
-      console.log("Wake Lock active: screen will stay awake");
+#lockOverlay img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%; /* round thumbnail */
+  object-fit: cover;
+  margin-bottom: 20px;
+  box-shadow: 0 0 20px rgba(255,255,255,0.7);
+}
 
-      wakeLock.addEventListener("release", () => {
-        console.log("Wake Lock released by system, requesting again...");
-        if (!audio.paused) {
-          requestWakeLock(); // agar song chal raha tha to dubara request karo
-        }
-      });
-    } else {
-      console.log("Wake Lock API not supported in this browser");
+#unlockBtn {
+  background: #ffffffcc;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+</style>
+
+<!-- Overlay HTML -->
+<div id="lockOverlay">
+  <img id="overlayThumb" src="" alt="Thumbnail">
+  <button id="unlockBtn">Unlock</button>
+</div>
+
+<script>
+let inactivityTimer;
+const lockOverlay = document.getElementById("lockOverlay");
+const overlayThumb = document.getElementById("overlayThumb");
+
+// Function: Show overlay
+function showOverlay() {
+  // Thumbnail ko Fimg se set karo
+  const thumbSrc = document.getElementById("Fimg")?.src;
+  if (thumbSrc) {
+    overlayThumb.src = thumbSrc;
+  }
+  lockOverlay.style.display = "flex";
+  console.log("Overlay lock activated");
+}
+
+// Function: Hide overlay
+function hideOverlay() {
+  lockOverlay.style.display = "none";
+  resetInactivityTimer();
+  console.log("Overlay lock removed");
+}
+
+// Unlock button click
+document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
+
+// Inactivity tracker
+function resetInactivityTimer() {
+  if (inactivityTimer) {
+    clearTimeout(inactivityTimer);
+  }
+  inactivityTimer = setTimeout(showOverlay, 10000); // 10 sec inactivity
+}
+
+// User activity listeners (touch/mouse/keys)
+["mousemove", "keydown", "touchstart", "click"].forEach(evt => {
+  document.addEventListener(evt, () => {
+    if (lockOverlay.style.display === "none") {
+      resetInactivityTimer();
     }
-  } catch (err) {
-    console.error(`${err.name}, ${err.message}`);
-  }
-}
-
-// Function to release Wake Lock
-function releaseWakeLock() {
-  if (wakeLock) {
-    wakeLock.release();
-    wakeLock = null;
-    console.log("Wake Lock released");
-  }
-}
-
-// Jab audio play ho → Wake Lock ON
-audio.addEventListener("play", () => {
-  if (lockTimeout) {
-    clearTimeout(lockTimeout); // agar koi timer chal raha tha use hata do
-  }
-  requestWakeLock();
+  });
 });
 
-// Jab audio pause ho → 6 second ke baad Wake Lock OFF
-audio.addEventListener("pause", () => {
-  if (lockTimeout) {
-    clearTimeout(lockTimeout);
-  }
-  lockTimeout = setTimeout(() => {
-    releaseWakeLock();
-  }, 6000); // 6 sec delay
-});
-
-// Jab song end ho → 6 second ke baad Wake Lock OFF
-audio.addEventListener("ended", () => {
-  if (lockTimeout) {
-    clearTimeout(lockTimeout);
-  }
-  lockTimeout = setTimeout(() => {
-    releaseWakeLock();
-  }, 6000);
-});
- </script>
-	
+// Start timer on load
+resetInactivityTimer();
+</script>
