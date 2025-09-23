@@ -4292,10 +4292,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-  
-
-
-	  <style>
+<style>
 /* Overlay CSS */
 #lockOverlay {
   position: fixed;
@@ -4303,9 +4300,11 @@ document.getElementById('search-btn').addEventListener('click', function() {
   left: 0;
   width: 100%;
   height: 100%;
+  background: black;
   display: none;
   flex-direction: column;
   justify-content: space-between;
+  align-items: center;
   z-index: 99999;
   color: white;
   font-family: 'Segoe UI', sans-serif;
@@ -4313,29 +4312,27 @@ document.getElementById('search-btn').addEventListener('click', function() {
   overflow: hidden;
 }
 
-/* Fullscreen Thumbnail Wallpaper */
+/* Thumbnail wallpaper */
 #lockOverlay::before {
   content: "";
   position: absolute;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  background: black;
-  background-size: cover;
-  background-position: center;
-  filter: brightness(0.3); /* dark effect */
+  background: var(--thumb) center/cover no-repeat;
+  filter: brightness(0.3);
   z-index: -1;
 }
 
+/* Clock style */
 #overlayClock {
   margin-top: 60px;
   font-size: 70px;
   font-weight: bold;
-  background: linear-gradient(45deg, #00f, #0ff, #0f0, #ff0, #f00);
+  background: linear-gradient(45deg,#00f,#0ff,#0f0,#ff0,#f00);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-/* Date under clock */
 #overlayDate {
   font-size: 16px;
   margin-top: 8px;
@@ -4344,7 +4341,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 /* Title marquee */
 #overlayTitle {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   margin: 0 20px;
   white-space: nowrap;
@@ -4357,7 +4354,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
   100% { transform: translateX(-100%); }
 }
 
-/* Time left-right bottom */
+/* Current / Total time row */
 #timeRow {
   display: flex;
   justify-content: space-between;
@@ -4388,7 +4385,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
     <div id="overlayDate"></div>
   </div>
 
-  <div id="overlayTitle">Song Title</div>
+  <div id="overlayTitle"></div>
 
   <div id="timeRow">
     <span id="currentTime">0:00</span>
@@ -4399,6 +4396,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
 </div>
 
 <script>
+let inactivityTimer;
 const lockOverlay = document.getElementById("lockOverlay");
 const overlayClock = document.getElementById("overlayClock");
 const overlayDate = document.getElementById("overlayDate");
@@ -4406,25 +4404,45 @@ const overlayTitle = document.getElementById("overlayTitle");
 const currentTimeEl = document.getElementById("currentTime");
 const totalTimeEl = document.getElementById("totalTime");
 
-// Show Overlay
+// Function: Show overlay
 function showOverlay() {
-  // Thumbnail wallpaper
   const thumbSrc = document.getElementById("Fimg")?.src;
-  if (thumbSrc) lockOverlay.style.setProperty("--bg", `url(${thumbSrc})`);
-  lockOverlay.style.display = "flex";
+  if (thumbSrc) lockOverlay.style.setProperty("--thumb", `url(${thumbSrc})`);
 
-  // Title
   const songTitle = document.getElementById("vfytitle")?.textContent;
   overlayTitle.textContent = songTitle || "";
+
+  const curr = document.getElementById("current-time")?.textContent || "0:00";
+  const total = document.getElementById("total-time")?.textContent || "0:00";
+  currentTimeEl.textContent = curr;
+  totalTimeEl.textContent = total;
+
+  lockOverlay.style.display = "flex";
+  console.log("Overlay lock activated");
 }
 
-// Hide Overlay
+// Function: Hide overlay
 function hideOverlay() {
   lockOverlay.style.display = "none";
+  resetInactivityTimer();
+  console.log("Overlay lock removed");
 }
 
 // Unlock button
 document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
+
+// Inactivity tracker
+function resetInactivityTimer() {
+  if (inactivityTimer) clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(showOverlay, 10000); // 10 sec inactivity → overlay on
+}
+
+// User activity listeners
+["mousemove", "keydown", "touchstart", "click"].forEach(evt => {
+  document.addEventListener(evt, () => {
+    if (lockOverlay.style.display === "none") resetInactivityTimer();
+  });
+});
 
 // Real Clock
 function updateClock() {
@@ -4437,11 +4455,19 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// Update song time
+// 🔥 Always On Display: agar overlay ON hai to song ke current/total time update hota rahe
 setInterval(() => {
-  const curr = document.getElementById("current-time")?.textContent || "0:00";
-  const total = document.getElementById("total-time")?.textContent || "0:00";
-  currentTimeEl.textContent = curr;
-  totalTimeEl.textContent = total;
+  if (lockOverlay.style.display === "flex") {
+    const curr = document.getElementById("current-time")?.textContent || "0:00";
+    const total = document.getElementById("total-time")?.textContent || "0:00";
+    currentTimeEl.textContent = curr;
+    totalTimeEl.textContent = total;
+  }
 }, 1000);
-</script>
+
+// Start inactivity timer on page load
+resetInactivityTimer();
+</script>  
+
+
+	    
