@@ -4316,35 +4316,64 @@ document.getElementById('search-btn').addEventListener('click', function() {
 #lockOverlay img {
   width: 150px;
   height: 150px;
-  border-radius: 0; /* square */
+  border-radius: 50%; /* round thumbnail */
   object-fit: cover;
   margin-bottom: 15px;
-
-  /* soft shadow all around 20px outside */
-  box-shadow: 0 0 20px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.9), 
+              0 0 50px rgba(0, 200, 255, 0.6);
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.15);
 }
 
+/* Title glossy + glowing */
 #overlayTitle {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
   margin-bottom: 10px;
   text-align: center;
+  color: #fff;
+  text-shadow: 0 0 8px rgba(0, 255, 255, 0.9), 
+               0 0 15px rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(6px);
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
 }
 
+/* Time glossy */
 #overlayTime {
   font-size: 16px;
   margin-bottom: 20px;
+  color: #eee;
+  text-shadow: 0 0 6px rgba(0, 255, 200, 0.8);
+  backdrop-filter: blur(4px);
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
 }
 
+/* Unlock button glossy + blur + glow */
 #unlockBtn {
-  background: #ffffffcc;
+  background: rgba(255, 255, 255, 0.25);
   border: none;
   padding: 12px 24px;
   border-radius: 30px;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
+  color: #fff;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 12px rgba(0, 255, 255, 0.7), 
+              inset 0 0 6px rgba(255, 255, 255, 0.4);
+  transition: all 0.3s ease;
 }
+
+#unlockBtn:hover {
+  background: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 1), 
+              inset 0 0 8px rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+	}
 </style>
 
 <!-- Overlay HTML -->
