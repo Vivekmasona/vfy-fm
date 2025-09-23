@@ -4296,76 +4296,24 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 	<script>
 let wakeLock = null;
-const audio = document.getElementById("SAudio");
+let timeInterval = null;
 
-// ---- Overlay Setup ----
-const overlay = document.createElement('div');
-overlay.id = 'overlayLock';
-overlay.style.cssText = `
-    position: fixed;
-    top:0; left:0; width:100%; height:100%;
-    background: rgba(0,0,0,0.8);
-    display:flex; justify-content:center; align-items:center;
-    flex-direction:column;
-    z-index:99999; /* High z-index */
-    visibility:hidden;
-    opacity:0;
-    transition: opacity 0.3s ease;
-`;
-const lockImage = document.createElement('img');
-lockImage.style.cssText = `
-    width:200px; height:200px;
-    border-radius:20px;
-    margin-bottom:20px;
-    object-fit:cover;
-    box-shadow:0 0 20px rgba(0,0,0,0.5);
-`;
-const unlockBtn = document.createElement('div');
-unlockBtn.innerText = "🔓";
-unlockBtn.style.cssText = `
-    width:60px;height:60px;
-    border-radius:50%; background:white;
-    display:flex; justify-content:center; align-items:center;
-    cursor:pointer; font-size:30px; user-select:none;
-    box-shadow:0 0 10px rgba(0,0,0,0.5);
-`;
-overlay.appendChild(lockImage);
-overlay.appendChild(unlockBtn);
-document.body.appendChild(overlay);
-
-// ---- Show/Hide Overlay ----
-function showOverlay() {
-    if (audio.paused) return; // Only when audio is playing
-    const fimgEl = document.getElementById("Fimg");
-    if (fimgEl) lockImage.src = fimgEl.src || fimgEl.dataset.src || "https://via.placeholder.com/200";
-    overlay.style.visibility = 'visible';
-    overlay.style.opacity = '1';
-}
-
-function hideOverlay() {
-    overlay.style.opacity = '0';
-    setTimeout(() => overlay.style.visibility='hidden', 300); // Match fade
-    resetTimer();
-}
-
-unlockBtn.addEventListener('click', hideOverlay);
-
-// ---- Wake Lock Functions ----
+// Function to request wake lock
 async function keepScreenOn() {
-    if (!audio.paused && 'wakeLock' in navigator && !wakeLock) {
-        try {
+    try {
+        if ('wakeLock' in navigator && !wakeLock) {
             wakeLock = await navigator.wakeLock.request('screen');
             console.log('Wake Lock active!');
             wakeLock.addEventListener('release', () => {
                 console.log('Wake Lock released');
-                wakeLock = null;
             });
-        } catch (err) {
-            console.error(`Wake Lock request failed: ${err.name}, ${err.message}`);
         }
+    } catch (err) {
+        console.error(`Wake Lock request failed: ${err.name}, ${err.message}`);
     }
 }
 
+// Function to release wake lock
 async function releaseWakeLock() {
     if (wakeLock) {
         await wakeLock.release();
@@ -4374,34 +4322,41 @@ async function releaseWakeLock() {
     }
 }
 
-// ---- Inactivity Timer ----
-let inactivityTimer;
-function resetTimer() {
-    clearTimeout(inactivityTimer);
-    if (audio.paused) return; // Don't show overlay if audio stopped
-    inactivityTimer = setTimeout(showOverlay, 10000); // 10 sec
+// Function to update time
+function updateTime() {
+    const timeElem = document.getElementById('current-time');
+    if (!timeElem) return;
+
+    const now = new Date();
+    timeElem.textContent = now.toLocaleTimeString();
+
+    // Keep screen on while time updates
+    keepScreenOn();
 }
 
-// ---- Monitor Audio State ----
-setInterval(() => {
-    if (!audio.paused) {
-        keepScreenOn();  // Keep screen on
-        resetTimer();    // Start inactivity timer
-    } else {
-        releaseWakeLock();
-        hideOverlay();
-        clearTimeout(inactivityTimer);
+// Function to start time updates
+function startTime() {
+    if (!timeInterval) {
+        updateTime(); // update immediately
+        timeInterval = setInterval(updateTime, 1000); // update every second
     }
-}, 1000);
+}
 
-// ---- User interaction resets timer ----
-['mousemove','mousedown','touchstart','keydown'].forEach(evt => {
-    document.addEventListener(evt, resetTimer);
-});
+// Function to stop time updates
+function stopTime() {
+    if (timeInterval) {
+        clearInterval(timeInterval);
+        timeInterval = null;
+        releaseWakeLock(); // release wake lock when time stops
+    }
+}
 
-// Start timer initially if audio is playing
-if (!audio.paused) resetTimer();
+// Example usage:
+// Start time on page load
+startTime();
 
-// Release wake lock on page unload
-window.addEventListener('beforeunload', releaseWakeLock);
-	</script>
+// Optional: stop time after 10 seconds (for testing)
+// setTimeout(stopTime, 10000);
+
+</script>
+
