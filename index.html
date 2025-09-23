@@ -4351,33 +4351,24 @@ document.getElementById('search-btn').addEventListener('click', function() {
   <button id="unlockBtn">Unlock</button>
 </div>
 
-<script>
+
+
+	<script>
 let inactivityTimer;
 const lockOverlay = document.getElementById("lockOverlay");
 const overlayThumb = document.getElementById("overlayThumb");
 const overlayTitle = document.getElementById("overlayTitle");
 const overlayTime = document.getElementById("overlayTime");
+const audioPlayer = document.getElementById("SAudio");
 
-// Function: Show overlay
+let wakeLock = null;
+
+// --------- Overlay functions ---------
 function showOverlay() {
-  // Thumbnail ko Fimg se set karo
-  const thumbSrc = document.getElementById("Fimg")?.src;
-  if (thumbSrc) overlayThumb.src = thumbSrc;
-
-  // Title ko vfytitle se set karo
-  const songTitle = document.getElementById("vfytitle")?.textContent;
-  overlayTitle.textContent = songTitle || "";
-
-  // Current-time + total-time set karo
-  const curr = document.getElementById("current-time")?.textContent || "0:00";
-  const total = document.getElementById("total-time")?.textContent || "0:00";
-  overlayTime.textContent = `${curr} / ${total}`;
-
   lockOverlay.style.display = "flex";
   console.log("Overlay lock activated");
 }
 
-// Function: Hide overlay
 function hideOverlay() {
   lockOverlay.style.display = "none";
   resetInactivityTimer();
@@ -4396,36 +4387,40 @@ function resetInactivityTimer() {
 // User activity listeners
 ["mousemove", "keydown", "touchstart", "click"].forEach(evt => {
   document.addEventListener(evt, () => {
-    if (lockOverlay.style.display === "none") resetInactivityTimer();
+    if (lockOverlay.style.display === "flex") hideOverlay();
+    else resetInactivityTimer();
   });
 });
 
-// 🔥 Always On Display: live update overlay me current time
+// --------- Overlay background updater (always) ---------
 setInterval(() => {
-  if (lockOverlay.style.display === "flex") {
-    const curr = document.getElementById("current-time")?.textContent || "0:00";
-    const total = document.getElementById("total-time")?.textContent || "0:00";
-    overlayTime.textContent = `${curr} / ${total}`;
-  }
-}, 1000);
+  // Thumbnail
+  const thumbSrc = document.getElementById("Fimg")?.src;
+  if (thumbSrc) overlayThumb.src = thumbSrc;
 
-// Start timer on load
-resetInactivityTimer();
-</script>
+  // Song title
+  const songTitle = document.getElementById("vfytitle")?.textContent;
+  overlayTitle.textContent = songTitle || "";
 
+  // Current time / total time
+  const curr = document.getElementById("current-time")?.textContent || "0:00";
+  const total = document.getElementById("total-time")?.textContent || "0:00";
+  overlayTime.textContent = `${curr} / ${total}`;
+}, 500); // har 0.5 sec update
 
-
-	<script>let wakeLock = null;
-
-// Request screen wake lock
+// --------- Wake Lock ---------
 async function keepScreenOn() {
     try {
         if ('wakeLock' in navigator) {
-            wakeLock = await navigator.wakeLock.request('screen');
-            console.log('Wake Lock active!');
-            wakeLock.addEventListener('release', () => {
-                console.log('Wake Lock released');
-            });
+            // Only request wake lock if song is playing
+            if (!audioPlayer.paused) {
+                wakeLock = await navigator.wakeLock.request('screen');
+                console.log('Wake Lock active!');
+                wakeLock.addEventListener('release', () => {
+                    console.log('Wake Lock released');
+                    wakeLock = null;
+                });
+            }
         } else {
             console.warn('Wake Lock API not supported in this browser.');
         }
@@ -4434,17 +4429,24 @@ async function keepScreenOn() {
     }
 }
 
-// Automatically try to acquire wake lock every 10 seconds in case it gets released
+// Monitor audio playback to acquire/release wake lock
 setInterval(() => {
-    if (!wakeLock) keepScreenOn();
-}, 10000);
+    if (audioPlayer && !audioPlayer.paused) {
+        if (!wakeLock) keepScreenOn();
+    } else {
+        if (wakeLock) {
+            wakeLock.release().then(() => wakeLock = null);
+        }
+    }
+}, 2000); // check every 2 sec
 
-// Optional: release wake lock on page unload
+// Release wake lock on page unload
 window.addEventListener('beforeunload', () => {
     if (wakeLock) {
         wakeLock.release().then(() => wakeLock = null);
     }
 });
 
-// Call it initially
-keepScreenOn();</script>
+// --------- Start inactivity timer ---------
+resetInactivityTimer();
+	</script>
