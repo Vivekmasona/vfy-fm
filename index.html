@@ -4355,7 +4355,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
 	<!-- Meta tag for PWA status bar -->
 
 
-<script>
+                <script>
 let inactivityTimer;
 const lockOverlay = document.getElementById("lockOverlay");
 const overlayThumb = document.getElementById("overlayThumb");
@@ -4363,6 +4363,7 @@ const overlayTitle = document.getElementById("overlayTitle");
 const overlayTime = document.getElementById("overlayTime");
 const audioPlayer = document.getElementById("SAudio");
 const themeMeta = document.getElementById("themeColorMeta");
+const modeToggle = document.getElementById("modeToggleBtn"); // audio/video toggle
 
 let wakeLock = null;
 
@@ -4373,6 +4374,7 @@ function setStatusBarColor(color) {
 
 // --------- Overlay functions ---------
 function showOverlay() {
+  if (modeToggle.checked) return; // video mode → overlay na dikhe
   lockOverlay.style.display = "flex";
   setStatusBarColor("#000000"); // overlay appear → black header
   console.log("Overlay lock activated");
@@ -4391,7 +4393,9 @@ document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
 // --------- Inactivity tracker ---------
 function resetInactivityTimer() {
   if (inactivityTimer) clearTimeout(inactivityTimer);
-  inactivityTimer = setTimeout(showOverlay, 10000); // 10 sec inactivity
+  if (!modeToggle.checked) { // only audio mode
+    inactivityTimer = setTimeout(showOverlay, 10000); // 10 sec inactivity
+  }
 }
 
 // User activity listeners (only reset timer)
@@ -4455,4 +4459,4 @@ window.addEventListener('beforeunload', () => {
 
 // --------- Start inactivity timer on load ---------
 resetInactivityTimer();
-</script>
+				</script>
