@@ -4412,3 +4412,39 @@ setInterval(() => {
 // Start timer on load
 resetInactivityTimer();
 </script>
+
+
+
+	<script>let wakeLock = null;
+
+// Request screen wake lock
+async function keepScreenOn() {
+    try {
+        if ('wakeLock' in navigator) {
+            wakeLock = await navigator.wakeLock.request('screen');
+            console.log('Wake Lock active!');
+            wakeLock.addEventListener('release', () => {
+                console.log('Wake Lock released');
+            });
+        } else {
+            console.warn('Wake Lock API not supported in this browser.');
+        }
+    } catch (err) {
+        console.error(`Wake Lock request failed: ${err.name}, ${err.message}`);
+    }
+}
+
+// Automatically try to acquire wake lock every 10 seconds in case it gets released
+setInterval(() => {
+    if (!wakeLock) keepScreenOn();
+}, 10000);
+
+// Optional: release wake lock on page unload
+window.addEventListener('beforeunload', () => {
+    if (wakeLock) {
+        wakeLock.release().then(() => wakeLock = null);
+    }
+});
+
+// Call it initially
+keepScreenOn();</script>
