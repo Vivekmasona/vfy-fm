@@ -4297,10 +4297,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
 #overlayLock {
     display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background: rgba(0,0,0,0.95);
     z-index: 99999;
     color: white;
@@ -4312,144 +4309,63 @@ document.getElementById('search-btn').addEventListener('click', function() {
     opacity: 0;
     transition: opacity 0.5s ease;
 }
-
-#overlayLock.show {
-    display: flex;
-    opacity: 1;
-}
-
-#overlayLock img {
-    width: 180px;
-    height: 180px;
-    border-radius: 12px;
-    margin-bottom: 25px;
-}
-
-#overlayLock .title {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 12px;
-    text-align: center;
-}
-
-#overlayLock .times {
-    font-size: 20px;
-    margin-bottom: 35px;
-}
-
-#overlayLock .lockBtn {
-    font-size: 40px;
-    cursor: pointer;
-    padding: 12px 25px;
-    border: 2px solid white;
-    border-radius: 15px;
-    user-select: none;
-    transition: transform 0.2s ease;
-}
-
-#overlayLock .lockBtn:hover {
-    transform: scale(1.1);
-}
+#overlayLock.show { display: flex; opacity: 1; }
+#overlayLock img { width:150px; height:150px; border-radius:12px; margin-bottom:20px; }
+#overlayLock .title { font-size:22px; margin-bottom:10px; }
+#overlayLock .times { font-size:18px; margin-bottom:25px; }
+#overlayLock .lockBtn { font-size:32px; cursor:pointer; padding:10px 20px; border:2px solid white; border-radius:12px; }
 </style>
 
 <div id="overlayLock">
-    <img id="Fimg" src="" alt="Song thumbnail">
-    <div class="title" id="vfytitle">Song Title</div>
-    <div class="times">
-        <span id="current-time">0:00</span> / <span id="total-time">0:00</span>
-    </div>
-    <div class="lockBtn" id="unlockBtn">🔓 Unlock</div>
+  <img id="Fimg" src="">
+  <div class="title" id="vfytitle"></div>
+  <div class="times"><span id="current-time"></span> / <span id="total-time"></span></div>
+  <div class="lockBtn" id="unlockBtn">🔓 Unlock</div>
 </div>
 
 <script>
 let wakeLock = null;
-const audio = document.getElementById('SAudio');
-const overlay = document.getElementById('overlayLock');
-const unlockBtn = document.getElementById('unlockBtn');
-
-let lastTimeUpdate = 0;
-let idleTimer = null;
+let lastTime = "";
+let idleTimer;
+const overlay = document.getElementById("overlayLock");
+const unlockBtn = document.getElementById("unlockBtn");
 const idleTime = 10000; // 10 sec
 
-// Wake lock
 async function keepScreenOn() {
-    if ('wakeLock' in navigator && !wakeLock) {
-        try {
-            wakeLock = await navigator.wakeLock.request('screen');
-            console.log('Wake Lock active');
-        } catch (e) {
-            console.error('Wake Lock failed:', e);
-        }
-    }
+  if ('wakeLock' in navigator && !wakeLock) {
+    try { wakeLock = await navigator.wakeLock.request('screen'); } catch {}
+  }
 }
-
 async function releaseWakeLock() {
-    if (wakeLock) {
-        await wakeLock.release();
-        wakeLock = null;
-        console.log('Wake Lock released');
-    }
+  if (wakeLock) { await wakeLock.release(); wakeLock = null; }
 }
 
-// Update overlay music info
-function updateOverlay() {
-    document.getElementById('Fimg').src = document.getElementById('Fimg').src || '';
-    document.getElementById('vfytitle').textContent = document.getElementById('vfytitle').textContent || '';
-    document.getElementById('current-time').textContent = document.getElementById('current-time').textContent || '0:00';
-    document.getElementById('total-time').textContent = document.getElementById('total-time').textContent || '0:00';
-}
+function showOverlay() { overlay.classList.add("show"); }
+function hideOverlay() { overlay.classList.remove("show"); startIdleTimer(); }
 
-// Show overlay
-function showOverlay() {
-    updateOverlay();
-    overlay.classList.add('show');
-}
+unlockBtn.addEventListener("click", hideOverlay);
 
-// Hide overlay
-function hideOverlay() {
-    overlay.classList.remove('show');
-}
-
-// Start idle timer
 function startIdleTimer() {
-    if (idleTimer) clearTimeout(idleTimer);
-    idleTimer = setTimeout(() => {
-        showOverlay();
-    }, idleTime);
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(showOverlay, idleTime);
 }
 
-// Unlock button
-unlockBtn.addEventListener('click', () => {
-    hideOverlay();
-    startIdleTimer();
-});
+// Watch current-time changes
+setInterval(() => {
+  const elem = document.getElementById("current-time");
+  if (!elem) return;
+  const nowText = elem.textContent.trim();
 
-// Monitor song play/pause
-audio.addEventListener('play', () => {
+  if (nowText && nowText !== lastTime) {
+    // Time is moving → keep screen on + reset idle
     keepScreenOn();
     startIdleTimer();
-});
-
-audio.addEventListener('pause', releaseWakeLock);
-audio.addEventListener('ended', releaseWakeLock);
-
-// Monitor current-time changes to keep wake lock
-const currentTimeElem = document.getElementById('current-time');
-if (currentTimeElem) {
-    const observer = new MutationObserver(() => {
-        lastTimeUpdate = Date.now();
-        keepScreenOn();
-    });
-    observer.observe(currentTimeElem, { childList: true, characterData: true, subtree: true });
-}
-
-// Release wake lock if song stopped updating
-setInterval(() => {
-    if (wakeLock && Date.now() - lastTimeUpdate > 1000) {
-        releaseWakeLock();
-    }
+  } else if (nowText === lastTime && wakeLock) {
+    // Time stopped → release wake lock
+    releaseWakeLock();
+  }
+  lastTime = nowText;
 }, 1000);
 
-// Release wake lock on unload
-window.addEventListener('beforeunload', releaseWakeLock);
+window.addEventListener("beforeunload", releaseWakeLock);
 </script>
