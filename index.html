@@ -1991,49 +1991,75 @@ document.getElementById("vivekmasona").onclick = ()=>{
         };
 
     
+
 var audio = document.getElementById("SAudio");  
 var isRepeat = false; // repeat flag
+var wakeLock = null; // wake lock instance
+
+// Wake Lock request function
+async function requestWakeLock() {
+    try {
+        if ('wakeLock' in navigator && wakeLock === null) {
+            wakeLock = await navigator.wakeLock.request("screen");
+            console.log("Wake Lock active");
+            wakeLock.addEventListener("release", () => {
+                console.log("Wake Lock released");
+            });
+        }
+    } catch (err) {
+        console.error(`${err.name}, ${err.message}`);
+    }
+}
+
+// Wake Lock release function
+function releaseWakeLock() {
+    if (wakeLock !== null) {
+        wakeLock.release();
+        wakeLock = null;
+    }
+}
 
 // Function to play the next song  
 function playNextSong() {  
-    var nextSongIndex = Sid + 1; // Calculate the index of the next song  
+    var nextSongIndex = Sid + 1;  
     var playlistItems = document.getElementsByClassName("list");  
 
     if (nextSongIndex < playlistItems.length) {  
-        playlistItems[nextSongIndex].click(); // Play the next song  
-        audio.play(); // Play the audio  
+        playlistItems[nextSongIndex].click();  
+        audio.play();  
+        requestWakeLock(); // 🔒 keep screen on  
 
-        // Update the profile thumbnail and video ID for the next song  
         var nextSong = playlistItems[nextSongIndex];  
         var nextThumbnail = $(nextSong).children('img').attr("src");  
         var nextVideoId = $(nextSong).attr("vid");  
         $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');  
         $("#profileThumbnail").data("videoId", nextVideoId);  
 
-        Sid = nextSongIndex; // update Sid  
+        Sid = nextSongIndex;  
         console.log('Automatically went to the next song and started playing.');  
     } else {  
         console.log('End of playlist');  
+        releaseWakeLock(); // 🔓 release lock
     }  
 }  
 
 // Function to play the previous song  
 function playPreviousSong() {  
-    var prevSongIndex = Sid - 1; // Calculate the index of the previous song  
+    var prevSongIndex = Sid - 1;  
     var playlistItems = document.getElementsByClassName("list");  
 
     if (prevSongIndex >= 0) {  
-        playlistItems[prevSongIndex].click(); // Play the previous song  
-        audio.play(); // Play the audio  
+        playlistItems[prevSongIndex].click();  
+        audio.play();  
+        requestWakeLock(); // 🔒  
 
-        // Update the profile thumbnail and video ID for the previous song  
         var prevSong = playlistItems[prevSongIndex];  
         var prevThumbnail = $(prevSong).children('img').attr("src");  
         var prevVideoId = $(prevSong).attr("vid");  
         $("#profileThumbnail").html('<img src="' + prevThumbnail + '" alt="Profile Thumbnail">');  
         $("#profileThumbnail").data("videoId", prevVideoId);  
 
-        Sid = prevSongIndex; // update Sid  
+        Sid = prevSongIndex;  
         console.log('Automatically went to the previous song and started playing.');  
     } else {  
         console.log('Start of playlist');  
@@ -2041,12 +2067,12 @@ function playPreviousSong() {
 }  
 
 function playPause() {  
-   var audio = document.getElementById("SAudio");  
-
    if (audio.paused) {  
       audio.play();  
+      requestWakeLock(); // 🔒  
    } else {  
       audio.pause();  
+      releaseWakeLock(); // 🔓  
    }  
 }  
 
@@ -2055,6 +2081,7 @@ audio.addEventListener("ended", function() {
     if (isRepeat) {  
         audio.currentTime = 0;  
         audio.play();  
+        requestWakeLock(); // 🔒  
         console.log("Song repeated.");  
     } else {  
         playNextSong();  
@@ -2066,9 +2093,10 @@ document.getElementById("pichhe").addEventListener("click", playPreviousSong);
 
 // Repeat button listener  
 document.getElementById("repeat").addEventListener("click", function() {  
-    isRepeat = !isRepeat; // toggle repeat  
+    isRepeat = !isRepeat;  
     console.log("Repeat mode: " + (isRepeat ? "ON" : "OFF"));  
 });
+
 
 // Listen for the 'error' event
 var alternativeAudioSources = [
@@ -4288,65 +4316,4 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-  <script>
-let wakeLock = null;
-let lockTimeout = null;
-
-// Function to request Wake Lock
-async function requestWakeLock() {
-  try {
-    if ("wakeLock" in navigator) {
-      wakeLock = await navigator.wakeLock.request("screen");
-      console.log("Wake Lock active: screen will stay awake");
-
-      wakeLock.addEventListener("release", () => {
-        console.log("Wake Lock released by system, requesting again...");
-        if (!audio.paused) {
-          requestWakeLock(); // agar song chal raha tha to dubara request karo
-        }
-      });
-    } else {
-      console.log("Wake Lock API not supported in this browser");
-    }
-  } catch (err) {
-    console.error(`${err.name}, ${err.message}`);
-  }
-}
-
-// Function to release Wake Lock
-function releaseWakeLock() {
-  if (wakeLock) {
-    wakeLock.release();
-    wakeLock = null;
-    console.log("Wake Lock released");
-  }
-}
-
-// Jab audio play ho → Wake Lock ON
-audio.addEventListener("play", () => {
-  if (lockTimeout) {
-    clearTimeout(lockTimeout); // agar koi timer chal raha tha use hata do
-  }
-  requestWakeLock();
-});
-
-// Jab audio pause ho → 6 second ke baad Wake Lock OFF
-audio.addEventListener("pause", () => {
-  if (lockTimeout) {
-    clearTimeout(lockTimeout);
-  }
-  lockTimeout = setTimeout(() => {
-    releaseWakeLock();
-  }, 6000); // 6 sec delay
-});
-
-// Jab song end ho → 6 second ke baad Wake Lock OFF
-audio.addEventListener("ended", () => {
-  if (lockTimeout) {
-    clearTimeout(lockTimeout);
-  }
-  lockTimeout = setTimeout(() => {
-    releaseWakeLock();
-  }, 6000);
-});
-  </script>
+  
