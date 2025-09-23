@@ -4292,7 +4292,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-  <style>
+    <style>
 /* Overlay CSS */
 #lockOverlay {
   position: fixed;
@@ -4301,7 +4301,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
   width: 100%;
   height: 100%;
   background: black;
-  display: flex;
+  display: none;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
@@ -4319,7 +4319,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
   top: 0; left: 0;
   width: 100%; height: 100%;
   background: var(--thumb) center/cover no-repeat;
-  filter: brightness(0.8);
+  filter: brightness(0.3);
   z-index: -1;
 }
 
@@ -4339,18 +4339,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
   opacity: 0.8;
 }
 
-/* Current / Total time row */
-#timeRow {
-  display: flex;
-  justify-content: space-between;
-  width: 90%;
-  padding: 0 25px;
-  font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
-/* Marquee (title ticker) at bottom */
+/* Title marquee */
 #overlayTitle {
   font-size: 16px;
   font-weight: bold;
@@ -4358,50 +4347,34 @@ document.getElementById('search-btn').addEventListener('click', function() {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  animation: marquee 15s linear infinite;
+  animation: marquee 10s linear infinite;
 }
 @keyframes marquee {
   0%   { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
 }
 
-/* Fingerprint unlock button */
-#unlockBtn {
-  position: relative;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  border: 2px solid #ffffff55;
-  margin-bottom: 40px;
-  background: radial-gradient(circle at center, #ffffff11 0%, #ffffff22 70%, #ffffff00 100%);
-  cursor: pointer;
+/* Current / Total time row */
+#timeRow {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 25px;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 70px;
 }
 
-/* Fingerprint lines */
-#unlockBtn span {
-  position: absolute;
-  width: 2px;
-  height: 20px;
-  background: linear-gradient(to top, #0ff, #00f);
-  top: 50%;
-  left: 50%;
-  transform-origin: bottom center;
-  opacity: 0.3;
-  animation: glow 1.5s infinite ease-in-out;
-}
-#unlockBtn span:nth-child(1){ transform: rotate(0deg) translate(-50%,-50%); animation-delay: 0s;}
-#unlockBtn span:nth-child(2){ transform: rotate(30deg) translate(-50%,-50%); animation-delay: 0.2s;}
-#unlockBtn span:nth-child(3){ transform: rotate(60deg) translate(-50%,-50%); animation-delay: 0.4s;}
-#unlockBtn span:nth-child(4){ transform: rotate(90deg) translate(-50%,-50%); animation-delay: 0.6s;}
-#unlockBtn span:nth-child(5){ transform: rotate(120deg) translate(-50%,-50%); animation-delay: 0.8s;}
-#unlockBtn span:nth-child(6){ transform: rotate(150deg) translate(-50%,-50%); animation-delay: 1s;}
-@keyframes glow {
-  0%,100% { opacity: 0.3; }
-  50% { opacity: 1; }
+/* Unlock button */
+#unlockBtn {
+  background: #ffffff33;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 18px;
+  font-weight: bold;
+  color: red;
+  margin-bottom: 40px;
 }
 </style>
 
@@ -4412,99 +4385,102 @@ document.getElementById('search-btn').addEventListener('click', function() {
     <div id="overlayDate"></div>
   </div>
 
+  <div id="overlayTitle"></div>
+
   <div id="timeRow">
     <span id="currentTime">0:00</span>
     <span id="totalTime">0:00</span>
   </div>
 
-  <div id="overlayTitle"></div>
-
-  <button id="unlockBtn">
-    <span></span><span></span><span></span><span></span><span></span><span></span>
-  </button>
+  <button id="unlockBtn">Unlock</button>
 </div>
 
 <script>
 let inactivityTimer;
-let wakeLock = null;
 const lockOverlay = document.getElementById("lockOverlay");
 const overlayClock = document.getElementById("overlayClock");
 const overlayDate = document.getElementById("overlayDate");
 const overlayTitle = document.getElementById("overlayTitle");
 const currentTimeEl = document.getElementById("currentTime");
 const totalTimeEl = document.getElementById("totalTime");
-const audio = document.getElementById("SAudio");
+const audioPlayer = document.getElementById("SAudio"); // Your audio element
 
-// ------------------ Wake Lock ------------------
-async function requestWakeLock() {
-  try {
-    if ('wakeLock' in navigator && !wakeLock) {
-      wakeLock = await navigator.wakeLock.request('screen');
-      wakeLock.addEventListener('release', () => { wakeLock = null; });
-      console.log("Wake Lock active");
-    }
-  } catch(err) { console.error("Wake Lock error:", err); }
-}
-function releaseWakeLock() {
-  if (wakeLock) wakeLock.release().then(()=>wakeLock=null);
-}
-
-// ------------------ Overlay Show/Hide ------------------
+// Function: Show overlay
 function showOverlay() {
   const thumbSrc = document.getElementById("Fimg")?.src;
   if (thumbSrc) lockOverlay.style.setProperty("--thumb", `url(${thumbSrc})`);
-  overlayTitle.textContent = document.getElementById("vfytitle")?.textContent || "";
-  currentTimeEl.textContent = document.getElementById("current-time")?.textContent || "0:00";
-  totalTimeEl.textContent = document.getElementById("total-time")?.textContent || "0:00";
+
+  const songTitle = document.getElementById("vfytitle")?.textContent;
+  overlayTitle.textContent = songTitle || "";
+
+  const curr = document.getElementById("current-time")?.textContent || "0:00";
+  const total = document.getElementById("total-time")?.textContent || "0:00";
+  currentTimeEl.textContent = curr;
+  totalTimeEl.textContent = total;
+
   lockOverlay.style.display = "flex";
-  requestWakeLock();
+  console.log("Overlay lock activated");
 }
+
+// Function: Hide overlay
 function hideOverlay() {
   lockOverlay.style.display = "none";
-  releaseWakeLock();
   resetInactivityTimer();
+  console.log("Overlay lock removed");
 }
+
+// Unlock button
 document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
 
-// ------------------ Inactivity Timer ------------------
+// Inactivity tracker
 function resetInactivityTimer() {
   if (inactivityTimer) clearTimeout(inactivityTimer);
-  inactivityTimer = setTimeout(showOverlay, 10000); // 10s inactivity → overlay
+
+  // Only show overlay after 10s inactivity if song is NOT playing
+  if (!audioPlayer || audioPlayer.paused) {
+    inactivityTimer = setTimeout(showOverlay, 10000);
+  }
 }
 
-// User activity resets timer and hides overlay if needed
-["mousemove","keydown","touchstart","click"].forEach(evt => {
+// User activity listeners
+["mousemove", "keydown", "touchstart", "click"].forEach(evt => {
   document.addEventListener(evt, () => {
-    if(lockOverlay.style.display === "flex") hideOverlay();
-    resetInactivityTimer();
+    if (lockOverlay.style.display === "none" && (!audioPlayer || audioPlayer.paused)) {
+      resetInactivityTimer();
+    }
   });
 });
 
-// ------------------ Clock Update ------------------
+// Real Clock
 function updateClock() {
   const now = new Date();
   let h = now.getHours();
-  let m = now.getMinutes().toString().padStart(2,"0");
+  let m = now.getMinutes().toString().padStart(2, "0");
   overlayClock.textContent = `${h}:${m}`;
-  overlayDate.textContent = now.toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short'});
+  overlayDate.textContent = now.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
 }
-setInterval(updateClock,1000);
+setInterval(updateClock, 1000);
 updateClock();
 
-// ------------------ Always Update Time ------------------
-setInterval(()=>{
-  if(lockOverlay.style.display==="flex"){
-    currentTimeEl.textContent = document.getElementById("current-time")?.textContent || "0:00";
-    totalTimeEl.textContent = document.getElementById("total-time")?.textContent || "0:00";
+// 🔥 Always On Display: update overlay times while song is playing
+setInterval(() => {
+  if (lockOverlay.style.display === "flex" || (audioPlayer && !audioPlayer.paused)) {
+    const curr = document.getElementById("current-time")?.textContent || "0:00";
+    const total = document.getElementById("total-time")?.textContent || "0:00";
+    currentTimeEl.textContent = curr;
+    totalTimeEl.textContent = total;
+
+    // Keep overlay visible if song is playing
+    if (audioPlayer && !audioPlayer.paused) lockOverlay.style.display = "flex";
   }
-},1000);
+}, 1000);
 
-// ------------------ Wake Lock check ------------------
-setInterval(()=>{
-  if(lockOverlay.style.display==="flex" || (audio && !audio.paused)) requestWakeLock();
-  else releaseWakeLock();
-},1000);
-
-// Start inactivity timer only
+// Start inactivity timer on page load
 resetInactivityTimer();
+
+// Listen to audio play/pause events to control overlay
+if (audioPlayer) {
+  audioPlayer.addEventListener("play", () => lockOverlay.style.display = "flex");
+  audioPlayer.addEventListener("pause", () => resetInactivityTimer());
+}
 </script>
