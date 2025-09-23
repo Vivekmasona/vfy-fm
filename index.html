@@ -4438,17 +4438,12 @@ const audio = document.getElementById("SAudio");
 // ------------------ Wake Lock ------------------
 async function requestWakeLock() {
   try {
-    if ('wakeLock' in navigator) {
+    if ('wakeLock' in navigator && !wakeLock) {
       wakeLock = await navigator.wakeLock.request('screen');
-      wakeLock.addEventListener('release', () => {
-        wakeLock = null;
-        if(lockOverlay.style.display === "flex" || (audio && !audio.paused)) requestWakeLock();
-      });
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
       console.log("Wake Lock active");
     }
-  } catch(err) {
-    console.error("Wake Lock error:", err);
-  }
+  } catch(err) { console.error("Wake Lock error:", err); }
 }
 function releaseWakeLock() {
   if (wakeLock) wakeLock.release().then(()=>wakeLock=null);
@@ -4474,10 +4469,15 @@ document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
 // ------------------ Inactivity Timer ------------------
 function resetInactivityTimer() {
   if (inactivityTimer) clearTimeout(inactivityTimer);
-  inactivityTimer = setTimeout(showOverlay, 10000);
+  inactivityTimer = setTimeout(showOverlay, 10000); // 10s inactivity → overlay
 }
-["mousemove","keydown","touchstart","click"].forEach(e=>{
-  document.addEventListener(e,()=>{if(lockOverlay.style.display==="none") resetInactivityTimer();});
+
+// User activity resets timer and hides overlay if needed
+["mousemove","keydown","touchstart","click"].forEach(evt => {
+  document.addEventListener(evt, () => {
+    if(lockOverlay.style.display === "flex") hideOverlay();
+    resetInactivityTimer();
+  });
 });
 
 // ------------------ Clock Update ------------------
@@ -4499,14 +4499,12 @@ setInterval(()=>{
   }
 },1000);
 
-// ------------------ Wake Lock check based on audio ------------------
+// ------------------ Wake Lock check ------------------
 setInterval(()=>{
   if(lockOverlay.style.display==="flex" || (audio && !audio.paused)) requestWakeLock();
   else releaseWakeLock();
 },1000);
-audio?.addEventListener('play',requestWakeLock);
-audio?.addEventListener('pause',releaseWakeLock);
 
-// Start inactivity timer
+// Start inactivity timer only
 resetInactivityTimer();
 </script>
