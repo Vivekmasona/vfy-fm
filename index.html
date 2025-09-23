@@ -4374,8 +4374,35 @@ const lockOverlay = document.getElementById("lockOverlay");
 const overlayThumb = document.getElementById("overlayThumb");
 const overlayTitle = document.getElementById("overlayTitle");
 const overlayTime = document.getElementById("overlayTime");
+const audio = document.getElementById("SAudio"); // tumhara audio player
 
-// Function: Show overlay
+let wakeLock = null; // Screen Wake Lock
+
+// 🔥 Function to request wake lock
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator && !wakeLock) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      console.log('Wake Lock activated');
+      wakeLock.addEventListener('release', () => {
+        console.log('Wake Lock released');
+        wakeLock = null;
+      });
+    }
+  } catch (err) {
+    console.error('Wake Lock error:', err);
+  }
+}
+
+// 🔥 Release wake lock
+function releaseWakeLock() {
+  if (wakeLock) {
+    wakeLock.release();
+    wakeLock = null;
+  }
+}
+
+// Show overlay
 function showOverlay() {
   const thumbSrc = document.getElementById("Fimg")?.src;
   if (thumbSrc) overlayThumb.src = thumbSrc;
@@ -4391,37 +4418,48 @@ function showOverlay() {
   console.log("Overlay lock activated");
 }
 
-// Function: Hide overlay
+// Hide overlay
 function hideOverlay() {
   lockOverlay.style.display = "none";
   resetInactivityTimer();
   console.log("Overlay lock removed");
 }
 
-// Unlock button click
+// Unlock button
 document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
 
 // Inactivity tracker
 function resetInactivityTimer() {
   if (inactivityTimer) clearTimeout(inactivityTimer);
+
+  // Agar song play ho raha hai, overlay kabhi show mat karo
+  if (!audio.paused) return;
+
   inactivityTimer = setTimeout(showOverlay, 10000); // 10 sec inactivity
 }
 
-// User activity listeners
-["mousemove", "keydown", "touchstart", "click"].forEach(evt => {
-  document.addEventListener(evt, () => {
-    if (lockOverlay.style.display === "none") resetInactivityTimer();
-  });
-});
-
-// 🔥 Always On Display: live update overlay me current time
+// Always-On Display: check audio playing
 setInterval(() => {
+  if (audio && !audio.paused) {
+    requestWakeLock(); // Song play → screen on
+    if (lockOverlay.style.display === "flex") hideOverlay();
+  } else {
+    releaseWakeLock(); // Song paused → normal behavior
+    resetInactivityTimer();
+  }
+
+  // Overlay time update
   if (lockOverlay.style.display === "flex") {
     const curr = document.getElementById("current-time")?.textContent || "0:00";
     const total = document.getElementById("total-time")?.textContent || "0:00";
     overlayTime.textContent = `${curr} / ${total}`;
   }
 }, 1000);
+
+// User activity listeners
+["mousemove", "keydown", "touchstart", "click"].forEach(evt => {
+  document.addEventListener(evt, resetInactivityTimer);
+});
 
 // Start timer on load
 resetInactivityTimer();
