@@ -4289,32 +4289,66 @@ document.getElementById('search-btn').addEventListener('click', function() {
 </div>
 	
  
-<script>
+
+
+
+
+
+	<script>
 let wakeLock = null;
 const audio = document.getElementById("SAudio");
 
-// ---- Overlay Lock Setup ----
+// ---- Overlay Setup ----
 const overlay = document.createElement('div');
 overlay.id = 'overlayLock';
 overlay.style.cssText = `
     position: fixed;
     top:0; left:0; width:100%; height:100%;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0.8);
     display:flex; justify-content:center; align-items:center;
-    flex-direction:column; z-index:9999; visibility:hidden;
+    flex-direction:column;
+    z-index:99999; /* High z-index */
+    visibility:hidden;
+    opacity:0;
+    transition: opacity 0.3s ease;
 `;
 const lockImage = document.createElement('img');
-lockImage.style.cssText = `width:200px;height:200px;border-radius:20px;margin-bottom:20px;object-fit:cover;`;
+lockImage.style.cssText = `
+    width:200px; height:200px;
+    border-radius:20px;
+    margin-bottom:20px;
+    object-fit:cover;
+    box-shadow:0 0 20px rgba(0,0,0,0.5);
+`;
 const unlockBtn = document.createElement('div');
 unlockBtn.innerText = "🔓";
 unlockBtn.style.cssText = `
-    width:60px;height:60px;border-radius:50%;background:white;
-    display:flex;justify-content:center;align-items:center;
-    cursor:pointer;font-size:30px;user-select:none;
+    width:60px;height:60px;
+    border-radius:50%; background:white;
+    display:flex; justify-content:center; align-items:center;
+    cursor:pointer; font-size:30px; user-select:none;
+    box-shadow:0 0 10px rgba(0,0,0,0.5);
 `;
 overlay.appendChild(lockImage);
 overlay.appendChild(unlockBtn);
 document.body.appendChild(overlay);
+
+// ---- Show/Hide Overlay ----
+function showOverlay() {
+    if (audio.paused) return; // Only when audio is playing
+    const fimgEl = document.getElementById("Fimg");
+    if (fimgEl) lockImage.src = fimgEl.src || fimgEl.dataset.src || "https://via.placeholder.com/200";
+    overlay.style.visibility = 'visible';
+    overlay.style.opacity = '1';
+}
+
+function hideOverlay() {
+    overlay.style.opacity = '0';
+    setTimeout(() => overlay.style.visibility='hidden', 300); // Match fade
+    resetTimer();
+}
+
+unlockBtn.addEventListener('click', hideOverlay);
 
 // ---- Wake Lock Functions ----
 async function keepScreenOn() {
@@ -4340,23 +4374,6 @@ async function releaseWakeLock() {
     }
 }
 
-// ---- Overlay Functions ----
-function showOverlay() {
-    if (audio.paused) return; // Only show when audio is playing
-    const fimgEl = document.getElementById("Fimg");
-    if (fimgEl) {
-        lockImage.src = fimgEl.src || fimgEl.dataset.src || "https://via.placeholder.com/200";
-    }
-    overlay.style.visibility = 'visible';
-}
-
-function hideOverlay() {
-    overlay.style.visibility = 'hidden';
-    resetTimer();
-}
-
-unlockBtn.addEventListener('click', hideOverlay);
-
 // ---- Inactivity Timer ----
 let inactivityTimer;
 function resetTimer() {
@@ -4365,19 +4382,19 @@ function resetTimer() {
     inactivityTimer = setTimeout(showOverlay, 10000); // 10 sec
 }
 
-// ---- Monitor Audio & Wake Lock ----
+// ---- Monitor Audio State ----
 setInterval(() => {
     if (!audio.paused) {
-        keepScreenOn(); // Audio playing → screen always on
-        resetTimer();   // Start inactivity timer for overlay
+        keepScreenOn();  // Keep screen on
+        resetTimer();    // Start inactivity timer
     } else {
-        releaseWakeLock(); // Audio stopped → release wake lock
-        hideOverlay();     // Hide overlay
+        releaseWakeLock();
+        hideOverlay();
         clearTimeout(inactivityTimer);
     }
 }, 1000);
 
-// ---- User interaction resets overlay timer ----
+// ---- User interaction resets timer ----
 ['mousemove','mousedown','touchstart','keydown'].forEach(evt => {
     document.addEventListener(evt, resetTimer);
 });
@@ -4387,4 +4404,4 @@ if (!audio.paused) resetTimer();
 
 // Release wake lock on page unload
 window.addEventListener('beforeunload', releaseWakeLock);
-</script>
+	</script>
