@@ -832,7 +832,7 @@ width: 50%;
      <input type="search"  name="search"   id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">search</button></sr>
 	    
-	
+	<div id="current-time"></div>
 	
 
    <div id="autocomplete-results"></div>
@@ -4296,9 +4296,10 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 	<script>
 let wakeLock = null;
-let timeInterval = null;
+let lastTime = null;
+let checkInterval = null;
 
-// Function to request wake lock
+// Request wake lock
 async function keepScreenOn() {
     try {
         if ('wakeLock' in navigator && !wakeLock) {
@@ -4313,16 +4314,16 @@ async function keepScreenOn() {
     }
 }
 
-// Function to release wake lock
+// Release wake lock
 async function releaseWakeLock() {
     if (wakeLock) {
         await wakeLock.release();
         wakeLock = null;
-        console.log('Wake Lock manually released');
+        console.log('Wake Lock released manually');
     }
 }
 
-// Function to update time
+// Update current time
 function updateTime() {
     const timeElem = document.getElementById('current-time');
     if (!timeElem) return;
@@ -4330,33 +4331,39 @@ function updateTime() {
     const now = new Date();
     timeElem.textContent = now.toLocaleTimeString();
 
-    // Keep screen on while time updates
+    // Track last updated time
+    lastTime = now.getTime();
+
+    // Ensure wake lock is active
     keepScreenOn();
 }
 
-// Function to start time updates
+// Start updating time every second
 function startTime() {
-    if (!timeInterval) {
-        updateTime(); // update immediately
-        timeInterval = setInterval(updateTime, 1000); // update every second
+    updateTime(); // update immediately
+    if (!checkInterval) {
+        checkInterval = setInterval(() => {
+            updateTime();
+
+            // If time stopped updating (1 second delay here), release wake lock
+            const now = new Date().getTime();
+            if (lastTime && now - lastTime > 2000) { // 2 seconds without update
+                releaseWakeLock();
+            }
+        }, 1000);
     }
 }
 
-// Function to stop time updates
+// Stop updating time manually
 function stopTime() {
-    if (timeInterval) {
-        clearInterval(timeInterval);
-        timeInterval = null;
-        releaseWakeLock(); // release wake lock when time stops
+    if (checkInterval) {
+        clearInterval(checkInterval);
+        checkInterval = null;
+        releaseWakeLock();
     }
 }
 
-// Example usage:
-// Start time on page load
+// Start the timer automatically
 startTime();
-
-// Optional: stop time after 10 seconds (for testing)
-// setTimeout(stopTime, 10000);
-
 </script>
 
