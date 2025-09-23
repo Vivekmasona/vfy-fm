@@ -4313,69 +4313,244 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-#lockOverlay img {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%; /* round thumbnail */
-  object-fit: cover;
-  margin-bottom: 15px;
-  box-shadow: 0 0 25px rgba(255, 255, 255, 0.9), 
-              0 0 50px rgba(0, 200, 255, 0.6);
-  backdrop-filter: blur(8px);
-}
 
-/* Title glossy + glowing (no bg color) */
-#overlayTitle {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  text-align: center;
-  color: #fff;
-  text-shadow: 0 0 8px rgba(0, 255, 255, 0.9), 
-               0 0 15px rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(6px);
-}
-
-/* Time glossy */
-#overlayTime {
-  font-size: 16px;
-  margin-bottom: 20px;
-  color: #eee;
-  text-shadow: 0 0 6px rgba(0, 255, 200, 0.8);
-  backdrop-filter: blur(4px);
-}
-
-/* Unlock button glossy + glow (no bg color) */
-#unlockBtn {
-  background: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  padding: 12px 24px;
-  border-radius: 30px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  color: #fff;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 0 12px rgba(0, 255, 255, 0.7), 
-              inset 0 0 6px rgba(255, 255, 255, 0.4);
-  transition: all 0.3s ease;
-}
-
-#unlockBtn:hover {
-  border-color: rgba(255, 255, 255, 0.7);
-  box-shadow: 0 0 20px rgba(0, 255, 255, 1), 
-              inset 0 0 8px rgba(255, 255, 255, 0.5);
-  transform: scale(1.05);
-	}
 </style>
 
-<!-- Overlay HTML -->
-<div id="lockOverlay">
-  <img id="overlayThumb" src="" alt="Thumbnail">
-  <div id="overlayTitle"></div>
-  <div id="overlayTime"></div>
-  <button id="unlockBtn">Unlock</button>
+<!-- HTML -->
+<div class="music-list">
+  <div class="music-item">
+    <div class="thumb-wrap">
+      <img id="overlayThumb" class="thumb" src="https://via.placeholder.com/150" alt="Thumbnail">
+      <!-- Optional time badge -->
+      <div class="time-badge" id="overlayTime">3:25</div>
+    </div>
+
+    <div class="meta">
+      <!-- Editable title -->
+      <div id="overlayTitle" class="title" contenteditable="true" spellcheck="false">Song Title — Click to edit</div>
+      <!-- Subtitle / artist (optional) -->
+      <div class="subtitle">Artist • Album</div>
+    </div>
+
+    <button class="action-btn" id="unlockBtn" aria-label="Unlock">
+      <!-- Big right arrow SVG -->
+      <svg viewBox="0 0 24 24" width="36" height="36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M8 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- example second item -->
+  <div class="music-item">
+    <div class="thumb-wrap">
+      <img class="thumb" src="https://via.placeholder.com/150/ff7f7f" alt="Thumbnail">
+      <div class="time-badge">4:02</div>
+    </div>
+
+    <div class="meta">
+      <div class="title" contenteditable="true">Another song — edit me</div>
+      <div class="subtitle">Another Artist</div>
+    </div>
+
+    <button class="action-btn">
+      <svg viewBox="0 0 24 24" width="36" height="36" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
 </div>
+
+<!-- CSS -->
+<style>
+  :root{
+    --item-height: 100px;
+    --item-width: 95%;
+    --thumb-size: 100px;
+    --gap: 14px;
+    --shadow: 0 6px 18px rgba(0,0,0,0.12);
+    --accent: linear-gradient(90deg, rgba(255,120,80,0.08), rgba(255,120,80,0.20));
+  }
+
+  /* container centering */
+  .music-list{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center; /* centers items so their width:95% looks neat */
+    padding: 12px 0;
+    box-sizing: border-box;
+  }
+
+  .music-item{
+    width: var(--item-width);
+    height: var(--item-height);
+    display: flex;
+    align-items: center;
+    gap: var(--gap);
+    background: rgba(255,255,255,0.02);
+    padding: 8px 12px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    box-sizing: border-box;
+    transition: transform .14s ease, box-shadow .14s ease;
+    /* optional hover pop */
+  }
+  .music-item:hover{
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.16);
+  }
+
+  /* thumbnail area */
+  .thumb-wrap{
+    position: relative;
+    width: var(--thumb-size);
+    min-width: var(--thumb-size);
+    height: var(--thumb-size);
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.03), rgba(0,0,0,0.06));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .thumb{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* subtle gradient overlay on the right side of thumbnail */
+  .thumb-wrap::after{
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 55%; /* how much of right side gets tinted */
+    pointer-events: none;
+    background: linear-gradient(90deg, rgba(255,120,80,0.00), rgba(255,120,80,0.20));
+    mix-blend-mode: overlay;
+    opacity: 0.9;
+  }
+
+  /* time badge on top-left or top-right of thumb */
+  .time-badge{
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    backdrop-filter: blur(4px);
+  }
+
+  /* meta info (title + subtitle) */
+  .meta{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    flex: 1; /* takes remaining space */
+    min-width: 0; /* important so text truncates correctly */
+  }
+
+  .title{
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: text; /* editable */
+  }
+
+  .title:focus{
+    outline: 2px dashed rgba(100,150,255,0.25);
+    background: rgba(255,255,255,0.015);
+    padding: 2px 4px;
+    border-radius: 6px;
+  }
+
+  .subtitle{
+    font-size: 13px;
+    color: rgba(0,0,0,0.6);
+    opacity: 0.9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* right button with big arrow */
+  .action-btn{
+    appearance: none;
+    border: none;
+    background: transparent;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+    color: rgba(0,0,0,0.7);
+    transition: transform .12s ease, color .12s ease;
+  }
+
+  .action-btn svg{ 
+    display: block;
+  }
+
+  .action-btn:hover{
+    transform: translateX(6px);
+    color: rgba(0,0,0,0.95);
+  }
+
+  /* dark mode friendliness */
+  @media (prefers-color-scheme: dark){
+    .music-item{ background: rgba(255,255,255,0.02); color: #fff; }
+    .subtitle{ color: rgba(255,255,255,0.7); opacity: 0.9; }
+    .action-btn{ color: rgba(255,255,255,0.9); }
+    .thumb-wrap::after{ background: linear-gradient(90deg, rgba(255,120,80,0.00), rgba(255,120,80,0.16)); }
+    .time-badge{ background: rgba(255,255,255,0.06); color: #fff; }
+  }
+
+  /* responsive tweaks for small screens */
+  @media (max-width: 420px){
+    .music-item{ width: 98%; padding: 6px; border-radius: 10px; }
+    .title{ font-size: 15px; }
+    .action-btn svg{ width: 30px; height: 30px; }
+  }
+</style>
+
+<!-- JS: optional small script to demonstrate title persistence (localStorage) -->
+<script>
+  // Save editable titles to localStorage so edits persist on reload (demo)
+  document.querySelectorAll('.title').forEach((el, idx) => {
+    const key = 'music-title-' + idx;
+    // load saved
+    const saved = localStorage.getItem(key);
+    if (saved) el.textContent = saved;
+
+    el.addEventListener('input', () => {
+      localStorage.setItem(key, el.textContent.trim());
+    });
+    // prevent new lines
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        el.blur();
+      }
+    });
+  });
+
+  // If you want to change thumbnail image dynamically:
+  // document.getElementById('overlayThumb').src = 'https://...';
+</script>
 
 
 
