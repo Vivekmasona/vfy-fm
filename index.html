@@ -4311,15 +4311,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
   font-family: sans-serif;
 }
 
-#lockOverlay img {
-  width: 150px;
-  height: 150px;
-  border-radius: 0; /* square */
-  object-fit: cover;
-  margin-bottom: 15px;
-  position: relative;
-  z-index: 1; /* image above background */
-}
+
 
 #lockOverlay img {
   width: 150px;
@@ -4328,11 +4320,8 @@ document.getElementById('search-btn').addEventListener('click', function() {
   object-fit: cover;
   margin-bottom: 15px;
 
-  /* shadow around the image */
-  box-shadow: 0 20px 20px rgba(0,0,0,0.5),   /* bottom shadow */
-              0 -20px 20px rgba(0,0,0,0.5),  /* top shadow */
-              20px 0 20px rgba(0,0,0,0.5),   /* right shadow */
-              -20px 0 20px rgba(0,0,0,0.5);  /* left shadow */
+  /* soft shadow all around 20px outside */
+  box-shadow: 0 0 20px 20px rgba(0, 0, 0, 0.5);
 }
 
 #overlayTitle {
