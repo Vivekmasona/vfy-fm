@@ -6,8 +6,7 @@
 <script src="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery-mobile.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery.mobile-1.4.5.min.css" />
 
-<meta content='#E74C3C' name='theme-color'/>
-<meta content='#E74C3C' name='msapplication-navbutto-color'/>
+<meta name="theme-color" content="#ffffff" id="themeColorMeta">
 <meta content='yes' name='apple-mobile-web-app-capable'/>
 <meta content='#E74C3C' name='apple-mobile-web-app-status-bar-style'/>
 <meta content='width=device-width, user-scalable=no' name='viewport'>
@@ -4353,24 +4352,35 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-	<script>
+	<!-- Meta tag for PWA status bar -->
+
+
+<script>
 let inactivityTimer;
 const lockOverlay = document.getElementById("lockOverlay");
 const overlayThumb = document.getElementById("overlayThumb");
 const overlayTitle = document.getElementById("overlayTitle");
 const overlayTime = document.getElementById("overlayTime");
 const audioPlayer = document.getElementById("SAudio");
+const themeMeta = document.getElementById("themeColorMeta");
 
 let wakeLock = null;
+
+// --------- Status bar color ---------
+function setStatusBarColor(color) {
+  if (themeMeta) themeMeta.setAttribute("content", color);
+}
 
 // --------- Overlay functions ---------
 function showOverlay() {
   lockOverlay.style.display = "flex";
+  setStatusBarColor("#000000"); // overlay appear → black header
   console.log("Overlay lock activated");
 }
 
 function hideOverlay() {
   lockOverlay.style.display = "none";
+  setStatusBarColor("#ffffff"); // overlay hide → original color
   resetInactivityTimer();
   console.log("Overlay lock removed");
 }
@@ -4384,7 +4394,7 @@ function resetInactivityTimer() {
   inactivityTimer = setTimeout(showOverlay, 10000); // 10 sec inactivity
 }
 
-// User activity listeners (reset timer only, don't hide overlay automatically)
+// User activity listeners (only reset timer)
 ["mousemove", "keydown", "touchstart", "click"].forEach(evt => {
   document.addEventListener(evt, resetInactivityTimer);
 });
@@ -4445,4 +4455,4 @@ window.addEventListener('beforeunload', () => {
 
 // --------- Start inactivity timer on load ---------
 resetInactivityTimer();
-	</script>
+</script>
