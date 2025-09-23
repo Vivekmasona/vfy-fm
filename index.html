@@ -4292,123 +4292,89 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-
-<style>
-/* Overlay CSS */
-#lockOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: black;
-  display: none; /* initially hidden */
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  z-index: 99999; /* sabse upar */
-  color: white;
-  font-family: sans-serif;
-}
-
-#lockOverlay img {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%; /* round thumbnail */
-  object-fit: cover;
-  margin-bottom: 15px;
-  box-shadow: 0 0 20px rgba(255,255,255,0.7);
-}
-
-#overlayTitle {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  text-align: center;
-}
-
-#overlayTime {
-  font-size: 16px;
-  margin-bottom: 20px;
-}
-
-#unlockBtn {
-  background: #ffffffcc;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 30px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-}
-</style>
-
-<!-- Overlay HTML -->
-<div id="lockOverlay">
-  <img id="overlayThumb" src="" alt="Thumbnail">
-  <div id="overlayTitle"></div>
-  <div id="overlayTime"></div>
-  <button id="unlockBtn">Unlock</button>
-</div>
-
 <script>
-let inactivityTimer;
-const lockOverlay = document.getElementById("lockOverlay");
-const overlayThumb = document.getElementById("overlayThumb");
-const overlayTitle = document.getElementById("overlayTitle");
-const overlayTime = document.getElementById("overlayTime");
+function showOverlayLock() {
+  // Agar pehle se hai toh remove karo
+  let old = document.getElementById("overlayLock");
+  if (old) old.remove();
 
-// Function: Show overlay
-function showOverlay() {
-  // Thumbnail ko Fimg se set karo
-  const thumbSrc = document.getElementById("Fimg")?.src;
-  if (thumbSrc) overlayThumb.src = thumbSrc;
+  // Overlay create karo
+  let overlay = document.createElement("div");
+  overlay.id = "overlayLock";
+  overlay.style.position = "fixed";
+  overlay.style.top = "0";
+  overlay.style.left = "0";
+  overlay.style.width = "100%";
+  overlay.style.height = "100%";
+  overlay.style.background = "rgba(0,0,0,0.9)";
+  overlay.style.zIndex = "9999";
+  overlay.style.display = "flex";
+  overlay.style.flexDirection = "column";
+  overlay.style.alignItems = "center";
+  overlay.style.justifyContent = "center";
+  overlay.style.color = "#fff";
+  overlay.style.fontFamily = "monospace";
+  overlay.style.textAlign = "center";
+  overlay.style.padding = "20px";
 
-  // Title ko vfytitle se set karo
-  const songTitle = document.getElementById("vfytitle")?.textContent;
-  overlayTitle.textContent = songTitle || "";
-
-  // Current-time + total-time set karo
-  const curr = document.getElementById("current-time")?.textContent || "0:00";
-  const total = document.getElementById("total-time")?.textContent || "0:00";
-  overlayTime.textContent = `${curr} / ${total}`;
-
-  lockOverlay.style.display = "flex";
-  console.log("Overlay lock activated");
-}
-
-// Function: Hide overlay
-function hideOverlay() {
-  lockOverlay.style.display = "none";
-  resetInactivityTimer();
-  console.log("Overlay lock removed");
-}
-
-// Unlock button click
-document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
-
-// Inactivity tracker
-function resetInactivityTimer() {
-  if (inactivityTimer) clearTimeout(inactivityTimer);
-  inactivityTimer = setTimeout(showOverlay, 10000); // 10 sec inactivity
-}
-
-// User activity listeners
-["mousemove", "keydown", "touchstart", "click"].forEach(evt => {
-  document.addEventListener(evt, () => {
-    if (lockOverlay.style.display === "none") resetInactivityTimer();
-  });
-});
-
-// 🔥 Always On Display: live update overlay me current time
-setInterval(() => {
-  if (lockOverlay.style.display === "flex") {
-    const curr = document.getElementById("current-time")?.textContent || "0:00";
-    const total = document.getElementById("total-time")?.textContent || "0:00";
-    overlayTime.textContent = `${curr} / ${total}`;
+  // Thumbnail
+  let img = document.getElementById("Fimg");
+  if (img) {
+    let cloneImg = img.cloneNode(true);
+    cloneImg.style.width = "180px";
+    cloneImg.style.borderRadius = "20px";
+    cloneImg.style.marginBottom = "20px";
+    overlay.appendChild(cloneImg);
   }
-}, 1000);
 
-// Start timer on load
-resetInactivityTimer();
+  // Title
+  let title = document.getElementById("vfytitle");
+  if (title) {
+    let songTitle = document.createElement("div");
+    songTitle.innerText = title.innerText;
+    songTitle.style.fontSize = "20px";
+    songTitle.style.marginBottom = "10px";
+    overlay.appendChild(songTitle);
+  }
+
+  // Current + Total Time
+  let timeBox = document.createElement("div");
+  timeBox.innerText =
+    document.getElementById("current-time").innerText +
+    " / " +
+    document.getElementById("total-time").innerText;
+  timeBox.style.fontSize = "18px";
+  timeBox.style.marginBottom = "30px";
+  overlay.appendChild(timeBox);
+
+  // Clock (Edge style big digital)
+  let clock = document.createElement("div");
+  clock.id = "edgeClock";
+  clock.style.fontSize = "50px";
+  clock.style.letterSpacing = "3px";
+  clock.style.fontWeight = "bold";
+  clock.style.marginBottom = "30px";
+  overlay.appendChild(clock);
+
+  // Clock update
+  function updateClock() {
+    let now = new Date();
+    let hh = String(now.getHours()).padStart(2, "0");
+    let mm = String(now.getMinutes()).padStart(2, "0");
+    let ss = String(now.getSeconds()).padStart(2, "0");
+    clock.innerText = `${hh}:${mm}:${ss}`;
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // Unlock button (fafa icon)
+  let unlock = document.createElement("div");
+  unlock.innerHTML = "🔓";
+  unlock.style.fontSize = "40px";
+  unlock.style.cursor = "pointer";
+  unlock.onclick = () => overlay.remove();
+  overlay.appendChild(unlock);
+
+  document.body.appendChild(overlay);
+}
 </script>
