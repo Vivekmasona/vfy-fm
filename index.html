@@ -1991,75 +1991,49 @@ document.getElementById("vivekmasona").onclick = ()=>{
         };
 
     
-
 var audio = document.getElementById("SAudio");  
 var isRepeat = false; // repeat flag
-var wakeLock = null; // wake lock instance
-
-// Wake Lock request function
-async function requestWakeLock() {
-    try {
-        if ('wakeLock' in navigator && wakeLock === null) {
-            wakeLock = await navigator.wakeLock.request("screen");
-            console.log("Wake Lock active");
-            wakeLock.addEventListener("release", () => {
-                console.log("Wake Lock released");
-            });
-        }
-    } catch (err) {
-        console.error(`${err.name}, ${err.message}`);
-    }
-}
-
-// Wake Lock release function
-function releaseWakeLock() {
-    if (wakeLock !== null) {
-        wakeLock.release();
-        wakeLock = null;
-    }
-}
 
 // Function to play the next song  
 function playNextSong() {  
-    var nextSongIndex = Sid + 1;  
+    var nextSongIndex = Sid + 1; // Calculate the index of the next song  
     var playlistItems = document.getElementsByClassName("list");  
 
     if (nextSongIndex < playlistItems.length) {  
-        playlistItems[nextSongIndex].click();  
-        audio.play();  
-        requestWakeLock(); // 🔒 keep screen on  
+        playlistItems[nextSongIndex].click(); // Play the next song  
+        audio.play(); // Play the audio  
 
+        // Update the profile thumbnail and video ID for the next song  
         var nextSong = playlistItems[nextSongIndex];  
         var nextThumbnail = $(nextSong).children('img').attr("src");  
         var nextVideoId = $(nextSong).attr("vid");  
         $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');  
         $("#profileThumbnail").data("videoId", nextVideoId);  
 
-        Sid = nextSongIndex;  
+        Sid = nextSongIndex; // update Sid  
         console.log('Automatically went to the next song and started playing.');  
     } else {  
         console.log('End of playlist');  
-        releaseWakeLock(); // 🔓 release lock
     }  
 }  
 
 // Function to play the previous song  
 function playPreviousSong() {  
-    var prevSongIndex = Sid - 1;  
+    var prevSongIndex = Sid - 1; // Calculate the index of the previous song  
     var playlistItems = document.getElementsByClassName("list");  
 
     if (prevSongIndex >= 0) {  
-        playlistItems[prevSongIndex].click();  
-        audio.play();  
-        requestWakeLock(); // 🔒  
+        playlistItems[prevSongIndex].click(); // Play the previous song  
+        audio.play(); // Play the audio  
 
+        // Update the profile thumbnail and video ID for the previous song  
         var prevSong = playlistItems[prevSongIndex];  
         var prevThumbnail = $(prevSong).children('img').attr("src");  
         var prevVideoId = $(prevSong).attr("vid");  
         $("#profileThumbnail").html('<img src="' + prevThumbnail + '" alt="Profile Thumbnail">');  
         $("#profileThumbnail").data("videoId", prevVideoId);  
 
-        Sid = prevSongIndex;  
+        Sid = prevSongIndex; // update Sid  
         console.log('Automatically went to the previous song and started playing.');  
     } else {  
         console.log('Start of playlist');  
@@ -2067,12 +2041,12 @@ function playPreviousSong() {
 }  
 
 function playPause() {  
+   var audio = document.getElementById("SAudio");  
+
    if (audio.paused) {  
       audio.play();  
-      requestWakeLock(); // 🔒  
    } else {  
       audio.pause();  
-      releaseWakeLock(); // 🔓  
    }  
 }  
 
@@ -2081,7 +2055,6 @@ audio.addEventListener("ended", function() {
     if (isRepeat) {  
         audio.currentTime = 0;  
         audio.play();  
-        requestWakeLock(); // 🔒  
         console.log("Song repeated.");  
     } else {  
         playNextSong();  
@@ -2093,10 +2066,9 @@ document.getElementById("pichhe").addEventListener("click", playPreviousSong);
 
 // Repeat button listener  
 document.getElementById("repeat").addEventListener("click", function() {  
-    isRepeat = !isRepeat;  
+    isRepeat = !isRepeat; // toggle repeat  
     console.log("Repeat mode: " + (isRepeat ? "ON" : "OFF"));  
 });
-
 
 // Listen for the 'error' event
 var alternativeAudioSources = [
@@ -4311,9 +4283,5 @@ document.getElementById('search-btn').addEventListener('click', function() {
     </div>
 </div>
 	
-
-
-
-
-
-  
+ 
+	
