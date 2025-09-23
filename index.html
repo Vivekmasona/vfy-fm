@@ -4293,8 +4293,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-
-	<style>
+<style>
 #overlayLock {
     display: none;
     position: fixed;
@@ -4302,7 +4301,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.9);
+    background: rgba(0,0,0,0.95);
     z-index: 99999;
     color: white;
     font-family: sans-serif;
@@ -4324,7 +4323,6 @@ document.getElementById('search-btn').addEventListener('click', function() {
     height: 180px;
     border-radius: 12px;
     margin-bottom: 25px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
 
 #overlayLock .title {
@@ -4369,33 +4367,41 @@ const audio = document.getElementById('SAudio');
 const overlay = document.getElementById('overlayLock');
 const unlockBtn = document.getElementById('unlockBtn');
 
-let userIdleTimer = null;
+let lastTimeUpdate = 0;
+let idleTimer = null;
 const idleTime = 10000; // 10 sec
 
-// Request wake lock
+// Wake lock
 async function keepScreenOn() {
     if ('wakeLock' in navigator && !wakeLock) {
         try {
             wakeLock = await navigator.wakeLock.request('screen');
-            console.log('Wake Lock active!');
-            wakeLock.addEventListener('release', () => console.log('Wake Lock released'));
-        } catch (err) {
-            console.error(`Wake Lock request failed: ${err.name}, ${err.message}`);
+            console.log('Wake Lock active');
+        } catch (e) {
+            console.error('Wake Lock failed:', e);
         }
     }
 }
 
-// Release wake lock
 async function releaseWakeLock() {
     if (wakeLock) {
         await wakeLock.release();
         wakeLock = null;
-        console.log('Wake Lock released manually');
+        console.log('Wake Lock released');
     }
+}
+
+// Update overlay music info
+function updateOverlay() {
+    document.getElementById('Fimg').src = document.getElementById('Fimg').src || '';
+    document.getElementById('vfytitle').textContent = document.getElementById('vfytitle').textContent || '';
+    document.getElementById('current-time').textContent = document.getElementById('current-time').textContent || '0:00';
+    document.getElementById('total-time').textContent = document.getElementById('total-time').textContent || '0:00';
 }
 
 // Show overlay
 function showOverlay() {
+    updateOverlay();
     overlay.classList.add('show');
 }
 
@@ -4406,29 +4412,44 @@ function hideOverlay() {
 
 // Start idle timer
 function startIdleTimer() {
-    if (userIdleTimer) clearTimeout(userIdleTimer);
-    userIdleTimer = setTimeout(() => {
-        // 10 sec no active interaction → show overlay
+    if (idleTimer) clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => {
         showOverlay();
     }, idleTime);
 }
 
-// Unlock button click
+// Unlock button
 unlockBtn.addEventListener('click', () => {
     hideOverlay();
-    startIdleTimer(); // restart idle timer after unlock
+    startIdleTimer();
 });
 
-// Start idle detection only when song is playing
+// Monitor song play/pause
 audio.addEventListener('play', () => {
     keepScreenOn();
     startIdleTimer();
 });
 
-// Stop wake lock when song paused/stopped
 audio.addEventListener('pause', releaseWakeLock);
 audio.addEventListener('ended', releaseWakeLock);
 
-// Release wake lock on page unload
+// Monitor current-time changes to keep wake lock
+const currentTimeElem = document.getElementById('current-time');
+if (currentTimeElem) {
+    const observer = new MutationObserver(() => {
+        lastTimeUpdate = Date.now();
+        keepScreenOn();
+    });
+    observer.observe(currentTimeElem, { childList: true, characterData: true, subtree: true });
+}
+
+// Release wake lock if song stopped updating
+setInterval(() => {
+    if (wakeLock && Date.now() - lastTimeUpdate > 1000) {
+        releaseWakeLock();
+    }
+}, 1000);
+
+// Release wake lock on unload
 window.addEventListener('beforeunload', releaseWakeLock);
 </script>
