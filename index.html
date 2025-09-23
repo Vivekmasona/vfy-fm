@@ -4370,7 +4370,7 @@ const overlay = document.getElementById('overlayLock');
 const unlockBtn = document.getElementById('unlockBtn');
 
 let userIdleTimer = null;
-const idleTime = 10000; // 10 seconds
+const idleTime = 10000; // 10 sec
 
 // Request wake lock
 async function keepScreenOn() {
@@ -4378,9 +4378,7 @@ async function keepScreenOn() {
         try {
             wakeLock = await navigator.wakeLock.request('screen');
             console.log('Wake Lock active!');
-            wakeLock.addEventListener('release', () => {
-                console.log('Wake Lock released');
-            });
+            wakeLock.addEventListener('release', () => console.log('Wake Lock released'));
         } catch (err) {
             console.error(`Wake Lock request failed: ${err.name}, ${err.message}`);
         }
@@ -4396,56 +4394,41 @@ async function releaseWakeLock() {
     }
 }
 
-// Show overlay with fade
+// Show overlay
 function showOverlay() {
-    // Update music info
-    const FimgElem = document.getElementById('Fimg');
-    const titleElem = document.getElementById('vfytitle');
-    const currentElem = document.getElementById('current-time');
-    const totalElem = document.getElementById('total-time');
-
-    FimgElem.src = document.getElementById('Fimg').src || '';
-    titleElem.textContent = document.getElementById('vfytitle').textContent || '';
-    currentElem.textContent = document.getElementById('current-time').textContent || '0:00';
-    totalElem.textContent = document.getElementById('total-time').textContent || '0:00';
-
     overlay.classList.add('show');
 }
 
-// Hide overlay with fade
+// Hide overlay
 function hideOverlay() {
     overlay.classList.remove('show');
 }
 
-// Reset idle timer
-function resetIdleTimer() {
+// Start idle timer
+function startIdleTimer() {
     if (userIdleTimer) clearTimeout(userIdleTimer);
     userIdleTimer = setTimeout(() => {
+        // 10 sec no active interaction → show overlay
         showOverlay();
     }, idleTime);
 }
 
-// Unlock button
+// Unlock button click
 unlockBtn.addEventListener('click', () => {
     hideOverlay();
-    resetIdleTimer();
+    startIdleTimer(); // restart idle timer after unlock
 });
 
-// Monitor user activity
-['mousemove','keydown','touchstart','click'].forEach(event => {
-    document.addEventListener(event, resetIdleTimer, true);
-});
-
-// Start idle timer when song plays
+// Start idle detection only when song is playing
 audio.addEventListener('play', () => {
     keepScreenOn();
-    resetIdleTimer();
+    startIdleTimer();
 });
 
-// Release wake lock when song paused/stopped
+// Stop wake lock when song paused/stopped
 audio.addEventListener('pause', releaseWakeLock);
 audio.addEventListener('ended', releaseWakeLock);
 
-// Release wake lock on unload
+// Release wake lock on page unload
 window.addEventListener('beforeunload', releaseWakeLock);
 </script>
