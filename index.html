@@ -4283,7 +4283,16 @@ document.getElementById('search-btn').addEventListener('click', function() {
     </div>
 </div>
 	
- <style>
+
+
+
+
+
+
+	<!-- Font Awesome CDN (icons ke liye) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
 /* Overlay CSS */
 #lockOverlay {
   position: fixed;
@@ -4295,79 +4304,137 @@ document.getElementById('search-btn').addEventListener('click', function() {
   display: none; /* initially hidden */
   align-items: center;
   justify-content: center;
-  flex-direction: column;
   z-index: 9999; /* sabse upar */
 }
 
+.lock-container {
+  position: relative;
+  display: inline-block;
+}
+
 #lockOverlay img {
-  width: 150px;
-  height: 150px;
+  width: 180px;
+  height: 180px;
   border-radius: 50%; /* round thumbnail */
   object-fit: cover;
-  margin-bottom: 20px;
   box-shadow: 0 0 20px rgba(255,255,255,0.7);
 }
 
 #unlockBtn {
-  background: #ffffffcc;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.5);
   border: none;
-  padding: 12px 24px;
-  border-radius: 30px;
-  font-size: 16px;
-  font-weight: bold;
+  color: white;
+  font-size: 36px;
+  border-radius: 50%;
+  padding: 20px;
   cursor: pointer;
 }
 </style>
 
 <!-- Overlay HTML -->
 <div id="lockOverlay">
-  <img id="overlayThumb" src="" alt="Thumbnail">
-  <button id="unlockBtn">Unlock</button>
+  <div class="lock-container">
+    <img id="overlayThumb" src="" alt="Thumbnail">
+    <button id="unlockBtn"><i class="fas fa-lock"></i></button>
+  </div>
 </div>
 
 <script>
+let wakeLock = null;
 let inactivityTimer;
+const audio = document.getElementById("SAudio");
 const lockOverlay = document.getElementById("lockOverlay");
 const overlayThumb = document.getElementById("overlayThumb");
+const unlockBtn = document.getElementById("unlockBtn");
 
-// Function: Show overlay
-function showOverlay() {
-  // Thumbnail ko Fimg se set karo
-  const thumbSrc = document.getElementById("Fimg")?.src;
-  if (thumbSrc) {
-    overlayThumb.src = thumbSrc;
+// Wake Lock request
+async function requestWakeLock() {
+  try {
+    if ("wakeLock" in navigator) {
+      wakeLock = await navigator.wakeLock.request("screen");
+      console.log("✅ Wake Lock active: Screen ON");
+      wakeLock.addEventListener("release", () => {
+        if (!audio.paused) {
+          requestWakeLock(); // agar song chal raha tha to firse le lo
+        }
+      });
+    }
+  } catch (err) {
+    console.error("Wake Lock error:", err);
   }
-  lockOverlay.style.display = "flex";
-  console.log("Overlay lock activated");
 }
 
-// Function: Hide overlay
+// Release Wake Lock
+function releaseWakeLock() {
+  if (wakeLock) {
+    wakeLock.release();
+    wakeLock = null;
+    console.log("❌ Wake Lock released: Screen normal");
+  }
+}
+
+// Show overlay
+function showOverlay() {
+  if (!audio.paused) { // sirf jab song play ho raha ho
+    const thumbSrc = document.getElementById("Fimg")?.src;
+    if (thumbSrc) {
+      overlayThumb.src = thumbSrc;
+    }
+    lockOverlay.style.display = "flex";
+    console.log("🔒 Overlay lock activated");
+  }
+}
+
+// Hide overlay
 function hideOverlay() {
   lockOverlay.style.display = "none";
   resetInactivityTimer();
-  console.log("Overlay lock removed");
+  console.log("🔓 Overlay lock removed");
 }
 
-// Unlock button click
-document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
+// Unlock button
+unlockBtn.addEventListener("click", () => {
+  hideOverlay();
+  unlockBtn.innerHTML = '<i class="fas fa-unlock"></i>'; // icon change
+  setTimeout(() => {
+    unlockBtn.innerHTML = '<i class="fas fa-lock"></i>'; // wapas lock
+  }, 2000);
+});
 
 // Inactivity tracker
 function resetInactivityTimer() {
-  if (inactivityTimer) {
-    clearTimeout(inactivityTimer);
-  }
-  inactivityTimer = setTimeout(showOverlay, 10000); // 10 sec inactivity
+  if (inactivityTimer) clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(showOverlay, 10000); // 10 sec
 }
 
-// User activity listeners (touch/mouse/keys)
+// User activity listeners
 ["mousemove", "keydown", "touchstart", "click"].forEach(evt => {
   document.addEventListener(evt, () => {
-    if (lockOverlay.style.display === "none") {
+    if (lockOverlay.style.display === "none" && !audio.paused) {
       resetInactivityTimer();
     }
   });
 });
 
-// Start timer on load
-resetInactivityTimer();
+// Audio event listeners
+audio.addEventListener("play", () => {
+  requestWakeLock();
+  resetInactivityTimer();
+});
+
+audio.addEventListener("pause", () => {
+  releaseWakeLock();
+  clearTimeout(inactivityTimer);
+  hideOverlay();
+});
+
+audio.addEventListener("ended", () => {
+  releaseWakeLock();
+  clearTimeout(inactivityTimer);
+  hideOverlay();
+});
 </script>
