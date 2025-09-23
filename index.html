@@ -4297,21 +4297,20 @@ document.getElementById('search-btn').addEventListener('click', function() {
 	<script>
 let wakeLock = null;
 const currentTimeElem = document.getElementById('current-time'); // tera song time element
-let lastUpdate = Date.now();
-let checkInterval = null;
+let lastUpdate = 0;
 
 // Request wake lock
 async function keepScreenOn() {
-    try {
-        if ('wakeLock' in navigator && !wakeLock) {
+    if ('wakeLock' in navigator && !wakeLock) {
+        try {
             wakeLock = await navigator.wakeLock.request('screen');
             console.log('Wake Lock active!');
             wakeLock.addEventListener('release', () => {
                 console.log('Wake Lock released');
             });
+        } catch (err) {
+            console.error(`Wake Lock request failed: ${err.name}, ${err.message}`);
         }
-    } catch (err) {
-        console.error(`Wake Lock request failed: ${err.name}, ${err.message}`);
     }
 }
 
@@ -4324,7 +4323,7 @@ async function releaseWakeLock() {
     }
 }
 
-// Observe changes in current-time
+// Detect updates in current-time
 if (currentTimeElem) {
     const observer = new MutationObserver(() => {
         lastUpdate = Date.now();
@@ -4333,15 +4332,13 @@ if (currentTimeElem) {
     observer.observe(currentTimeElem, { childList: true, characterData: true, subtree: true });
 }
 
-// Check every second if current-time stopped updating
-checkInterval = setInterval(() => {
-    const now = Date.now();
-    // Agar 2 seconds se update nahi hua → release wake lock
-    if (wakeLock && now - lastUpdate > 2000) {
-        releaseWakeLock();
+// Check every second if current-time has stopped
+setInterval(() => {
+    if (wakeLock && Date.now() - lastUpdate > 1000) { // 1 second without update
+        releaseWakeLock(); // release lock → phone can timeout normally
     }
 }, 1000);
 
-// Release wake lock on page unload
+// Release on page unload
 window.addEventListener('beforeunload', releaseWakeLock);
 	</script>
