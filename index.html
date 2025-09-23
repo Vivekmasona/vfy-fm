@@ -4321,7 +4321,65 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
+
+
+
+	
+<div id="lockOverlay">
+<!-- Big Clock -->
+<div class="big-clock">
+  <div id="clockTime">00:00</div>
+  <div id="clockDate">Mon, 23 Sep 2025</div>
+</div>
+
+<!-- Music Item -->
+<div class="music-item">
+  <!-- Left Thumbnail -->
+  <div class="thumb-wrap">
+    <img id="overlayThumb" src="https://via.placeholder.com/100" alt="Thumbnail">
+    <div id="overlayTime" class="time">3:25</div>
+  </div>
+
+  <!-- Middle Title -->
+  <div id="overlayTitle" class="title">
+    Ye ek bada sa gaana ka title hai jo multi line me adjust ho sakta hai aur cut nahi hoga.
+  </div>
+
+  <!-- Right Arrow Button -->
+  <button id="unlockBtn" class="arrow-btn" aria-label="Unlock">
+    <svg viewBox="0 0 24 24" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+</div>
+</div>
+
 <style>
+/* Big Clock */
+.big-clock {
+  width: 90%;
+  margin: 20px auto;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.big-clock #clockTime {
+  font-size: 48px;
+  font-weight: 700;
+  background: linear-gradient(90deg, #fff, #aaa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.big-clock #clockDate {
+  font-size: 18px;
+  font-weight: 500;
+  background: linear-gradient(90deg, #eee, #888);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Music Item same as before */
 .music-item {
   width: 95%;
   height: 100px;
@@ -4331,8 +4389,9 @@ document.getElementById('search-btn').addEventListener('click', function() {
   border-radius: 12px;
   padding: 8px 12px;
   box-sizing: border-box;
-  background: linear-gradient(90deg, rgba(255,120,80,0.2), rgba(255,120,80,0)); /* fade background */
+  background: linear-gradient(90deg, rgba(255,120,80,0.2), rgba(255,120,80,0));
   position: relative;
+  margin: 0 auto;
 }
 
 /* Thumbnail */
@@ -4352,7 +4411,6 @@ document.getElementById('search-btn').addEventListener('click', function() {
   display: block;
 }
 
-/* Gradient overlay on thumbnail (right→left fade) */
 .thumb-wrap::after {
   content: "";
   position: absolute;
@@ -4364,7 +4422,6 @@ document.getElementById('search-btn').addEventListener('click', function() {
   pointer-events: none;
 }
 
-/* Time bottom of thumbnail */
 .time {
   position: absolute;
   bottom: 6px;
@@ -4385,11 +4442,11 @@ document.getElementById('search-btn').addEventListener('click', function() {
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 3;   /* max 3 line adjust */
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
 }
 
-/* Arrow button with round gradient background */
+/* Arrow button with round gradient */
 .arrow-btn {
   background: radial-gradient(circle, rgba(255,120,80,0.4), rgba(255,120,80,0.1));
   border: none;
@@ -4414,32 +4471,22 @@ document.getElementById('search-btn').addEventListener('click', function() {
 }
 </style>
 
-
-
-	
-
-
+<script>
+// Live Clock
+function updateClock(){
+  const now = new Date();
+  const time = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+  const date = now.toLocaleDateString([], {weekday:'short', day:'numeric', month:'short', year:'numeric'});
+  document.getElementById('clockTime').textContent = time;
+  document.getElementById('clockDate').textContent = date;
+}
+setInterval(updateClock, 1000);
+updateClock();
+</script>
 
     
-<div id="lockOverlay">
-<div class="music-item">
-  <!-- Left Thumbnail with gradient -->
-  <div class="thumb-wrap">
-    <img id="overlayThumb" src="https://via.placeholder.com/100" alt="Thumbnail">
-    <div id="overlayTime" class="time">3:25</div>
-  </div>
 
-  <!-- Middle Title -->
-  <div id="overlayTitle" class="title" contenteditable="true">Song Title Here</div>
 
-  <!-- Right Arrow Button -->
-  <button id="unlockBtn" class="arrow-btn" aria-label="Unlock">
-    <svg viewBox="0 0 24 24" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
-      <path d="M8 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </button>
-</div>
-</div>
 
 	
 	<!-- Meta tag for PWA status bar -->
