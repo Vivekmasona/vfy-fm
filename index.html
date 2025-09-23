@@ -4378,18 +4378,15 @@ function hideOverlay() {
 // Unlock button click
 document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
 
-// Inactivity tracker
+// --------- Inactivity tracker ---------
 function resetInactivityTimer() {
   if (inactivityTimer) clearTimeout(inactivityTimer);
   inactivityTimer = setTimeout(showOverlay, 10000); // 10 sec inactivity
 }
 
-// User activity listeners
+// User activity listeners (reset timer only, don't hide overlay automatically)
 ["mousemove", "keydown", "touchstart", "click"].forEach(evt => {
-  document.addEventListener(evt, () => {
-    if (lockOverlay.style.display === "flex") hideOverlay();
-    else resetInactivityTimer();
-  });
+  document.addEventListener(evt, resetInactivityTimer);
 });
 
 // --------- Overlay background updater (always) ---------
@@ -4412,7 +4409,6 @@ setInterval(() => {
 async function keepScreenOn() {
     try {
         if ('wakeLock' in navigator) {
-            // Only request wake lock if song is playing
             if (!audioPlayer.paused) {
                 wakeLock = await navigator.wakeLock.request('screen');
                 console.log('Wake Lock active!');
@@ -4447,6 +4443,6 @@ window.addEventListener('beforeunload', () => {
     }
 });
 
-// --------- Start inactivity timer ---------
+// --------- Start inactivity timer on load ---------
 resetInactivityTimer();
 	</script>
