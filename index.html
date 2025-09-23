@@ -4436,9 +4436,9 @@ document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
 function resetInactivityTimer() {
   if (inactivityTimer) clearTimeout(inactivityTimer);
 
-  // Only show overlay after 10s inactivity if song is NOT playing
+  // Only show overlay after 20s inactivity if song is NOT playing
   if (!audioPlayer || audioPlayer.paused) {
-    inactivityTimer = setTimeout(showOverlay, 10000);
+    inactivityTimer = setTimeout(showOverlay, 20000); // 20 seconds
   }
 }
 
