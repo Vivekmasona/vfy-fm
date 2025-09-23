@@ -4294,78 +4294,121 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 <style>
-#overlayLock {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.95);
-    z-index: 99999;
-    color: white;
-    font-family: sans-serif;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    transition: opacity 0.5s ease;
+/* Overlay CSS */
+#lockOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  display: none; /* initially hidden */
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 99999; /* sabse upar */
+  color: white;
+  font-family: sans-serif;
 }
-#overlayLock.show { display: flex; opacity: 1; }
-#overlayLock img { width:150px; height:150px; border-radius:12px; margin-bottom:20px; }
-#overlayLock .title { font-size:22px; margin-bottom:10px; }
-#overlayLock .times { font-size:18px; margin-bottom:25px; }
-#overlayLock .lockBtn { font-size:32px; cursor:pointer; padding:10px 20px; border:2px solid white; border-radius:12px; }
+
+#lockOverlay img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%; /* round thumbnail */
+  object-fit: cover;
+  margin-bottom: 15px;
+  box-shadow: 0 0 20px rgba(255,255,255,0.7);
+}
+
+#overlayTitle {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+#overlayTime {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+#unlockBtn {
+  background: #ffffffcc;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
 </style>
 
-<div id="overlayLock">
-  <img id="Fimg" src="">
-  <div class="title" id="vfytitle"></div>
-  <div class="times"><span id="current-time"></span> / <span id="total-time"></span></div>
-  <div class="lockBtn" id="unlockBtn">🔓 Unlock</div>
+<!-- Overlay HTML -->
+<div id="lockOverlay">
+  <img id="overlayThumb" src="" alt="Thumbnail">
+  <div id="overlayTitle"></div>
+  <div id="overlayTime"></div>
+  <button id="unlockBtn">Unlock</button>
 </div>
 
 <script>
-let wakeLock = null;
-let lastTime = "";
-let idleTimer;
-const overlay = document.getElementById("overlayLock");
-const unlockBtn = document.getElementById("unlockBtn");
-const idleTime = 10000; // 10 sec
+let inactivityTimer;
+const lockOverlay = document.getElementById("lockOverlay");
+const overlayThumb = document.getElementById("overlayThumb");
+const overlayTitle = document.getElementById("overlayTitle");
+const overlayTime = document.getElementById("overlayTime");
 
-async function keepScreenOn() {
-  if ('wakeLock' in navigator && !wakeLock) {
-    try { wakeLock = await navigator.wakeLock.request('screen'); } catch {}
-  }
+// Function: Show overlay
+function showOverlay() {
+  // Thumbnail ko Fimg se set karo
+  const thumbSrc = document.getElementById("Fimg")?.src;
+  if (thumbSrc) overlayThumb.src = thumbSrc;
+
+  // Title ko vfytitle se set karo
+  const songTitle = document.getElementById("vfytitle")?.textContent;
+  overlayTitle.textContent = songTitle || "";
+
+  // Current-time + total-time set karo
+  const curr = document.getElementById("current-time")?.textContent || "0:00";
+  const total = document.getElementById("total-time")?.textContent || "0:00";
+  overlayTime.textContent = `${curr} / ${total}`;
+
+  lockOverlay.style.display = "flex";
+  console.log("Overlay lock activated");
 }
-async function releaseWakeLock() {
-  if (wakeLock) { await wakeLock.release(); wakeLock = null; }
+
+// Function: Hide overlay
+function hideOverlay() {
+  lockOverlay.style.display = "none";
+  resetInactivityTimer();
+  console.log("Overlay lock removed");
 }
 
-function showOverlay() { overlay.classList.add("show"); }
-function hideOverlay() { overlay.classList.remove("show"); startIdleTimer(); }
+// Unlock button click
+document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
 
-unlockBtn.addEventListener("click", hideOverlay);
-
-function startIdleTimer() {
-  clearTimeout(idleTimer);
-  idleTimer = setTimeout(showOverlay, idleTime);
+// Inactivity tracker
+function resetInactivityTimer() {
+  if (inactivityTimer) clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(showOverlay, 10000); // 10 sec inactivity
 }
 
-// Watch current-time changes
+// User activity listeners
+["mousemove", "keydown", "touchstart", "click"].forEach(evt => {
+  document.addEventListener(evt, () => {
+    if (lockOverlay.style.display === "none") resetInactivityTimer();
+  });
+});
+
+// 🔥 Always On Display: live update overlay me current time
 setInterval(() => {
-  const elem = document.getElementById("current-time");
-  if (!elem) return;
-  const nowText = elem.textContent.trim();
-
-  if (nowText && nowText !== lastTime) {
-    // Time is moving → keep screen on + reset idle
-    keepScreenOn();
-    startIdleTimer();
-  } else if (nowText === lastTime && wakeLock) {
-    // Time stopped → release wake lock
-    releaseWakeLock();
+  if (lockOverlay.style.display === "flex") {
+    const curr = document.getElementById("current-time")?.textContent || "0:00";
+    const total = document.getElementById("total-time")?.textContent || "0:00";
+    overlayTime.textContent = `${curr} / ${total}`;
   }
-  lastTime = nowText;
 }, 1000);
 
-window.addEventListener("beforeunload", releaseWakeLock);
+// Start timer on load
+resetInactivityTimer();
 </script>
