@@ -40,6 +40,7 @@ function createPlaylistSongElement(videoId, title, channelTitle, videoDate, inde
 `;
 }
 
+
 function displaySongs(songs) {
     const songsContainer = document.getElementById("songs");
     songsContainer.innerHTML = "";
