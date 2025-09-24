@@ -1592,25 +1592,27 @@ function getOutput(item, i) {
     if (item.snippet?.liveBroadcastContent === "live") return '';
 
     return `
-<b index="${i}" class="music-item list" vid="${id}" onclick="selectItem(this)">
-    <!-- Thumbnail -->
-    <div class="thumb-wrap">
-        <img src="${thumbUrl}" alt="${title}">
-        <div class="overlay-play">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
-                <path d="M3 22v-20l18 10-18 10z"/>
-            </svg>
-        </div>
-    </div>
+<div style="margin-bottom:12px;">
+  <b index="${i}" class="music-item list" vid="${id}" onclick="selectItem(this)">
+      <!-- Thumbnail -->
+      <div class="thumb-wrap">
+          <img src="${thumbUrl}" alt="${title}">
+          <div class="overlay-play">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
+                  <path d="M3 22v-20l18 10-18 10z"/>
+              </svg>
+          </div>
+      </div>
 
-    <!-- Title -->
-    <div class="title">${title}</div>
+      <!-- Title -->
+      <div class="title">${title}</div>
 
-    <!-- Save button -->
-    <button class="save-btn" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">
-        <i class="fas fa-heart"></i>
-    </button>
-</b>
+      <!-- Save button -->
+      <button class="save-btn" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">
+          <i class="fas fa-heart"></i>
+      </button>
+  </b>
+</div>
 `;
 }
 
