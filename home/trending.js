@@ -14,22 +14,30 @@ async function fetchTrendingSongs(query) {
 function createPlaylistSongElement(videoId, title, channelTitle, videoDate, index) {
     const thumbUrl = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
     return `
-        <b index="${index}" class="list" vid="${videoId}" style="position:relative;">
-            <div class="video" style="position:relative;">
-                <i class="fas fa-heart save-icon" 
-                   onclick="event.stopPropagation(); saveFavorite(${index}, '${title}', '${thumbUrl}', '${videoId}')"></i>
-                <img src="${thumbUrl}" alt="${title}" 
-                     class="video-thumbnail" index="${index}" vid="${videoId}" 
-                     data-thumb="${thumbUrl}" style="width:100%;">
-                <div class="overlay-play" style="position:absolute; top:10px; right:10px; width:40px; height:40px; background: transparent; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:10;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent"><path d="M3 22v-20l18 10-18 10z"/></svg>
-                </div>
-                <section>
-                    <img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">
-                    <div><p>V F Y ${title}</p></div>
-                </section>
-            </div>
-        </b>`;
+<div style="margin-bottom:12px;">
+  <b index="${index}" class="music-item list" vid="${videoId}" onclick="selectItem(this)">
+      
+      <!-- Thumbnail -->
+      <div class="thumb-wrap">
+          <img src="${thumbUrl}" alt="${title}">
+          <div class="overlay-play">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
+                  <path d="M3 22v-20l18 10-18 10z"/>
+              </svg>
+          </div>
+      </div>
+
+      <!-- Title -->
+      <div class="title">${title}</div>
+
+      <!-- Save button -->
+      <button class="save-btn" onclick="event.stopPropagation(); saveFavorite(${index}, '${title}', '${thumbUrl}', '${videoId}')">
+          <i class="fas fa-heart"></i>
+      </button>
+
+  </b>
+</div>
+`;
 }
 
 function displaySongs(songs) {
