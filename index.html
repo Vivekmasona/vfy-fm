@@ -1465,102 +1465,41 @@ function paginate(direction) {
 }
 
           
+
+
+	
+	
+	
 // --- Global Variables ---
-let currentVideoListItem = null; 
+let currentVideoListItem = null;
 let ytPlayer = null;
 let isPlaying = false;
-let isVideoMode = false; // default Audio mode
+let isVideoMode = false; // Default Audio Mode
 
 // --- Mode Toggle Button ---
 document.getElementById("modeToggleBtn").addEventListener("click", () => {
     isVideoMode = !isVideoMode;
-    document.getElementById("modeToggleBtn").innerText = `Mode: ${isVideoMode ? 'Video' : 'Audio'}`;
+    document.getElementById("modeToggleBtn").innerText = 
+        isVideoMode ? "Video Mode" : "Audio Mode";
 });
 
-// --- Generate List Item ---
-function getOutput(item, i) {
-    var id = item.id?.videoId || item.id;
-    var title = item.snippet?.title || "No title";
-    var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
-
-    if (item.snippet?.liveBroadcastContent === "live") return '';
-
-    return `
-<div style="margin-bottom:12px;">
-  <b index="${i}" class="music-item list" vid="${id}" onclick="handleItemClick(this)">
-      <!-- Thumbnail -->
-      <div class="thumb-wrap">
-          <img src="${thumbUrl}" alt="${title}">
-          <div class="overlay-play">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
-                  <path d="M3 22v-20l18 10-18 10z"/>
-              </svg>
-          </div>
-      </div>
-
-      <!-- Title -->
-      <div class="title">${title}</div>
-
-      <!-- Save button -->
-      <button class="save-btn" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">
-          <i class="fas fa-heart"></i>
-      </button>
-  </b>
-</div>
-`;
-}
-
-// --- Handle Item Click Based on Mode ---
-function handleItemClick(el) {
-    if (isVideoMode) {
-        let videoId = $(el).attr("vid");
-        playVideoOverlay(videoId);
-    } else {
-        // Audio mode
-        stopVideoIfPlaying();
-        document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
-        loadSong(el); // your existing audio loader
-    }
-}
-
-// --- Stop current video ---
+// --- Video Overlay Close ---
 function stopVideoIfPlaying() {
     if (ytPlayer) {
         ytPlayer.stopVideo();
+        ytPlayer.destroy();
         ytPlayer = null;
     }
     $(".yt-full-overlay").remove();
-    currentVideoListItem = null;
     isPlaying = false;
 }
-
-// --- Popup show/hide ---
-$("#showPopupbutto").click(() => $("#popupContainer").show());
-$("#closePopup").click(() => $("#popupContainer").hide());
-
-// --- List Item Click ---
-$(document).on('click', '.list', function(e) {
-    if (!$(e.target).hasClass('overlay-play') && !$(e.target).closest('.overlay-play').length) {
-        handleItemClick(this);
-    }
-});
-
-// --- Play Video on Overlay Click ---
-$(document).on('click', '.overlay-play', function(e) {
-    e.stopPropagation();
-    let listItem = $(this).closest('.list');
-    let videoId = listItem.attr('vid');
-
-    // Stop audio if any
-    document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
-
-    // Show overlay video
-    playVideoOverlay(videoId);
-});
 
 // --- Fullscreen Video Overlay ---
 function playVideoOverlay(videoId) {
     stopVideoIfPlaying();
+
+    // 🔴 Ensure all audio stops when video plays
+    document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
 
     let overlay = $(`
         <div class="yt-full-overlay" style="
@@ -1597,30 +1536,28 @@ function playVideoOverlay(videoId) {
     isPlaying = true;
 }
 
-// --- Popup show/hide ---
-$("#showPopupbutto").click(() => $("#popupContainer").show());
-$("#closePopup").click(() => $("#popupContainer").hide());
+// --- Click to Play ---
+function playItem(listItem, videoId) {
+    currentVideoListItem = listItem;
 
-// --- List Item Click ---
-$(document).on('click', '.list', function(e) {
-    if (!$(e.target).hasClass('overlay-play') && !$(e.target).closest('.overlay-play').length) {
-        handleItemClick(this);
+    if (isVideoMode) {
+        playVideoOverlay(videoId);
+    } else {
+        // Video Mode OFF → Play Audio
+        let audioEl = document.getElementById("SAudio");
+        if (audioEl) {
+            audioEl.src = `https://grape-earthy-amaranthus.glitch.me/play?url=https://www.youtube.com/watch?v=${videoId}`;
+            audioEl.play();
+        }
     }
-});
+}
 
-// --- Play Video on Overlay Click ---
-$(document).on('click', '.overlay-play', function(e) {
-    e.stopPropagation();
-    let listItem = $(this).closest('.list');
-    let videoId = listItem.attr('vid');
 
-    // Stop audio if any
-    document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
 
-    // Stop previous video
-    if (currentVideoListItem && currentVideoListItem[0] !== listItem[0]) {
-        stopVideoIfPlaying();
-    }
+
+
+
+	
 
 
 
