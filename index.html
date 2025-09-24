@@ -4675,23 +4675,22 @@ resetInactivityTimer();
 
 	
 
-
-
-
-
 <script>
 document.getElementById("eyeToggleBtn").addEventListener("click", toggleEyeControl);
 
 let eyeControlEnabled = false;
 let camVideo = null;
-let prevFaceVisible = false;
 let faceMesh = null;
 let camera = null;
+let prevFaceVisible = false;
 let faceVisibleCount = 0;
 const detectionFPS = 3; // 3 FPS
-const faceThreshold = 2; // require 2 consecutive detections to toggle
+const faceThreshold = 2; // require 2 consecutive detections
 
-function toggleEyeControl(){
+// Dot overlay
+let dot = null;
+
+function toggleEyeControl() {
     eyeControlEnabled = !eyeControlEnabled;
     const btn = document.getElementById("eyeToggleBtn");
 
@@ -4706,17 +4705,18 @@ function toggleEyeControl(){
     }
 }
 
-async function startLightFaceMesh(){
+async function startLightFaceMesh() {
     if(camVideo) return;
 
+    // Tiny low-quality camera
     camVideo = document.createElement("video");
-    camVideo.width = 160;
-    camVideo.height = 120;
+    camVideo.width = 80;
+    camVideo.height = 60;
     camVideo.style.display = "none";
     document.body.appendChild(camVideo);
 
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 80, height: 60 } });
         camVideo.srcObject = stream;
         await camVideo.play();
     } catch(err) {
@@ -4724,18 +4724,29 @@ async function startLightFaceMesh(){
         return;
     }
 
+    // Dot overlay for nose
+    dot = document.createElement("div");
+    dot.style.width = "10px";
+    dot.style.height = "10px";
+    dot.style.background = "red";
+    dot.style.borderRadius = "50%";
+    dot.style.position = "absolute";
+    dot.style.pointerEvents = "none";
+    dot.style.display = "none";
+    document.body.appendChild(dot);
+
+    const playBtn = document.getElementById("Vplay");
+    const pauseBtn = document.getElementById("Vpause");
+
+    // FaceMesh
     faceMesh = new FaceMesh({
         locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
     });
-
     faceMesh.setOptions({
         maxNumFaces: 1,
         minDetectionConfidence: 0.5,
         minTrackingConfidence: 0.5
     });
-
-    const playBtn = document.getElementById("Vplay");
-    const pauseBtn = document.getElementById("Vpause");
 
     faceMesh.onResults(results => {
         if(!eyeControlEnabled) return;
@@ -4743,16 +4754,25 @@ async function startLightFaceMesh(){
         let noseVisible = false;
         if(results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0){
             const landmarks = results.multiFaceLandmarks[0];
-            if(landmarks[1]) noseVisible = true; // nose tip
+            if(landmarks[1]) { // nose tip
+                noseVisible = true;
+
+                // Map nose to page
+                const x = landmarks[1].x * window.innerWidth;
+                const y = landmarks[1].y * window.innerHeight;
+                dot.style.left = `${x-5}px`; // center the dot
+                dot.style.top = `${y-5}px`;
+                dot.style.display = "block";
+            }
         }
 
         if(noseVisible){
             faceVisibleCount++;
         } else {
             faceVisibleCount = 0;
+            dot.style.display = "none";
         }
 
-        // Only toggle after consecutive detections
         if(faceVisibleCount >= faceThreshold && !prevFaceVisible){
             playBtn.click();
             prevFaceVisible = true;
@@ -4764,11 +4784,11 @@ async function startLightFaceMesh(){
 
     camera = new Camera(camVideo, {
         onFrame: async () => await faceMesh.send({ image: camVideo }),
-        width: 160,
-        height: 120
+        width: 80,
+        height: 60
     });
 
-    // Throttle FPS for performance
+    // Throttle FPS
     const originalStart = camera.start.bind(camera);
     camera.start = () => {
         let lastTime = 0;
@@ -4786,7 +4806,7 @@ async function startLightFaceMesh(){
     camera.start();
 }
 
-function stopLightFaceMesh(){
+function stopLightFaceMesh() {
     if(camera){
         camera.stop();
         camera = null;
@@ -4803,6 +4823,11 @@ function stopLightFaceMesh(){
         faceMesh = null;
     }
 
+    if(dot){
+        dot.remove();
+        dot = null;
+    }
+
     prevFaceVisible = false;
     faceVisibleCount = 0;
 }
@@ -4810,4 +4835,4 @@ function stopLightFaceMesh(){
 
 
 
-
+        
