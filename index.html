@@ -1562,95 +1562,72 @@ function enforceAudioPause() {
 	
 	
 	// --- Play Mini Video Player ---
-   function playMiniVideoPlayer(videoId) {
+                       function playMiniVideoTab(videoId) {
     stopVideoIfPlaying();
     enforceAudioPause();
 
+    const videoWidth = 286;
+    const videoHeight = 120;
+    const controlHeight = 14;
+    const tabPadding = 2; // extra for blur effect
+
     let overlay = $(`
-        <div class="yt-mini-player" style="
+        <div class="yt-mini-tab" style="
             position:fixed;
-            bottom:0; /* video stays at bottom */
-            left:0;
-            width:100%; /* full width */
-            height:180px; /* video height */
-            background:#111;
-            z-index:99999;
-            overflow:hidden;
+            top:32%;
+            right:10px;
+            width:${videoWidth + tabPadding*2}px;
+            height:${videoHeight + controlHeight + tabPadding*2}px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(16px);
+            border-radius:12px;
             display:flex;
-            justify-content:center;
-            align-items:flex-end;
+            flex-direction:column;
+            align-items:center;
+            justify-content:flex-start;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+            z-index:99999;
+            padding:${tabPadding}px;
         ">
             <!-- Video Container -->
             <div id="yt-mini-${videoId}" style="
-                width:100%;
-                height:100%;
+                width:${videoWidth}px;
+                height:${videoHeight}px;
                 background:black;
+                border-radius:8px;
+                overflow:hidden;
                 position:relative;
             "></div>
 
-            <!-- Glass-style Control Bar -->
+            <!-- Control Bar -->
             <div class="mini-control-bar" style="
-                position:fixed;
-                top:26%; /* 26% from top of page */
-                left:50%;
-                transform:translateX(-50%);
-                width:80%; /* controls width */
-                height:50px;
+                width:${videoWidth}px;
+                height:${controlHeight}px;
+                margin-top:2px; /* small gap */
                 display:flex;
                 align-items:center;
                 justify-content:space-between;
-                padding:0 12px;
-                backdrop-filter: blur(16px);
-                background: rgba(255,255,255,0.05);
-                border-radius:12px;
-                box-shadow: 0 0 12px rgba(255,255,255,0.2);
-                z-index:100000;
+                padding:0 4px;
+                background: rgba(255,255,255,0.08);
+                backdrop-filter: blur(12px);
+                border-radius:6px;
             ">
-                <!-- Play/Pause -->
                 <button id="mini-playpause" style="
-                    color:#00ffff;
-                    border:none;
-                    background:none;
-                    cursor:pointer;
-                    font-size:20px;
-                    text-shadow: 0 0 8px #00ffff;
-                ">
+                    border:none; background:none; cursor:pointer; font-size:12px; color:#00ffff; text-shadow:0 0 6px #00ffff;">
                     <i class="fas fa-pause"></i>
                 </button>
 
-                <!-- Seek Bar -->
                 <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="
                     flex:1;
-                    margin:0 8px;
-                    -webkit-appearance:none;
                     height:4px;
                     border-radius:2px;
                     background: linear-gradient(to right, #ff6a00, #ee0979);
-                    box-shadow: 0 0 8px #ff6a00, 0 0 12px #ee0979;
+                    margin:0 4px;
                     cursor:pointer;
                 ">
-                
-                <!-- Fullscreen -->
-                <button id="mini-fullscreen" style="
-                    color:#00ffff;
-                    border:none;
-                    background:none;
-                    cursor:pointer;
-                    font-size:20px;
-                    text-shadow: 0 0 8px #00ffff;
-                ">
-                    <i class="fas fa-expand"></i>
-                </button>
 
-                <!-- Close -->
                 <button id="mini-close" style="
-                    color:#ff4f4f;
-                    border:none;
-                    background:none;
-                    cursor:pointer;
-                    font-size:20px;
-                    text-shadow: 0 0 8px #ff4f4f;
-                ">
+                    border:none; background:none; cursor:pointer; font-size:12px; color:#ff4f4f; text-shadow:0 0 6px #ff4f4f;">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -1661,8 +1638,8 @@ function enforceAudioPause() {
 
     ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
         videoId: videoId,
-        width: "100%",
-        height: "100%",
+        width: videoWidth,
+        height: videoHeight,
         playerVars: { autoplay: 1, controls: 0, modestbranding: 1 },
         events: {
             onReady: (e) => {
@@ -1683,18 +1660,6 @@ function enforceAudioPause() {
         } else {
             ytPlayer.playVideo();
             $("#mini-playpause i").removeClass("fa-play").addClass("fa-pause");
-        }
-    });
-
-    // Fullscreen button
-    $("#mini-fullscreen").click(() => {
-        if (!ytPlayer) return;
-        if (!isMiniPlayerFullscreen) {
-            $(".yt-mini-player").css({ width: "100vw", height: "100vh", bottom: 0, left: 0 });
-            isMiniPlayerFullscreen = true;
-        } else {
-            $(".yt-mini-player").css({ width: "100%", height: "180px", bottom: 0, left: 0 });
-            isMiniPlayerFullscreen = false;
         }
     });
 
