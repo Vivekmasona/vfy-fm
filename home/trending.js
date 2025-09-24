@@ -15,7 +15,7 @@ function createPlaylistSongElement(videoId, title, channelTitle, videoDate, inde
     const thumbUrl = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
     return `
 <div style="margin-bottom:12px;">
-  <b index="${i}" class="music-item list" vid="${id}" onclick="handleItemClick(this)">
+  <b index="${index}" class="music-item list" vid="${videoId}" onclick="handleItemClick(this)">
       
       <!-- Thumbnail -->
       <div class="thumb-wrap">
@@ -31,7 +31,7 @@ function createPlaylistSongElement(videoId, title, channelTitle, videoDate, inde
       <div class="title">${title}</div>
 
       <!-- Save button -->
-      <button class="save-btn" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">
+      <button class="save-btn" onclick="event.stopPropagation(); saveFavorite(${index}, '${title}', '${thumbUrl}', '${videoId}')">
           <i class="fas fa-heart"></i>
       </button>
 
