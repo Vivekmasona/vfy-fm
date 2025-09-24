@@ -1464,7 +1464,19 @@ function paginate(direction) {
     fetchResults(apiUrl);
 }
 
-          // --- Global Variables ---
+    
+	
+	
+	
+	
+
+
+
+
+
+
+
+// --- Global Variables ---
 let currentVideoListItem = null; 
 let ytPlayer = null;
 let isPlaying = false;
@@ -1476,8 +1488,6 @@ document.getElementById("modeToggleBtn").addEventListener("click", () => {
     document.getElementById("modeToggleBtn").innerText = `Mode: ${isVideoMode ? 'Video' : 'Audio'}`;
 });
 
-
-
 // --- Generate List Item ---
 function getOutput(item, i) {
     var id = item.id?.videoId || item.id;
@@ -1488,7 +1498,7 @@ function getOutput(item, i) {
 
     return `
 <div style="margin-bottom:12px;">
-  <b index="${i}" class="music-item list" vid="${id}" onclick="selectItem(this)">
+  <b index="${i}" class="music-item list" vid="${id}" onclick="handleItemClick(this)">
       <!-- Thumbnail -->
       <div class="thumb-wrap">
           <img src="${thumbUrl}" alt="${title}">
@@ -1514,8 +1524,8 @@ function getOutput(item, i) {
 // --- Handle Item Click Based on Mode ---
 function handleItemClick(el) {
     if (isVideoMode) {
-        // Trigger video overlay click
-        $(el).find('.overlay-play').click();
+        let videoId = $(el).attr("vid");
+        playVideoOverlay(videoId);
     } else {
         // Audio mode
         stopVideoIfPlaying();
@@ -1526,21 +1536,21 @@ function handleItemClick(el) {
 
 // --- Stop current video ---
 function stopVideoIfPlaying() {
-    if (currentVideoListItem) {
-        let iframeWrapper = currentVideoListItem.find('.yt-wrapper');
-        let prevThumbUrl = iframeWrapper.data('thumb');
-        if (iframeWrapper.length && prevThumbUrl) {
-            iframeWrapper.replaceWith(
-                `<img src="${prevThumbUrl}" alt="Video"
-                      class="video-thumbnail" style="width:100%;"
-                      data-thumb="${prevThumbUrl}">`
-            );
-        }
-        currentVideoListItem = null;
-        if (ytPlayer) ytPlayer.stopVideo();
+    if (ytPlayer) {
+        ytPlayer.stopVideo();
         ytPlayer = null;
-        isPlaying = false;
     }
+    $(".yt-full-overlay").remove();
+    currentVideoListItem = null;
+    isPlaying = false;
+}
+
+// --- Force Audio Stop Always When Video Playing ---
+function enforceAudioPause() {
+    document.querySelectorAll("#SAudio").forEach(audio => {
+        audio.pause();
+        audio.currentTime = 0; // optional: reset time
+    });
 }
 
 // --- Popup show/hide ---
@@ -1561,162 +1571,89 @@ $(document).on('click', '.overlay-play', function(e) {
     let videoId = listItem.attr('vid');
 
     // Stop audio if any
-    document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
+    enforceAudioPause();
 
-    // Stop previous video
-    if (currentVideoListItem && currentVideoListItem[0] !== listItem[0]) {
-        stopVideoIfPlaying();
-    }
+    // Show overlay video
+    playVideoOverlay(videoId);
+});
 
+// --- Fullscreen Video Overlay ---
+function playVideoOverlay(videoId) {
+    stopVideoIfPlaying();
+    enforceAudioPause(); // Ensure audio is paused
 
-
-// Create a full-screen overlay for video playback
-let thumb = listItem.find('.video-thumbnail');
-if (thumb.length) {
-    let thumbUrl = thumb.attr('src');
-
-    // Create overlay
     let overlay = $(`
-        <div id="yt-overlay-${videoId}" style="
+        <div class="yt-full-overlay" style="
             position:fixed;
-            top:0;
-            left:0;
-            width:100vw;
-            height:100vh;
-            background:rgba(0,0,0,0.85);
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            z-index:9999;
-            flex-direction:column;
-            overflow:hidden;
-        ">
-            <!-- Loader Overlay -->
-            <div class="yt-loader-overlay" style="
-                position:absolute; top:0; left:0; width:100%; height:100%;
-                display:flex; align-items:center; justify-content:center;
-                backdrop-filter:blur(15px);
-                background:rgba(0,0,0,0.55);
-                z-index:10;
-            ">
-                <h2 class="loading-text" style="font-size:26px; font-weight:bold; display:flex; gap:5px;">
-                    <span style="color:#4285F4">L</span>
-                    <span style="color:#EA4335">o</span>
-                    <span style="color:#FBBC05">a</span>
-                    <span style="color:#34A853">d</span>
-                    <span style="color:#EA4335">i</span>
-                    <span style="color:#4285F4">n</span>
-                    <span style="color:#FBBC05">g</span>
-                    <span style="color:#34A853">.</span>
-                    <span style="color:#EA4335">.</span>
-                    <span style="color:#4285F4">.</span>
-                </h2>
-            </div>
-
-            <!-- Player Container -->
+            top:0; left:0; width:100vw; height:100vh;
+            background:rgba(0,0,0,0.9);
+            display:flex; align-items:center; justify-content:center;
+            flex-direction:column; z-index:99999;">
+            
             <div id="yt-player-${videoId}" style="
-                width:90%;
-                max-width:1280px;
-                aspect-ratio:16/9;
-                background:black;
-                position:relative;
-            "></div>
-
-            <!-- Custom Controls -->
-            <div class="custom-controls" style="
-                width:90%;
-                max-width:1280px;
-                display:flex; align-items:center; gap:8px;
-                padding:10px; box-sizing:border-box;
-                background:rgba(0,0,0,0.35);
-                backdrop-filter:blur(8px);
-                -webkit-backdrop-filter:blur(8px);
-                border-top:1px solid rgba(255,255,255,0.2);
-                margin-top:10px;
-            ">
-                <button id="ytToggleBtn" onclick="togglePlayPause()" style="
-                    width:35px; height:35px; border:none; border-radius:50%;
-                    background:linear-gradient(145deg,#ff9900,#3C8787);
-                    display:flex; align-items:center; justify-content:center; cursor:pointer;">
-                    <svg viewBox="0 0 24 24" id="ytToggleIcon" fill="white" width="16" height="16">
-                        <path d="M3 22v-20l18 10-18 10z"/>
-                    </svg>
-                </button>
-                <input type="range" id="ytSeek" value="0" min="0" max="100" style="
-                    flex:1; appearance:none; height:6px; border-radius:10px;
-                    background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
-                <input type="range" id="ytVol" value="100" min="0" max="100" style="
-                    width:70px; appearance:none; height:6px; border-radius:10px;
-                    background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
-                <button id="ytMuteBtn" onclick="toggleMute()" style="
-                    width:30px; height:30px; border:none; border-radius:50%;
-                    background:linear-gradient(145deg,#222,#3C8787);
-                    display:flex; align-items:center; justify-content:center; cursor:pointer;">
-                    <svg viewBox="0 0 24 24" id="ytMuteIcon" fill="white" width="14" height="14">
-                        <path d="M5 9v6h4l5 5V4l-5 5H5z"/>
-                    </svg>
-                </button>
-                <button id="ytSpeedBtn" onclick="cycleSpeed()" style="
-                    width:30px; height:30px; border:none; border-radius:50%;
-                    background:linear-gradient(145deg,#222,#3C8787);
-                    display:flex; align-items:center; justify-content:center; cursor:pointer;
-                    color:white; font-size:12px; font-weight:bold;">
-                    1x
-                </button>
-                <button onclick="closeOverlay('yt-overlay-${videoId}')" style="
-                    width:30px; height:30px; border:none; border-radius:50%;
-                    background:linear-gradient(145deg,#3C8787,#222);
-                    display:flex; align-items:center; justify-content:center; cursor:pointer;">
-                    <svg viewBox="0 0 24 24" fill="white" width="14" height="14">
-                        <path d="M18 6L6 18M6 6l12 12"/>
-                    </svg>
-                </button>
+                width:90%; max-width:1280px; aspect-ratio:16/9; background:black;">
             </div>
+
+            <button onclick="stopVideoIfPlaying()" style="
+                margin-top:15px; padding:8px 14px;
+                background:red; color:white; border:none; border-radius:6px; cursor:pointer;">
+                Close
+            </button>
         </div>
     `);
 
-    // Append overlay to body
-    $('body').append(overlay);
-
-    // Initialize YouTube Player
-    ytPlayer = new YT.Player(`yt-player-${videoId}`, {
-        height: '100%',
-        width: '100%',
-        videoId: videoId,
-        playerVars: { 
-            autoplay: 1, 
-            controls: 0, 
-            modestbranding: 1, 
-            rel: 0, 
-            fs: 0, 
-            iv_load_policy: 3, 
-            disablekb: 1, 
-            showinfo: 0 
-        },
-        events: { 
-            'onReady': function(event) {
-                event.target.playVideo();
-            },
-            'onStateChange': function(event) {
-                if (event.data === YT.PlayerState.PLAYING) {
-                    $(overlay).find('.yt-loader-overlay').fadeOut(800, function(){ $(this).remove(); });
-                }
-            }
-        }    
-    });
-}
 currentVideoListItem = listItem;
             
 });
-// Close overlay function
-function closeOverlay(id) {
-    let ov = document.getElementById(id);
-    if (ov) {
-        ytPlayer.stopVideo();
-        ov.remove();
-    }
+	
+    $("body").append(overlay);
+
+    ytPlayer = new YT.Player(`yt-player-${videoId}`, {
+        videoId: videoId,
+        width: "100%",
+        height: "100%",
+        playerVars: { autoplay: 1, controls: 1, modestbranding: 1 },
+        events: {
+            onReady: (e) => {
+                enforceAudioPause(); // safety check
+                e.target.playVideo();
+            }
+        }
+    });
+
+    isPlaying = true;
 }
 
+// --- Prevent Audio Play During Video Mode ---
+document.addEventListener("play", function(e) {
+    if (isVideoMode && ytPlayer && isPlaying && e.target.id === "SAudio") {
+        e.target.pause();
+    }
+}, true);
+
+
+
+	
+	
+	
+	      
+
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+
+
+
+
+
+	
 
 // Mute / Unmute toggle
 function toggleMute() {
