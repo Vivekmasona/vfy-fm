@@ -170,8 +170,7 @@ if (window !== window.top) {
 
   
 
-
-  /* Music Item same as before */
+/* Music Item */
 .music-item {
   width: 95%;
   height: 100px;
@@ -250,28 +249,6 @@ if (window !== window.top) {
   padding-left: 10px;
 }
 
-/* Save button */
-.save-btn.save {
-  background: radial-gradient(circle, rgba(0,200,0,0.4), rgba(0,150,0,0.1));
-  border: none;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  font-size: 20px;
-  color: #fff;
-  transition: 0.2s all;
-}
-
-.save-btn.save:hover {
-  transform: scale(1.1);
-  color: #00ff00;
-}
-
 /* Delete button */
 .save-btn.delete {
   background: radial-gradient(circle, rgba(255,0,0,0.4), rgba(200,0,0,0.1));
@@ -298,6 +275,28 @@ if (window !== window.top) {
   display: block;
 }
 
+/* Keep save button CSS for future use */
+.save-btn.save {
+  background: radial-gradient(circle, rgba(0,200,0,0.4), rgba(0,150,0,0.1));
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 20px;
+  color: #fff;
+  transition: 0.2s all;
+}
+
+.save-btn.save:hover {
+  transform: scale(1.1);
+  color: #00ff00;
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   .music-item {
@@ -308,6 +307,7 @@ if (window !== window.top) {
   .save-btn.delete { color: #fff; }
   .overlay-play svg path { fill: #fff; }
 }
+  
 
 
 	
