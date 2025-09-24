@@ -1955,190 +1955,212 @@ function play(videoId, index) {
 
 
 
-// GLOBAL state
-let CURRENT_ID = null;
-let CURRENT_SID = 0;
-let isRepeat = false;
-let currentAlternativeIndex = 0;
-let currentSourceList = [];
-const audio = document.getElementById("SAudio");
 
-// Helper: set thumbnails & button links (keeps your original URLs)
-function setUIForId(id) {
-  document.getElementById("SThumb").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
-  document.getElementById("Fimg").src   = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
+  
+  
+function play(id,Sid){
+  // data = "https://distinctive-netta-vivekfy-608ee81c.koyeb.app/play?url=https://youtu.be/"+id;  
+  //data = "https://vivekfy.vercel.app/hack?url=https://vkrdownloader.xyz/download.php?vkr=https://youtu.be/"+id+"&redirect=1";  
+  //data = "https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/"+id;  
+  //data = "https://vivekfy.vercel.app/api-play?url=https://youtu.be/"+id;  
+  data = "https://vivekfy.vercel.app/inv?id="+id;  
+  //data = "https://vivekfy.vercel.app/mp3?url=https://vkrdownloader.xyz/download.php?vkr=https://youtu.be/"+id;  
+  //data = "https://inv-ca1-c.nadeko.net/latest_version?id="+id+"&itag=250&local=true";  
+  //data = "https://myserver-dev-atmq.2.ie-1.fl0.io/audio?url=https://youtu.be/"+id;  
+  //data = "https://audioserver-dev-cgen.2.sg-1.fl0.io/"+id;  
 
-  document.getElementById("pahilagana").onclick = () => {
-    location.href = "https://vivekfy.vercel.app/dl?url=https://youtu.be/"+id;
-  };
-  document.getElementById("VFYmp3").onclick = () => {
-    location.href = "https://vivekfy.vercel.app/stream?url=https://youtu.be/"+id;
-  };
-  document.getElementById("VFYmp3v2").onclick = () => {
-    location.href = "https://vivekfy.vercel.app/stream?url=https://youtu.be/"+id;
-  };
-  document.getElementById("vivekmasona").onclick = () => {
-    location.href = "https://vivekfy.vercel.app/api?url=https://youtu.be/"+id;
-  };
-}
+  document.getElementById("SThumb").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";  
+  document.getElementById("Fimg").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";  
 
-// MAIN play function — call this to start a given video id & index
-function play(id, Sid) {
-  // save global state
-  CURRENT_ID = id;
-  CURRENT_SID = (typeof Sid === 'number') ? Sid : 0;
+  document.getElementById("pahilagana").onclick = ()=>{  
+    location.href= "https://vivekfy.vercel.app/dl?url=https://youtu.be/"+id;  
+    //location.href= "https://vivekfy.vercel.app/download/audio?url=https://youtu.be/"+id;  
+    //location.href= "https://vivekfy-server.000webhostapp.com/audio/download?url=https://youtu.be/"+id;  
+  };  
 
-  // Build the source list in order (primary first, then alternatives)
-  // KEEP every URL you had — none removed
-  const primary = "https://vivekfy.vercel.app/inv?id=" + id;
-  const alternatives = [
+  document.getElementById("VFYmp3").onclick = ()=>{  
+    //location.href= "https://vivekfy-server.000webhostapp.com/audio/download?url=https://youtu.be/"+id;  
+    location.href= "https://vivekfy.vercel.app/stream?url=https://youtu.be/"+id;  
+    //location.href= "https://vivekdl.000webhostapp.com/audio/download?url=https://youtu.be/"+id;  
+  };  
+
+  document.getElementById("VFYmp3v2").onclick = ()=>{  
+    location.href= "https://vivekfy.vercel.app/stream?url=https://youtu.be/"+id;  
+    //location.href= "https://vivekfy.fanclub.rocks/audio?url=https://youtu.be/"+id;  
+    //location.href= "https://vivekdl.000webhostapp.com/audio/download?url=https://youtu.be/"+id;  
+  };  
+
+  document.getElementById("vivekmasona").onclick = ()=>{  
+    location.href= "https://vivekfy.vercel.app/api?url=https://youtu.be/"+id;  
+    //location.href= "https://myserver-dev-akkd.2.sg-1.fl0.io/mp4?url=https://youtu.be/"+id;  
+    //location.href= "https://vivekfy-api-v2.onrender.com/video?url=https://youtu.be/"+id;  
+    //location.href= "https://vivekfy-obg6.onrender.com/download/video?url=https://youtu.be/"+id;  
+  };  
+
+  var audio = document.getElementById("SAudio");    
+  var isRepeat = false; // repeat flag  
+
+  // --- IMPORTANT: set the initial audio.src to the main 'data' (Sid-based) and reset alternatives ---
+  audio.src = data;
+  audio.load();
+  audio.play().catch(function(e){ console.log("Play promise rejected:", e); });
+
+  // Reset alternative index whenever new song is loaded
+  var currentAlternativeIndex = 0;
+  var triedAlternatives = []; // for debug
+
+  // Function to play the next song    
+  function playNextSong() {    
+      var nextSongIndex = Sid + 1; // Calculate the index of the next song    
+      var playlistItems = document.getElementsByClassName("list");    
+
+      if (nextSongIndex < playlistItems.length) {    
+          playlistItems[nextSongIndex].click(); // Play the next song    
+          // audio.play(); // click handler should set src & play if your click logic does that  
+
+          // Update the profile thumbnail and video ID for the next song    
+          var nextSong = playlistItems[nextSongIndex];    
+          var nextThumbnail = $(nextSong).children('img').attr("src");    
+          var nextVideoId = $(nextSong).attr("vid");    
+          $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');    
+          $("#profileThumbnail").data("videoId", nextVideoId);    
+
+          Sid = nextSongIndex; // update Sid    
+          console.log('Automatically went to the next song and started playing.');    
+      } else {    
+          console.log('End of playlist');    
+      }    
+  }    
+
+  // Function to play the previous song    
+  function playPreviousSong() {    
+      var prevSongIndex = Sid - 1; // Calculate the index of the previous song    
+      var playlistItems = document.getElementsByClassName("list");    
+
+      if (prevSongIndex >= 0) {    
+          playlistItems[prevSongIndex].click(); // Play the previous song    
+          // audio.play(); // click handler should handle play  
+
+          // Update the profile thumbnail and video ID for the previous song    
+          var prevSong = playlistItems[prevSongIndex];    
+          var prevThumbnail = $(prevSong).children('img').attr("src");    
+          var prevVideoId = $(prevSong).attr("vid");    
+          $("#profileThumbnail").html('<img src="' + prevThumbnail + '" alt="Profile Thumbnail">');    
+          $("#profileThumbnail").data("videoId", prevVideoId);    
+
+          Sid = prevSongIndex; // update Sid    
+          console.log('Automatically went to the previous song and started playing.');    
+      } else {    
+          console.log('Start of playlist');    
+      }    
+  }    
+
+  function playPause() {    
+     var audio = document.getElementById("SAudio");    
+
+     if (audio.paused) {    
+        audio.play();    
+     } else {    
+        audio.pause();    
+     }    
+  }    
+
+  // Listen for the 'ended' event    
+  audio.addEventListener("ended", function() {    
+      if (isRepeat) {    
+          audio.currentTime = 0;    
+          audio.play();    
+          console.log("Song repeated.");    
+      } else {    
+          playNextSong();    
+      }    
+  });    
+
+  // Pichhe button listener    
+  document.getElementById("pichhe").addEventListener("click", playPreviousSong);    
+
+  // Repeat button listener    
+  document.getElementById("repeat").addEventListener("click", function() {    
+      isRepeat = !isRepeat; // toggle repeat    
+      console.log("Repeat mode: " + (isRepeat ? "ON" : "OFF"));    
+  });  
+
+  // Listen for the 'error' event  
+  var alternativeAudioSources = [
+    // preserve as many variants as you had (even duplicates/likely-dead ones)
     "https://vivekfy.vercel.app/inv1?id=" + id,
     "https://vivekfy.vercel.app/inv2?id=" + id,
     "https://vivekfy.vercel.app/stream?url=https://youtu.be/" + id,
     "https://vivekfy.vercel.app/tokyo?id=" + id,
+    // kept others you commented earlier (as active alternatives) — you said don't remove even if dead
     "https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/" + id,
-    "https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + id
-    // add any other urls you want here
-  ];
+    "https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + id,
+    // older fallback patterns (kept)
+    "https://vivekfy.vercel.app/mp3?url=https://vkrdownloader.xyz/download.php?vkr=https://youtu.be/" + id,
+    "https://distinctive-netta-vivekfy-608ee81c.koyeb.app/play?url=https://youtu.be/" + id,
+    "https://myserver-dev-atmq.2.ie-1.fl0.io/audio?url=https://youtu.be/" + id,
+    "https://audioserver-dev-cgen.2.sg-1.fl0.io/" + id
+  ];  
 
-  // Final ordered list to try
-  currentSourceList = [primary].concat(alternatives);
-
-  // reset alternative index
+  // Make sure we try the initial main 'data' first; if it errors, we'll step through alternatives
+  // Reset trackers when a new play() call is made
   currentAlternativeIndex = 0;
+  triedAlternatives = [];
 
-  // update UI
-  setUIForId(id);
-  $("#profileThumbnail").html('<img src="https://i.ytimg.com/vi/'+id+'/mqdefault.jpg" alt="Profile Thumbnail">');
-  $("#profileThumbnail").data("videoId", id);
+  audio.addEventListener("error", function (ev) {
+      // log the error event for debugging
+      console.log("Audio error on src:", audio.src, "error event:", ev);
 
-  // set audio src to first (primary)
-  audio.src = currentSourceList[currentAlternativeIndex];
-  audio.load();
-
-  // try to play (some browsers require user interaction; this will still attempt)
-  audio.play().catch((e) => {
-    console.log("play() promise rejected (maybe autoplay blocked):", e);
-    // Do nothing — user can click play. But we still keep error handler to try alternatives.
+      setTimeout(function () {
+          // If there are still alternatives left, try the next one
+          if (currentAlternativeIndex < alternativeAudioSources.length) {
+              var nextSrc = alternativeAudioSources[currentAlternativeIndex];
+              triedAlternatives.push(nextSrc);
+              console.log("Attempting alternative source:", nextSrc);
+              audio.src = nextSrc;
+              audio.load();
+              audio.play().catch(function(e){
+                console.log("Play failed for alternative:", nextSrc, e);
+                // advance index to try next in next error event
+                currentAlternativeIndex++;
+                // Manually trigger error handler if play promise rejects before 'error' event fires
+                // but don't recurse too deep — rely on browser to fire error if needed
+              });
+              // increment index so next error tries next source
+              currentAlternativeIndex++;
+          } else {
+              // all alternatives exhausted: log and move to next song
+              console.log("All alternative sources exhausted for id:", id, "tried:", triedAlternatives);
+              // reset index for future songs
+              currentAlternativeIndex = 0;
+              triedAlternatives = [];
+              // optionally you may want to show a UI message here to the user
+              playNextSong();
+          }
+      }, 1000);
   });
 
-  console.log("Playing id:", id, "using primary src:", audio.src);
-}
+  // next button (keeps your existing var name)
+  var nextbutto = document.getElementById("nextbutto");  
+  nextbutto.addEventListener("click", function () {  
+      playNextSong();  
+  });
 
-// AUDIO error handler: try next source; if none left -> skip to next song
-audio.addEventListener("error", function () {
-  console.warn("Audio error on source:", audio.src);
-
-  // try next source after small delay
-  setTimeout(function () {
-    currentAlternativeIndex++;
-    if (currentAlternativeIndex < currentSourceList.length) {
-      // try next alternative
-      audio.src = currentSourceList[currentAlternativeIndex];
-      audio.load();
-      audio.play().catch((e) => {
-        console.log("play() after switching source failed:", e);
-      });
-      console.log("Switched to alternative source:", audio.src);
-    } else {
-      // all sources exhausted for this id => move to next song
-      console.error("All sources failed for id:", CURRENT_ID);
-      // reset index so next time new song starts fresh
+  // OPTIONAL: if your playlist items are clicked manually, make sure you reset alternative index there too.
+  // Example: if each .list element click triggers play(...) elsewhere, ensure that handler resets currentAlternativeIndex = 0.
+  // If you want, we can hook into clicks here:
+  var playlistItems = document.getElementsByClassName("list");
+  for (let i = 0; i < playlistItems.length; i++) {
+    playlistItems[i].addEventListener("click", function(){
+      // When user clicks a list item directly, reset alternative index so fresh tries start
       currentAlternativeIndex = 0;
-      // Give user console message and auto-skip
-      playNextSong();
-    }
-  }, 800); // short delay to avoid rapid-fire
-});
-
-// ENDED handler: repeat or next
-audio.addEventListener("ended", function() {
-  if (isRepeat) {
-    audio.currentTime = 0;
-    audio.play().catch(e => console.log("repeat play failed:", e));
-    console.log("Song repeated.");
-  } else {
-    playNextSong();
+      triedAlternatives = [];
+      // If your click handler sets src via play(...), it will overwrite audio.src anyway.
+    });
   }
-});
 
-// PLAY NEXT SONG
-function playNextSong() {
-  const playlistItems = document.getElementsByClassName("list");
-  let nextSongIndex = (typeof CURRENT_SID === 'number') ? CURRENT_SID + 1 : 0;
+} // end function play(id,Sid)
 
-  if (nextSongIndex < playlistItems.length) {
-    // Simulate click on that playlist item (your existing list click handlers should call play())
-    playlistItems[nextSongIndex].click();
-    // After click handler runs it calls play(...) which sets audio.src etc.
-    console.log('Automatically went to the next song and started playing. index:', nextSongIndex);
-  } else {
-    console.log('End of playlist');
-  }
-}
-
-// PLAY PREVIOUS SONG
-function playPreviousSong() {
-  const playlistItems = document.getElementsByClassName("list");
-  let prevSongIndex = (typeof CURRENT_SID === 'number') ? CURRENT_SID - 1 : -1;
-
-  if (prevSongIndex >= 0) {
-    playlistItems[prevSongIndex].click();
-    console.log('Automatically went to the previous song and started playing. index:', prevSongIndex);
-  } else {
-    console.log('Start of playlist');
-  }
-}
-
-// play/pause toggle
-function playPause() {
-  if (audio.paused) {
-    audio.play().catch(e => console.log("play() error on user toggle:", e));
-  } else {
-    audio.pause();
-  }
-}
-
-// Hook up your existing buttons
-document.getElementById("pichhe").addEventListener("click", playPreviousSong);
-document.getElementById("repeat").addEventListener("click", function() {
-  isRepeat = !isRepeat;
-  console.log("Repeat mode: " + (isRepeat ? "ON" : "OFF"));
-});
-var nextbutto = document.getElementById("nextbutto");
-if (nextbutto) {
-  nextbutto.addEventListener("click", function () {
-    playNextSong();
-  });
-}
-
-// Make sure playlist items call play(id, index) when clicked
-(function attachPlaylistClickers() {
-  const items = document.getElementsByClassName("list");
-  for (let i = 0; i < items.length; i++) {
-    const el = items[i];
-    // avoid adding duplicate handlers
-    el.removeEventListener('click', el.__playHandler); 
-    el.__playHandler = function (ev) {
-      // if your .list element stores video id in attribute 'vid' as before
-      const vid = el.getAttribute('vid') || el.getAttribute('data-vid') || el.dataset.vid;
-      if (!vid) {
-        console.warn("playlist item missing vid attribute at index", i);
-        return;
-      }
-      // update CURRENT_SID then call play
-      CURRENT_SID = i;
-      play(vid, i);
-    };
-    el.addEventListener('click', el.__playHandler);
-  }
-})();
-
-// OPTIONAL: If you have initial page state (e.g., you want to auto-play first item)
-// you can call play with the first playlist item (uncomment if desired):
-// const first = document.querySelector('.list[vid]');
-// if (first) first.click();  
-    
 
 
 
