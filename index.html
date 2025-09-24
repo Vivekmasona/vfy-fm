@@ -51,6 +51,9 @@
 <script src="globlealert/alert.js" defer></script>
 <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+
 <b onclick="alert('This is a stylish alert!')"></b>
 
 
@@ -839,21 +842,14 @@ width: 50%;
      <input type="search"  name="search"   id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">search</button></sr>
 	    
-	<!-- Separate Play/Pause Buttons -->
-<button id="Vplay" style="
-    width:30px; height:30px; border:none; border-radius:50%;
-    background:linear-gradient(145deg,#34A853,#3C8787);
+	<!-- Eye Control Toggle Button -->
+<button id="eyeToggleBtn" style="
+    width:60px; height:28px; border:none; border-radius:12px;
+    background:linear-gradient(145deg,#3C8787,#ff9900);
     display:flex; align-items:center; justify-content:center; cursor:pointer;
-    margin-left:5px;">
-    ▶
-</button>
-
-<button id="Vpause" style="
-    width:30px; height:30px; border:none; border-radius:50%;
-    background:linear-gradient(145deg,#EA4335,#3C8787);
-    display:flex; align-items:center; justify-content:center; cursor:pointer;
-    margin-left:5px;">
-    ❚❚
+    color:white; font-size:12px; font-weight:bold;
+    margin-left:10px;">
+    OFF
 </button>
 
 	
@@ -4671,12 +4667,11 @@ resetInactivityTimer();
 <script>
 let eyeControlEnabled = false;
 let camVideo = null;
-let prevFaceVisible = false; // previous frame me face tha ya nahi
+let prevFaceVisible = false;
 
 function toggleEyeControl(){
   eyeControlEnabled = !eyeControlEnabled;
   const btn = document.getElementById("eyeToggleBtn");
-
   if(eyeControlEnabled){
     btn.innerText = "ON";
     btn.style.background = "linear-gradient(145deg,#00cc66,#006633)";
@@ -4703,23 +4698,21 @@ async function startFaceControl(){
   faceMesh.onResults(results=>{
     if(!eyeControlEnabled) return;
 
-    const ytBtn = document.getElementById("ytToggleBtn");
+    const playBtn = document.getElementById("Vplay");
+    const pauseBtn = document.getElementById("Vpause");
+
     let faceDetected = results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0;
 
     if(faceDetected && !prevFaceVisible){
       // Face just appeared → play
-      if(ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING){
-        ytBtn.click();
-      }
+      playBtn.click();
       prevFaceVisible = true;
     } else if(!faceDetected && prevFaceVisible){
       // Face just disappeared → pause
-      if(ytPlayer.getPlayerState() === YT.PlayerState.PLAYING){
-        ytBtn.click();
-      }
+      pauseBtn.click();
       prevFaceVisible = false;
     }
-    // Agar state same → kuch nahi karna
+    // State same → do nothing
   });
 
   const camera = new Camera(camVideo,{
