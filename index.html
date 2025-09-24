@@ -4682,40 +4682,47 @@ resetInactivityTimer();
 
 
 
+
 <script>
 document.getElementById("eyeToggleBtn").addEventListener("click", toggleEyeControl);
 
 let eyeControlEnabled = false;
 let camVideo = null;
+let canvas = null;
+let ctx = null;
 let prevFaceVisible = false;
-let faceMesh = null;
-let camera = null;
-let lastDetectionTime = 0;
-const detectionInterval = 200; // 5 FPS
+let lastFrame = null;
 
-function toggleEyeControl(){
+function toggleEyeControl() {
     eyeControlEnabled = !eyeControlEnabled;
     const btn = document.getElementById("eyeToggleBtn");
 
     if(eyeControlEnabled){
         btn.innerText = "ON";
         btn.style.background = "linear-gradient(145deg,#00cc66,#006633)";
-        startLightFaceMesh();
+        startMotionControl();
     } else {
         btn.innerText = "OFF";
         btn.style.background = "linear-gradient(145deg,#3C8787,#ff9900)";
-        stopLightFaceMesh();
+        stopMotionControl();
     }
 }
 
-async function startLightFaceMesh(){
+async function startMotionControl(){
     if(camVideo) return;
 
     camVideo = document.createElement("video");
-    camVideo.width = 160;
-    camVideo.height = 120;
+    camVideo.width = 80;  // tiny
+    camVideo.height = 60; // tiny
     camVideo.style.display = "none";
     document.body.appendChild(camVideo);
+
+    canvas = document.createElement("canvas");
+    canvas.width = camVideo.width;
+    canvas.height = camVideo.height;
+    canvas.style.display = "none";
+    document.body.appendChild(canvas);
+    ctx = canvas.getContext("2d");
 
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -4726,69 +4733,50 @@ async function startLightFaceMesh(){
         return;
     }
 
-    faceMesh = new FaceMesh({
-        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
-    });
+    const playBtn = document.getElementById("Vplay");
+    const pauseBtn = document.getElementById("Vpause");
 
-    faceMesh.setOptions({
-        maxNumFaces: 1,
-        minDetectionConfidence: 0.5,
-        minTrackingConfidence: 0.5
-    });
-
-    faceMesh.onResults(results => {
+    const interval = setInterval(() => {
         if(!eyeControlEnabled) return;
 
-        const now = Date.now();
-        if(now - lastDetectionTime < detectionInterval) return;
-        lastDetectionTime = now;
+        ctx.drawImage(camVideo, 0, 0, canvas.width, canvas.height);
+        const frame = ctx.getImageData(0,0,canvas.width,canvas.height);
 
-        const playBtn = document.getElementById("Vplay");
-        const pauseBtn = document.getElementById("Vpause");
+        let sum = 0;
+        for(let i=0;i<frame.data.length;i+=4){
+            sum += frame.data[i] + frame.data[i+1] + frame.data[i+2];
+        }
+        const avg = sum / (frame.data.length/4);
 
-        let noseVisible = false;
-
-        if(results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0){
-            const landmarks = results.multiFaceLandmarks[0];
-            if(landmarks[1]) { // Nose tip index 1
-                noseVisible = true;
+        if(lastFrame){
+            let diff = Math.abs(avg - lastFrame);
+            if(diff > 10 && !prevFaceVisible){ // change detected → assume face
+                playBtn.click();
+                prevFaceVisible = true;
+            } else if(diff <= 10 && prevFaceVisible){ // no change → assume face gone
+                pauseBtn.click();
+                prevFaceVisible = false;
             }
         }
+        lastFrame = avg;
+    }, 100); // 10 FPS very light
 
-        if(noseVisible && !prevFaceVisible){
-            playBtn.click();
-            prevFaceVisible = true;
-        } else if(!noseVisible && prevFaceVisible){
-            pauseBtn.click();
-            prevFaceVisible = false;
-        }
-    });
-
-    camera = new Camera(camVideo, {
-        onFrame: async () => await faceMesh.send({ image: camVideo }),
-        width: 160,
-        height: 120
-    });
-    camera.start();
+    camVideo.dataset.intervalId = interval;
 }
 
-function stopLightFaceMesh(){
-    if(camera){
-        camera.stop();
-        camera = null;
+function stopMotionControl(){
+    if(camVideo && camVideo.dataset.intervalId){
+        clearInterval(camVideo.dataset.intervalId);
     }
 
     if(camVideo && camVideo.srcObject){
-        camVideo.srcObject.getTracks().forEach(track => track.stop());
+        camVideo.srcObject.getTracks().forEach(track=>track.stop());
         camVideo.remove();
         camVideo = null;
     }
-
-    if(faceMesh){
-        faceMesh.close();
-        faceMesh = null;
-    }
+    if(canvas) canvas.remove();
 
     prevFaceVisible = false;
+    lastFrame = null;
 }
 </script>
