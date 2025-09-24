@@ -29,7 +29,7 @@
 <link rel="stylesheet" href="setting/setting.css" />
 <link rel="stylesheet" href="menu/sidemenu.css" />
 <link rel="stylesheet" href="detail/detail.css" />
-<link rel="stylesheet" href="home/trendin.css" />
+<link rel="stylesheet" href="home/trending.css" />
 <link rel="stylesheet" href="connect/player.css" />
 <link rel="stylesheet" href="artist/artist.css" />
 
@@ -40,7 +40,7 @@
 <script src="fullscreen/fs.js" defer></script>
 <script src="remote/remote.js" defer></script>
 <script src="database/storage.js" defer></script>
-<script src="home/trending.js" defer></script>
+<script src="home/trending-v2.js" defer></script>
 <script src="attachment/online.js" defer></script>
 <script src="detail/detail.js" defer></script>
 <script src="setting/setting.js" defer></script>
@@ -166,184 +166,8 @@ if (window !== window.top) {
 
  
 
-<style>
-
-  
-
-/* Music Item */
-.music-item {
-  width: 95%;
-  height: 100px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border-radius: 12px;
-  padding: 8px 1px;
-  box-sizing: border-box;
-  background: linear-gradient(90deg, rgba(255,120,80,0.2), rgba(255,120,80,0));
-  position: relative;
-  margin: 0 auto 12px; /* 12px gap between items */
-  cursor: pointer;
-}
-
-/* Thumbnail */
-.thumb-wrap {
-  position: relative;
-  width: 120px;
-  height: 100px;
-  flex-shrink: 0;
-  border-radius: 12px 0 0 12px;
-  overflow: hidden;
-}
-
-	/* Save button */
-.save-btn {
-  background: radial-gradient(circle, rgba(255,120,80,0.4), rgba(255,120,80,0.1));
-  border: none;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  font-size: 20px;
-  color: #fff;
-  transition: 0.2s all;
-}
-
-.save-btn:hover {
-  transform: scale(1.1);
-  color: #ff5555; /* change color on hover */
-}
-
-.save-btn i {
-  display: block;
-}
-
-/* Dark mode for save button */
-@media (prefers-color-scheme: dark) {
-  .save-btn {
-    color: #fff;
-  }
-}
-.thumb-wrap img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.thumb-wrap::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  background: linear-gradient(90deg, rgba(40,19,13,0) 10%, rgba(40,19,13,0.48) 65%, rgba(40,19,13,0.86) 85%, rgba(40,19,13,1) 95%);
-  pointer-events: none;
-}
-
-/* Overlay play button */
-.overlay-play {
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 5;
-}
-
-.overlay-play svg path {
-  fill: rgba(255,120,80,0.9);
-}
-
-/* Title multi-line */
-.title {
-  flex: 1;
-  font-size: 15px;
-  opacity: 0.5;
-  letter-spacing: 2px;
-  font-weight: 600;
-  line-height: 1.3;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  padding-left: 10px;
-}
-
-/* Delete button */
-.save-btn.delete {
-  background: radial-gradient(circle, rgba(255,0,0,0.4), rgba(200,0,0,0.1));
-  border: none;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  font-size: 20px;
-  color: #fff;
-  transition: 0.2s all;
-}
-
-.save-btn.delete:hover {
-  transform: scale(1.1);
-  color: #ff5555;
-}
-
-.save-btn i {
-  display: block;
-}
-
-/* Keep save button CSS for future use */
-.save-btn.save {
-  background: radial-gradient(circle, rgba(0,200,0,0.4), rgba(0,150,0,0.1));
-  border: none;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  font-size: 20px;
-  color: #fff;
-  transition: 0.2s all;
-}
-
-.save-btn.save:hover {
-  transform: scale(1.1);
-  color: #00ff00;
-}
-
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-  .music-item {
-    background: linear-gradient(90deg, rgba(255,120,80,0.25), rgba(255,120,80,0));
-    color: #fff;
-  }
-  .save-btn.save { color: #fff; }
-  .save-btn.delete { color: #fff; }
-  .overlay-play svg path { fill: #fff; }
-}
-  
 
 
-	
-</style>
 
 
   
@@ -666,34 +490,178 @@ width: 50%;
 }
 
  
+.list {
+  position: relative;
+  display: block;
+  background: linear-gradient(
+      to top,
+      rgba(255, 255, 255, 0.25) 0%,   /* top light glow */
+      rgba(255, 255, 255, 0.05) 30%,
+      rgba(0, 0, 0, 0.2) 100%
+    ),
+    rgba(255, 255, 255, 0.08);  /* base transparent layer */
+    
+  backdrop-filter: blur(10px) saturate(160%);
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+  
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
 
+  box-shadow: 
+    0 8px 20px rgba(0, 0, 0, 0.6),   /* deep outer shadow */
+    inset 0 2px 6px rgba(255, 255, 255, 0.2), /* top glossy edge */
+    inset 0 -4px 8px rgba(0, 0, 0, 0.3);      /* bottom depth */
+    
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  width: 100%;
+  margin: 20px auto;
+}
+
+/* Video Thumbnail with Overlay Effect */
+.video-thumbnail {
+  width: 100%;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  transition: opacity 1s;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.video-thumbnail:hover {
+  opacity: 1.8;
+}
+
+/* Gradient Overlay on Thumbnail */
+.list::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 20%;
+  background: linear-gradient(to bottom, rgba(255, 126, 95, 0.8), rgba(254, 180, 123, 0));
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+
+	/* Gradient Overlay on Bottom of Thumbnail */
+/*.list::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 20%;
+  background: linear-gradient(to top, rgba(56, 54, 52, 0.4), rgba(56, 54, 52, 0));
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  z-index: 2;
+  pointer-events: none;
+}
+*/
 		
-		
-		
-		
-		
-		
-		
-	
+/* Video Section Styling */
+.video section {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.video section img {
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.video section div {
+  text-align: left;
+}
+
+.video-info {
+  color: #00ffff;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+/* Title Styling */
+.video p {
+  font-weight: bold;
+  color: #fff;
+  margin: 5px 0;
+  opacity: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .list {
+    width: 99%;
+  }
+} 
+  
+.save-icon {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    font-size: 20px;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1); /* Slightly transparent for glow */
+    backdrop-filter: blur(20px); /* Blur background */
+    box-shadow: 
+        0 0 10px rgba(231, 76, 60, 0.7),   /* inner subtle glow */
+        0 0 20px rgba(231, 76, 60, 0.5),   /* outer soft glow */
+        0 0 30px rgba(231, 76, 60, 0.3);   /* extended glow */
+    border-radius: 50%; /* Circle for better glow effect */
+    padding: 10px;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Hover effect for stronger glow */
+.save-icon:hover {
+    color: #ffff00;
+    box-shadow: 
+        0 0 15px rgba(255, 45, 0, 0.8),
+        0 0 30px rgba(255, 45, 0, 0.6),
+        0 0 45px rgba(255, 45, 0, 0.4);
+}
 
 
 
+.video-play-button {
+    position: absolute;
+    top: 5px;
+    right: 5px; /* top-right corner */
+    font-size: 20px; /* bigger play icon */
+    color: #00A86B;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    border-radius: 50%;
+    padding: 5px;
+    cursor: pointer;
+    z-index: 10;
+    transition: color 0.3s, transform 0.2s;
+}
 
+.video-play-button:hover {
+    color: #FFD700;
+    transform: scale(1.1);
+}
 
+.video-thumbnail {
+    width: 100%;
+    height: auto;
+    display: block;
+    position: relative;
+}
 
-
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		.delete-btn {
+.delete-btn {
     position: absolute;
     top: 5px;
     left: 5px;
@@ -868,29 +836,6 @@ width: 50%;
 	
 
    <div id="autocomplete-results"></div>
-
-
-<div id="videopopup" style="
-    display:none;
-    position:fixed;
-    top:25%;
-    left:50%;
-    transform:translateX(-50%);
-    width:80%;
-    max-width:720px;
-    z-index:9999;
-    background:#000;
-    border-radius:10px;
-    overflow:hidden;
-">
-    <button id="closeVideoPopup" style="
-        position:absolute; top:5px; right:5px; z-index:20;
-        width:28px; height:28px; border-radius:50%; border:none;
-        background:red; color:white; cursor:pointer;
-    ">X</button>
-</div>
-
-		
 <!-- Mode Toggle -->
 <div id="videoListContainer">
     <!-- Your generated list items go here -->
@@ -901,8 +846,7 @@ width: 50%;
     <button id="closePopup">Close</button>
 </div>
 
-
-		
+ 
 
     
     </div> 
@@ -1200,35 +1144,50 @@ function saveFavorite(index, title, thumbUrl, id) {
 function displayFavorites() {
     const favContainer = document.getElementById('fav-songs');
     const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-favContainer.innerHTML = '';
-favorites.forEach((song, i) => {
-    const li = document.createElement('li');
-    li.style.marginBottom = "12px"; // 12px gap between items
-    li.innerHTML = `
-        <b index="${i}" class="music-item list" vid="${song.id}" onclick="loadFavoriteSong('${song.id}')">
 
-            <!-- Thumbnail -->
-            <div class="thumb-wrap">
-                <img src="${song.thumbUrl}" alt="${song.title}">
-                <div class="overlay-play">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
-                        <path d="M3 22v-20l18 10-18 10z"/>
-                    </svg>
+    favContainer.innerHTML = '';
+    favorites.forEach(song => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <b onclick="loadFavoriteSong('${song.id}')" class="list" vid="${song.id}" style="position: relative;">
+                <div class="video" style="position:relative;">
+                    
+                    <!-- Thumbnail -->
+                    <img src="${song.thumbUrl}" alt="${song.title}" 
+                         class="video-thumbnail" vid="${song.id}" 
+                         data-thumb="${song.thumbUrl}" style="width:100%;">
+
+                    <!-- Overlay play button -->
+                    <div class="overlay-play" style="
+                        position:absolute; top:10px; right:10px;
+                        width:40px; height:40px;
+                        background: transparent;
+                        border-radius:50%; display:flex;
+                        align-items:center; justify-content:center;
+                        cursor:pointer; z-index:10;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
+                            <path d="M3 22v-20l18 10-18 10z"/>
+                        </svg>
+                    </div>
+
+                    <!-- Song info -->
+                    <section>
+                        <img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">
+                        <div>
+                            <p>V F Y ${song.title}</p>
+                            <small class="video-info">Video ID: ${song.id}</small>
+                        </div>
+                    </section>
+
+                    <!-- Delete button -->
+                    <b class="delete-btn" onclick="event.stopPropagation(); removeFavorite('${song.id}')">
+                        <i class="fas fa-trash"></i>
+                    </b>
                 </div>
-            </div>
-
-            <!-- Title -->
-            <div class="title">${song.title}</div>
-
-            <!-- Delete button -->
-            <button class="save-btn delete" onclick="event.stopPropagation(); removeFavorite('${song.id}')">
-                <i class="fas fa-trash"></i>
-            </button>
-
-        </b>
-    `;
-    favContainer.appendChild(li);
-});
+            </b>
+        `;
+        favContainer.appendChild(li);
+    });
 }
 
 // Function to Load Song by Video ID
@@ -1488,9 +1447,7 @@ function paginate(direction) {
     fetchResults(apiUrl);
 }
 
-          
-        
-  // --- Global Variables ---
+          // --- Global Variables ---
 let currentVideoListItem = null; 
 let ytPlayer = null;
 let isPlaying = false;
@@ -1500,31 +1457,6 @@ let isVideoMode = false; // default Audio mode
 document.getElementById("modeToggleBtn").addEventListener("click", () => {
     isVideoMode = !isVideoMode;
     document.getElementById("modeToggleBtn").innerText = `Mode: ${isVideoMode ? 'Video' : 'Audio'}`;
-
-    // --- Hide/Stop video on mode change ---
-    if (ytPlayer) {
-        ytPlayer.stopVideo();
-        ytPlayer.destroy();
-        ytPlayer = null;
-    }
-
-    // Hide popup if open
-    $("#videopopup").hide().html('');
-
-    // Remove inline video from list if any
-    if (currentVideoListItem) {
-        let iframeWrapper = currentVideoListItem.find('.yt-wrapper');
-        let prevThumbUrl = iframeWrapper.data('thumb');
-        if (iframeWrapper.length && prevThumbUrl) {
-            iframeWrapper.replaceWith(
-                `<img src="${prevThumbUrl}" alt="Video"
-                      class="video-thumbnail" style="width:100%;"
-                      data-thumb="${prevThumbUrl}">`
-            );
-        }
-        currentVideoListItem = null;
-        isPlaying = false;
-    }
 });
 
 
@@ -1538,28 +1470,35 @@ function getOutput(item, i) {
     if (item.snippet?.liveBroadcastContent === "live") return '';
 
     return `
-<div style="margin-bottom:12px;">
-  <b index="${i}" class="music-item list" vid="${id}" onclick="selectItem(this)">
-      <!-- Thumbnail -->
-      <div class="thumb-wrap">
-          <img src="${thumbUrl}" alt="${title}" class="video-thumbnail" data-thumb="${thumbUrl}">
-          <div class="overlay-play">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
-                  <path d="M3 22v-20l18 10-18 10z"/>
-              </svg>
-          </div>
-      </div>
+        <b index="${i}" class="list" vid="${id}" style="position:relative;">
+            <div class="video" style="position:relative;">
+                <i class="fas fa-heart save-icon" 
+                   onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
 
-      <!-- Title -->
-      <div class="title">${title}</div>
+                <!-- Thumbnail -->
+                <img src="${thumbUrl}" alt="${title}" 
+                     class="video-thumbnail" index="${i}" vid="${id}" 
+                     data-thumb="${thumbUrl}" style="width:100%;">
 
-      <!-- Save button -->
-      <button class="save-btn" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">
-          <i class="fas fa-heart"></i>
-      </button>
-  </b>
-</div>
-`;
+                <!-- Overlay play button -->
+                <div class="overlay-play" style="
+                    position:absolute; top:10px; right:10px;
+                    width:40px; height:40px;
+                    background: transparent;
+                    border-radius:50%; display:flex;
+                    align-items:center; justify-content:center;
+                    cursor:pointer; z-index:10;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
+                        <path d="M3 22v-20l18 10-18 10z"/>
+                    </svg>
+                </div>
+
+                <section>
+                    <img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">
+                    <div><p>V F Y ${title}</p></div>
+                </section>
+            </div>
+        </b>`;
 }
 
 // --- Handle Item Click Based on Mode ---
@@ -1588,10 +1527,7 @@ function stopVideoIfPlaying() {
             );
         }
         currentVideoListItem = null;
-        if (ytPlayer) {
-            ytPlayer.stopVideo();
-            ytPlayer.destroy();
-        }
+        if (ytPlayer) ytPlayer.stopVideo();
         ytPlayer = null;
         isPlaying = false;
     }
@@ -1622,111 +1558,162 @@ $(document).on('click', '.overlay-play', function(e) {
         stopVideoIfPlaying();
     }
 
-    // Replace thumbnail with player
-    let thumb = listItem.find('.video-thumbnail');
-    if (thumb.length) {
-        let thumbUrl = thumb.attr('src');
-        let wrapper = $(`
-            <div class="yt-wrapper" data-thumb="${thumbUrl}" style="position:relative; width:100%; overflow:hidden;">
-                <!-- Loader Overlay -->
-                <div class="yt-loader-overlay" style="
-                    position:absolute; top:0; left:0; width:100%; height:100%;
-                    display:flex; align-items:center; justify-content:center;
-                    backdrop-filter:blur(15px);
-                    background:rgba(0,0,0,0.55);
-                    z-index:9999;
-                ">
-                    <h2 class="loading-text" style="font-size:26px; font-weight:bold; display:flex; gap:5px;">
-                        <span style="color:#4285F4">L</span>
-                        <span style="color:#EA4335">o</span>
-                        <span style="color:#FBBC05">a</span>
-                        <span style="color:#34A853">d</span>
-                        <span style="color:#EA4335">i</span>
-                        <span style="color:#4285F4">n</span>
-                        <span style="color:#FBBC05">g</span>
-                        <span style="color:#34A853">.</span>
-                        <span style="color:#EA4335">.</span>
-                        <span style="color:#4285F4">.</span>
-                    </h2>
-                </div>
 
-                <!-- Player -->
-                <div id="yt-player-${videoId}"></div>
+
+// Replace thumbnail with player
+let thumb = listItem.find('.video-thumbnail');
+if (thumb.length) {
+    let thumbUrl = thumb.attr('src');
+    let wrapper = $(`
+        <div class="yt-wrapper" data-thumb="${thumbUrl}" style="position:relative; width:100%; overflow:hidden;">
+            <!-- Loader Overlay -->
+            <div class="yt-loader-overlay" style="
+                position:absolute; top:0; left:0; width:100%; height:100%;
+                display:flex; align-items:center; justify-content:center;
+                backdrop-filter:blur(15px);
+                background:rgba(0,0,0,0.55);
+                z-index:10;
+            ">
+                <h2 class="loading-text" style="font-size:26px; font-weight:bold; display:flex; gap:5px;">
+                    <span style="color:#4285F4">L</span>
+                    <span style="color:#EA4335">o</span>
+                    <span style="color:#FBBC05">a</span>
+                    <span style="color:#34A853">d</span>
+                    <span style="color:#EA4335">i</span>
+                    <span style="color:#4285F4">n</span>
+                    <span style="color:#FBBC05">g</span>
+                    <span style="color:#34A853">.</span>
+                    <span style="color:#EA4335">.</span>
+                    <span style="color:#4285F4">.</span>
+                </h2>
             </div>
-        `);
 
-        thumb.replaceWith(wrapper);
+            <!-- Player -->
+            <div id="yt-player-${videoId}"></div>
 
-        ytPlayer = new YT.Player(`yt-player-${videoId}`, {
-            height: '250',
-            width: '100%',
-            videoId: videoId,
-            playerVars: { 
-                autoplay: 1, 
-                controls: 0, 
-                modestbranding: 1, 
-                rel: 0, 
-                fs: 0, 
-                iv_load_policy: 3, 
-                disablekb: 1, 
-                showinfo: 0 
-            },
-            events: { 
-                'onReady': function(event) {
+            <!-- Custom Controls -->
+            <div class="custom-controls" style="
+                position:absolute; bottom:0; left:0; width:100%;
+                display:flex; align-items:center; gap:8px;
+                padding:5px 10px; box-sizing:border-box;
+                background:rgba(0,0,0,0.35);
+                backdrop-filter:blur(8px);
+                -webkit-backdrop-filter:blur(8px);
+                border-top:1px solid rgba(255,255,255,0.2);
+            ">
+                <!-- Play / Pause -->
+                <button id="ytToggleBtn" onclick="togglePlayPause()" style="
+                    width:30px; height:30px; border:none; border-radius:50%;
+                    background:linear-gradient(145deg,#ff9900,#3C8787);
+                    display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <svg viewBox="0 0 24 24" id="ytToggleIcon" fill="white" width="14" height="14">
+                        <path d="M3 22v-20l18 10-18 10z"/>
+                    </svg>
+                </button>
+
+                <!-- Seek -->
+                <input type="range" id="ytSeek" value="0" min="0" max="100" style="
+                    flex:1; appearance:none; height:6px; border-radius:10px;
+                    background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
+
+                <!-- Volume -->
+                <input type="range" id="ytVol" value="100" min="0" max="100" style="
+                    width:60px; appearance:none; height:6px; border-radius:10px;
+                    background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
+
+                <!-- Mute / Unmute -->
+                <button id="ytMuteBtn" onclick="toggleMute()" style="
+                    width:28px; height:28px; border:none; border-radius:50%;
+                    background:linear-gradient(145deg,#222,#3C8787);
+                    display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <svg viewBox="0 0 24 24" id="ytMuteIcon" fill="white" width="12" height="12">
+                        <path d="M5 9v6h4l5 5V4l-5 5H5z"/>
+                    </svg>
+                </button>
+
+                <!-- Speed / Fast -->
+                <button id="ytSpeedBtn" onclick="cycleSpeed()" style="
+                    width:28px; height:28px; border:none; border-radius:50%;
+                    background:linear-gradient(145deg,#222,#3C8787);
+                    display:flex; align-items:center; justify-content:center; cursor:pointer;
+                    color:white; font-size:10px; font-weight:bold;">
+                    1x
+                </button>
+
+                <!-- Fullscreen -->
+                <button onclick="toggleFullscreen('yt-player-${videoId}')" style="
+                    width:28px; height:28px; border:none; border-radius:50%;
+                    background:linear-gradient(145deg,#3C8787,#222);
+                    display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <svg viewBox="0 0 24 24" fill="white" width="12" height="12">
+                        <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zm-3-9h3v3h2V5h-5v2z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    `);
+
+    thumb.replaceWith(wrapper);
+
+    ytPlayer = new YT.Player(`yt-player-${videoId}`, {
+        height: '250',
+        width: '100%',
+        videoId: videoId,
+        playerVars: { 
+            autoplay: 1, 
+            controls: 0, 
+            modestbranding: 1, 
+            rel: 0, 
+            fs: 0, 
+            iv_load_policy: 3, 
+            disablekb: 1, 
+            showinfo: 0 
+        },
+        events: { 
+            'onReady': function(event) {
+                onYtReady(event);
+                document.addEventListener("click", function onceClick() {
                     event.target.playVideo();
-                },
-                'onStateChange': function(event) {
-                    if (event.data === YT.PlayerState.PLAYING) {
-                        setTimeout(() => {
-                            let overlay = $(wrapper).find('.yt-loader-overlay');
-                            overlay.css({
-                                transition: "all 1s ease",
-                                transform: "translateY(-100%)",
-                                opacity: 0
-                            });
-                            setTimeout(() => overlay.remove(), 1200);
-                        }, 1000);
-                    }
+                    document.removeEventListener("click", onceClick);
+                });
+            },
+            'onStateChange': function(event) {
+                onYtStateChange(event);
+                if (event.data === YT.PlayerState.PLAYING) {
+                    setTimeout(() => {
+                        let overlay = $(wrapper).find('.yt-loader-overlay');
+                        overlay.css({
+                            transition: "all 1s ease",
+                            transform: "translateY(-100%)",
+                            opacity: 0
+                        });
+                        setTimeout(() => overlay.remove(), 1200);
+                    }, 1000);
                 }
-            }    
-        });
-    }
+            }
+        }    
+    });
+}
 
-    currentVideoListItem = listItem;
-});  
-                
-
-// --- Close Popup Button ---
-$("#closeVideoPopup").click(function() {
-    if (ytPlayer) {
-        ytPlayer.stopVideo();
-        ytPlayer.destroy();
-        ytPlayer = null;
-    }
-    $("#videopopup").hide().html('');
+currentVideoListItem = listItem;
+            
 });
-
-
-
-
-
-
 
 // Mute / Unmute toggle
 function toggleMute() {
     if (!ytPlayer) return;
     if (ytPlayer.isMuted()) {
         ytPlayer.unMute();
-        $("#ytMuteIcon").html('<path d="M5 9v6h4l5 5V4l-5 5H5z"/>');
+        $("#ytMuteIcon").html('<path d="M5 9v6h4l5 5V4l-5 5H5z"/>'); // speaker icon
     } else {
         ytPlayer.mute();
-        $("#ytMuteIcon").html('<path d="M16 12c0-1.1-.9-2-2-2v4c1.1 0 2-.9 2-2zM5 9v6h4l5 5V4l-5 5H5z"/>');
+        $("#ytMuteIcon").html('<path d="M16 12c0-1.1-.9-2-2-2v4c1.1 0 2-.9 2-2zM5 9v6h4l5 5V4l-5 5H5z"/>'); // muted speaker
     }
 }
 
 // Speed / Fast cycle 0.5x → 1x → 1.5x → 2x
 let speeds = [0.5, 1, 1.5, 2];
-let speedIndex = 1;
+let speedIndex = 1; // default 1x
 
 function cycleSpeed() {
     if (!ytPlayer) return;
@@ -1734,6 +1721,9 @@ function cycleSpeed() {
     ytPlayer.setPlaybackRate(speeds[speedIndex]);
     $("#ytSpeedBtn").text(speeds[speedIndex] + "x");
 }
+            
+                
+
 
 // --- Fullscreen function ---
 function toggleFullscreen(playerId) {
@@ -1748,14 +1738,6 @@ function toggleFullscreen(playerId) {
         iframe.msRequestFullscreen();
     }
 }
-	
-
-
-
-			   
-
-
-	
 
 // --- Auto PiP when page goes background ---
 document.addEventListener("visibilitychange", async () => {
