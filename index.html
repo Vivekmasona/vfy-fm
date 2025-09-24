@@ -1570,7 +1570,7 @@ $(document).on('click', '.overlay-play', function(e) {
 
 
 
-// --- Replace thumbnail with compact list item ---
+// Replace thumbnail with list
 let thumb = listItem.find('.video-thumbnail');
 if (thumb.length) {
     let thumbUrl = thumb.attr('src');
@@ -1578,12 +1578,11 @@ if (thumb.length) {
         <div class="yt-wrapper" data-thumb="${thumbUrl}" data-videoid="${videoId}" style="position:relative; width:100%; overflow:hidden;">
             <img src="${thumbUrl}" alt="${title}" style="width:100%; height:auto; border-radius:5px; cursor:pointer;">
         </div>
-    `);
-
-    thumb.replaceWith(wrapper);
+    `)
+    thumb.replaceWith(wrapper)
 }
 
-// --- Overlay Container (added once to body) ---
+// Add overlay once
 if (!$("#videoOverlay").length) {
     $("body").append(`
     <div id="videoOverlay" style="
@@ -1591,7 +1590,6 @@ if (!$("#videoOverlay").length) {
         width:80%; max-width:900px; height:300px; background:black;
         z-index:99999; display:none; border-radius:10px; overflow:hidden;
     ">
-        <!-- Loader -->
         <div class="yt-loader-overlay" style="
             position:absolute; top:0; left:0; width:100%; height:100%;
             display:flex; align-items:center; justify-content:center;
@@ -1604,10 +1602,7 @@ if (!$("#videoOverlay").length) {
                 <span style="color:#EA4335">.</span><span style="color:#4285F4">.</span>
             </h2>
         </div>
-        <!-- Player -->
         <div id="videoOverlayPlayer"></div>
-
-        <!-- Controls -->
         <div class="custom-controls" style="
             position:absolute; bottom:0; left:0; width:100%;
             display:flex; align-items:center; gap:8px;
@@ -1623,15 +1618,12 @@ if (!$("#videoOverlay").length) {
                     <path d="M3 22v-20l18 10-18 10z"/>
                 </svg>
             </button>
-
             <input type="range" id="ytSeek" value="0" min="0" max="100" style="
                 flex:1; appearance:none; height:6px; border-radius:10px;
                 background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
-
             <input type="range" id="ytVol" value="100" min="0" max="100" style="
                 width:60px; appearance:none; height:6px; border-radius:10px;
                 background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
-
             <button id="ytMuteBtn" style="
                 width:28px; height:28px; border:none; border-radius:50%;
                 background:linear-gradient(145deg,#222,#3C8787);
@@ -1640,13 +1632,11 @@ if (!$("#videoOverlay").length) {
                     <path d="M5 9v6h4l5 5V4l-5 5H5z"/>
                 </svg>
             </button>
-
             <button id="ytSpeedBtn" style="
                 width:28px; height:28px; border:none; border-radius:50%;
                 background:linear-gradient(145deg,#222,#3C8787);
                 display:flex; align-items:center; justify-content:center; cursor:pointer;
                 color:white; font-size:10px; font-weight:bold;">1x</button>
-
             <button id="ytFullscreenBtn" style="
                 width:28px; height:28px; border:none; border-radius:50%;
                 background:linear-gradient(145deg,#3C8787,#222);
@@ -1655,7 +1645,6 @@ if (!$("#videoOverlay").length) {
                     <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zm-3-9h3v3h2V5h-5v2z"/>
                 </svg>
             </button>
-
             <button id="closeOverlay" style="
                 position:absolute; top:5px; right:5px;
                 width:28px; height:28px; border:none; border-radius:50%;
@@ -1663,108 +1652,116 @@ if (!$("#videoOverlay").length) {
                 z-index:10;">×</button>
         </div>
     </div>
-    `);
+    `)
 }
 
-// --- Overlay Player Logic ---
-let overlayPlayer = null;
-let speedIndex = 1;
-const speeds = [0.5,1,1.5,2];
+// Overlay Player
+let overlayPlayer = null
+let speedIndex = 1
+const speeds = [0.5,1,1.5,2]
 
 function playVideoInOverlay(videoId){
-    const overlay = $("#videoOverlay");
-    overlay.show();
-    $(".yt-loader-overlay").show();
-
-    if(overlayPlayer) overlayPlayer.destroy();
-
+    const overlay = $("#videoOverlay")
+    overlay.show()
+    $(".yt-loader-overlay").show()
+    if(overlayPlayer) overlayPlayer.destroy()
     overlayPlayer = new YT.Player("videoOverlayPlayer", {
-        height:'100%', width:'100%',
+        height:'100%',
+        width:'100%',
         videoId:videoId,
         playerVars:{autoplay:1,controls:0,modestbranding:1,rel:0,iv_load_policy:3,disablekb:1},
         events:{
-            onReady:function(event){ event.target.playVideo(); $(".yt-loader-overlay").fadeOut(500); },
-            onStateChange:function(event){ if(event.data===YT.PlayerState.PLAYING) $(".yt-loader-overlay").fadeOut(500); }
+            onReady:function(event){
+                event.target.playVideo()
+                $(".yt-loader-overlay").fadeOut(500)
+            },
+            onStateChange:function(event){
+                if(event.data===YT.PlayerState.PLAYING){
+                    $(".yt-loader-overlay").fadeOut(500)
+                }
+            }
         }
-    });
+    })
 }
 
-// --- Click list item ---
+// Click list item
 $(".yt-wrapper").on("click", function(){
-    const videoId = $(this).data("videoid");
-    playVideoInOverlay(videoId);
-});
+    const videoId = $(this).data("videoid")
+    playVideoInOverlay(videoId)
+})
 
-// --- Controls ---
 // Play/Pause
 $("#ytToggleBtn").on("click", function(){
-    if(!overlayPlayer) return;
-    const state = overlayPlayer.getPlayerState();
+    if(!overlayPlayer) return
+    const state = overlayPlayer.getPlayerState()
     if(state===YT.PlayerState.PLAYING){
-        overlayPlayer.pauseVideo();
-        $("#ytToggleIcon").html('<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'); // pause
+        overlayPlayer.pauseVideo()
+        $("#ytToggleIcon").html('<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>')
     } else {
-        overlayPlayer.playVideo();
-        $("#ytToggleIcon").html('<path d="M3 22v-20l18 10-18 10z"/>'); // play
+        overlayPlayer.playVideo()
+        $("#ytToggleIcon").html('<path d="M3 22v-20l18 10-18 10z"/>')
     }
-});
+})
 
 // Seek
 $("#ytSeek").on("input", function(){
-    if(!overlayPlayer) return;
-    const duration = overlayPlayer.getDuration();
-    overlayPlayer.seekTo(duration*($(this).val()/100), true);
-});
+    if(!overlayPlayer) return
+    const duration = overlayPlayer.getDuration()
+    overlayPlayer.seekTo(duration*($(this).val()/100), true)
+})
+
 setInterval(()=>{
-    if(!overlayPlayer) return;
-    const dur = overlayPlayer.getDuration();
-    const cur = overlayPlayer.getCurrentTime();
-    if(dur) $("#ytSeek").val((cur/dur)*100);
-},1000);
+    if(!overlayPlayer) return
+    const dur = overlayPlayer.getDuration()
+    const cur = overlayPlayer.getCurrentTime()
+    if(dur) $("#ytSeek").val((cur/dur)*100)
+},1000)
 
 // Volume
-$("#ytVol").on("input", function(){ if(overlayPlayer) overlayPlayer.setVolume($(this).val()); });
+$("#ytVol").on("input", function(){ if(overlayPlayer) overlayPlayer.setVolume($(this).val()) })
 
 // Mute
 $("#ytMuteBtn").on("click", function(){
-    if(!overlayPlayer) return;
+    if(!overlayPlayer) return
     if(overlayPlayer.isMuted()){
-        overlayPlayer.unMute();
-        $("#ytMuteIcon").html('<path d="M5 9v6h4l5 5V4l-5 5H5z"/>');
+        overlayPlayer.unMute()
+        $("#ytMuteIcon").html('<path d="M5 9v6h4l5 5V4l-5 5H5z"/>')
     } else {
-        overlayPlayer.mute();
-        $("#ytMuteIcon").html('<path d="M16 12c0-1.1-.9-2-2-2v4c1.1 0 2-.9 2-2zM5 9v6h4l5 5V4l-5 5H5z"/>');
+        overlayPlayer.mute()
+        $("#ytMuteIcon").html('<path d="M16 12c0-1.1-.9-2-2-2v4c1.1 0 2-.9 2-2zM5 9v6h4l5 5V4l-5 5H5z"/>')
     }
-});
+})
 
 // Speed
 $("#ytSpeedBtn").on("click", function(){
-    if(!overlayPlayer) return;
-    speedIndex = (speedIndex+1)%speeds.length;
-    overlayPlayer.setPlaybackRate(speeds[speedIndex]);
-    $(this).text(speeds[speedIndex]+"x");
-});
+    if(!overlayPlayer) return
+    speedIndex = (speedIndex+1)%speeds.length
+    overlayPlayer.setPlaybackRate(speeds[speedIndex])
+    $(this).text(speeds[speedIndex]+"x")
+})
 
 // Fullscreen
 $("#ytFullscreenBtn").on("click", function(){
-    const el = document.getElementById("videoOverlay");
-    if(el.requestFullscreen) el.requestFullscreen();
-    else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-    else if(el.mozRequestFullScreen) el.mozRequestFullScreen();
-    else if(el.msRequestFullscreen) el.msRequestFullscreen();
-});
+    const el = document.getElementById("videoOverlay")
+    if(el.requestFullscreen) el.requestFullscreen()
+    else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen()
+    else if(el.mozRequestFullScreen) el.mozRequestFullScreen()
+    else if(el.msRequestFullscreen) el.msRequestFullscreen()
+})
 
 // Close overlay
 $("#closeOverlay").on("click", function(){
-    if(overlayPlayer){ overlayPlayer.stopVideo(); overlayPlayer.destroy(); overlayPlayer=null; }
-    $("#videoOverlay").hide();
-});
-
-
-}
+    if(overlayPlayer){ overlayPlayer.stopVideo(); overlayPlayer.destroy(); overlayPlayer=null }
+    $("#videoOverlay").hide()
+})
 
 
 
+
+
+
+
+			   
 
 
 	
