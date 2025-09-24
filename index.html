@@ -4343,7 +4343,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
 .big-clock #clockTime {
   font-size: 48px;
   font-weight: 700;
-  
+  background: linear-gradient(90deg, white, yellow);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -4471,10 +4471,7 @@ background: linear-gradient(90deg, rgba(40, 19, 13, 0) 10%, rgba(40, 19, 13, 0.4
   overflow: hidden; /* overlay ke andar scroll block */
 }
 
-/* Agar aap chahte ho ki overlay active hote hi body scroll bhi block ho jaye */
-body:has(#lockOverlay:visible) {
-  overflow: hidden;
-}
+
 
 	
 	
