@@ -79,6 +79,33 @@
   
 
 <script>
+let eyeControlEnabled = false;
+
+function toggleEyeControl() {
+    eyeControlEnabled = !eyeControlEnabled;
+    const btn = document.getElementById("eyeToggleBtn");
+
+    if (eyeControlEnabled) {
+        btn.style.background = "linear-gradient(145deg,#00cc66,#006633)";
+        initFaceControl(); // 👈 yeh function wahi hoga jo maine pichle code me diya tha
+    } else {
+        btn.style.background = "linear-gradient(145deg,#3C8787,#ff9900)";
+        stopFaceControl();
+    }
+}
+
+// agar band karna ho to stream stop
+function stopFaceControl() {
+    if (camVideo && camVideo.srcObject) {
+        let tracks = camVideo.srcObject.getTracks();
+        tracks.forEach(track => track.stop());
+        camVideo.remove();
+        camVideo = null;
+    }
+}
+</script>
+
+<script>
   // Page load hote hi sid check karo
   window.addEventListener("DOMContentLoaded", () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -837,14 +864,14 @@ width: 50%;
      <input type="search"  name="search"   id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">search</button></sr>
 	    
-	<!-- Play / Pause Button -->
-<button id="ytToggleBtn" onclick="togglePlayPause()" style="  
-    width:30px; height:30px; border:none; border-radius:50%;  
-    background:linear-gradient(145deg,#ff9900,#3C8787);  
-    display:flex; align-items:center; justify-content:center; cursor:pointer;">  
-    <svg viewBox="0 0 24 24" id="ytToggleIcon" fill="white" width="14" height="14">  
-        <path d="M3 22v-20l18 10-18 10z"/>  
-    </svg>  
+	<!-- Eye Control Toggle Button -->
+<button id="eyeToggleBtn" onclick="toggleEyeControl()" style="
+    width:30px; height:30px; border:none; border-radius:50%;
+    background:linear-gradient(145deg,#3C8787,#ff9900);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;">
+    <svg viewBox="0 0 24 24" fill="white" width="16" height="16">
+        <path d="M12 4.5C7 4.5 2.7 7.6 1 12c1.7 4.4 6 7.5 11 7.5s9.3-3.1 11-7.5c-1.7-4.4-6-7.5-11-7.5zm0 12c-2.5 0-4.5-2-4.5-4.5S9.5 7.5 12 7.5 16.5 9.5 16.5 12 14.5 16.5 12 16.5z"/>
+    </svg>
 </button>
 	
 
