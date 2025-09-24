@@ -4687,6 +4687,7 @@ resetInactivityTimer();
 
     
             
+        
 <script>
 let controlEnabled = false;
 let camVideo = null;
@@ -4755,15 +4756,27 @@ async function startFaceControl() {
         if(!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) return;
 
         const landmarks = results.multiFaceLandmarks[0];
-        const nose = landmarks[1];
 
-        // Map nose X/Y (0-1) to full page width/height
-        const targetX = (1 - nose.x) * window.innerWidth;
-        const targetY = nose.y * window.innerHeight;
+        // Get bounding box of face
+        let minX=1, maxX=0, minY=1, maxY=0;
+        for(const lm of landmarks){
+            if(lm.x<minX) minX=lm.x;
+            if(lm.x>maxX) maxX=lm.x;
+            if(lm.y<minY) minY=lm.y;
+            if(lm.y>maxY) maxY=lm.y;
+        }
 
-        // Fast pointer movement (higher factor = faster)
-        prevX += (targetX - prevX) * 0.35; 
-        prevY += (targetY - prevY) * 0.35; 
+        // Center of face bounding box
+        const faceCenterX = (minX + maxX)/2;
+        const faceCenterY = (minY + maxY)/2;
+
+        // Map face center to full page
+        const targetX = (1 - faceCenterX) * window.innerWidth;
+        const targetY = faceCenterY * window.innerHeight;
+
+        // Smooth pointer movement, fast
+        prevX += (targetX - prevX) * 0.35;
+        prevY += (targetY - prevY) * 0.35;
 
         pointerDot.style.left = `${prevX - 7}px`;
         pointerDot.style.top = `${prevY - 7}px`;
