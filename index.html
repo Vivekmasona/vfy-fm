@@ -171,27 +171,20 @@ if (window !== window.top) {
   
 
   
-/* Music Item container */
+/* Music Item same as before */
 .music-item {
-  width: 95%;               /* fixed width */
+  width: 95%;
   height: 100px;
   display: flex;
   align-items: center;
   gap: 8px;
-  border-radius: 12px;      /* rounded corners */
+  border-radius: 12px;
   padding: 8px 1px;
   box-sizing: border-box;
   background: linear-gradient(90deg, rgba(255,120,80,0.2), rgba(255,120,80,0));
   position: relative;
-  margin: 0 auto 12px;      /* 12px gap between all items */
+  margin: 0 auto 12px; /* 12px gap between items */
   cursor: pointer;
-  overflow: hidden;
-  transition: 0.2s all;
-}
-
-/* Remove border / tab styling */
-.music-item.selected {
-  background: linear-gradient(90deg, rgba(255,120,80,0.3), rgba(255,120,80,0.05));
 }
 
 /* Thumbnail */
@@ -211,7 +204,6 @@ if (window !== window.top) {
   display: block;
 }
 
-/* Gradient overlay */
 .thumb-wrap::after {
   content: "";
   position: absolute;
@@ -244,7 +236,7 @@ if (window !== window.top) {
   fill: rgba(255,120,80,0.9);
 }
 
-/* Title */
+/* Title multi-line */
 .title {
   flex: 1;
   font-size: 15px;
@@ -260,7 +252,7 @@ if (window !== window.top) {
   padding-left: 10px;
 }
 
-/* Save button */
+/* Save button (replacing arrow-btn) */
 .save-btn {
   background: radial-gradient(circle, rgba(255,120,80,0.4), rgba(255,120,80,0.1));
   border: none;
@@ -288,16 +280,13 @@ if (window !== window.top) {
 
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
-  .music-item { 
-    background: linear-gradient(90deg, rgba(255,120,80,0.2), rgba(255,120,80,0));
-    color: #fff; 
+  .music-item {
+    background: linear-gradient(90deg, rgba(255,120,80,0.25), rgba(255,120,80,0));
+    color: #fff;
   }
   .save-btn { color: #fff; }
   .overlay-play svg path { fill: #fff; }
 }
- 
-
-
 
 	
 </style>
