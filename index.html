@@ -4688,6 +4688,8 @@ resetInactivityTimer();
     
             
         
+
+        
 <script>
 let controlEnabled = false;
 let camVideo = null;
@@ -4757,7 +4759,7 @@ async function startFaceControl() {
 
         const landmarks = results.multiFaceLandmarks[0];
 
-        // Get bounding box of face
+        // Full face bounding box
         let minX=1, maxX=0, minY=1, maxY=0;
         for(const lm of landmarks){
             if(lm.x<minX) minX=lm.x;
@@ -4774,7 +4776,7 @@ async function startFaceControl() {
         const targetX = (1 - faceCenterX) * window.innerWidth;
         const targetY = faceCenterY * window.innerHeight;
 
-        // Smooth pointer movement, fast
+        // Fast, smooth pointer movement
         prevX += (targetX - prevX) * 0.35;
         prevY += (targetY - prevY) * 0.35;
 
