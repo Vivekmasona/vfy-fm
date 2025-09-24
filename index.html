@@ -1577,7 +1577,9 @@ $(document).on('click', '.overlay-play', function(e) {
 
                     
                 
-    // Replace thumbnail with player
+
+
+// Replace thumbnail with player
 let thumb = listItem.find('.video-thumbnail');
 if (thumb.length) {
     let thumbUrl = thumb.attr('src');
@@ -1701,7 +1703,7 @@ if (thumb.length) {
             'onReady': function(event) {
                 onYtReady(event);
 
-                // First click autoplay
+                // First click to play
                 document.addEventListener("click", function onceClick() {
                     event.target.playVideo();
                     togglePlayPause(true);
@@ -1713,15 +1715,18 @@ if (thumb.length) {
 
                 const playBtn = document.getElementById('VidPlay');
                 const pauseBtn = document.getElementById('VidPause');
+                const overlay = wrapper.find('.yt-loader-overlay');
 
                 if (event.data === YT.PlayerState.PLAYING) {
-                    // Hide overlay exactly like original code
-                    setTimeout(() => {
-                        let overlay = $(wrapper).find('.yt-loader-overlay');
-                        overlay.css({ transition: "all 1s ease", transform: "translateY(-100%)", opacity: 0 });
-                        setTimeout(() => overlay.remove(), 1200);
-                    }, 1000);
-
+                    // Hide overlay properly
+                    if (overlay.length) {
+                        overlay.css({
+                            transition: "all 0.8s ease",
+                            transform: "translateY(-100%)",
+                            opacity: 0
+                        });
+                        setTimeout(() => overlay.remove(), 800);
+                    }
                     playBtn.style.display = 'none';
                     pauseBtn.style.display = 'flex';
                 } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
@@ -1751,6 +1756,15 @@ function togglePlayPause(play) {
         pauseBtn.style.display = 'none';
     }
 }
+
+
+
+
+
+
+
+	
+                
             
 
 // Mute / Unmute toggle
