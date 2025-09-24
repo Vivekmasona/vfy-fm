@@ -1146,20 +1146,30 @@ function displayFavorites() {
     const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 
     favContainer.innerHTML = '';
-    favorites.forEach(song => {
-        // Start with maxres WebP thumbnail
-        let thumbUrl = `https://i.ytimg.com/vi_webp/${song.id}/maxresdefault.webp`;
+    favorites.forEach((song, i) => {
+        var id = song.id;
+        var title = song.title || "No title";
+
+        // Start with maxres WebP
+        var thumbUrl = `https://i.ytimg.com/vi_webp/${id}/maxresdefault.webp`;
 
         const li = document.createElement('li');
         li.innerHTML = `
-            <b onclick="loadFavoriteSong('${song.id}')" class="list" vid="${song.id}" style="position: relative;">
+            <b index="${i}" class="list" vid="${id}" style="position:relative;">
                 <div class="video" style="position:relative;">
 
-                    <!-- Best Thumbnail Picker -->
-                    <img src="${thumbUrl}" alt="${song.title}" 
-                         class="video-thumbnail" vid="${song.id}" 
-                         data-thumb="${thumbUrl}" style="width:100%;"
-                         onerror="this.onerror=null; this.src='https://i.ytimg.com/vi_webp/${song.id}/mqdefault.webp';">
+                    <!-- Favorite Icon -->
+                    <i class="fas fa-heart save-icon" 
+                       onclick="event.stopPropagation(); removeFavorite('${id}')"></i>
+
+                    <!-- Thumbnail -->
+                    <img src="${thumbUrl}" 
+                         alt="${title}" 
+                         class="video-thumbnail" 
+                         index="${i}" vid="${id}" 
+                         data-thumb="${thumbUrl}" 
+                         style="width:100%;"
+                         onerror="this.onerror=null; this.src='https://i.ytimg.com/vi_webp/${id}/mqdefault.webp';">
 
                     <!-- Overlay play button -->
                     <div class="overlay-play" style="
@@ -1178,13 +1188,13 @@ function displayFavorites() {
                     <section>
                         <img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">
                         <div>
-                            <p>V F Y ${song.title}</p>
-                            <small class="video-info">Video ID: ${song.id}</small>
+                            <p>V F Y ${title}</p>
+                            <small class="video-info">Video ID: ${id}</small>
                         </div>
                     </section>
 
                     <!-- Delete button -->
-                    <b class="delete-btn" onclick="event.stopPropagation(); removeFavorite('${song.id}')">
+                    <b class="delete-btn" onclick="event.stopPropagation(); removeFavorite('${id}')">
                         <i class="fas fa-trash"></i>
                     </b>
                 </div>
@@ -1193,7 +1203,7 @@ function displayFavorites() {
         favContainer.appendChild(li);
     });
 }
-
+                    
 // Function to Load Song by Video ID
 function loadFavoriteSong(id) {
     // Find the song element using the video ID
