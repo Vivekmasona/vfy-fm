@@ -4343,7 +4343,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
 .big-clock #clockTime {
   font-size: 48px;
   font-weight: 700;
-  background: linear-gradient(90deg, white, yellow);
+  background: linear-gradient(90deg, white, red);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -4452,26 +4452,22 @@ background: linear-gradient(90deg, rgba(40, 19, 13, 0) 10%, rgba(40, 19, 13, 0.4
   .arrow-btn { color: #fff; }
 }
 
-/* Overlay CSS */
-#lockOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: black;
-  display: flex; /* overlay visible ho */
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  z-index: 99999;
-  color: white;
-  font-family: sans-serif;
-
-  overflow: hidden; /* overlay ke andar scroll block */
-}
-
-
+/* Overlay CSS */  
+#lockOverlay {  
+  position: fixed;  
+  top: 0;  
+  left: 0;  
+  width: 100%;  
+  height: 100%;  
+  background: black;  
+  display: none; /* initially hidden */  
+  align-items: center;  
+  justify-content: center;  
+  flex-direction: column;  
+  z-index: 99999; /* sabse upar */  
+  color: white;  
+  font-family: sans-serif;  
+}  
 
 	
 	
