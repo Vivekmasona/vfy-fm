@@ -169,7 +169,8 @@ if (window !== window.top) {
 <style>
 
   
-/* Music Item container */
+
+  /* Music Item container */
 .music-item {
   width: 95%;
   height: 100px;
@@ -181,9 +182,15 @@ if (window !== window.top) {
   box-sizing: border-box;
   background: linear-gradient(90deg, rgba(255,120,80,0.2), rgba(255,120,80,0));
   position: relative;
-  margin: 0 auto;
+  margin: 0 auto 12px; /* 12px gap between items */
   cursor: pointer;
   overflow: hidden;
+  transition: 0.2s all;
+}
+
+/* Highlight selected item */
+.music-item.selected {
+  background: linear-gradient(90deg, rgba(255,120,80,0.4), rgba(255,120,80,0.1));
 }
 
 /* Thumbnail */
@@ -203,7 +210,6 @@ if (window !== window.top) {
   display: block;
 }
 
-/* Thumbnail gradient overlay */
 .thumb-wrap::after {
   content: "";
   position: absolute;
@@ -215,7 +221,7 @@ if (window !== window.top) {
   pointer-events: none;
 }
 
-/* Overlay play button on top of thumbnail */
+/* Overlay play button */
 .overlay-play {
   position: absolute;
   top: 10px;
@@ -236,7 +242,7 @@ if (window !== window.top) {
   fill: rgba(255,120,80,0.9);
 }
 
-/* Title multi-line text */
+/* Title */
 .title {
   flex: 1;
   font-size: 15px;
@@ -252,7 +258,7 @@ if (window !== window.top) {
   padding-left: 10px;
 }
 
-/* Save button (heart) */
+/* Save button */
 .save-btn {
   background: radial-gradient(circle, rgba(255,120,80,0.4), rgba(255,120,80,0.1));
   border: none;
@@ -278,7 +284,7 @@ if (window !== window.top) {
   display: block;
 }
 
-/* Dark mode support */
+/* Dark mode */
 @media (prefers-color-scheme: dark) {
   .music-item { 
     background: linear-gradient(90deg, rgba(255,120,80,0.25), rgba(255,120,80,0)); 
@@ -286,7 +292,9 @@ if (window !== window.top) {
   }
   .save-btn { color: #fff; }
   .overlay-play svg path { fill: #fff; }
-}  
+}
+
+
 
 	
 </style>
