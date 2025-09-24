@@ -4643,13 +4643,10 @@ resetInactivityTimer();
 
 
 
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
-
 <script>
 let eyeControlEnabled = false;
 let camVideo = null;
-let faceVisible = false;
+let prevFaceVisible = false; // previous frame me face tha ya nahi
 
 function toggleEyeControl(){
   eyeControlEnabled = !eyeControlEnabled;
@@ -4682,21 +4679,22 @@ async function startFaceControl(){
     if(!eyeControlEnabled) return;
 
     const ytBtn = document.getElementById("ytToggleBtn");
-    const isPlaying = !ytPlayer?.getPlayerState ? false : ytPlayer.getPlayerState() === YT.PlayerState.PLAYING;
+    let faceDetected = results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0;
 
-    if(results.multiFaceLandmarks && results.multiFaceLandmarks.length>0){
-      // Face detected → only play if not already playing
-      if(!isPlaying){
+    if(faceDetected && !prevFaceVisible){
+      // Face just appeared → play
+      if(ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING){
         ytBtn.click();
-        faceVisible = true;
       }
-    } else {
-      // Face not detected → only pause if playing
-      if(isPlaying){
+      prevFaceVisible = true;
+    } else if(!faceDetected && prevFaceVisible){
+      // Face just disappeared → pause
+      if(ytPlayer.getPlayerState() === YT.PlayerState.PLAYING){
         ytBtn.click();
-        faceVisible = false;
       }
+      prevFaceVisible = false;
     }
+    // Agar state same → kuch nahi karna
   });
 
   const camera = new Camera(camVideo,{
@@ -4712,6 +4710,6 @@ function stopFaceControl(){
     camVideo.remove();
     camVideo = null;
   }
-  faceVisible = false;
+  prevFaceVisible = false;
 }
 </script>
