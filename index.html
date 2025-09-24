@@ -1538,38 +1538,8 @@ function stopVideoIfPlaying() {
     }
 }
 
-// --- Popup show/hide ---
-$("#showPopupbutto").click(() => $("#popupContainer").show());
-$("#closePopup").click(() => $("#popupContainer").hide());
-
-// --- List Item Click ---
-$(document).on('click', '.list', function(e) {
-    if (!$(e.target).hasClass('overlay-play') && !$(e.target).closest('.overlay-play').length) {
-        handleItemClick(this);
-    }
-});
-
-// --- Play Video on Overlay Click ---
-$(document).on('click', '.overlay-play', function(e) {
-    e.stopPropagation();
-    let listItem = $(this).closest('.list');
-    let videoId = listItem.attr('vid');
-
-    // Stop audio if any
-    document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
-
-    // Stop previous video
-    if (currentVideoListItem && currentVideoListItem[0] !== listItem[0]) {
-        stopVideoIfPlaying();
-    }
 
 
-// --- Ensure audio never plays with video ---
-document.querySelectorAll("#SAudio").forEach(audio => {
-    audio.addEventListener('play', () => {
-        if (ytPlayer && isPlaying) stopVideoIfPlaying();
-    });
-});
 
 
 
