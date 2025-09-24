@@ -68,5 +68,5 @@ async function loadTrendingSongs() {
     displaySongs(trendingSongs);
 }
 
-// 🔄 Page load pe call
+// Page load pe call
 window.onload = loadTrendingSongs;
