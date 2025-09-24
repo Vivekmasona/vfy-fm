@@ -1554,7 +1554,7 @@ function enforceAudioPause() {
 }
 
 // --- Play Mini Video Player ---
-function playMiniVideoPlayer(videoId) {
+ function playMiniVideoPlayer(videoId) {
     stopVideoIfPlaying();
     enforceAudioPause();
 
@@ -1564,60 +1564,75 @@ function playMiniVideoPlayer(videoId) {
             position:fixed;
             bottom:10px;
             right:10px;
-            width:200px;
-            height:120px;
+            width:320px;
+            height:180px;
             background:#000;
             border-radius:12px;
             overflow:hidden;
             z-index:99999;
             display:flex;
             flex-direction:column;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
         ">
             <!-- Video Container -->
             <div id="yt-mini-${videoId}" style="flex:1; background:black; position:relative;"></div>
 
             <!-- Glass-style Control Bar -->
             <div class="mini-control-bar" style="
-                height:40px;
+                height:50px;
                 width:100%;
-                backdrop-filter: blur(12px);
-                background: rgba(255,255,255,0.1);
                 display:flex;
                 align-items:center;
                 justify-content:space-between;
                 padding:0 8px;
+                backdrop-filter: blur(14px);
+                background: rgba(255,255,255,0.08);
                 border-top:1px solid rgba(255,255,255,0.2);
             ">
+                <!-- Play/Pause -->
                 <button id="mini-playpause" style="
                     color:white;
                     border:none;
                     background:none;
                     cursor:pointer;
-                    font-size:16px;
+                    font-size:18px;
                     transition: transform 0.2s;
                 ">
                     <i class="fas fa-pause"></i>
                 </button>
+
+                <!-- Seek Bar -->
                 <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="
                     flex:1;
-                    margin:0 6px;
+                    margin:0 8px;
                     -webkit-appearance:none;
-                    height:4px;
-                    border-radius:2px;
-                    background: linear-gradient(to right, #ff8a00, #e52e71);
-                    outline:none;
+                    height:6px;
+                    border-radius:3px;
+                    background: linear-gradient(to right, #ff7e5f, #feb47b);
                     cursor:pointer;
                 ">
+                
+                <!-- Fullscreen -->
                 <button id="mini-fullscreen" style="
                     color:white;
                     border:none;
                     background:none;
                     cursor:pointer;
-                    font-size:16px;
-                    transition: transform 0.2s;
+                    font-size:18px;
+                    margin-right:4px;
                 ">
                     <i class="fas fa-expand"></i>
+                </button>
+
+                <!-- Close -->
+                <button id="mini-close" style="
+                    color:white;
+                    border:none;
+                    background:none;
+                    cursor:pointer;
+                    font-size:18px;
+                ">
+                    <i class="fas fa-times"></i>
                 </button>
             </div>
         </div>
@@ -1659,9 +1674,14 @@ function playMiniVideoPlayer(videoId) {
             $(".yt-mini-player").css({ width: "100vw", height: "100vh", bottom: 0, right: 0, borderRadius: 0 });
             isMiniPlayerFullscreen = true;
         } else {
-            $(".yt-mini-player").css({ width: "200px", height: "120px", bottom: "10px", right: "10px", borderRadius: "12px" });
+            $(".yt-mini-player").css({ width: "320px", height: "180px", bottom: "10px", right: "10px", borderRadius: "12px" });
             isMiniPlayerFullscreen = false;
         }
+    });
+
+    // Close button
+    $("#mini-close").click(() => {
+        stopVideoIfPlaying();
     });
 
     // Seek bar input
@@ -1685,13 +1705,12 @@ function playMiniVideoPlayer(videoId) {
     }
 }
 
-// --- Prevent Audio Play During Video Mode ---
+// Prevent Audio Play During Video Mode
 document.addEventListener("play", function(e) {
     if (isVideoMode && ytPlayer && isPlaying && e.target.id === "SAudio") {
         e.target.pause();
     }
 }, true);
-
 	
 
 	
