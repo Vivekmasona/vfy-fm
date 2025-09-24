@@ -1639,6 +1639,15 @@ if (thumb.length) {
                     color:white; font-size:10px; font-weight:bold;">
                     1x
                 </button>
+                <!-- Eye Detection Toggle Button (Add this inside your custom-controls div) -->
+<button id="ytEyeBtn" style="
+    width:28px; height:28px; border:none; border-radius:50%;
+    background:linear-gradient(145deg,#444,#222);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    color:white; font-size:14px; font-weight:bold;
+">
+    👁 OFF
+</button>
 
                 <!-- Fullscreen -->
                 <button onclick="toggleFullscreen('yt-player-${videoId}')" style="
@@ -1766,7 +1775,63 @@ document.addEventListener("visibilitychange", async () => {
     }
 });
 
+// --- Eye Detection JS ---
+let eyeDetectionEnabled = false;
+let faceVisible = false;
 
+// Button reference
+const eyeBtn = document.getElementById('ytEyeBtn');
+eyeBtn.addEventListener('click', () => {
+    eyeDetectionEnabled = !eyeDetectionEnabled;
+    eyeBtn.innerText = eyeDetectionEnabled ? '👁 ON' : '👁 OFF';
+    if (!eyeDetectionEnabled && ytPlayer) ytPlayer.playVideo(); // Disable → resume normal play
+});
+
+// --- Hidden webcam for detection ---
+const camVideo = document.createElement('video');
+camVideo.style.display = 'none';
+document.body.appendChild(camVideo);
+
+async function setupCamera() {
+    const stream = await navigator.mediaDevices.getUserMedia({video:true});
+    camVideo.srcObject = stream;
+    await camVideo.play();
+}
+
+// --- Mediapipe FaceMesh setup ---
+const faceMesh = new FaceMesh({locateFile:(file)=>`https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`});
+faceMesh.setOptions({
+    maxNumFaces:1,
+    refineLandmarks:false,
+    minDetectionConfidence:0.5,
+    minTrackingConfidence:0.5
+});
+
+faceMesh.onResults(results => {
+    if (!eyeDetectionEnabled) return;
+
+    if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
+        if (!faceVisible && ytPlayer) {
+            ytPlayer.playVideo();  // Face detected → play
+            faceVisible = true;
+        }
+    } else {
+        if (faceVisible && ytPlayer) {
+            ytPlayer.pauseVideo(); // Face lost → pause
+            faceVisible = false;
+        }
+    }
+});
+
+// --- Start webcam & detection ---
+setupCamera().then(() => {
+    const camera = new Camera(camVideo, {
+        onFrame: async () => { await faceMesh.send({image: camVideo}); },
+        width: 200,
+        height: 150
+    });
+    camera.start();
+});
 	
 
 // --- Ensure audio never plays with video ---
