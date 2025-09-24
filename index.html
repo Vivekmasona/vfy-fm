@@ -1562,15 +1562,20 @@ function enforceAudioPause() {
 	
 	
 	// --- Play Mini Video Player ---
-                       function playMiniVideoTab(videoId) {
+     function playMiniVideoPlayer(videoId) {
+    // Stop any existing video
     stopVideoIfPlaying();
     enforceAudioPause();
 
     const videoWidth = 286;
     const videoHeight = 120;
     const controlHeight = 14;
-    const tabPadding = 2; // extra for blur effect
+    const tabPadding = 2; // extra for blur
 
+    // Remove existing tab if any
+    $(".yt-mini-tab").remove();
+
+    // Create mini tab
     let overlay = $(`
         <div class="yt-mini-tab" style="
             position:fixed;
@@ -1588,8 +1593,8 @@ function enforceAudioPause() {
             box-shadow: 0 8px 16px rgba(0,0,0,0.5);
             z-index:99999;
             padding:${tabPadding}px;
+            cursor:default;
         ">
-            <!-- Video Container -->
             <div id="yt-mini-${videoId}" style="
                 width:${videoWidth}px;
                 height:${videoHeight}px;
@@ -1599,11 +1604,10 @@ function enforceAudioPause() {
                 position:relative;
             "></div>
 
-            <!-- Control Bar -->
             <div class="mini-control-bar" style="
                 width:${videoWidth}px;
                 height:${controlHeight}px;
-                margin-top:2px; /* small gap */
+                margin-top:2px;
                 display:flex;
                 align-items:center;
                 justify-content:space-between;
@@ -1636,6 +1640,7 @@ function enforceAudioPause() {
 
     $("body").append(overlay);
 
+    // Initialize YouTube player
     ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
         videoId: videoId,
         width: videoWidth,
@@ -1650,7 +1655,7 @@ function enforceAudioPause() {
         }
     });
 
-    // Play/Pause button
+    // Play/Pause
     $("#mini-playpause").click(() => {
         if (!ytPlayer) return;
         const state = ytPlayer.getPlayerState();
@@ -1663,12 +1668,12 @@ function enforceAudioPause() {
         }
     });
 
-    // Close button
+    // Close
     $("#mini-close").click(() => {
         stopVideoIfPlaying();
     });
 
-    // Seek bar input
+    // Seek bar
     $("#mini-seekbar").on("input", function() {
         if (!ytPlayer) return;
         const duration = ytPlayer.getDuration();
@@ -1694,12 +1699,8 @@ document.addEventListener("play", function(e) {
     if (isVideoMode && ytPlayer && isPlaying && e.target.id === "SAudio") {
         e.target.pause();
     }
-}, true);
-                                
-    
-        
-                        
-
+}, true);                                  <button id="mini-close" style="
+                    
 
 
 
