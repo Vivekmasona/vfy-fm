@@ -851,6 +851,7 @@ width: 50%;
     margin-left:10px;">
     OFF
 </button>
+		
 
 	
 
@@ -4664,7 +4665,10 @@ resetInactivityTimer();
 
 
 
+
 <script>
+document.getElementById("eyeToggleBtn").addEventListener("click", toggleEyeControl);
+
 let eyeControlEnabled = false;
 let camVideo = null;
 let prevFaceVisible = false;
@@ -4672,6 +4676,7 @@ let prevFaceVisible = false;
 function toggleEyeControl(){
   eyeControlEnabled = !eyeControlEnabled;
   const btn = document.getElementById("eyeToggleBtn");
+
   if(eyeControlEnabled){
     btn.innerText = "ON";
     btn.style.background = "linear-gradient(145deg,#00cc66,#006633)";
@@ -4704,15 +4709,12 @@ async function startFaceControl(){
     let faceDetected = results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0;
 
     if(faceDetected && !prevFaceVisible){
-      // Face just appeared → play
       playBtn.click();
       prevFaceVisible = true;
     } else if(!faceDetected && prevFaceVisible){
-      // Face just disappeared → pause
       pauseBtn.click();
       prevFaceVisible = false;
     }
-    // State same → do nothing
   });
 
   const camera = new Camera(camVideo,{
