@@ -868,6 +868,29 @@ width: 50%;
 	
 
    <div id="autocomplete-results"></div>
+
+
+<div id="videopopup" style="
+    display:none;
+    position:fixed;
+    top:25%;
+    left:50%;
+    transform:translateX(-50%);
+    width:80%;
+    max-width:720px;
+    z-index:9999;
+    background:#000;
+    border-radius:10px;
+    overflow:hidden;
+">
+    <button id="closeVideoPopup" style="
+        position:absolute; top:5px; right:5px; z-index:20;
+        width:28px; height:28px; border-radius:50%; border:none;
+        background:red; color:white; cursor:pointer;
+    ">X</button>
+</div>
+
+		
 <!-- Mode Toggle -->
 <div id="videoListContainer">
     <!-- Your generated list items go here -->
@@ -878,7 +901,8 @@ width: 50%;
     <button id="closePopup">Close</button>
 </div>
 
- 
+
+		
 
     
     </div> 
@@ -1558,12 +1582,14 @@ $(document).on('click', '.list', function(e) {
 
 
 	
+
+// --- Play Video on Overlay Click (Popup Version) ---
 $(document).on('click', '.overlay-play', function(e) {
     e.stopPropagation();
     let listItem = $(this).closest('.list');
     let videoId = listItem.attr('vid');
 
-    // Stop audio if any
+    // Stop audio
     document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
 
     // Stop previous video
@@ -1571,95 +1597,133 @@ $(document).on('click', '.overlay-play', function(e) {
         stopVideoIfPlaying();
     }
 
-    // Replace thumbnail with player
+    // Show popup
+    $("#videopopup").show().html(''); // Clear previous content
+
+    // Get thumbnail
     let thumb = listItem.find('.video-thumbnail');
-    if (thumb.length) {
-        let thumbUrl = thumb.attr('src');
-        let wrapper = $(`
-            <div class="yt-wrapper" data-thumb="${thumbUrl}" style="
-                position:fixed; 
-                top:25%; 
-                left:50%; 
-                transform:translateX(-50%);
-                width:80%; 
-                max-width:720px; 
-                z-index:9999; 
-                overflow:hidden;
-                box-shadow:0 4px 15px rgba(0,0,0,0.3);
-                border-radius:10px;
-                background:#000;
+    let thumbUrl = thumb.length ? thumb.attr('src') : '';
+
+    // --- Insert exact same wrapper structure inside popup ---
+    let wrapper = $(`
+        <div class="yt-wrapper" data-thumb="${thumbUrl}" style="position:relative; width:100%; overflow:hidden;">
+            <!-- Loader Overlay -->
+            <div class="yt-loader-overlay" style="
+                position:absolute; top:0; left:0; width:100%; height:100%;
+                display:flex; align-items:center; justify-content:center;
+                backdrop-filter:blur(15px);
+                background:rgba(0,0,0,0.55);
+                z-index:10;
             ">
-                <!-- Loader Overlay -->
-                <div class="yt-loader-overlay" style="
-                    position:absolute; top:0; left:0; width:100%; height:100%;
-                    display:flex; align-items:center; justify-content:center;
-                    backdrop-filter:blur(15px);
-                    background:rgba(0,0,0,0.55);
-                    z-index:10;
-                ">
-                    <h2 class="loading-text" style="font-size:26px; font-weight:bold; display:flex; gap:5px; color:white;">
-                        Loading...
-                    </h2>
-                </div>
-
-                <!-- Player -->
-                <div id="yt-player-${videoId}" style="width:100%; height:250px;"></div>
-
-                <!-- Custom Controls -->
-                <div class="custom-controls" style="
-                    position:absolute; bottom:0; left:0; width:100%;
-                    display:flex; align-items:center; gap:8px;
-                    padding:5px 10px; box-sizing:border-box;
-                    background:rgba(0,0,0,0.35);
-                    backdrop-filter:blur(8px);
-                    border-top:1px solid rgba(255,255,255,0.2);
-                    z-index:20;
-                ">
-                    <!-- Play / Pause -->
-                    <button id="ytToggleBtn" onclick="togglePlayPause()" style="
-                        width:30px; height:30px; border:none; border-radius:50%;
-                        background:linear-gradient(145deg,#ff9900,#3C8787);
-                        display:flex; align-items:center; justify-content:center; cursor:pointer;">
-                        <svg viewBox="0 0 24 24" id="ytToggleIcon" fill="white" width="14" height="14">
-                            <path d="M3 22v-20l18 10-18 10z"/>
-                        </svg>
-                    </button>
-
-                    <!-- Seek -->
-                    <input type="range" id="ytSeek" value="0" min="0" max="100" style="
-                        flex:1; appearance:none; height:6px; border-radius:10px;
-                        background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
-
-                    <!-- Volume -->
-                    <input type="range" id="ytVol" value="100" min="0" max="100" style="
-                        width:60px; appearance:none; height:6px; border-radius:10px;
-                        background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
-                </div>
+                <h2 class="loading-text" style="font-size:26px; font-weight:bold; display:flex; gap:5px;">
+                    <span style="color:#4285F4">L</span>
+                    <span style="color:#EA4335">o</span>
+                    <span style="color:#FBBC05">a</span>
+                    <span style="color:#34A853">d</span>
+                    <span style="color:#EA4335">i</span>
+                    <span style="color:#4285F4">n</span>
+                    <span style="color:#FBBC05">g</span>
+                    <span style="color:#34A853">.</span>
+                    <span style="color:#EA4335">.</span>
+                    <span style="color:#4285F4">.</span>
+                </h2>
             </div>
-        `);
 
-        thumb.replaceWith(wrapper);
+            <!-- Player -->
+            <div id="yt-player-${videoId}"></div>
 
-        ytPlayer = new YT.Player(`yt-player-${videoId}`, {
-            height: '250',
-            width: '100%',
-            videoId: videoId,
-            playerVars: { 
-                autoplay: 1, 
-                controls: 0, 
-                modestbranding: 1, 
-                rel: 0, 
-                fs: 0, 
-                iv_load_policy: 3, 
-                disablekb: 1, 
-                showinfo: 0 
-            },
-            events: { 
-                'onReady': function(event) {
+            <!-- Custom Controls -->
+            <div class="custom-controls" style="
+                position:absolute; bottom:0; left:0; width:100%;
+                display:flex; align-items:center; gap:8px;
+                padding:5px 10px; box-sizing:border-box;
+                background:rgba(0,0,0,0.35);
+                backdrop-filter:blur(8px);
+                -webkit-backdrop-filter:blur(8px);
+                border-top:1px solid rgba(255,255,255,0.2);
+            ">
+                <!-- Play / Pause -->
+                <button id="ytToggleBtn" onclick="togglePlayPause()" style="
+                    width:30px; height:30px; border:none; border-radius:50%;
+                    background:linear-gradient(145deg,#ff9900,#3C8787);
+                    display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <svg viewBox="0 0 24 24" id="ytToggleIcon" fill="white" width="14" height="14">
+                        <path d="M3 22v-20l18 10-18 10z"/>
+                    </svg>
+                </button>
+
+                <!-- Seek -->
+                <input type="range" id="ytSeek" value="0" min="0" max="100" style="
+                    flex:1; appearance:none; height:6px; border-radius:10px;
+                    background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
+
+                <!-- Volume -->
+                <input type="range" id="ytVol" value="100" min="0" max="100" style="
+                    width:60px; appearance:none; height:6px; border-radius:10px;
+                    background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
+
+                <!-- Mute / Unmute -->
+                <button id="ytMuteBtn" onclick="toggleMute()" style="
+                    width:28px; height:28px; border:none; border-radius:50%;
+                    background:linear-gradient(145deg,#222,#3C8787);
+                    display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <svg viewBox="0 0 24 24" id="ytMuteIcon" fill="white" width="12" height="12">
+                        <path d="M5 9v6h4l5 5V4l-5 5H5z"/>
+                    </svg>
+                </button>
+
+                <!-- Speed / Fast -->
+                <button id="ytSpeedBtn" onclick="cycleSpeed()" style="
+                    width:28px; height:28px; border:none; border-radius:50%;
+                    background:linear-gradient(145deg,#222,#3C8787);
+                    display:flex; align-items:center; justify-content:center; cursor:pointer;
+                    color:white; font-size:10px; font-weight:bold;">
+                    1x
+                </button>
+
+                <!-- Fullscreen -->
+                <button onclick="toggleFullscreen('yt-player-${videoId}')" style="
+                    width:28px; height:28px; border:none; border-radius:50%;
+                    background:linear-gradient(145deg,#3C8787,#222);
+                    display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                    <svg viewBox="0 0 24 24" fill="white" width="12" height="12">
+                        <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zm-3-9h3v3h2V5h-5v2z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    `);
+
+    // Insert wrapper into popup
+    $("#videopopup").append(wrapper);
+
+    // Initialize YouTube Player
+    ytPlayer = new YT.Player(`yt-player-${videoId}`, {
+        height: '250',
+        width: '100%',
+        videoId: videoId,
+        playerVars: { 
+            autoplay: 1, 
+            controls: 0, 
+            modestbranding: 1, 
+            rel: 0, 
+            fs: 0, 
+            iv_load_policy: 3, 
+            disablekb: 1, 
+            showinfo: 0 
+        },
+        events: { 
+            'onReady': function(event) {
+                onYtReady(event);
+                document.addEventListener("click", function onceClick() {
                     event.target.playVideo();
-                },
-                'onStateChange': function(event) {
-                    if (event.data === YT.PlayerState.PLAYING) {
+                    document.removeEventListener("click", onceClick);
+                });
+            },
+            'onStateChange': function(event) {
+                onYtStateChange(event);
+                if (event.data === YT.PlayerState.PLAYING) {
+                    setTimeout(() => {
                         let overlay = $(wrapper).find('.yt-loader-overlay');
                         overlay.css({
                             transition: "all 1s ease",
@@ -1667,13 +1731,23 @@ $(document).on('click', '.overlay-play', function(e) {
                             opacity: 0
                         });
                         setTimeout(() => overlay.remove(), 1200);
-                    }
+                    }, 1000);
                 }
-            }    
-        });
-    }
+            }
+        }    
+    });
 
     currentVideoListItem = listItem;
+});
+
+// --- Close Popup Button ---
+$("#closeVideoPopup").click(function() {
+    if (ytPlayer) {
+        ytPlayer.stopVideo();
+        ytPlayer.destroy();
+        ytPlayer = null;
+    }
+    $("#videopopup").hide().html('');
 });
 
 
