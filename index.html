@@ -1562,40 +1562,39 @@ function enforceAudioPause() {
 	
 	
 	// --- Play Mini Video Player ---
-   
-    function playMiniVideoPlayer(videoId) {
+   function playMiniVideoPlayer(videoId) {
     stopVideoIfPlaying();
     enforceAudioPause();
 
     let overlay = $(`
         <div class="yt-mini-player" style="
             position:fixed;
-            bottom:10px;
-            right:10px;
-            width:300px; /* reduced 20px */
-            height:180px;
+            bottom:0; /* video stays at bottom */
+            left:0;
+            width:100%; /* full width */
+            height:180px; /* video height */
             background:#111;
-            border-radius:16px;
-            overflow:hidden;
             z-index:99999;
+            overflow:hidden;
             display:flex;
-            flex-direction:column;
-            box-shadow: 0 12px 28px rgba(0,0,0,0.7);
-            border: 1px solid rgba(255,255,255,0.1);
+            justify-content:center;
+            align-items:flex-end;
         ">
             <!-- Video Container -->
             <div id="yt-mini-${videoId}" style="
-                flex:1;
+                width:100%;
+                height:100%;
                 background:black;
                 position:relative;
             "></div>
 
             <!-- Glass-style Control Bar -->
             <div class="mini-control-bar" style="
-                position:absolute;
-                bottom:26%; /* move controls 26% from bottom */
-                left:0;
-                width:100%; /* same as video width */
+                position:fixed;
+                top:26%; /* 26% from top of page */
+                left:50%;
+                transform:translateX(-50%);
+                width:80%; /* controls width */
                 height:50px;
                 display:flex;
                 align-items:center;
@@ -1603,8 +1602,9 @@ function enforceAudioPause() {
                 padding:0 12px;
                 backdrop-filter: blur(16px);
                 background: rgba(255,255,255,0.05);
-                border-top:1px solid rgba(255,255,255,0.15);
-                box-shadow: 0 -2px 8px rgba(255,255,255,0.05);
+                border-radius:12px;
+                box-shadow: 0 0 12px rgba(255,255,255,0.2);
+                z-index:100000;
             ">
                 <!-- Play/Pause -->
                 <button id="mini-playpause" style="
@@ -1613,8 +1613,6 @@ function enforceAudioPause() {
                     background:none;
                     cursor:pointer;
                     font-size:20px;
-                    margin-right:8px;
-                    transition: transform 0.2s, text-shadow 0.2s;
                     text-shadow: 0 0 8px #00ffff;
                 ">
                     <i class="fas fa-pause"></i>
@@ -1639,7 +1637,6 @@ function enforceAudioPause() {
                     background:none;
                     cursor:pointer;
                     font-size:20px;
-                    margin-right:8px;
                     text-shadow: 0 0 8px #00ffff;
                 ">
                     <i class="fas fa-expand"></i>
@@ -1693,10 +1690,10 @@ function enforceAudioPause() {
     $("#mini-fullscreen").click(() => {
         if (!ytPlayer) return;
         if (!isMiniPlayerFullscreen) {
-            $(".yt-mini-player").css({ width: "100vw", height: "100vh", bottom: 0, right: 0, borderRadius: 0 });
+            $(".yt-mini-player").css({ width: "100vw", height: "100vh", bottom: 0, left: 0 });
             isMiniPlayerFullscreen = true;
         } else {
-            $(".yt-mini-player").css({ width: "300px", height: "180px", bottom: "10px", right: "10px", borderRadius: "16px" });
+            $(".yt-mini-player").css({ width: "100%", height: "180px", bottom: 0, left: 0 });
             isMiniPlayerFullscreen = false;
         }
     });
@@ -1733,6 +1730,7 @@ document.addEventListener("play", function(e) {
         e.target.pause();
     }
 }, true);
+                                
     
         
                         
