@@ -838,7 +838,18 @@ width: 50%;
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">search</button></sr>
 	    
 	
-	
+	<!-- Video Overlay Container -->
+<div id="videoContainer" style="
+    position: fixed;
+    top: 50px;
+    right: 10px;
+    width: 400px;
+    height: 225px;
+    background: #000;
+    z-index: 2147483647; /* max possible z-index */
+    display: none;
+">
+</div>
 
    <div id="autocomplete-results"></div>
 <!-- Mode Toggle -->
@@ -4327,18 +4338,7 @@ resetInactivityTimer();
 
 
 
-<!-- Video Overlay Container -->
-<div id="videoContainer" style="
-    position: fixed;
-    top: 50px;
-    right: 10px;
-    width: 400px;
-    height: 225px;
-    background: #000;
-    z-index: 2147483647; /* max possible z-index */
-    display: none;
-">
-</div>
+
 
 	
 <script src="https://www.youtube.com/iframe_api"></script>
