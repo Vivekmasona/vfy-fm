@@ -4684,6 +4684,8 @@ resetInactivityTimer();
         
 
         
+
+    
 <script>
 let controlEnabled = false;
 let camVideo = null;
@@ -4746,7 +4748,6 @@ async function startFaceControl() {
     faceMesh.setOptions({ maxNumFaces: 1, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
 
     const edgeMargin = 20; // scroll trigger margin
-    const cameraRange = { minY: 0.3, maxY: 0.7 }; // pointer moves only in this nose range
 
     faceMesh.onResults(results => {
         if(!controlEnabled) return;
@@ -4755,19 +4756,18 @@ async function startFaceControl() {
         const landmarks = results.multiFaceLandmarks[0];
         const nose = landmarks[1];
 
-        // Pointer movement
-        if(nose.y >= cameraRange.minY && nose.y <= cameraRange.maxY){
-            const targetX = (1 - nose.x) * window.innerWidth;
-            const targetY = ((nose.y - cameraRange.minY)/(cameraRange.maxY - cameraRange.minY)) * window.innerHeight;
+        // Map nose X/Y (0-1) to full page width/height
+        const targetX = (1 - nose.x) * window.innerWidth;
+        const targetY = nose.y * window.innerHeight;
 
-            prevX += (targetX - prevX) * 0.15; 
-            prevY += (targetY - prevY) * 0.15; 
+        // Smooth pointer movement
+        prevX += (targetX - prevX) * 0.15; 
+        prevY += (targetY - prevY) * 0.15; 
 
-            pointerDot.style.left = `${prevX - 7}px`;
-            pointerDot.style.top = `${prevY - 7}px`;
-        }
+        pointerDot.style.left = `${prevX - 7}px`;
+        pointerDot.style.top = `${prevY - 7}px`;
 
-        // Mouth open detection → click immediately on open
+        // Mouth open → click
         const mouthOpen = (landmarks[14].y - landmarks[13].y) > 0.02;
         if(mouthOpen && !mouthWasOpen && Date.now() - lastClickTime > clickCooldown){
             const element = document.elementFromPoint(prevX, prevY);
@@ -4776,7 +4776,7 @@ async function startFaceControl() {
         }
         mouthWasOpen = mouthOpen;
 
-        // Scroll only when pointer reaches top/bottom
+        // Scroll only when pointer reaches top/bottom edges
         const viewHeight = window.innerHeight;
         if(prevY <= edgeMargin){ 
             window.scrollBy({ top: -5, behavior: 'smooth' });
@@ -4786,19 +4786,6 @@ async function startFaceControl() {
     });
 
     camera = new Camera(camVideo, { onFrame: async()=> await faceMesh.send({ image: camVideo }), width: 80, height: 60 });
-    const originalStart = camera.start.bind(camera);
-    camera.start = () => {
-        let lastTime = 0;
-        const originalOnFrame = camera._onFrame;
-        camera._onFrame = async () => {
-            const now = Date.now();
-            if(now - lastTime >= 1000/3){
-                await originalOnFrame();
-                lastTime = now;
-            }
-        };
-        originalStart();
-    };
     camera.start();
 }
 
