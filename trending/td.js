@@ -1,4 +1,4 @@
-<script>
+
   document.addEventListener('DOMContentLoaded', function() {
     const apiUrl = 'https://vivekfy.vercel.app/search?q=bhojpuri+trending+songs';
     const videosContainer = document.getElementById('videos');
@@ -44,4 +44,4 @@
     // You might want to add logic here to actually play the video or song
     // For instance, you could send a request to your server to fetch and play the song
   }
-</script>
+
