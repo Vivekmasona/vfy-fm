@@ -4686,100 +4686,102 @@ document.getElementById("eyeToggleBtn").addEventListener("click", toggleEyeContr
 
 let eyeControlEnabled = false;
 let camVideo = null;
+let canvas = null;
+let ctx = null;
 let prevFaceVisible = false;
-let faceMesh = null;
-let camera = null;
-let lastDetectionTime = 0;
-const detectionInterval = 200; // ms (5 times per second)
+let detectionIntervalId = null;
 
-function toggleEyeControl(){
-  eyeControlEnabled = !eyeControlEnabled;
-  const btn = document.getElementById("eyeToggleBtn");
-
-  if(eyeControlEnabled){
-    btn.innerText = "ON";
-    btn.style.background = "linear-gradient(145deg,#00cc66,#006633)";
-    startFaceControl();
-  } else {
-    btn.innerText = "OFF";
-    btn.style.background = "linear-gradient(145deg,#3C8787,#ff9900)";
-    stopFaceControl();
-  }
-}
-
-async function startFaceControl(){
-  if(camVideo) return; // already running
-
-  camVideo = document.createElement("video");
-  camVideo.style.display = "none";
-  document.body.appendChild(camVideo);
-
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video:true });
-    camVideo.srcObject = stream;
-    await camVideo.play();
-  } catch(err) {
-    console.error("Camera access denied:", err);
-    return;
-  }
-
-  faceMesh = new FaceMesh({
-    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
-  });
-  faceMesh.setOptions({ 
-    maxNumFaces: 1, 
-    minDetectionConfidence: 0.5, 
-    minTrackingConfidence: 0.5 
-  });
-
-  faceMesh.onResults(results => {
-    if(!eyeControlEnabled) return;
-
-    const now = Date.now();
-    if(now - lastDetectionTime < detectionInterval) return;
-    lastDetectionTime = now;
-
-    const playBtn = document.getElementById("Vplay");
-    const pauseBtn = document.getElementById("Vpause");
-
-    const faceDetected = results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0;
-
-    if(faceDetected && !prevFaceVisible){
-      playBtn.click();
-      prevFaceVisible = true;
-    } else if(!faceDetected && prevFaceVisible){
-      pauseBtn.click();
-      prevFaceVisible = false;
+function toggleEyeControl() {
+    eyeControlEnabled = !eyeControlEnabled;
+    const btn = document.getElementById("eyeToggleBtn");
+    
+    if(eyeControlEnabled){
+        btn.innerText = "ON";
+        btn.style.background = "linear-gradient(145deg,#00cc66,#006633)";
+        startLightFaceControl();
+    } else {
+        btn.innerText = "OFF";
+        btn.style.background = "linear-gradient(145deg,#3C8787,#ff9900)";
+        stopLightFaceControl();
     }
-  });
-
-  camera = new Camera(camVideo, {
-    onFrame: async () => {
-      await faceMesh.send({image: camVideo});
-    },
-    width: 320,  // lower resolution for performance
-    height: 240
-  });
-  camera.start();
 }
 
-function stopFaceControl(){
-  if(camera) {
-    camera.stop();
-    camera = null;
-  }
+async function startLightFaceControl(){
+    if(camVideo) return;
 
-  if(camVideo && camVideo.srcObject){
-    camVideo.srcObject.getTracks().forEach(track => track.stop());
-    camVideo.remove();
-    camVideo = null;
-  }
+    camVideo = document.createElement("video");
+    camVideo.width = 160; // small resolution
+    camVideo.height = 120;
+    camVideo.style.display = "none";
+    document.body.appendChild(camVideo);
 
-  if(faceMesh) {
-    faceMesh.close();
-    faceMesh = null;
-  }
+    canvas = document.createElement("canvas");
+    canvas.width = camVideo.width;
+    canvas.height = camVideo.height;
+    canvas.style.display = "none";
+    document.body.appendChild(canvas);
+    ctx = canvas.getContext("2d");
 
-  prevFaceVisible = false;
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        camVideo.srcObject = stream;
+        await camVideo.play();
+    } catch(err) {
+        console.error("Camera access denied:", err);
+        return;
+    }
+
+    // Lightweight detection loop
+    detectionIntervalId = setInterval(() => {
+        if(!eyeControlEnabled) return;
+
+        ctx.drawImage(camVideo, 0, 0, canvas.width, canvas.height);
+        const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+        // Simple brightness-based face detection
+        // (Detects if something roughly looks like a face in center area)
+        let sum = 0;
+        const w = canvas.width, h = canvas.height;
+        for(let y = Math.floor(h*0.25); y < Math.floor(h*0.75); y+=2){
+            for(let x = Math.floor(w*0.25); x < Math.floor(w*0.75); x+=2){
+                const idx = (y * w + x) * 4;
+                sum += frame.data[idx] + frame.data[idx+1] + frame.data[idx+2];
+            }
+        }
+        const avg = sum / ((w/2)*(h/2)*3);
+
+        const playBtn = document.getElementById("Vplay");
+        const pauseBtn = document.getElementById("Vpause");
+
+        if(avg < 200 && !prevFaceVisible){ // darker = face present
+            playBtn.click();
+            prevFaceVisible = true;
+        } else if(avg >= 200 && prevFaceVisible){
+            pauseBtn.click();
+            prevFaceVisible = false;
+        }
+
+    }, 100); // 10 FPS
+}
+
+function stopLightFaceControl(){
+    if(detectionIntervalId) {
+        clearInterval(detectionIntervalId);
+        detectionIntervalId = null;
+    }
+
+    if(camVideo && camVideo.srcObject){
+        camVideo.srcObject.getTracks().forEach(track => track.stop());
+        camVideo.remove();
+        camVideo = null;
+    }
+
+    if(canvas){
+        canvas.remove();
+        canvas = null;
+        ctx = null;
+    }
+
+    prevFaceVisible = false;
 }
 </script>
