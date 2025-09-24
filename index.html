@@ -4690,6 +4690,7 @@ resetInactivityTimer();
         
 
         
+            
 <script>
 let controlEnabled = false;
 let camVideo = null;
@@ -4702,7 +4703,7 @@ let prevY = window.innerHeight/2;
 
 let mouthWasOpen = false;
 let lastClickTime = 0;
-const clickCooldown = 600;
+const clickCooldown = 600; // ms
 
 // ON/OFF button
 document.getElementById("eyeToggleBtn").addEventListener("click", toggleControl);
@@ -4759,7 +4760,7 @@ async function startFaceControl() {
 
         const landmarks = results.multiFaceLandmarks[0];
 
-        // Full face bounding box
+        // Calculate face bounding box center
         let minX=1, maxX=0, minY=1, maxY=0;
         for(const lm of landmarks){
             if(lm.x<minX) minX=lm.x;
@@ -4767,17 +4768,14 @@ async function startFaceControl() {
             if(lm.y<minY) minY=lm.y;
             if(lm.y>maxY) maxY=lm.y;
         }
-
-        // Center of face bounding box
         const faceCenterX = (minX + maxX)/2;
         const faceCenterY = (minY + maxY)/2;
 
-        // Map face center to full page
+        // Map to full page (pointer moves even if face still)
         const targetX = (1 - faceCenterX) * window.innerWidth;
         const targetY = faceCenterY * window.innerHeight;
 
-        // Fast, smooth pointer movement
-        prevX += (targetX - prevX) * 0.35;
+        prevX += (targetX - prevX) * 0.35; // fast & smooth
         prevY += (targetY - prevY) * 0.35;
 
         pointerDot.style.left = `${prevX - 7}px`;
@@ -4792,7 +4790,7 @@ async function startFaceControl() {
         }
         mouthWasOpen = mouthOpen;
 
-        // Scroll only when pointer reaches top/bottom edges
+        // Scroll top/bottom edges
         const viewHeight = window.innerHeight;
         if(prevY <= edgeMargin){ 
             window.scrollBy({ top: -5, behavior: 'smooth' });
