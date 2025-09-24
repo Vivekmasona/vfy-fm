@@ -4675,6 +4675,8 @@ resetInactivityTimer();
 
 	
 
+        
+            
 <script>
 document.getElementById("eyeToggleBtn").addEventListener("click", toggleEyeControl);
 
@@ -4758,10 +4760,8 @@ async function startLightFaceMesh() {
                 noseVisible = true;
 
                 // Map nose to page
-                const x = landmarks[1].x * window.innerWidth;
-                const y = landmarks[1].y * window.innerHeight;
-                dot.style.left = `${x-5}px`; // center the dot
-                dot.style.top = `${y-5}px`;
+                dot.style.left = (landmarks[1].x * window.innerWidth - 5) + "px";
+                dot.style.top = (landmarks[1].y * window.innerHeight - 5) + "px";
                 dot.style.display = "block";
             }
         }
@@ -4832,9 +4832,3 @@ function stopLightFaceMesh() {
     faceVisibleCount = 0;
 }
 </script>
-
-
-
-
-	v
-        
