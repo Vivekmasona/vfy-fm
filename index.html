@@ -4727,15 +4727,16 @@ async function startLightFaceMesh() {
     }
 
     // Dot overlay for nose
-    dot = document.createElement("div");
-    dot.style.width = "10px";
-    dot.style.height = "10px";
-    dot.style.background = "red";
-    dot.style.borderRadius = "50%";
-    dot.style.position = "absolute";
-    dot.style.pointerEvents = "none";
-    dot.style.display = "none";
-    document.body.appendChild(dot);
+dot = document.createElement("div");
+dot.style.width = "10px";
+dot.style.height = "10px";
+dot.style.background = "red";
+dot.style.borderRadius = "50%";
+dot.style.position = "absolute";
+dot.style.pointerEvents = "none";
+dot.style.display = "none";
+dot.style.zIndex = "999999"; // very high to stay on top
+document.body.appendChild(dot);
 
     const playBtn = document.getElementById("Vplay");
     const pauseBtn = document.getElementById("Vpause");
