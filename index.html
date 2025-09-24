@@ -1561,12 +1561,12 @@ function playMiniVideoPlayer(videoId) {
     let overlay = $(`
         <div class="yt-mini-player" style="
             position:fixed;
-            bottom:60px; /* moved up from bottom */
+            bottom:110px; /* moved 50px up from previous 60px */
             right:10px;
-            width:280px; /* reduced width */
-            height:160px; /* reduced height */
+            width:270px; /* slightly smaller width */
+            height:150px; /* slightly smaller height */
             background:#111;
-            border-radius:16px;
+            border-radius:4px; /* sharp corners */
             overflow:hidden;
             z-index:99999;
             display:flex;
@@ -1583,16 +1583,17 @@ function playMiniVideoPlayer(videoId) {
 
             <!-- Glass-style Control Bar -->
             <div class="mini-control-bar" style="
-                height:50px;
+                height:45px; /* slightly smaller */
                 width:100%;
                 display:flex;
                 align-items:center;
                 justify-content:space-between;
-                padding:0 12px;
+                padding:0 10px;
                 backdrop-filter: blur(16px);
                 background: rgba(255,255,255,0.05);
                 border-top:1px solid rgba(255,255,255,0.15);
                 box-shadow: 0 -2px 8px rgba(255,255,255,0.05);
+                border-radius:0; /* sharp corners */
             ">
                 <!-- Play/Pause -->
                 <button id="mini-playpause" style="
@@ -1600,8 +1601,8 @@ function playMiniVideoPlayer(videoId) {
                     border:none;
                     background:none;
                     cursor:pointer;
-                    font-size:20px;
-                    margin-right:8px;
+                    font-size:18px;
+                    margin-right:6px;
                     transition: transform 0.2s, text-shadow 0.2s;
                     text-shadow: 0 0 8px #00ffff;
                 ">
@@ -1611,7 +1612,7 @@ function playMiniVideoPlayer(videoId) {
                 <!-- Seek Bar -->
                 <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="
                     flex:1;
-                    margin:0 8px;
+                    margin:0 6px;
                     -webkit-appearance:none;
                     height:4px;
                     border-radius:2px;
@@ -1626,8 +1627,8 @@ function playMiniVideoPlayer(videoId) {
                     border:none;
                     background:none;
                     cursor:pointer;
-                    font-size:20px;
-                    margin-right:8px;
+                    font-size:18px;
+                    margin-right:6px;
                     text-shadow: 0 0 8px #00ffff;
                 ">
                     <i class="fas fa-expand"></i>
@@ -1639,7 +1640,7 @@ function playMiniVideoPlayer(videoId) {
                     border:none;
                     background:none;
                     cursor:pointer;
-                    font-size:20px;
+                    font-size:18px;
                     text-shadow: 0 0 8px #ff4f4f;
                 ">
                     <i class="fas fa-times"></i>
@@ -1669,17 +1670,17 @@ function playMiniVideoPlayer(videoId) {
     style.innerHTML = `
         #mini-seekbar::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width:14px;
-            height:14px;
+            width:12px;
+            height:12px;
             border-radius:50%;
-            background: yellow; /* custom yellow thumb */
+            background: yellow;
             box-shadow: 0 0 6px yellow;
             cursor:pointer;
             transition: transform 0.2s;
         }
         #mini-seekbar::-moz-range-thumb {
-            width:14px;
-            height:14px;
+            width:12px;
+            height:12px;
             border-radius:50%;
             background: yellow;
             box-shadow: 0 0 6px yellow;
@@ -1687,8 +1688,8 @@ function playMiniVideoPlayer(videoId) {
             transition: transform 0.2s;
         }
         #mini-seekbar::-ms-thumb {
-            width:14px;
-            height:14px;
+            width:12px;
+            height:12px;
             border-radius:50%;
             background: yellow;
             box-shadow: 0 0 6px yellow;
@@ -1718,7 +1719,7 @@ function playMiniVideoPlayer(videoId) {
             $(".yt-mini-player").css({ width: "100vw", height: "100vh", bottom: 0, right: 0, borderRadius: 0 });
             isMiniPlayerFullscreen = true;
         } else {
-            $(".yt-mini-player").css({ width: "280px", height: "160px", bottom: "60px", right: "10px", borderRadius: "16px" });
+            $(".yt-mini-player").css({ width: "270px", height: "150px", bottom: "110px", right: "10px", borderRadius: "4px" });
             isMiniPlayerFullscreen = false;
         }
     });
