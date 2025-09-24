@@ -1472,132 +1472,104 @@ function paginate(direction) {
 
 
 	
-	
-
-
-
-
-
-
-
-
-
-                 // --- Global Variables ---
-let currentVideoListItem = null; 
+// --- Global Variables ---
 let ytPlayer = null;
 let isPlaying = false;
-let isVideoMode = false; 
+let isVideoMode = false;
 let isMiniPlayerFullscreen = false;
 
-// --- Mode Toggle Button ---
+// --- Toggle Mode ---
 document.getElementById("modeToggleBtn").addEventListener("click", () => {
     isVideoMode = !isVideoMode;
     document.getElementById("modeToggleBtn").innerText = `Mode: ${isVideoMode ? 'Video' : 'Audio'}`;
 });
 
-// --- Force Audio Stop ---
+// --- Force pause all audio ---
 function enforceAudioPause() {
-    document.querySelectorAll("#SAudio").forEach(audio => {
-        audio.pause();
-        audio.currentTime = 0;
+    document.querySelectorAll("#SAudio").forEach(a => {
+        a.pause();
+        a.currentTime = 0;
     });
 }
 
-// --- Stop current video ---
+// --- Stop video ---
 function stopVideoIfPlaying() {
     if (ytPlayer) ytPlayer.stopVideo();
     ytPlayer = null;
     $(".yt-mini-player").remove();
-    currentVideoListItem = null;
     isPlaying = false;
 }
 
-// --- Play Stylish Mini Video Player ---
-function playMiniVideoPlayer(videoId, title = "Video") {
+// --- Play Mini Video Player ---
+function playMiniVideoPlayer(videoId, title = "Video Title") {
     stopVideoIfPlaying();
     enforceAudioPause();
 
-    let overlay = $(`
-    <div class="yt-mini-player" style="
-        position:fixed;
-        bottom:10px;
-        right:10px;
-        width:220px;
-        height:140px;
-        background:#111;
-        border-radius:12px;
-        overflow:hidden;
-        z-index:99999;
-        box-shadow:0 8px 20px rgba(0,0,0,0.5);
-        display:flex;
-        flex-direction:column;
-    ">
-        <!-- Top content: title -->
-        <div style="
-            height:35px;
-            width:100%;
-            background: linear-gradient(90deg, #ff7e5f, #feb47b);
+    // Create player container
+    const overlay = $(`
+        <div class="yt-mini-player" style="
+            position:fixed;
+            bottom:10px;
+            right:10px;
+            width:200px;
+            height:120px;
+            background:#111;
+            border-radius:10px;
+            overflow:hidden;
+            z-index:99999;
             display:flex;
-            align-items:center;
-            justify-content:space-between;
-            padding:0 6px;
-            font-size:12px;
-            color:white;
-            font-weight:bold;
+            flex-direction:column;
+            box-shadow:0 4px 12px rgba(0,0,0,0.6);
         ">
-            <span>${title}</span>
-            <button id="mini-close" style="background:none; border:none; cursor:pointer;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-                    <path d="M18 6L6 18M6 6l12 12" stroke="white" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-            </button>
-        </div>
+            <!-- Video -->
+            <div id="yt-mini-${videoId}" style="flex:1; background:black;"></div>
 
-        <!-- Seek bar -->
-        <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="
-            width:100%;
-            height:4px;
-            margin:2px 0;
-            -webkit-appearance:none;
-            background: linear-gradient(90deg, #36d1dc, #5b86e5);
-            border-radius:2px;
-        ">
-        
-        <!-- Video container -->
-        <div id="yt-mini-${videoId}" style="flex:1; background:black;"></div>
-
-        <!-- Controls -->
-        <div style="
-            height:30px;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            background: linear-gradient(90deg, #ff512f, #dd2476);
-            padding:0 4px;
-        ">
-            <button id="mini-playpause" style="background:none; border:none; cursor:pointer;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-                    <polygon points="5,3 19,12 5,21"/>
-                </svg>
-            </button>
-            <button id="mini-fullscreen" style="background:none; border:none; cursor:pointer;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-                    <path d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zm6 10v6h-6v-2h4v-4h2zm-10 6H4v-6h2v4h4v2z"/>
-                </svg>
-            </button>
+            <!-- Controls -->
+            <div style="
+                height:40px;
+                background: linear-gradient(90deg, #ff7e5f, #feb47b);
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                padding:0 5px;
+            ">
+                <button id="mini-playpause" style="background:none; border:none; cursor:pointer;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                        <polygon points="5,3 19,12 5,21"/>
+                    </svg>
+                </button>
+                <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="
+                    flex:1;
+                    margin:0 5px;
+                    -webkit-appearance:none;
+                    background: linear-gradient(90deg, #36d1dc, #5b86e5);
+                    height:4px;
+                    border-radius:2px;
+                ">
+                <button id="mini-fullscreen" style="background:none; border:none; cursor:pointer;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                        <path d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zm6 10v6h-6v-2h4v-4h2zm-10 6H4v-6h2v4h4v2z"/>
+                    </svg>
+                </button>
+                <button id="mini-close" style="background:none; border:none; cursor:pointer;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                        <path d="M18 6L6 18M6 6l12 12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
         </div>
-    </div>
     `);
 
     $("body").append(overlay);
 
+    // Create YT player
     ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
         videoId: videoId,
         width: "100%",
         height: "100%",
         playerVars: { autoplay: 1, controls: 0, modestbranding: 1 },
         events: {
-            onReady: (e) => {
+            onReady: e => {
                 e.target.playVideo();
                 isPlaying = true;
                 updateSeekBar();
@@ -1605,10 +1577,7 @@ function playMiniVideoPlayer(videoId, title = "Video") {
         }
     });
 
-    // Close button
-    $("#mini-close").click(() => stopVideoIfPlaying());
-
-    // Play/Pause toggle
+    // Play/Pause
     $("#mini-playpause").click(() => {
         if (!ytPlayer) return;
         const state = ytPlayer.getPlayerState();
@@ -1625,48 +1594,47 @@ function playMiniVideoPlayer(videoId, title = "Video") {
     $("#mini-fullscreen").click(() => {
         if (!ytPlayer) return;
         if (!isMiniPlayerFullscreen) {
-            $(".yt-mini-player").css({ width: "100vw", height: "100vh", bottom: 0, right: 0, borderRadius:0 });
+            $(".yt-mini-player").css({ width:"100vw", height:"100vh", bottom:0, right:0, borderRadius:0 });
             isMiniPlayerFullscreen = true;
         } else {
-            $(".yt-mini-player").css({ width: "220px", height: "140px", bottom:"10px", right:"10px", borderRadius:"12px" });
+            $(".yt-mini-player").css({ width:"200px", height:"120px", bottom:"10px", right:"10px", borderRadius:"10px" });
             isMiniPlayerFullscreen = false;
         }
     });
 
-    // Seek bar control
+    // Close button
+    $("#mini-close").click(() => stopVideoIfPlaying());
+
+    // Seek bar
     $("#mini-seekbar").on("input", function() {
         if (!ytPlayer) return;
         const duration = ytPlayer.getDuration();
-        const seekTo = (this.value / 100) * duration;
-        ytPlayer.seekTo(seekTo, true);
+        ytPlayer.seekTo((this.value / 100) * duration, true);
     });
 
-    // Update seek bar continuously
     function updateSeekBar() {
         if (!ytPlayer || ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) return;
-        const currentTime = ytPlayer.getCurrentTime();
+        const current = ytPlayer.getCurrentTime();
         const duration = ytPlayer.getDuration();
-        if (duration > 0) {
-            const percent = (currentTime / duration) * 100;
-            $("#mini-seekbar").val(percent);
-        }
+        if(duration>0) $("#mini-seekbar").val((current/duration)*100);
         requestAnimationFrame(updateSeekBar);
     }
 }
 
-// --- Prevent Audio Play During Video Mode ---
-document.addEventListener("play", function(e) {
-    if (isVideoMode && ytPlayer && isPlaying && e.target.id === "SAudio") {
-        e.target.pause();
-    }
-}, true);
+// --- Prevent Audio play during video mode ---
+document.addEventListener("play", function(e){
+    if(isVideoMode && ytPlayer && isPlaying && e.target.id === "SAudio") e.target.pause();
+}, true);	
 
 
-	
-	
-	
-	      
 
+
+
+
+
+
+
+                 
 	
 	
 	
