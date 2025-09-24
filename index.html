@@ -2390,6 +2390,8 @@ function play(videoId, index) {
 	
     
 
+
+
 function play(id,Sid){
   // data = "https://distinctive-netta-vivekfy-608ee81c.koyeb.app/play?url=https://youtu.be/"+id;
     //data = "https://vivekfy.vercel.app/hack?url=https://vkrdownloader.xyz/download.php?vkr=https://youtu.be/"+id+"&redirect=1";
@@ -2489,30 +2491,6 @@ var alternativeAudioSources = [
 ];
 
 var currentAlternativeIndex = 0;
-
- 
-    
-	
-
-    if (nextSongIndex < playlistItems.length) {
-        playlistItems[nextSongIndex].click(); // Play the next song
-        audio.play(); // Play the audio
-
-        // Update the profile thumbnail and video ID for the next song
-        var nextSong = playlistItems[nextSongIndex];
-        var nextThumbnail = $(nextSong).children('img').attr("src");
-        var nextVideoId = $(nextSong).attr("vid");
-        $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');
-        $("#profileThumbnail").data("videoId", nextVideoId);
-
-        console.log('Automatically went to the next song and started playing.');
-    } else {
-        console.log('End of playlist');
-
-
-
-
-		
 
 audio.addEventListener("error", function () {
     setTimeout(function () {
