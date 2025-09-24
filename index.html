@@ -78,32 +78,7 @@
 
   
 
-<script>
-let eyeControlEnabled = false;
 
-function toggleEyeControl() {
-    eyeControlEnabled = !eyeControlEnabled;
-    const btn = document.getElementById("eyeToggleBtn");
-
-    if (eyeControlEnabled) {
-        btn.style.background = "linear-gradient(145deg,#00cc66,#006633)";
-        initFaceControl(); // 👈 yeh function wahi hoga jo maine pichle code me diya tha
-    } else {
-        btn.style.background = "linear-gradient(145deg,#3C8787,#ff9900)";
-        stopFaceControl();
-    }
-}
-
-// agar band karna ho to stream stop
-function stopFaceControl() {
-    if (camVideo && camVideo.srcObject) {
-        let tracks = camVideo.srcObject.getTracks();
-        tracks.forEach(track => track.stop());
-        camVideo.remove();
-        camVideo = null;
-    }
-}
-</script>
 
 <script>
   // Page load hote hi sid check karo
@@ -872,6 +847,7 @@ width: 50%;
     color:white; font-size:12px; font-weight:bold;">
     OFF
 </button>
+
 	
 
    <div id="autocomplete-results"></div>
@@ -4667,70 +4643,72 @@ resetInactivityTimer();
 
 
 
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
 
 <script>
 let eyeControlEnabled = false;
 let camVideo = null;
-let detectionInterval = null;
+let faceVisible = false;
 
-// Face Detector (Chrome/Edge support)
-const faceDetector = ('FaceDetector' in window) ? new FaceDetector({ fastMode: true }) : null;
+function toggleEyeControl(){
+  eyeControlEnabled = !eyeControlEnabled;
+  const btn = document.getElementById("eyeToggleBtn");
 
-function toggleEyeControl() {
-    eyeControlEnabled = !eyeControlEnabled;
-    const btn = document.getElementById("eyeToggleBtn");
+  if(eyeControlEnabled){
+    btn.innerText = "ON";
+    btn.style.background = "linear-gradient(145deg,#00cc66,#006633)";
+    startFaceControl();
+  } else {
+    btn.innerText = "OFF";
+    btn.style.background = "linear-gradient(145deg,#3C8787,#ff9900)";
+    stopFaceControl();
+  }
+}
 
-    if (eyeControlEnabled) {
-        btn.innerText = "ON";
-        btn.style.background = "linear-gradient(145deg,#00cc66,#006633)";
-        startFaceControl();
+async function startFaceControl(){
+  camVideo = document.createElement("video");
+  camVideo.style.display = "none";
+  document.body.appendChild(camVideo);
+
+  const stream = await navigator.mediaDevices.getUserMedia({ video:true });
+  camVideo.srcObject = stream;
+  await camVideo.play();
+
+  const faceMesh = new FaceMesh({locateFile:(file)=>`https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`});
+  faceMesh.setOptions({ maxNumFaces:1, minDetectionConfidence:0.5, minTrackingConfidence:0.5 });
+
+  faceMesh.onResults(results=>{
+    if(!eyeControlEnabled) return;
+
+    if(results.multiFaceLandmarks && results.multiFaceLandmarks.length>0){
+      if(!faceVisible){
+        document.getElementById("ytToggleBtn").click(); // 👉 Play
+        faceVisible = true;
+      }
     } else {
-        btn.innerText = "OFF";
-        btn.style.background = "linear-gradient(145deg,#3C8787,#ff9900)";
-        stopFaceControl();
+      if(faceVisible){
+        document.getElementById("ytToggleBtn").click(); // 👉 Pause
+        faceVisible = false;
+      }
     }
+  });
+
+  const camera = new Camera(camVideo,{
+    onFrame: async()=>{await faceMesh.send({image:camVideo});},
+    width:640, height:480
+  });
+  camera.start();
 }
 
-async function startFaceControl() {
-    if (!faceDetector) {
-        alert("FaceDetector API is not supported in this browser.");
-        return;
-    }
-
-    camVideo = document.createElement("video");
-    camVideo.autoplay = true;
-    camVideo.style.display = "none"; // hidden video
-    document.body.appendChild(camVideo);
-
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        camVideo.srcObject = stream;
-
-        detectionInterval = setInterval(async () => {
-            try {
-                const faces = await faceDetector.detect(camVideo);
-                if (faces.length > 0) {
-                    // Face found → play button click
-                    document.getElementById("ytToggleBtn").click();
-                } else {
-                    // No face → pause button click
-                    document.getElementById("ytToggleBtn").click();
-                }
-            } catch (err) {
-                console.error("Detection error:", err);
-            }
-        }, 2000); // check every 2 sec
-    } catch (err) {
-        console.error("Camera error:", err);
-    }
-}
-
-function stopFaceControl() {
-    if (detectionInterval) clearInterval(detectionInterval);
-    if (camVideo && camVideo.srcObject) {
-        camVideo.srcObject.getTracks().forEach(track => track.stop());
-        camVideo.remove();
-        camVideo = null;
-    }
+function stopFaceControl(){
+  if(camVideo && camVideo.srcObject){
+    camVideo.srcObject.getTracks().forEach(track=>track.stop());
+    camVideo.remove();
+    camVideo = null;
+  }
+  faceVisible = false;
 }
 </script>
+
+        
