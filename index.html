@@ -4674,6 +4674,7 @@ resetInactivityTimer();
 
 
 
+    
 <script>
 let eyeControlEnabled = false;
 let camVideo = null;
@@ -4681,10 +4682,12 @@ let faceMesh = null;
 let camera = null;
 let pointerDot = null;
 let lastClickTime = 0;
+const detectionFPS = 3; // FPS
+const clickCooldown = 800; // ms
+let prevX = window.innerWidth/2;
+let prevY = window.innerHeight/2;
 
-const detectionFPS = 3;
-const clickCooldown = 800; // milliseconds
-
+// ON/OFF button
 document.getElementById("eyeToggleBtn").addEventListener("click", toggleEyeControl);
 
 function toggleEyeControl(){
@@ -4705,7 +4708,7 @@ function toggleEyeControl(){
 async function startFacePointer() {
     if(camVideo) return;
 
-    // Tiny low-quality camera
+    // Tiny camera
     camVideo = document.createElement("video");
     camVideo.width = 80;
     camVideo.height = 60;
@@ -4729,7 +4732,7 @@ async function startFacePointer() {
     pointerDot.style.borderRadius = "50%";
     pointerDot.style.position = "absolute";
     pointerDot.style.pointerEvents = "none";
-    pointerDot.style.zIndex = "999999"; // on top
+    pointerDot.style.zIndex = "999999";
     document.body.appendChild(pointerDot);
 
     faceMesh = new FaceMesh({
@@ -4744,23 +4747,26 @@ async function startFacePointer() {
 
     faceMesh.onResults(results => {
         if(!eyeControlEnabled) return;
-
         if(!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) return;
 
         const landmarks = results.multiFaceLandmarks[0];
 
-        // Nose tip (landmark 1) → pointer position
+        // Mirror-style: nose X/Y
         const nose = landmarks[1];
-        const x = nose.x * window.innerWidth;
-        const y = nose.y * window.innerHeight;
-        pointerDot.style.left = `${x - 7}px`;
-        pointerDot.style.top = `${y - 7}px`;
+        const targetX = nose.x * window.innerWidth;
+        const targetY = nose.y * window.innerHeight;
 
-        // Mouth open detection (upper lip 13, lower lip 14)
-        const mouthOpen = landmarks[13].y - landmarks[14].y > 0.02; // adjust threshold
+        // Smooth pointer movement
+        prevX += (targetX - prevX) * 0.25;
+        prevY += (targetY - prevY) * 0.25;
 
+        pointerDot.style.left = `${prevX - 7}px`;
+        pointerDot.style.top = `${prevY - 7}px`;
+
+        // Mouth open detection: upper lip 13, lower lip 14
+        const mouthOpen = (landmarks[14].y - landmarks[13].y) > 0.02; // tweak threshold
         if(mouthOpen && Date.now() - lastClickTime > clickCooldown){
-            const element = document.elementFromPoint(x, y);
+            const element = document.elementFromPoint(prevX, prevY);
             if(element) element.click();
             lastClickTime = Date.now();
         }
@@ -4802,9 +4808,7 @@ function stopFacePointer() {
     pointerDot = null;
     faceMesh = null;
     lastClickTime = 0;
+    prevX = window.innerWidth/2;
+    prevY = window.innerHeight/2;
 }
-</script>	
-
-        
-            
-                
+</script>
