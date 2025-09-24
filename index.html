@@ -51,9 +51,6 @@
 <script src="globlealert/alert.js" defer></script>
 <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
-
 <b onclick="alert('This is a stylish alert!')"></b>
 
 
@@ -81,8 +78,6 @@
 
   
 
-
-
 <script>
   // Page load hote hi sid check karo
   window.addEventListener("DOMContentLoaded", () => {
@@ -103,12 +98,7 @@
     }
   });
 </script>
-
-
-
-
-
-
+  
     
     <script>
 // App ke load hone ke baad ek state push karte hain
@@ -842,33 +832,8 @@ width: 50%;
      <input type="search"  name="search"   id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">search</button></sr>
 	    
-	<!-- Eye Control Toggle Button -->
-<button id="eyeToggleBtn" style="
-    width:60px; height:28px; border:none; border-radius:12px;
-    background:linear-gradient(145deg,#3C8787,#ff9900);
-    display:flex; align-items:center; justify-content:center; cursor:pointer;
-    color:white; font-size:12px; font-weight:bold;
-    margin-left:10px;">
-    OFF
-</button>
-		
-
-	<!-- Separate Play/Pause Buttons -->
-<button id="Vplay" style="
-    width:30px; height:30px; border:none; border-radius:50%;
-    background:linear-gradient(145deg,#34A853,#3C8787);
-    display:flex; align-items:center; justify-content:center; cursor:pointer;
-    margin-left:5px;">
-    ▶
-</button>
-
-<button id="Vpause" style="
-    width:30px; height:30px; border:none; border-radius:50%;
-    background:linear-gradient(145deg,#EA4335,#3C8787);
-    display:flex; align-items:center; justify-content:center; cursor:pointer;
-    margin-left:5px;">
-    ❚❚
-</button>
+	
+	
 
    <div id="autocomplete-results"></div>
 <!-- Mode Toggle -->
@@ -1595,12 +1560,6 @@ $(document).on('click', '.overlay-play', function(e) {
 
 
 
-                    
-                
-
-
-
-                
 // Replace thumbnail with player
 let thumb = listItem.find('.video-thumbnail');
 if (thumb.length) {
@@ -1739,17 +1698,7 @@ if (thumb.length) {
 currentVideoListItem = listItem;
             
 });
-// Play the video
-$("#Vplay").on("click", function() {
-    if (!ytPlayer) return;
-    ytPlayer.playVideo();
-});
 
-// Pause the video
-$("#Vpause").on("click", function() {
-    if (!ytPlayer) return;
-    ytPlayer.pauseVideo();
-});
 // Mute / Unmute toggle
 function toggleMute() {
     if (!ytPlayer) return;
@@ -1773,18 +1722,6 @@ function cycleSpeed() {
     $("#ytSpeedBtn").text(speeds[speedIndex] + "x");
 }
             
-                
-
-
-
-
-
-
-	
-                
-            
-
-
                 
 
 
@@ -4667,156 +4604,3 @@ window.addEventListener('beforeunload', () => {
 // --------- Start inactivity timer on load ---------
 resetInactivityTimer();
 				</script>
-
-
-
-
-
-
-
-    
-            
-        
-        
-            
-
-        
-        
-
-        
-
-    
-            
-        
-
-        
-            
-    
-        
-<script>
-let controlEnabled = false;
-let camVideo = null;
-let faceMesh = null;
-let camera = null;
-let pointerDot = null;
-
-let prevX = window.innerWidth/2;
-let prevY = window.innerHeight/2;
-
-let mouthWasOpen = false;
-let lastClickTime = 0;
-const clickCooldown = 600; // ms
-
-// ON/OFF button
-document.getElementById("eyeToggleBtn").addEventListener("click", toggleControl);
-
-function toggleControl(){
-    controlEnabled = !controlEnabled;
-    const btn = document.getElementById("eyeToggleBtn");
-
-    if(controlEnabled){
-        btn.innerText = "ON";
-        btn.style.background = "linear-gradient(145deg,#00cc66,#006633)";
-        startFaceControl();
-    } else {
-        btn.innerText = "OFF";
-        btn.style.background = "linear-gradient(145deg,#3C8787,#ff9900)";
-        stopFaceControl();
-    }
-}
-
-async function startFaceControl() {
-    if(camVideo) return;
-
-    camVideo = document.createElement("video");
-    camVideo.width = 80;
-    camVideo.height = 60;
-    camVideo.style.display = "none";
-    document.body.appendChild(camVideo);
-
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 80, height: 60 } });
-        camVideo.srcObject = stream;
-        await camVideo.play();
-    } catch(err) { console.error(err); return; }
-
-    // Pointer dot
-    pointerDot = document.createElement("div");
-    pointerDot.style.width = "15px";
-    pointerDot.style.height = "15px";
-    pointerDot.style.background = "red";
-    pointerDot.style.borderRadius = "50%";
-    pointerDot.style.position = "fixed"; // fixed so scroll doesn't move it
-    pointerDot.style.pointerEvents = "none";
-    pointerDot.style.zIndex = "999999";
-    document.body.appendChild(pointerDot);
-
-    faceMesh = new FaceMesh({ locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}` });
-    faceMesh.setOptions({ maxNumFaces: 1, minDetectionConfidence: 0.7, minTrackingConfidence: 0.7 });
-
-    const edgeMargin = 20; // scroll trigger margin
-    const scrollStep = 8;  // smooth scroll step
-
-    faceMesh.onResults(results => {
-        if(!controlEnabled) return;
-        if(!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) return; // Face lost
-
-        const landmarks = results.multiFaceLandmarks[0];
-
-        // Face bounding box center
-        let minX=1, maxX=0, minY=1, maxY=0;
-        for(const lm of landmarks){
-            if(lm.x<minX) minX=lm.x;
-            if(lm.x>maxX) maxX=lm.x;
-            if(lm.y<minY) minY=lm.y;
-            if(lm.y>maxY) maxY=lm.y;
-        }
-        const faceCenterX = (minX + maxX)/2;
-        const faceCenterY = (minY + maxY)/2;
-
-        // Map face center to full screen instantly
-        prevX = (1 - faceCenterX) * window.innerWidth;
-        prevY = faceCenterY * window.innerHeight;
-
-        pointerDot.style.left = `${prevX - 7}px`;
-        pointerDot.style.top = `${prevY - 7}px`;
-
-        // Strict mouth open detection
-        const mouthOpen = (landmarks[14].y - landmarks[13].y) > 0.025; // stricter threshold
-        if(mouthOpen && !mouthWasOpen && Date.now() - lastClickTime > clickCooldown){
-            const element = document.elementFromPoint(prevX, prevY);
-            if(element) element.click();
-            lastClickTime = Date.now();
-        }
-        mouthWasOpen = mouthOpen;
-
-        // Smooth scroll at edges
-        const viewHeight = window.innerHeight;
-        if(prevY <= edgeMargin){ 
-            window.scrollBy({ top: -scrollStep, behavior: 'smooth' });
-        } else if(prevY >= viewHeight - edgeMargin){ 
-            window.scrollBy({ top: scrollStep, behavior: 'smooth' });
-        }
-    });
-
-    camera = new Camera(camVideo, { onFrame: async()=> await faceMesh.send({ image: camVideo }), width: 80, height: 60 });
-    camera.start();
-}
-
-function stopFaceControl() {
-    if(camera) camera.stop();
-    if(camVideo && camVideo.srcObject){
-        camVideo.srcObject.getTracks().forEach(t=>t.stop());
-        camVideo.remove();
-        camVideo = null;
-    }
-    if(pointerDot) pointerDot.remove();
-    if(faceMesh) faceMesh.close();
-    pointerDot = null;
-    faceMesh = null;
-    prevX = window.innerWidth/2;
-    prevY = window.innerHeight/2;
-    mouthWasOpen = false;
-    lastClickTime = 0;
-}
-</script>
