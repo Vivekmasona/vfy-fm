@@ -1481,7 +1481,8 @@ function paginate(direction) {
 
 
 
-// --- Global Variables ---
+
+         // --- Global Variables ---
 let currentVideoListItem = null; 
 let ytPlayer = null;
 let isPlaying = false;
@@ -1563,40 +1564,42 @@ function playMiniVideoPlayer(videoId) {
     stopVideoIfPlaying();
     enforceAudioPause();
 
-    // Create mini player container
+    // Mini player container
     let overlay = $(`
         <div class="yt-mini-player" style="
             position:fixed;
             bottom:10px;
             right:10px;
-            width:20%;
-            height:140px;
+            width:200px;
+            height:120px;
             background:#000;
-            display:flex;
-            flex-direction:column;
             border-radius:8px;
             overflow:hidden;
             z-index:99999;
-            box-shadow:0 4px 12px rgba(0,0,0,0.5);
+            display:flex;
+            flex-direction:column;
         ">
-            <div id="yt-mini-${videoId}" style="width:100%; flex:1; background:black;"></div>
-
+            <!-- Custom Control Bar -->
             <div style="
-                height:40px;
+                height:30px;
+                width:100%;
+                background:rgba(0,0,0,0.7);
                 display:flex;
                 align-items:center;
                 justify-content:space-between;
-                padding:0 5px;
-                background:#111;
+                padding:0 4px;
             ">
                 <button id="mini-playpause" style="color:white; border:none; background:none; cursor:pointer;">
                     <i class="fas fa-pause"></i>
                 </button>
-                <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="flex:1; margin:0 5px;">
+                <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="flex:1; margin:0 4px;">
                 <button id="mini-fullscreen" style="color:white; border:none; background:none; cursor:pointer;">
                     <i class="fas fa-expand"></i>
                 </button>
             </div>
+
+            <!-- Video Container -->
+            <div id="yt-mini-${videoId}" style="flex:1; background:black;"></div>
         </div>
     `);
 
@@ -1636,12 +1639,12 @@ function playMiniVideoPlayer(videoId) {
             $(".yt-mini-player").css({ width: "100vw", height: "100vh", bottom: 0, right: 0, borderRadius: 0 });
             isMiniPlayerFullscreen = true;
         } else {
-            $(".yt-mini-player").css({ width: "20%", height: "140px", bottom: "10px", right: "10px", borderRadius: "8px" });
+            $(".yt-mini-player").css({ width: "200px", height: "120px", bottom: "10px", right: "10px", borderRadius: "8px" });
             isMiniPlayerFullscreen = false;
         }
     });
 
-    // Seek bar update
+    // Seek bar input
     $("#mini-seekbar").on("input", function() {
         if (!ytPlayer) return;
         const duration = ytPlayer.getDuration();
@@ -1649,7 +1652,7 @@ function playMiniVideoPlayer(videoId) {
         ytPlayer.seekTo(seekTo, true);
     });
 
-    // Update seek bar periodically
+    // Update seek bar continuously
     function updateSeekBar() {
         if (!ytPlayer || ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) return;
         const currentTime = ytPlayer.getCurrentTime();
@@ -1667,7 +1670,7 @@ document.addEventListener("play", function(e) {
     if (isVideoMode && ytPlayer && isPlaying && e.target.id === "SAudio") {
         e.target.pause();
     }
-}, true);            
+}, true);       
 
 
 	
