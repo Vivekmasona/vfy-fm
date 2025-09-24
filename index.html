@@ -101,69 +101,6 @@
 
 
 
-<script type="text/javascript">
-  // --- Eye Control JS ---
-  let eyeControlEnabled = false; // ON/OFF toggle
-  let faceVisible = false;
-
-  // References to buttons
-  const eyeBtn = document.getElementById('ytEyeBtn');
-  const playBtn = document.getElementById('ytToggleBtn');
-
-  // Toggle Eye Control ON/OFF
-  eyeBtn.addEventListener('click', () => {
-      eyeControlEnabled = !eyeControlEnabled;
-      eyeBtn.innerText = eyeControlEnabled ? '👁 ON' : '👁 OFF';
-      if (!eyeControlEnabled && ytPlayer) ytPlayer.playVideo(); // Disable → resume normal play
-  });
-
-  // --- Hidden webcam ---
-  const camVideo = document.createElement('video');
-  camVideo.style.display = 'none';
-  document.body.appendChild(camVideo);
-
-  async function setupCamera() {
-      const stream = await navigator.mediaDevices.getUserMedia({video:true});
-      camVideo.srcObject = stream;
-      await camVideo.play();
-  }
-
-  // --- Mediapipe FaceMesh ---
-  const faceMesh = new FaceMesh({locateFile:(file)=>`https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`});
-  faceMesh.setOptions({
-      maxNumFaces:1,
-      refineLandmarks:false,
-      minDetectionConfidence:0.5,
-      minTrackingConfidence:0.5
-  });
-
-  // Face detection controls Play/Pause
-  faceMesh.onResults(results => {
-      if (!eyeControlEnabled) return;
-
-      if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
-          if (!faceVisible && ytPlayer) {
-              ytPlayer.playVideo();  // Face detected → Play
-              faceVisible = true;
-          }
-      } else {
-          if (faceVisible && ytPlayer) {
-              ytPlayer.pauseVideo(); // Face lost → Pause
-              faceVisible = false;
-          }
-      }
-  });
-
-  // --- Start camera & detection ---
-  setupCamera().then(() => {
-      const camera = new Camera(camVideo, {
-          onFrame: async () => { await faceMesh.send({image: camVideo}); },
-          width: 200,
-          height: 150
-      });
-      camera.start();
-  });
-</script>
 
 
 
@@ -4683,3 +4620,72 @@ window.addEventListener('beforeunload', () => {
 // --------- Start inactivity timer on load ---------
 resetInactivityTimer();
 				</script>
+
+
+
+
+
+
+	
+
+<!-- Scripts for FaceMesh -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+
+<script>
+let eyeControlEnabled = false;
+let faceVisible = false;
+let camera = null;
+let camVideo = null;
+
+const eyeBtn = document.getElementById('ytEyeBtn');
+const playBtn = document.getElementById('ytToggleBtn'); // 👈 aapka button
+
+eyeBtn.addEventListener('click', async () => {
+    eyeControlEnabled = !eyeControlEnabled;
+    eyeBtn.innerText = eyeControlEnabled ? "👁 ON" : "👁 OFF";
+
+    if (eyeControlEnabled) {
+        if (!camVideo) {
+            camVideo = document.createElement("video");
+            camVideo.style.display = "none";
+            document.body.appendChild(camVideo);
+
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            camVideo.srcObject = stream;
+            await camVideo.play();
+
+            const faceMesh = new FaceMesh({
+                locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+            });
+            faceMesh.setOptions({
+                maxNumFaces: 1,
+                minDetectionConfidence: 0.5,
+                minTrackingConfidence: 0.5
+            });
+
+            faceMesh.onResults(results => {
+                if (!eyeControlEnabled) return;
+                if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
+                    if (!faceVisible) {
+                        playBtn.click(); // 👈 yahi se toggle hota hai
+                        faceVisible = true;
+                    }
+                } else {
+                    if (faceVisible) {
+                        playBtn.click(); // 👈 pause karne ke liye dobara toggle
+                        faceVisible = false;
+                    }
+                }
+            });
+
+            camera = new Camera(camVideo, {
+                onFrame: async () => { await faceMesh.send({ image: camVideo }); },
+                width: 200,
+                height: 150
+            });
+            camera.start();
+        }
+    }
+});
+</script>
