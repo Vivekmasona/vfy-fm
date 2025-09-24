@@ -170,7 +170,8 @@ if (window !== window.top) {
 
   
 
-/* Music Item container */
+
+  /* Music Item same as before */
 .music-item {
   width: 95%;
   height: 100px;
@@ -182,8 +183,8 @@ if (window !== window.top) {
   box-sizing: border-box;
   background: linear-gradient(90deg, rgba(255,120,80,0.2), rgba(255,120,80,0));
   position: relative;
-  cursor: pointer;
   margin: 0 auto 12px; /* 12px gap between items */
+  cursor: pointer;
 }
 
 /* Thumbnail */
@@ -233,7 +234,7 @@ if (window !== window.top) {
   fill: rgba(255,120,80,0.9);
 }
 
-/* Title */
+/* Title multi-line */
 .title {
   flex: 1;
   font-size: 15px;
@@ -249,7 +250,7 @@ if (window !== window.top) {
   padding-left: 10px;
 }
 
-/* Save Button */
+/* Save button */
 .save-btn.save {
   background: radial-gradient(circle, rgba(0,200,0,0.4), rgba(0,150,0,0.1));
   border: none;
@@ -271,7 +272,7 @@ if (window !== window.top) {
   color: #00ff00;
 }
 
-/* Delete Button */
+/* Delete button */
 .save-btn.delete {
   background: radial-gradient(circle, rgba(255,0,0,0.4), rgba(200,0,0,0.1));
   border: none;
@@ -297,7 +298,7 @@ if (window !== window.top) {
   display: block;
 }
 
-/* Dark Mode */
+/* Dark mode */
 @media (prefers-color-scheme: dark) {
   .music-item {
     background: linear-gradient(90deg, rgba(255,120,80,0.25), rgba(255,120,80,0));
@@ -307,7 +308,6 @@ if (window !== window.top) {
   .save-btn.delete { color: #fff; }
   .overlay-play svg path { fill: #fff; }
 }
-  
 
 
 	
@@ -1147,7 +1147,7 @@ function displayFavorites() {
 favContainer.innerHTML = '';
 favorites.forEach((song, i) => {
     const li = document.createElement('li');
-    li.style.marginBottom = "12px"; // gap between items
+    li.style.marginBottom = "12px"; // Gap between items
     li.innerHTML = `
         <b index="${i}" class="music-item list" vid="${song.id}" onclick="loadFavoriteSong('${song.id}')">
 
