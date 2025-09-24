@@ -4679,6 +4679,8 @@ resetInactivityTimer();
         
         
             
+
+        
 <script>
 let controlEnabled = false;
 let camVideo = null;
@@ -4686,11 +4688,12 @@ let faceMesh = null;
 let camera = null;
 let pointerDot = null;
 
-const detectionFPS = 3; 
 let prevX = window.innerWidth/2;
 let prevY = window.innerHeight/2;
+
+let mouthWasOpen = false;
 let lastClickTime = 0;
-const clickCooldown = 800;
+const clickCooldown = 600; // ms
 
 // ON/OFF button
 document.getElementById("eyeToggleBtn").addEventListener("click", toggleControl);
@@ -4728,6 +4731,7 @@ async function startFaceControl() {
         await camVideo.play();
     } catch(err) { console.error(err); return; }
 
+    // Pointer dot
     pointerDot = document.createElement("div");
     pointerDot.style.width = "15px";
     pointerDot.style.height = "15px";
@@ -4741,36 +4745,40 @@ async function startFaceControl() {
     faceMesh = new FaceMesh({ locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}` });
     faceMesh.setOptions({ maxNumFaces: 1, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
 
+    const neutralY = window.innerHeight / 2;
+    const edgeMargin = 50; // pixels from top/bottom to stop scrolling
+
     faceMesh.onResults(results => {
         if(!controlEnabled) return;
         if(!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) return;
 
         const landmarks = results.multiFaceLandmarks[0];
 
-        // Pointer: nose landmark 1, mirror X
+        // Nose pointer
         const nose = landmarks[1];
-        const targetX = (1 - nose.x) * window.innerWidth;
+        const targetX = (1 - nose.x) * window.innerWidth; // mirror X
         const targetY = nose.y * window.innerHeight;
 
         // Smooth pointer
-        prevX += (targetX - prevX) * 0.2;
-        prevY += (targetY - prevY) * 0.2;
+        prevX += (targetX - prevX) * 0.15; 
+        prevY += (targetY - prevY) * 0.15; 
         pointerDot.style.left = `${prevX - 7}px`;
         pointerDot.style.top = `${prevY - 7}px`;
 
-        // Mouth open detection: landmarks 13 (upper) & 14 (lower)
-        const mouthOpen = (landmarks[14].y - landmarks[13].y) > 0.02; // tweak threshold
-        if(mouthOpen && Date.now() - lastClickTime > clickCooldown){
+        // Mouth detection: click only on open → close
+        const mouthOpen = (landmarks[14].y - landmarks[13].y) > 0.02;
+        if(mouthWasOpen && !mouthOpen && Date.now() - lastClickTime > clickCooldown){
             const element = document.elementFromPoint(prevX, prevY);
             if(element) element.click();
             lastClickTime = Date.now();
         }
+        mouthWasOpen = mouthOpen;
 
-        // Vertical head movement scroll
-        const scrollFactor = 10; // adjust sensitivity
-        const centerY = window.innerHeight / 2;
-        const deltaY = prevY - centerY;
-        window.scrollBy({ top: deltaY * 0.05, behavior: 'smooth' });
+        // Vertical scroll: only if pointer not too close to top/bottom
+        if(prevY > edgeMargin && prevY < window.innerHeight - edgeMargin){
+            const scrollDelta = (prevY - neutralY) * 0.05; 
+            window.scrollBy({ top: scrollDelta, behavior: 'smooth' });
+        }
     });
 
     camera = new Camera(camVideo, { onFrame: async()=> await faceMesh.send({ image: camVideo }), width: 80, height: 60 });
@@ -4780,7 +4788,7 @@ async function startFaceControl() {
         const originalOnFrame = camera._onFrame;
         camera._onFrame = async () => {
             const now = Date.now();
-            if(now - lastTime >= 1000/detectionFPS){
+            if(now - lastTime >= 1000/3){ // detectionFPS
                 await originalOnFrame();
                 lastTime = now;
             }
@@ -4803,6 +4811,7 @@ function stopFaceControl() {
     faceMesh = null;
     prevX = window.innerWidth/2;
     prevY = window.innerHeight/2;
+    mouthWasOpen = false;
     lastClickTime = 0;
 }
 </script>
