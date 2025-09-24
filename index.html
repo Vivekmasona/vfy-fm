@@ -866,12 +866,11 @@ width: 50%;
 	    
 	<!-- Eye Control Toggle Button -->
 <button id="eyeToggleBtn" onclick="toggleEyeControl()" style="
-    width:30px; height:30px; border:none; border-radius:50%;
+    width:50px; height:28px; border:none; border-radius:12px;
     background:linear-gradient(145deg,#3C8787,#ff9900);
-    display:flex; align-items:center; justify-content:center; cursor:pointer;">
-    <svg viewBox="0 0 24 24" fill="white" width="16" height="16">
-        <path d="M12 4.5C7 4.5 2.7 7.6 1 12c1.7 4.4 6 7.5 11 7.5s9.3-3.1 11-7.5c-1.7-4.4-6-7.5-11-7.5zm0 12c-2.5 0-4.5-2-4.5-4.5S9.5 7.5 12 7.5 16.5 9.5 16.5 12 14.5 16.5 12 16.5z"/>
-    </svg>
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    color:white; font-size:12px; font-weight:bold;">
+    OFF
 </button>
 	
 
@@ -4667,83 +4666,71 @@ resetInactivityTimer();
 
 
 
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+
 
 <script>
-let camVideo;
-let camera;
-let faceVisible = false; // track face status
-let isPlaying = false;   // track video state
+let eyeControlEnabled = false;
+let camVideo = null;
+let detectionInterval = null;
 
-// Yeh function aapke player ko toggle karega
-function togglePlayPause() {
-    const icon = document.getElementById("ytToggleIcon");
-    if (isPlaying) {
-        // pause
-        ytPlayer.pauseVideo(); // <-- apne YouTube player ka object lagao
-        icon.setAttribute("d", "M3 22v-20l18 10-18 10z"); // play icon
-        isPlaying = false;
+// Face Detector (Chrome/Edge support)
+const faceDetector = ('FaceDetector' in window) ? new FaceDetector({ fastMode: true }) : null;
+
+function toggleEyeControl() {
+    eyeControlEnabled = !eyeControlEnabled;
+    const btn = document.getElementById("eyeToggleBtn");
+
+    if (eyeControlEnabled) {
+        btn.innerText = "ON";
+        btn.style.background = "linear-gradient(145deg,#00cc66,#006633)";
+        startFaceControl();
     } else {
-        // play
-        ytPlayer.playVideo();  // <-- apne YouTube player ka object lagao
-        icon.setAttribute("d", "M6 19h4V5H6v14zm8-14v14h4V5h-4z"); // pause icon
-        isPlaying = true;
+        btn.innerText = "OFF";
+        btn.style.background = "linear-gradient(145deg,#3C8787,#ff9900)";
+        stopFaceControl();
     }
 }
 
-// Camera setup & face detection
-async function initFaceControl() {
-    if (!camVideo) {
-        camVideo = document.createElement("video");
-        camVideo.style.display = "none";
-        document.body.appendChild(camVideo);
+async function startFaceControl() {
+    if (!faceDetector) {
+        alert("FaceDetector API is not supported in this browser.");
+        return;
+    }
 
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            camVideo.srcObject = stream;
-            await camVideo.play();
-        } catch (err) {
-            alert("Camera access denied: " + err.message);
-            return;
-        }
+    camVideo = document.createElement("video");
+    camVideo.autoplay = true;
+    camVideo.style.display = "none"; // hidden video
+    document.body.appendChild(camVideo);
 
-        const faceMesh = new FaceMesh({
-            locateFile: (file) =>
-                `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`,
-        });
-        faceMesh.setOptions({
-            maxNumFaces: 1,
-            minDetectionConfidence: 0.5,
-            minTrackingConfidence: 0.5,
-        });
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        camVideo.srcObject = stream;
 
-        faceMesh.onResults((results) => {
-            if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
-                if (!faceVisible) {
-                    if (!isPlaying) document.getElementById("ytToggleBtn").click();
-                    faceVisible = true;
+        detectionInterval = setInterval(async () => {
+            try {
+                const faces = await faceDetector.detect(camVideo);
+                if (faces.length > 0) {
+                    // Face found → play button click
+                    document.getElementById("ytToggleBtn").click();
+                } else {
+                    // No face → pause button click
+                    document.getElementById("ytToggleBtn").click();
                 }
-            } else {
-                if (faceVisible) {
-                    if (isPlaying) document.getElementById("ytToggleBtn").click();
-                    faceVisible = false;
-                }
+            } catch (err) {
+                console.error("Detection error:", err);
             }
-        });
-
-        camera = new Camera(camVideo, {
-            onFrame: async () => {
-                await faceMesh.send({ image: camVideo });
-            },
-            width: 200,
-            height: 150,
-        });
-        camera.start();
+        }, 2000); // check every 2 sec
+    } catch (err) {
+        console.error("Camera error:", err);
     }
 }
 
-// 👁 Face control auto start (ya aap button se bhi call kar sakte ho)
-initFaceControl();
+function stopFaceControl() {
+    if (detectionInterval) clearInterval(detectionInterval);
+    if (camVideo && camVideo.srcObject) {
+        camVideo.srcObject.getTracks().forEach(track => track.stop());
+        camVideo.remove();
+        camVideo = null;
+    }
+}
 </script>
