@@ -839,13 +839,21 @@ width: 50%;
      <input type="search"  name="search"   id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">search</button></sr>
 	    
-	<!-- Eye Control Toggle Button -->
-<button id="eyeToggleBtn" onclick="toggleEyeControl()" style="
-    width:50px; height:28px; border:none; border-radius:12px;
-    background:linear-gradient(145deg,#3C8787,#ff9900);
+	<!-- Separate Play/Pause Buttons -->
+<button id="Vplay" style="
+    width:30px; height:30px; border:none; border-radius:50%;
+    background:linear-gradient(145deg,#34A853,#3C8787);
     display:flex; align-items:center; justify-content:center; cursor:pointer;
-    color:white; font-size:12px; font-weight:bold;">
-    OFF
+    margin-left:5px;">
+    ▶
+</button>
+
+<button id="Vpause" style="
+    width:30px; height:30px; border:none; border-radius:50%;
+    background:linear-gradient(145deg,#EA4335,#3C8787);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    margin-left:5px;">
+    ❚❚
 </button>
 
 	
@@ -1579,13 +1587,14 @@ $(document).on('click', '.overlay-play', function(e) {
                 
 
 
+
+                
 // Replace thumbnail with player
 let thumb = listItem.find('.video-thumbnail');
 if (thumb.length) {
     let thumbUrl = thumb.attr('src');
     let wrapper = $(`
         <div class="yt-wrapper" data-thumb="${thumbUrl}" style="position:relative; width:100%; overflow:hidden;">
-
             <!-- Loader Overlay -->
             <div class="yt-loader-overlay" style="
                 position:absolute; top:0; left:0; width:100%; height:100%;
@@ -1621,23 +1630,13 @@ if (thumb.length) {
                 -webkit-backdrop-filter:blur(8px);
                 border-top:1px solid rgba(255,255,255,0.2);
             ">
-
                 <!-- Play / Pause -->
-                <button id="VidPlay" onclick="togglePlayPause(true)" style="
+                <button id="ytToggleBtn" onclick="togglePlayPause()" style="
                     width:30px; height:30px; border:none; border-radius:50%;
                     background:linear-gradient(145deg,#ff9900,#3C8787);
                     display:flex; align-items:center; justify-content:center; cursor:pointer;">
-                    <svg viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <svg viewBox="0 0 24 24" id="ytToggleIcon" fill="white" width="14" height="14">
                         <path d="M3 22v-20l18 10-18 10z"/>
-                    </svg>
-                </button>
-
-                <button id="VidPause" onclick="togglePlayPause(false)" style="
-                    width:30px; height:30px; border:none; border-radius:50%;
-                    background:linear-gradient(145deg,#ff9900,#3C8787);
-                    display:none; align-items:center; justify-content:center; cursor:pointer;">
-                    <svg viewBox="0 0 24 24" fill="white" width="14" height="14">
-                        <path d="M6 4h4v16H6zm8 0h4v16h-4z"/>
                     </svg>
                 </button>
 
@@ -1689,84 +1688,56 @@ if (thumb.length) {
         height: '250',
         width: '100%',
         videoId: videoId,
-        playerVars: {
-            autoplay: 1,
-            controls: 0,
-            modestbranding: 1,
-            rel: 0,
-            fs: 0,
-            iv_load_policy: 3,
-            disablekb: 1,
-            showinfo: 0
+        playerVars: { 
+            autoplay: 1, 
+            controls: 0, 
+            modestbranding: 1, 
+            rel: 0, 
+            fs: 0, 
+            iv_load_policy: 3, 
+            disablekb: 1, 
+            showinfo: 0 
         },
-        events: {
+        events: { 
             'onReady': function(event) {
                 onYtReady(event);
-
-                // First click to play
                 document.addEventListener("click", function onceClick() {
                     event.target.playVideo();
-                    togglePlayPause(true);
                     document.removeEventListener("click", onceClick);
                 });
             },
             'onStateChange': function(event) {
                 onYtStateChange(event);
-
-                const playBtn = document.getElementById('VidPlay');
-                const pauseBtn = document.getElementById('VidPause');
-                const overlay = wrapper.find('.yt-loader-overlay');
-
                 if (event.data === YT.PlayerState.PLAYING) {
-                    // Hide overlay properly
-                    if (overlay.length) {
+                    setTimeout(() => {
+                        let overlay = $(wrapper).find('.yt-loader-overlay');
                         overlay.css({
-                            transition: "all 0.8s ease",
+                            transition: "all 1s ease",
                             transform: "translateY(-100%)",
                             opacity: 0
                         });
-                        setTimeout(() => overlay.remove(), 800);
-                    }
-                    playBtn.style.display = 'none';
-                    pauseBtn.style.display = 'flex';
-                } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
-                    playBtn.style.display = 'flex';
-                    pauseBtn.style.display = 'none';
+                        setTimeout(() => overlay.remove(), 1200);
+                    }, 1000);
                 }
             }
-        }
+        }    
     });
 }
 
 currentVideoListItem = listItem;
-});
-// Toggle function
-function togglePlayPause(play) {
-    if (!ytPlayer) return;
-    const playBtn = document.getElementById('VidPlay');
-    const pauseBtn = document.getElementById('VidPause');
-
-    if (play) {
-        ytPlayer.playVideo();
-        playBtn.style.display = 'none';
-        pauseBtn.style.display = 'flex';
-    } else {
-        ytPlayer.pauseVideo();
-        playBtn.style.display = 'flex';
-        pauseBtn.style.display = 'none';
-    }
-}
-
-
-
-
-
-
-
-	
-                
             
+});
+// Play the video
+$("#Vplay").on("click", function() {
+    if (!ytPlayer) return;
+    ytPlayer.playVideo();
+});
 
+// Pause the video
+$("#Vpause").on("click", function() {
+    if (!ytPlayer) return;
+    ytPlayer.pauseVideo();
+});
 // Mute / Unmute toggle
 function toggleMute() {
     if (!ytPlayer) return;
@@ -1790,6 +1761,18 @@ function cycleSpeed() {
     $("#ytSpeedBtn").text(speeds[speedIndex] + "x");
 }
             
+                
+
+
+
+
+
+
+	
+                
+            
+
+
                 
 
 
