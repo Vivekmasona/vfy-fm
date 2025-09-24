@@ -1122,50 +1122,37 @@ function saveFavorite(index, title, thumbUrl, id) {
 function displayFavorites() {
     const favContainer = document.getElementById('fav-songs');
     const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-
-    favContainer.innerHTML = '';
-    favorites.forEach(song => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-            <b onclick="loadFavoriteSong('${song.id}')" class="list" vid="${song.id}" style="position: relative;">
-                <div class="video" style="position:relative;">
-                    
-                    <!-- Thumbnail -->
-                    <img src="${song.thumbUrl}" alt="${song.title}" 
-                         class="video-thumbnail" vid="${song.id}" 
-                         data-thumb="${song.thumbUrl}" style="width:100%;">
-
-                    <!-- Overlay play button -->
-                    <div class="overlay-play" style="
-                        position:absolute; top:10px; right:10px;
-                        width:40px; height:40px;
-                        background: transparent;
-                        border-radius:50%; display:flex;
-                        align-items:center; justify-content:center;
-                        cursor:pointer; z-index:10;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
-                            <path d="M3 22v-20l18 10-18 10z"/>
-                        </svg>
-                    </div>
-
-                    <!-- Song info -->
-                    <section>
-                        <img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">
-                        <div>
-                            <p>V F Y ${song.title}</p>
-                            <small class="video-info">Video ID: ${song.id}</small>
-                        </div>
-                    </section>
-
-                    <!-- Delete button -->
-                    <b class="delete-btn" onclick="event.stopPropagation(); removeFavorite('${song.id}')">
-                        <i class="fas fa-trash"></i>
-                    </b>
+favContainer.innerHTML = '';
+favorites.forEach((song, i) => {
+    const li = document.createElement('li');
+    li.style.marginBottom = "12px"; // 12px gap between items
+    li.innerHTML = `
+        <b index="${i}" class="music-item list" vid="${song.id}" onclick="loadFavoriteSong('${song.id}')">
+            
+            <!-- Thumbnail -->
+            <div class="thumb-wrap">
+                <img src="${song.thumbUrl}" alt="${song.title}">
+                
+                <!-- Overlay play button -->
+                <div class="overlay-play">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
+                        <path d="M3 22v-20l18 10-18 10z"/>
+                    </svg>
                 </div>
-            </b>
-        `;
-        favContainer.appendChild(li);
-    });
+            </div>
+
+            <!-- Title -->
+            <div class="title">${song.title}</div>
+
+            <!-- Delete button -->
+            <button class="save-btn delete-btn" onclick="event.stopPropagation(); removeFavorite('${song.id}')">
+                <i class="fas fa-trash"></i>
+            </button>
+
+        </b>
+    `;
+    favContainer.appendChild(li);
+});
 }
 
 // Function to Load Song by Video ID
