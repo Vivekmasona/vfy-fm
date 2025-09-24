@@ -4686,6 +4686,7 @@ resetInactivityTimer();
         
 
     
+            
 <script>
 let controlEnabled = false;
 let camVideo = null;
@@ -4760,9 +4761,9 @@ async function startFaceControl() {
         const targetX = (1 - nose.x) * window.innerWidth;
         const targetY = nose.y * window.innerHeight;
 
-        // Smooth pointer movement
-        prevX += (targetX - prevX) * 0.15; 
-        prevY += (targetY - prevY) * 0.15; 
+        // Fast pointer movement (higher factor = faster)
+        prevX += (targetX - prevX) * 0.35; 
+        prevY += (targetY - prevY) * 0.35; 
 
         pointerDot.style.left = `${prevX - 7}px`;
         pointerDot.style.top = `${prevY - 7}px`;
