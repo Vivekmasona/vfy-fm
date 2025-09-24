@@ -1561,12 +1561,12 @@ function playMiniVideoPlayer(videoId) {
     let overlay = $(`
         <div class="yt-mini-player" style="
             position:fixed;
-            bottom:110px; /* moved 50px up from previous 60px */
+            bottom:110px; /* higher on screen */
             right:10px;
-            width:270px; /* slightly smaller width */
-            height:150px; /* slightly smaller height */
+            width:268px; /* slightly smaller width */
+            height:150px; /* same height */
             background:#111;
-            border-radius:4px; /* sharp corners */
+            border-radius:4px;
             overflow:hidden;
             z-index:99999;
             display:flex;
@@ -1579,72 +1579,75 @@ function playMiniVideoPlayer(videoId) {
                 flex:1;
                 background:black;
                 position:relative;
-            "></div>
-
-            <!-- Glass-style Control Bar -->
-            <div class="mini-control-bar" style="
-                height:45px; /* slightly smaller */
-                width:100%;
-                display:flex;
-                align-items:center;
-                justify-content:space-between;
-                padding:0 10px;
-                backdrop-filter: blur(16px);
-                background: rgba(255,255,255,0.05);
-                border-top:1px solid rgba(255,255,255,0.15);
-                box-shadow: 0 -2px 8px rgba(255,255,255,0.05);
-                border-radius:0; /* sharp corners */
             ">
-                <!-- Play/Pause -->
-                <button id="mini-playpause" style="
-                    color:#00ffff;
-                    border:none;
-                    background:none;
-                    cursor:pointer;
-                    font-size:18px;
-                    margin-right:6px;
-                    transition: transform 0.2s, text-shadow 0.2s;
-                    text-shadow: 0 0 8px #00ffff;
+                <!-- Glass-style Control Bar inside video -->
+                <div class="mini-control-bar" style="
+                    position:absolute;
+                    bottom:0;
+                    left:0;
+                    width:100%;
+                    height:45px;
+                    display:flex;
+                    align-items:center;
+                    justify-content:space-between;
+                    padding:0 10px;
+                    backdrop-filter: blur(16px);
+                    background: rgba(255,255,255,0.05);
+                    border-top:1px solid rgba(255,255,255,0.15);
+                    box-shadow: 0 -2px 8px rgba(255,255,255,0.05);
+                    border-radius:0; /* sharp corners */
                 ">
-                    <i class="fas fa-pause"></i>
-                </button>
+                    <!-- Play/Pause -->
+                    <button id="mini-playpause" style="
+                        color:#00ffff;
+                        border:none;
+                        background:none;
+                        cursor:pointer;
+                        font-size:18px;
+                        margin-right:6px;
+                        transition: transform 0.2s, text-shadow 0.2s;
+                        text-shadow: 0 0 8px #00ffff;
+                    ">
+                        <i class="fas fa-pause"></i>
+                    </button>
 
-                <!-- Seek Bar -->
-                <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="
-                    flex:1;
-                    margin:0 6px;
-                    -webkit-appearance:none;
-                    height:4px;
-                    border-radius:2px;
-                    background: linear-gradient(to right, #ff6a00, #ee0979);
-                    box-shadow: 0 0 8px #ff6a00, 0 0 12px #ee0979;
-                    cursor:pointer;
-                ">
+                    <!-- Seek Bar -->
+                    <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="
+                        flex:1;
+                        margin:0 6px;
+                        -webkit-appearance:none;
+                        height:4px;
+                        border-radius:2px;
+                        background: linear-gradient(to right, #ff6a00, #ee0979);
+                        box-shadow: 0 0 8px #ff6a00, 0 0 12px #ee0979;
+                        cursor:pointer;
+                    ">
 
-                <!-- Fullscreen -->
-                <button id="mini-fullscreen" style="
-                    color:#00ffff;
-                    border:none;
-                    background:none;
-                    cursor:pointer;
-                    font-size:18px;
-                    margin-right:6px;
-                    text-shadow: 0 0 8px #00ffff;
-                ">
-                    <i class="fas fa-expand"></i>
-                </button>
+                    <!-- Fullscreen -->
+                    <button id="mini-fullscreen" style="
+                        color:#00ffff;
+                        border:none;
+                        background:none;
+                        cursor:pointer;
+                        font-size:18px;
+                        margin-right:6px;
+                        text-shadow: 0 0 8px #00ffff;
+                    ">
+                        <i class="fas fa-expand"></i>
+                    </button>
 
-                <!-- Close -->
-                <button id="mini-close" style="
-                    color:#ff4f4f;
-                    border:none;
-                    background:none;
-                    cursor:pointer;
-                    font-size:18px;
-                    text-shadow: 0 0 8px #ff4f4f;
-                ">
-                    <i class="fas fa-times"></i>
-                </button>
+                    <!-- Close -->
+                    <button id="mini-close" style="
+                        color:#ff4f4f;
+                        border:none;
+                        background:none;
+                        cursor:pointer;
+                        font-size:18px;
+                        text-shadow: 0 0 8px #ff4f4f;
+                    ">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
             </div>
         </div>
     `);
@@ -1719,7 +1722,7 @@ function playMiniVideoPlayer(videoId) {
             $(".yt-mini-player").css({ width: "100vw", height: "100vh", bottom: 0, right: 0, borderRadius: 0 });
             isMiniPlayerFullscreen = true;
         } else {
-            $(".yt-mini-player").css({ width: "270px", height: "150px", bottom: "110px", right: "10px", borderRadius: "4px" });
+            $(".yt-mini-player").css({ width: "268px", height: "150px", bottom: "110px", right: "10px", borderRadius: "4px" });
             isMiniPlayerFullscreen = false;
         }
     });
@@ -1756,6 +1759,9 @@ document.addEventListener("play", function(e) {
         e.target.pause();
     }
 }, true);
+    
+
+    
 	
 
 	
