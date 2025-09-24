@@ -167,8 +167,10 @@ if (window !== window.top) {
  
 
 <style>
+
+  
 /* Music Item container */
-.list {
+.music-item {
   width: 95%;
   height: 100px;
   display: flex;
@@ -185,18 +187,24 @@ if (window !== window.top) {
 }
 
 /* Thumbnail */
-.video-thumbnail {
+.thumb-wrap {
+  position: relative;
   width: 120px;
   height: 100px;
   flex-shrink: 0;
   border-radius: 12px 0 0 12px;
-  object-fit: cover;
-  display: block;
-  position: relative;
+  overflow: hidden;
 }
 
-/* Thumbnail overlay gradient */
-.video-thumbnail::after {
+.thumb-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Thumbnail gradient overlay */
+.thumb-wrap::after {
   content: "";
   position: absolute;
   top: 0;
@@ -207,66 +215,7 @@ if (window !== window.top) {
   pointer-events: none;
 }
 
-/* Time / optional overlay text */
-.time {
-  position: absolute;
-  bottom: 1px;
-  left: 7px;
-  background: rgba(0,0,0,0.8);
-  color: #fff;
-  font-size: 12px;
-  padding: 2px 7px;
-  border-radius: 6px;
-}
-
-/* Title section */
-.video section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding-left: 10px;
-}
-
-.video section p {
-  font-size: 15px;
-  opacity: 0.7;
-  letter-spacing: 1px;
-  font-weight: 600;
-  line-height: 1.3;
-  margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-}
-
-/* Save button (heart) */
-.save-icon {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 40px;
-  height: 40px;
-  background: radial-gradient(circle, rgba(255,120,80,0.4), rgba(255,120,80,0.1));
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #333;
-  font-size: 18px;
-  cursor: pointer;
-  z-index: 10;
-  transition: 0.2s all;
-}
-
-.save-icon:hover {
-  transform: scale(1.1);
-  color: #ff5555;
-}
-
-/* Overlay play button */
+/* Overlay play button on top of thumbnail */
 .overlay-play {
   position: absolute;
   top: 10px;
@@ -287,19 +236,59 @@ if (window !== window.top) {
   fill: rgba(255,120,80,0.9);
 }
 
+/* Title multi-line text */
+.title {
+  flex: 1;
+  font-size: 15px;
+  opacity: 0.5;
+  letter-spacing: 2px;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  padding-left: 10px;
+}
+
+/* Save button (heart) */
+.save-btn {
+  background: radial-gradient(circle, rgba(255,120,80,0.4), rgba(255,120,80,0.1));
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  color: #333;
+  font-size: 20px;
+  transition: 0.2s all;
+}
+
+.save-btn:hover {
+  transform: scale(1.1);
+  color: #ff5555;
+}
+
+.save-btn i {
+  display: block;
+}
+
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
-  .list {
-    background: linear-gradient(90deg, rgba(255,120,80,0.25), rgba(255,120,80,0));
-    color: #fff;
+  .music-item { 
+    background: linear-gradient(90deg, rgba(255,120,80,0.25), rgba(255,120,80,0)); 
+    color: #fff; 
   }
-  .save-icon {
-    color: #fff;
-  }
-  .overlay-play svg path {
-    fill: #fff;
-  }
-	  }	
+  .save-btn { color: #fff; }
+  .overlay-play svg path { fill: #fff; }
+}  
+
+	
 </style>
 
 
@@ -1603,35 +1592,23 @@ function getOutput(item, i) {
     if (item.snippet?.liveBroadcastContent === "live") return '';
 
     return `
-        <b index="${i}" class="list" vid="${id}" style="position:relative;">
-            <div class="video" style="position:relative;">
-                <i class="fas fa-heart save-icon" 
-                   onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')"></i>
+<b index="${i}" class="music-item" vid="${id}" style="position:relative;">
+    <!-- Thumbnail -->
+    <div class="thumb-wrap">
+        <img src="${thumbUrl}" alt="${title}">
+        <!-- Optional time overlay -->
+        <!-- <div class="time">3:45</div> -->
+    </div>
 
-                <!-- Thumbnail -->
-                <img src="${thumbUrl}" alt="${title}" 
-                     class="video-thumbnail" index="${i}" vid="${id}" 
-                     data-thumb="${thumbUrl}" style="width:100%;">
+    <!-- Title -->
+    <div class="title">${title}</div>
 
-                <!-- Overlay play button -->
-                <div class="overlay-play" style="
-                    position:absolute; top:10px; right:10px;
-                    width:40px; height:40px;
-                    background: transparent;
-                    border-radius:50%; display:flex;
-                    align-items:center; justify-content:center;
-                    cursor:pointer; z-index:10;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
-                        <path d="M3 22v-20l18 10-18 10z"/>
-                    </svg>
-                </div>
-
-                <section>
-                    <img src="img/logo.png" alt="Vivekfy" width="10%" padding="20">
-                    <div><p>V F Y ${title}</p></div>
-                </section>
-            </div>
-        </b>`;
+    <!-- Save button -->
+    <button class="save-btn" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">
+        <i class="fas fa-heart"></i>
+    </button>
+</b>
+`;
 }
 
 // --- Handle Item Click Based on Mode ---
