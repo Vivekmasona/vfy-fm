@@ -1147,7 +1147,7 @@ function displayFavorites() {
 favContainer.innerHTML = '';
 favorites.forEach((song, i) => {
     const li = document.createElement('li');
-    li.style.marginBottom = "12px"; // Gap between items
+    li.style.marginBottom = "12px"; // 12px gap between items
     li.innerHTML = `
         <b index="${i}" class="music-item list" vid="${song.id}" onclick="loadFavoriteSong('${song.id}')">
 
@@ -1163,11 +1163,6 @@ favorites.forEach((song, i) => {
 
             <!-- Title -->
             <div class="title">${song.title}</div>
-
-            <!-- Save button -->
-            <button class="save-btn save" onclick="event.stopPropagation(); saveFavorite(${i}, '${song.title}', '${song.thumbUrl}', '${song.id}')">
-                <i class="fas fa-heart"></i>
-            </button>
 
             <!-- Delete button -->
             <button class="save-btn delete" onclick="event.stopPropagation(); removeFavorite('${song.id}')">
