@@ -1600,12 +1600,15 @@ function getOutput(item, i) {
     if (item.snippet?.liveBroadcastContent === "live") return '';
 
     return `
-<b index="${i}" class="music-item" vid="${id}" style="position:relative;">
+<b index="${i}" class="music-item list" vid="${id}" onclick="selectItem(this)">
     <!-- Thumbnail -->
     <div class="thumb-wrap">
         <img src="${thumbUrl}" alt="${title}">
-        <!-- Optional time overlay -->
-        <!-- <div class="time">3:45</div> -->
+        <div class="overlay-play">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
+                <path d="M3 22v-20l18 10-18 10z"/>
+            </svg>
+        </div>
     </div>
 
     <!-- Title -->
