@@ -1482,11 +1482,11 @@ function paginate(direction) {
 
 
 
-         // --- Global Variables ---
+                 // --- Global Variables ---
 let currentVideoListItem = null; 
 let ytPlayer = null;
 let isPlaying = false;
-let isVideoMode = false; // default Audio mode
+let isVideoMode = false; 
 let isMiniPlayerFullscreen = false;
 
 // --- Mode Toggle Button ---
@@ -1495,63 +1495,7 @@ document.getElementById("modeToggleBtn").addEventListener("click", () => {
     document.getElementById("modeToggleBtn").innerText = `Mode: ${isVideoMode ? 'Video' : 'Audio'}`;
 });
 
-// --- Generate List Item ---
-function getOutput(item, i) {
-    var id = item.id?.videoId || item.id;
-    var title = item.snippet?.title || "No title";
-    var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
-
-    if (item.snippet?.liveBroadcastContent === "live") return '';
-
-    return `
-<div style="margin-bottom:12px;">
-  <b index="${i}" class="music-item list" vid="${id}" onclick="handleItemClick(this)">
-      <!-- Thumbnail -->
-      <div class="thumb-wrap">
-          <img src="${thumbUrl}" alt="${title}">
-          <div class="overlay-play">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
-                  <path d="M3 22v-20l18 10-18 10z"/>
-              </svg>
-          </div>
-      </div>
-
-      <!-- Title -->
-      <div class="title">${title}</div>
-
-      <!-- Save button -->
-      <button class="save-btn" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">
-          <i class="fas fa-heart"></i>
-      </button>
-  </b>
-</div>
-`;
-}
-
-// --- Handle Item Click Based on Mode ---
-function handleItemClick(el) {
-    if (isVideoMode) {
-        let videoId = $(el).attr("vid");
-        playMiniVideoPlayer(videoId);
-    } else {
-        stopVideoIfPlaying();
-        document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
-        loadSong(el);
-    }
-}
-
-// --- Stop current video ---
-function stopVideoIfPlaying() {
-    if (ytPlayer) {
-        ytPlayer.stopVideo();
-        ytPlayer = null;
-    }
-    $(".yt-mini-player").remove();
-    currentVideoListItem = null;
-    isPlaying = false;
-}
-
-// --- Force Audio Stop Always When Video Playing ---
+// --- Force Audio Stop ---
 function enforceAudioPause() {
     document.querySelectorAll("#SAudio").forEach(audio => {
         audio.pause();
@@ -1559,48 +1503,90 @@ function enforceAudioPause() {
     });
 }
 
-// --- Play Mini Video Player ---
-function playMiniVideoPlayer(videoId) {
+// --- Stop current video ---
+function stopVideoIfPlaying() {
+    if (ytPlayer) ytPlayer.stopVideo();
+    ytPlayer = null;
+    $(".yt-mini-player").remove();
+    currentVideoListItem = null;
+    isPlaying = false;
+}
+
+// --- Play Stylish Mini Video Player ---
+function playMiniVideoPlayer(videoId, title = "Video") {
     stopVideoIfPlaying();
     enforceAudioPause();
 
-    // Mini player container
     let overlay = $(`
-        <div class="yt-mini-player" style="
-            position:fixed;
-            bottom:10px;
-            right:10px;
-            width:200px;
-            height:120px;
-            background:#000;
-            border-radius:8px;
-            overflow:hidden;
-            z-index:99999;
+    <div class="yt-mini-player" style="
+        position:fixed;
+        bottom:10px;
+        right:10px;
+        width:220px;
+        height:140px;
+        background:#111;
+        border-radius:12px;
+        overflow:hidden;
+        z-index:99999;
+        box-shadow:0 8px 20px rgba(0,0,0,0.5);
+        display:flex;
+        flex-direction:column;
+    ">
+        <!-- Top content: title -->
+        <div style="
+            height:35px;
+            width:100%;
+            background: linear-gradient(90deg, #ff7e5f, #feb47b);
             display:flex;
-            flex-direction:column;
+            align-items:center;
+            justify-content:space-between;
+            padding:0 6px;
+            font-size:12px;
+            color:white;
+            font-weight:bold;
         ">
-            <!-- Custom Control Bar -->
-            <div style="
-                height:30px;
-                width:100%;
-                background:rgba(0,0,0,0.7);
-                display:flex;
-                align-items:center;
-                justify-content:space-between;
-                padding:0 4px;
-            ">
-                <button id="mini-playpause" style="color:white; border:none; background:none; cursor:pointer;">
-                    <i class="fas fa-pause"></i>
-                </button>
-                <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="flex:1; margin:0 4px;">
-                <button id="mini-fullscreen" style="color:white; border:none; background:none; cursor:pointer;">
-                    <i class="fas fa-expand"></i>
-                </button>
-            </div>
-
-            <!-- Video Container -->
-            <div id="yt-mini-${videoId}" style="flex:1; background:black;"></div>
+            <span>${title}</span>
+            <button id="mini-close" style="background:none; border:none; cursor:pointer;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                    <path d="M18 6L6 18M6 6l12 12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
         </div>
+
+        <!-- Seek bar -->
+        <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="
+            width:100%;
+            height:4px;
+            margin:2px 0;
+            -webkit-appearance:none;
+            background: linear-gradient(90deg, #36d1dc, #5b86e5);
+            border-radius:2px;
+        ">
+        
+        <!-- Video container -->
+        <div id="yt-mini-${videoId}" style="flex:1; background:black;"></div>
+
+        <!-- Controls -->
+        <div style="
+            height:30px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            background: linear-gradient(90deg, #ff512f, #dd2476);
+            padding:0 4px;
+        ">
+            <button id="mini-playpause" style="background:none; border:none; cursor:pointer;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+                    <polygon points="5,3 19,12 5,21"/>
+                </svg>
+            </button>
+            <button id="mini-fullscreen" style="background:none; border:none; cursor:pointer;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+                    <path d="M4 4h6v2H6v4H4V4zm10 0h6v6h-2V6h-4V4zm6 10v6h-6v-2h4v-4h2zm-10 6H4v-6h2v4h4v2z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
     `);
 
     $("body").append(overlay);
@@ -1619,32 +1605,35 @@ function playMiniVideoPlayer(videoId) {
         }
     });
 
-    // Play/Pause button
+    // Close button
+    $("#mini-close").click(() => stopVideoIfPlaying());
+
+    // Play/Pause toggle
     $("#mini-playpause").click(() => {
         if (!ytPlayer) return;
         const state = ytPlayer.getPlayerState();
         if (state === YT.PlayerState.PLAYING) {
             ytPlayer.pauseVideo();
-            $("#mini-playpause i").removeClass("fa-pause").addClass("fa-play");
+            $("#mini-playpause svg").html('<rect x="5" y="3" width="4" height="18" fill="white"/><rect x="15" y="3" width="4" height="18" fill="white"/>'); // pause icon
         } else {
             ytPlayer.playVideo();
-            $("#mini-playpause i").removeClass("fa-play").addClass("fa-pause");
+            $("#mini-playpause svg").html('<polygon points="5,3 19,12 5,21" fill="white"/>'); // play icon
         }
     });
 
-    // Fullscreen button
+    // Fullscreen toggle
     $("#mini-fullscreen").click(() => {
         if (!ytPlayer) return;
         if (!isMiniPlayerFullscreen) {
-            $(".yt-mini-player").css({ width: "100vw", height: "100vh", bottom: 0, right: 0, borderRadius: 0 });
+            $(".yt-mini-player").css({ width: "100vw", height: "100vh", bottom: 0, right: 0, borderRadius:0 });
             isMiniPlayerFullscreen = true;
         } else {
-            $(".yt-mini-player").css({ width: "200px", height: "120px", bottom: "10px", right: "10px", borderRadius: "8px" });
+            $(".yt-mini-player").css({ width: "220px", height: "140px", bottom:"10px", right:"10px", borderRadius:"12px" });
             isMiniPlayerFullscreen = false;
         }
     });
 
-    // Seek bar input
+    // Seek bar control
     $("#mini-seekbar").on("input", function() {
         if (!ytPlayer) return;
         const duration = ytPlayer.getDuration();
@@ -1670,7 +1659,7 @@ document.addEventListener("play", function(e) {
     if (isVideoMode && ytPlayer && isPlaying && e.target.id === "SAudio") {
         e.target.pause();
     }
-}, true);       
+}, true);
 
 
 	
