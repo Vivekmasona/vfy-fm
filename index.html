@@ -842,9 +842,34 @@ width: 50%;
      <input type="search"  name="search"   id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">search</button></sr>
 	    
-	
+	<!-- Eye Control Toggle Button -->
+<button id="eyeToggleBtn" style="
+    width:60px; height:28px; border:none; border-radius:12px;
+    background:linear-gradient(145deg,#3C8787,#ff9900);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    color:white; font-size:12px; font-weight:bold;
+    margin-left:10px;">
+    OFF
+</button>
+		
 
-	
+	<!-- Separate Play/Pause Buttons -->
+<button id="Vplay" style="
+    width:30px; height:30px; border:none; border-radius:50%;
+    background:linear-gradient(145deg,#34A853,#3C8787);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    margin-left:5px;">
+    ▶
+</button>
+
+<button id="Vpause" style="
+    width:30px; height:30px; border:none; border-radius:50%;
+    background:linear-gradient(145deg,#EA4335,#3C8787);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    margin-left:5px;">
+    ❚❚
+</button>
+
    <div id="autocomplete-results"></div>
 <!-- Mode Toggle -->
 <div id="videoListContainer">
@@ -3745,8 +3770,6 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 	
 	
  <butto id="developer"></butto>
- <butto id="Vplay"></butto>
- <butto id="Vpause"></butto>
 
 <butto id="playVideobutto"></butto>
 
@@ -4275,19 +4298,6 @@ document.getElementById('search-btn').addEventListener('click', function() {
   <button onclick="savePreference()" style="padding:8px;border-radius:8px;border:none;cursor:pointer;background:#ff0055;color:white;">
     Save
   </button>
-
-<!-- Eye Control Toggle Button -->
-	
-	
-<button id="eyeToggleBtn" style="
-    width:60px; height:28px; border:none; border-radius:12px;
-    background:linear-gradient(145deg,#3C8787,#ff9900);
-    display:flex; align-items:center; justify-content:center; cursor:pointer;
-    color:white; font-size:12px; font-weight:bold;
-    margin-left:10px;">👁️ 
-</button>
-		
-
 
     
     <button class="close-btn" onclick="closePopup()">Close</button>
