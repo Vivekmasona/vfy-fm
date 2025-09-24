@@ -4687,6 +4687,10 @@ document.getElementById("eyeToggleBtn").addEventListener("click", toggleEyeContr
 let eyeControlEnabled = false;
 let camVideo = null;
 let prevFaceVisible = false;
+let faceMesh = null;
+let camera = null;
+let lastDetectionTime = 0;
+const detectionInterval = 200; // ms (5 times per second)
 
 function toggleEyeControl(){
   eyeControlEnabled = !eyeControlEnabled;
@@ -4704,24 +4708,41 @@ function toggleEyeControl(){
 }
 
 async function startFaceControl(){
+  if(camVideo) return; // already running
+
   camVideo = document.createElement("video");
   camVideo.style.display = "none";
   document.body.appendChild(camVideo);
 
-  const stream = await navigator.mediaDevices.getUserMedia({ video:true });
-  camVideo.srcObject = stream;
-  await camVideo.play();
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video:true });
+    camVideo.srcObject = stream;
+    await camVideo.play();
+  } catch(err) {
+    console.error("Camera access denied:", err);
+    return;
+  }
 
-  const faceMesh = new FaceMesh({locateFile:(file)=>`https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`});
-  faceMesh.setOptions({ maxNumFaces:1, minDetectionConfidence:0.5, minTrackingConfidence:0.5 });
+  faceMesh = new FaceMesh({
+    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+  });
+  faceMesh.setOptions({ 
+    maxNumFaces: 1, 
+    minDetectionConfidence: 0.5, 
+    minTrackingConfidence: 0.5 
+  });
 
-  faceMesh.onResults(results=>{
+  faceMesh.onResults(results => {
     if(!eyeControlEnabled) return;
+
+    const now = Date.now();
+    if(now - lastDetectionTime < detectionInterval) return;
+    lastDetectionTime = now;
 
     const playBtn = document.getElementById("Vplay");
     const pauseBtn = document.getElementById("Vpause");
 
-    let faceDetected = results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0;
+    const faceDetected = results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0;
 
     if(faceDetected && !prevFaceVisible){
       playBtn.click();
@@ -4732,19 +4753,33 @@ async function startFaceControl(){
     }
   });
 
-  const camera = new Camera(camVideo,{
-    onFrame: async()=>{await faceMesh.send({image:camVideo});},
-    width:640, height:480
+  camera = new Camera(camVideo, {
+    onFrame: async () => {
+      await faceMesh.send({image: camVideo});
+    },
+    width: 320,  // lower resolution for performance
+    height: 240
   });
   camera.start();
 }
 
 function stopFaceControl(){
+  if(camera) {
+    camera.stop();
+    camera = null;
+  }
+
   if(camVideo && camVideo.srcObject){
-    camVideo.srcObject.getTracks().forEach(track=>track.stop());
+    camVideo.srcObject.getTracks().forEach(track => track.stop());
     camVideo.remove();
     camVideo = null;
   }
+
+  if(faceMesh) {
+    faceMesh.close();
+    faceMesh = null;
+  }
+
   prevFaceVisible = false;
 }
 </script>
