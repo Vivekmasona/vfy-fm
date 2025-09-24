@@ -1560,8 +1560,10 @@ function enforceAudioPause() {
 	
 	
 	
+	
 	// --- Play Mini Video Player ---
-    function playMiniVideoPlayer(videoId) {
+    
+function playMiniVideoPlayer(videoId) {
     stopVideoIfPlaying();
     enforceAudioPause();
 
@@ -1580,8 +1582,8 @@ function enforceAudioPause() {
             z-index:2147483647;
             display:flex;
             flex-direction:column;
-            box-shadow: 0 12px 28px rgba(0,0,0,0.7);
-            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow:0 12px 28px rgba(0,0,0,0.7);
+            border:1px solid rgba(255,255,255,0.1);
         ">
             <div id="yt-mini-${videoId}" style="
                 flex:1;
@@ -1604,9 +1606,9 @@ function enforceAudioPause() {
                     border-top:1px solid rgba(255,255,255,0.2);
                     box-shadow: 0 -2px 12px rgba(255,255,255,0.2);
                     border-radius:0;
-                    opacity:0; /* initially hidden */
+                    opacity:0; /* hidden initially */
                     transition: opacity 0.5s ease;
-                    z-index:2147483648;
+                    z-index:99999999; /* ensure visible above video */
                 ">
                     <button id="mini-playpause" style="
                         color:#00ffff;
@@ -1625,7 +1627,7 @@ function enforceAudioPause() {
                         height:4px;
                         border-radius:2px;
                         background: linear-gradient(to right,#ff6a00,#ee0979);
-                        box-shadow: 0 0 8px #ff6a00,0 0 12px #ee0979;
+                        box-shadow:0 0 8px #ff6a00,0 0 12px #ee0979;
                         cursor:pointer;
                     ">
 
@@ -1658,7 +1660,7 @@ function enforceAudioPause() {
         videoId: videoId,
         width: "100%",
         height: "100%",
-        playerVars: { autoplay: 1, controls: 0, modestbranding: 1 },
+        playerVars: { autoplay:1, controls:0, modestbranding:1 },
         events: {
             onReady: (e) => {
                 e.target.playVideo();
@@ -1705,34 +1707,29 @@ function enforceAudioPause() {
 
     $("#mini-seekbar").on("input", function() {
         if (!ytPlayer) return;
-        const duration = ytPlayer.getDuration();
-        ytPlayer.seekTo((this.value/100)*duration, true);
+        ytPlayer.seekTo((this.value/100)*ytPlayer.getDuration(), true);
     });
 
     function updateSeekBar() {
         if (!ytPlayer || ytPlayer.getPlayerState()!==YT.PlayerState.PLAYING) return;
-        const percent = (ytPlayer.getCurrentTime()/ytPlayer.getDuration())*100;
-        $("#mini-seekbar").val(percent);
+        $("#mini-seekbar").val((ytPlayer.getCurrentTime()/ytPlayer.getDuration())*100);
         requestAnimationFrame(updateSeekBar);
     }
 
-    // **Show controls on tap/click**
+    // **Tap/click overlay control**
     const controls = overlay.find(".mini-control-bar");
     let fadeTimeout;
-
     $("#yt-mini-" + videoId).click(() => {
         controls.css("opacity", 1);
         clearTimeout(fadeTimeout);
-        fadeTimeout = setTimeout(() => controls.css("opacity", 0), 2000); // fade out after 2s
+        fadeTimeout = setTimeout(() => controls.css("opacity", 0), 2000);
     });
 }
 
 // Prevent Audio Play During Video Mode
 document.addEventListener("play", e => {
     if (isVideoMode && ytPlayer && isPlaying && e.target.id==="SAudio") e.target.pause();
-}, true);        
-
-
+}, true);                    
 	
 
     
