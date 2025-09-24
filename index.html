@@ -4682,6 +4682,8 @@ resetInactivityTimer();
 
         
         
+
+        
 <script>
 let controlEnabled = false;
 let camVideo = null;
@@ -4714,8 +4716,6 @@ function toggleControl(){
     }
 }
 
-function distance(a,b){ return Math.hypot(a.x-b.x, a.y-b.y); }
-
 async function startFaceControl() {
     if(camVideo) return;
 
@@ -4745,45 +4745,43 @@ async function startFaceControl() {
     faceMesh = new FaceMesh({ locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}` });
     faceMesh.setOptions({ maxNumFaces: 1, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
 
-    const neutralY = window.innerHeight / 2;
-    const scrollEdgeMargin = 20; // top/bottom trigger scroll
+    const edgeMargin = 20; // scroll trigger margin
+    const cameraRange = { minY: 0.3, maxY: 0.7 }; // pointer moves only in this nose range
 
     faceMesh.onResults(results => {
         if(!controlEnabled) return;
         if(!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) return;
 
         const landmarks = results.multiFaceLandmarks[0];
-
-        // Nose pointer (mirror X)
         const nose = landmarks[1];
-        const targetX = (1 - nose.x) * window.innerWidth;
-        const targetY = nose.y * window.innerHeight;
 
-        // Smooth pointer movement
-        prevX += (targetX - prevX) * 0.15; 
-        prevY += (targetY - prevY) * 0.15; 
-        pointerDot.style.left = `${prevX - 7}px`;
-        pointerDot.style.top = `${prevY - 7}px`;
+        // Pointer movement
+        if(nose.y >= cameraRange.minY && nose.y <= cameraRange.maxY){
+            const targetX = (1 - nose.x) * window.innerWidth;
+            const targetY = ((nose.y - cameraRange.minY)/(cameraRange.maxY - cameraRange.minY)) * window.innerHeight;
 
-        // Mouth click: open → close
+            prevX += (targetX - prevX) * 0.15; 
+            prevY += (targetY - prevY) * 0.15; 
+
+            pointerDot.style.left = `${prevX - 7}px`;
+            pointerDot.style.top = `${prevY - 7}px`;
+        }
+
+        // Mouth open detection → click immediately on open
         const mouthOpen = (landmarks[14].y - landmarks[13].y) > 0.02;
-        if(mouthWasOpen && !mouthOpen && Date.now() - lastClickTime > clickCooldown){
+        if(mouthOpen && !mouthWasOpen && Date.now() - lastClickTime > clickCooldown){
             const element = document.elementFromPoint(prevX, prevY);
             if(element) element.click();
             lastClickTime = Date.now();
         }
         mouthWasOpen = mouthOpen;
 
-        // Scroll only if pointer near top/bottom
-        const pageHeight = document.documentElement.scrollHeight;
+        // Scroll only when pointer reaches top/bottom
         const viewHeight = window.innerHeight;
-
-        if(prevY <= scrollEdgeMargin){ // near top
-            const delta = -5; // smooth scroll up
-            window.scrollBy({ top: delta, behavior: 'smooth' });
-        } else if(prevY >= viewHeight - scrollEdgeMargin){ // near bottom
-            const delta = 5; // smooth scroll down
-            window.scrollBy({ top: delta, behavior: 'smooth' });
+        if(prevY <= edgeMargin){ 
+            window.scrollBy({ top: -5, behavior: 'smooth' });
+        } else if(prevY >= viewHeight - edgeMargin){ 
+            window.scrollBy({ top: 5, behavior: 'smooth' });
         }
     });
 
