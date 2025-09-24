@@ -4681,6 +4681,7 @@ resetInactivityTimer();
             
 
         
+        
 <script>
 let controlEnabled = false;
 let camVideo = null;
@@ -4693,7 +4694,7 @@ let prevY = window.innerHeight/2;
 
 let mouthWasOpen = false;
 let lastClickTime = 0;
-const clickCooldown = 600; // ms
+const clickCooldown = 600;
 
 // ON/OFF button
 document.getElementById("eyeToggleBtn").addEventListener("click", toggleControl);
@@ -4713,7 +4714,6 @@ function toggleControl(){
     }
 }
 
-// Helper: distance
 function distance(a,b){ return Math.hypot(a.x-b.x, a.y-b.y); }
 
 async function startFaceControl() {
@@ -4746,7 +4746,7 @@ async function startFaceControl() {
     faceMesh.setOptions({ maxNumFaces: 1, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
 
     const neutralY = window.innerHeight / 2;
-    const edgeMargin = 50; // pixels from top/bottom to stop scrolling
+    const scrollEdgeMargin = 20; // top/bottom trigger scroll
 
     faceMesh.onResults(results => {
         if(!controlEnabled) return;
@@ -4754,18 +4754,18 @@ async function startFaceControl() {
 
         const landmarks = results.multiFaceLandmarks[0];
 
-        // Nose pointer
+        // Nose pointer (mirror X)
         const nose = landmarks[1];
-        const targetX = (1 - nose.x) * window.innerWidth; // mirror X
+        const targetX = (1 - nose.x) * window.innerWidth;
         const targetY = nose.y * window.innerHeight;
 
-        // Smooth pointer
+        // Smooth pointer movement
         prevX += (targetX - prevX) * 0.15; 
         prevY += (targetY - prevY) * 0.15; 
         pointerDot.style.left = `${prevX - 7}px`;
         pointerDot.style.top = `${prevY - 7}px`;
 
-        // Mouth detection: click only on open → close
+        // Mouth click: open → close
         const mouthOpen = (landmarks[14].y - landmarks[13].y) > 0.02;
         if(mouthWasOpen && !mouthOpen && Date.now() - lastClickTime > clickCooldown){
             const element = document.elementFromPoint(prevX, prevY);
@@ -4774,10 +4774,16 @@ async function startFaceControl() {
         }
         mouthWasOpen = mouthOpen;
 
-        // Vertical scroll: only if pointer not too close to top/bottom
-        if(prevY > edgeMargin && prevY < window.innerHeight - edgeMargin){
-            const scrollDelta = (prevY - neutralY) * 0.05; 
-            window.scrollBy({ top: scrollDelta, behavior: 'smooth' });
+        // Scroll only if pointer near top/bottom
+        const pageHeight = document.documentElement.scrollHeight;
+        const viewHeight = window.innerHeight;
+
+        if(prevY <= scrollEdgeMargin){ // near top
+            const delta = -5; // smooth scroll up
+            window.scrollBy({ top: delta, behavior: 'smooth' });
+        } else if(prevY >= viewHeight - scrollEdgeMargin){ // near bottom
+            const delta = 5; // smooth scroll down
+            window.scrollBy({ top: delta, behavior: 'smooth' });
         }
     });
 
@@ -4788,7 +4794,7 @@ async function startFaceControl() {
         const originalOnFrame = camera._onFrame;
         camera._onFrame = async () => {
             const now = Date.now();
-            if(now - lastTime >= 1000/3){ // detectionFPS
+            if(now - lastTime >= 1000/3){
                 await originalOnFrame();
                 lastTime = now;
             }
