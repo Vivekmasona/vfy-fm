@@ -170,7 +170,7 @@ if (window !== window.top) {
 
   
 
-/* Favorites / music items */
+/* Music Item container */
 .music-item {
   width: 95%;
   height: 100px;
@@ -183,9 +183,8 @@ if (window !== window.top) {
   background: linear-gradient(90deg, rgba(255,120,80,0.2), rgba(255,120,80,0));
   position: relative;
   cursor: pointer;
+  margin: 0 auto 12px; /* 12px gap between items */
 }
-
-/* Gap between items handled in JS with li margin-bottom */
 
 /* Thumbnail */
 .thumb-wrap {
@@ -250,9 +249,9 @@ if (window !== window.top) {
   padding-left: 10px;
 }
 
-/* Delete / save button */
-.save-btn.delete-btn {
-  background: radial-gradient(circle, rgba(255,120,80,0.4), rgba(255,120,80,0.1));
+/* Save Button */
+.save-btn.save {
+  background: radial-gradient(circle, rgba(0,200,0,0.4), rgba(0,150,0,0.1));
   border: none;
   border-radius: 50%;
   width: 60px;
@@ -263,28 +262,51 @@ if (window !== window.top) {
   cursor: pointer;
   flex-shrink: 0;
   font-size: 20px;
-  color: #333;
+  color: #fff;
   transition: 0.2s all;
 }
 
-.save-btn.delete-btn:hover {
+.save-btn.save:hover {
+  transform: scale(1.1);
+  color: #00ff00;
+}
+
+/* Delete Button */
+.save-btn.delete {
+  background: radial-gradient(circle, rgba(255,0,0,0.4), rgba(200,0,0,0.1));
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 20px;
+  color: #fff;
+  transition: 0.2s all;
+}
+
+.save-btn.delete:hover {
   transform: scale(1.1);
   color: #ff5555;
 }
 
-.save-btn.delete-btn i {
+.save-btn i {
   display: block;
 }
 
-/* Dark mode */
+/* Dark Mode */
 @media (prefers-color-scheme: dark) {
   .music-item {
     background: linear-gradient(90deg, rgba(255,120,80,0.25), rgba(255,120,80,0));
     color: #fff;
   }
-  .save-btn.delete-btn { color: #fff; }
+  .save-btn.save { color: #fff; }
+  .save-btn.delete { color: #fff; }
   .overlay-play svg path { fill: #fff; }
-	}  
+}
 
 
 
