@@ -1140,14 +1140,14 @@ function saveFavorite(index, title, thumbUrl, id) {
     }
 }
 
-// Function to Display Favorite Songs as Clickable List with Best Thumbnail Picker
+// Function to Display Favorite Songs with Best Thumbnail Picker
 function displayFavorites() {
     const favContainer = document.getElementById('fav-songs');
     const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 
     favContainer.innerHTML = '';
     favorites.forEach(song => {
-        // Start with maxres WebP
+        // Start with maxres WebP thumbnail
         let thumbUrl = `https://i.ytimg.com/vi_webp/${song.id}/maxresdefault.webp`;
 
         const li = document.createElement('li');
@@ -1155,7 +1155,7 @@ function displayFavorites() {
             <b onclick="loadFavoriteSong('${song.id}')" class="list" vid="${song.id}" style="position: relative;">
                 <div class="video" style="position:relative;">
 
-                    <!-- Thumbnail -->
+                    <!-- Best Thumbnail Picker -->
                     <img src="${thumbUrl}" alt="${song.title}" 
                          class="video-thumbnail" vid="${song.id}" 
                          data-thumb="${thumbUrl}" style="width:100%;"
