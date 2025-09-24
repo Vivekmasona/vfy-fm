@@ -4691,6 +4691,7 @@ resetInactivityTimer();
 
         
             
+    
 <script>
 let controlEnabled = false;
 let camVideo = null;
@@ -4744,7 +4745,7 @@ async function startFaceControl() {
     pointerDot.style.height = "15px";
     pointerDot.style.background = "red";
     pointerDot.style.borderRadius = "50%";
-    pointerDot.style.position = "absolute";
+    pointerDot.style.position = "fixed"; // fixed so scroll doesn't move it
     pointerDot.style.pointerEvents = "none";
     pointerDot.style.zIndex = "999999";
     document.body.appendChild(pointerDot);
@@ -4756,7 +4757,7 @@ async function startFaceControl() {
 
     faceMesh.onResults(results => {
         if(!controlEnabled) return;
-        if(!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) return;
+        if(!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) return; // Face lost
 
         const landmarks = results.multiFaceLandmarks[0];
 
@@ -4771,7 +4772,7 @@ async function startFaceControl() {
         const faceCenterX = (minX + maxX)/2;
         const faceCenterY = (minY + maxY)/2;
 
-        // Map to full page (pointer moves even if face still)
+        // Map to full viewport
         const targetX = (1 - faceCenterX) * window.innerWidth;
         const targetY = faceCenterY * window.innerHeight;
 
@@ -4790,7 +4791,7 @@ async function startFaceControl() {
         }
         mouthWasOpen = mouthOpen;
 
-        // Scroll top/bottom edges
+        // Scroll only when pointer reaches top/bottom edges
         const viewHeight = window.innerHeight;
         if(prevY <= edgeMargin){ 
             window.scrollBy({ top: -5, behavior: 'smooth' });
