@@ -4675,6 +4675,7 @@ resetInactivityTimer();
 
 
     
+            
 <script>
 let eyeControlEnabled = false;
 let camVideo = null;
@@ -4682,12 +4683,12 @@ let faceMesh = null;
 let camera = null;
 let pointerDot = null;
 let lastClickTime = 0;
-const detectionFPS = 3; // FPS
+
+const detectionFPS = 3;
 const clickCooldown = 800; // ms
 let prevX = window.innerWidth/2;
 let prevY = window.innerHeight/2;
 
-// ON/OFF button
 document.getElementById("eyeToggleBtn").addEventListener("click", toggleEyeControl);
 
 function toggleEyeControl(){
@@ -4708,7 +4709,6 @@ function toggleEyeControl(){
 async function startFacePointer() {
     if(camVideo) return;
 
-    // Tiny camera
     camVideo = document.createElement("video");
     camVideo.width = 80;
     camVideo.height = 60;
@@ -4724,7 +4724,6 @@ async function startFacePointer() {
         return;
     }
 
-    // Pointer dot
     pointerDot = document.createElement("div");
     pointerDot.style.width = "15px";
     pointerDot.style.height = "15px";
@@ -4751,21 +4750,23 @@ async function startFacePointer() {
 
         const landmarks = results.multiFaceLandmarks[0];
 
-        // Mirror-style: nose X/Y
+        // Fix mirror: invert X axis
         const nose = landmarks[1];
-        const targetX = nose.x * window.innerWidth;
+        const targetX = (1 - nose.x) * window.innerWidth; // invert horizontal
         const targetY = nose.y * window.innerHeight;
 
-        // Smooth pointer movement
-        prevX += (targetX - prevX) * 0.25;
-        prevY += (targetY - prevY) * 0.25;
+        // Smooth movement
+        prevX += (targetX - prevX) * 0.2; // slower easing
+        prevY += (targetY - prevY) * 0.2;
 
         pointerDot.style.left = `${prevX - 7}px`;
         pointerDot.style.top = `${prevY - 7}px`;
 
-        // Mouth open detection: upper lip 13, lower lip 14
-        const mouthOpen = (landmarks[14].y - landmarks[13].y) > 0.02; // tweak threshold
-        if(mouthOpen && Date.now() - lastClickTime > clickCooldown){
+        // Mouth closed detection: upper 13, lower 14
+        const mouthOpen = (landmarks[14].y - landmarks[13].y) > 0.02;
+        const mouthClosed = !mouthOpen;
+
+        if(mouthClosed && Date.now() - lastClickTime > clickCooldown){
             const element = document.elementFromPoint(prevX, prevY);
             if(element) element.click();
             lastClickTime = Date.now();
@@ -4778,7 +4779,6 @@ async function startFacePointer() {
         height: 60
     });
 
-    // Throttle FPS
     const originalStart = camera.start.bind(camera);
     camera.start = () => {
         let lastTime = 0;
