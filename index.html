@@ -4692,6 +4692,7 @@ resetInactivityTimer();
         
             
     
+        
 <script>
 let controlEnabled = false;
 let camVideo = null;
@@ -4751,9 +4752,10 @@ async function startFaceControl() {
     document.body.appendChild(pointerDot);
 
     faceMesh = new FaceMesh({ locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}` });
-    faceMesh.setOptions({ maxNumFaces: 1, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+    faceMesh.setOptions({ maxNumFaces: 1, minDetectionConfidence: 0.7, minTrackingConfidence: 0.7 });
 
     const edgeMargin = 20; // scroll trigger margin
+    const scrollStep = 8;  // smooth scroll step
 
     faceMesh.onResults(results => {
         if(!controlEnabled) return;
@@ -4761,7 +4763,7 @@ async function startFaceControl() {
 
         const landmarks = results.multiFaceLandmarks[0];
 
-        // Calculate face bounding box center
+        // Face bounding box center
         let minX=1, maxX=0, minY=1, maxY=0;
         for(const lm of landmarks){
             if(lm.x<minX) minX=lm.x;
@@ -4772,18 +4774,15 @@ async function startFaceControl() {
         const faceCenterX = (minX + maxX)/2;
         const faceCenterY = (minY + maxY)/2;
 
-        // Map to full viewport
-        const targetX = (1 - faceCenterX) * window.innerWidth;
-        const targetY = faceCenterY * window.innerHeight;
-
-        prevX += (targetX - prevX) * 0.35; // fast & smooth
-        prevY += (targetY - prevY) * 0.35;
+        // Map face center to full screen instantly
+        prevX = (1 - faceCenterX) * window.innerWidth;
+        prevY = faceCenterY * window.innerHeight;
 
         pointerDot.style.left = `${prevX - 7}px`;
         pointerDot.style.top = `${prevY - 7}px`;
 
-        // Mouth open → click
-        const mouthOpen = (landmarks[14].y - landmarks[13].y) > 0.02;
+        // Strict mouth open detection
+        const mouthOpen = (landmarks[14].y - landmarks[13].y) > 0.025; // stricter threshold
         if(mouthOpen && !mouthWasOpen && Date.now() - lastClickTime > clickCooldown){
             const element = document.elementFromPoint(prevX, prevY);
             if(element) element.click();
@@ -4791,12 +4790,12 @@ async function startFaceControl() {
         }
         mouthWasOpen = mouthOpen;
 
-        // Scroll only when pointer reaches top/bottom edges
+        // Smooth scroll at edges
         const viewHeight = window.innerHeight;
         if(prevY <= edgeMargin){ 
-            window.scrollBy({ top: -5, behavior: 'smooth' });
+            window.scrollBy({ top: -scrollStep, behavior: 'smooth' });
         } else if(prevY >= viewHeight - edgeMargin){ 
-            window.scrollBy({ top: 5, behavior: 'smooth' });
+            window.scrollBy({ top: scrollStep, behavior: 'smooth' });
         }
     });
 
