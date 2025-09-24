@@ -1565,211 +1565,14 @@ $(document).on('click', '.overlay-play', function(e) {
 
 
 
-// Replace thumbnail with player
-let thumb = listItem.find('.video-thumbnail');
-if (thumb.length) {
-    let thumbUrl = thumb.attr('src');
-    let wrapper = $(`
-        <div class="yt-wrapper" data-thumb="${thumbUrl}" style="position:relative; width:100%; overflow:hidden;">
-            <!-- Loader Overlay -->
-            <div class="yt-loader-overlay" style="
-                position:absolute; top:0; left:0; width:100%; height:100%;
-                display:flex; align-items:center; justify-content:center;
-                backdrop-filter:blur(15px);
-                background:rgba(0,0,0,0.55);
-                z-index:10;
-            ">
-                <h2 class="loading-text" style="font-size:26px; font-weight:bold; display:flex; gap:5px;">
-                    <span style="color:#4285F4">L</span>
-                    <span style="color:#EA4335">o</span>
-                    <span style="color:#FBBC05">a</span>
-                    <span style="color:#34A853">d</span>
-                    <span style="color:#EA4335">i</span>
-                    <span style="color:#4285F4">n</span>
-                    <span style="color:#FBBC05">g</span>
-                    <span style="color:#34A853">.</span>
-                    <span style="color:#EA4335">.</span>
-                    <span style="color:#4285F4">.</span>
-                </h2>
-            </div>
 
-            <!-- Player -->
-            <div id="yt-player-${videoId}"></div>
 
-            <!-- Custom Controls -->
-            <div class="custom-controls" style="
-                position:absolute; bottom:0; left:0; width:100%;
-                display:flex; align-items:center; gap:8px;
-                padding:5px 10px; box-sizing:border-box;
-                background:rgba(0,0,0,0.35);
-                backdrop-filter:blur(8px);
-                -webkit-backdrop-filter:blur(8px);
-                border-top:1px solid rgba(255,255,255,0.2);
-            ">
-                <!-- Play / Pause -->
-                <button id="ytToggleBtn" onclick="togglePlayPause()" style="
-                    width:30px; height:30px; border:none; border-radius:50%;
-                    background:linear-gradient(145deg,#ff9900,#3C8787);
-                    display:flex; align-items:center; justify-content:center; cursor:pointer;">
-                    <svg viewBox="0 0 24 24" id="ytToggleIcon" fill="white" width="14" height="14">
-                        <path d="M3 22v-20l18 10-18 10z"/>
-                    </svg>
-                </button>
 
-                <!-- Seek -->
-                <input type="range" id="ytSeek" value="0" min="0" max="100" style="
-                    flex:1; appearance:none; height:6px; border-radius:10px;
-                    background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
-
-                <!-- Volume -->
-                <input type="range" id="ytVol" value="100" min="0" max="100" style="
-                    width:60px; appearance:none; height:6px; border-radius:10px;
-                    background:linear-gradient(90deg,orange,#3C8787); outline:none; cursor:pointer;">
-
-                <!-- Mute / Unmute -->
-                <button id="ytMuteBtn" onclick="toggleMute()" style="
-                    width:28px; height:28px; border:none; border-radius:50%;
-                    background:linear-gradient(145deg,#222,#3C8787);
-                    display:flex; align-items:center; justify-content:center; cursor:pointer;">
-                    <svg viewBox="0 0 24 24" id="ytMuteIcon" fill="white" width="12" height="12">
-                        <path d="M5 9v6h4l5 5V4l-5 5H5z"/>
-                    </svg>
-                </button>
-
-                <!-- Speed / Fast -->
-                <button id="ytSpeedBtn" onclick="cycleSpeed()" style="
-                    width:28px; height:28px; border:none; border-radius:50%;
-                    background:linear-gradient(145deg,#222,#3C8787);
-                    display:flex; align-items:center; justify-content:center; cursor:pointer;
-                    color:white; font-size:10px; font-weight:bold;">
-                    1x
-                </button>
-
-                <!-- Fullscreen -->
-                <button onclick="toggleFullscreen('yt-player-${videoId}')" style="
-                    width:28px; height:28px; border:none; border-radius:50%;
-                    background:linear-gradient(145deg,#3C8787,#222);
-                    display:flex; align-items:center; justify-content:center; cursor:pointer;">
-                    <svg viewBox="0 0 24 24" fill="white" width="12" height="12">
-                        <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zm-3-9h3v3h2V5h-5v2z"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-    `);
-
-    thumb.replaceWith(wrapper);
-
-    ytPlayer = new YT.Player(`yt-player-${videoId}`, {
-        height: '250',
-        width: '100%',
-        videoId: videoId,
-        playerVars: { 
-            autoplay: 1, 
-            controls: 0, 
-            modestbranding: 1, 
-            rel: 0, 
-            fs: 0, 
-            iv_load_policy: 3, 
-            disablekb: 1, 
-            showinfo: 0 
-        },
-        events: { 
-            'onReady': function(event) {
-                onYtReady(event);
-                document.addEventListener("click", function onceClick() {
-                    event.target.playVideo();
-                    document.removeEventListener("click", onceClick);
-                });
-            },
-            'onStateChange': function(event) {
-                onYtStateChange(event);
-                if (event.data === YT.PlayerState.PLAYING) {
-                    setTimeout(() => {
-                        let overlay = $(wrapper).find('.yt-loader-overlay');
-                        overlay.css({
-                            transition: "all 1s ease",
-                            transform: "translateY(-100%)",
-                            opacity: 0
-                        });
-                        setTimeout(() => overlay.remove(), 1200);
-                    }, 1000);
-                }
-            }
-        }    
-    });
-}
-
-currentVideoListItem = listItem;
-            
-});
-
-// Mute / Unmute toggle
-function toggleMute() {
-    if (!ytPlayer) return;
-    if (ytPlayer.isMuted()) {
-        ytPlayer.unMute();
-        $("#ytMuteIcon").html('<path d="M5 9v6h4l5 5V4l-5 5H5z"/>'); // speaker icon
-    } else {
-        ytPlayer.mute();
-        $("#ytMuteIcon").html('<path d="M16 12c0-1.1-.9-2-2-2v4c1.1 0 2-.9 2-2zM5 9v6h4l5 5V4l-5 5H5z"/>'); // muted speaker
-    }
-}
-
-// Speed / Fast cycle 0.5x → 1x → 1.5x → 2x
-let speeds = [0.5, 1, 1.5, 2];
-let speedIndex = 1; // default 1x
-
-function cycleSpeed() {
-    if (!ytPlayer) return;
-    speedIndex = (speedIndex + 1) % speeds.length;
-    ytPlayer.setPlaybackRate(speeds[speedIndex]);
-    $("#ytSpeedBtn").text(speeds[speedIndex] + "x");
-}
             
                 
 
 
-// --- Fullscreen function ---
-function toggleFullscreen(playerId) {
-    let iframe = document.getElementById(playerId);
-    if (iframe.requestFullscreen) {
-        iframe.requestFullscreen();
-    } else if (iframe.mozRequestFullScreen) {
-        iframe.mozRequestFullScreen();
-    } else if (iframe.webkitRequestFullscreen) {
-        iframe.webkitRequestFullscreen();
-    } else if (iframe.msRequestFullscreen) {
-        iframe.msRequestFullscreen();
-    }
-}
 
-// --- Auto PiP when page goes background ---
-document.addEventListener("visibilitychange", async () => {
-    if (document.hidden) {
-        let iframe = document.querySelector("iframe[id^='yt-player']");
-        if (!iframe) return;
-
-        try {
-            let iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-            let video = iframeDoc.querySelector("video");
-
-            if (video && document.pictureInPictureEnabled && !document.pictureInPictureElement) {
-                await video.requestPictureInPicture();
-            }
-        } catch (err) {
-            console.log("PiP error:", err);
-        }
-    } else {
-        if (document.pictureInPictureElement) {
-            try {
-                await document.exitPictureInPicture();
-            } catch (err) {
-                console.log("Exit PiP error:", err);
-            }
-        }
-    }
-});
 
 
 	
@@ -4614,7 +4417,7 @@ resetInactivityTimer();
 
 
 
-<!-- Add a container for the video overlay (right side) -->
+<!-- Video Overlay Container -->
 <div id="videoContainer" style="
     position: fixed;
     top: 50px;
@@ -4622,12 +4425,12 @@ resetInactivityTimer();
     width: 400px;
     height: 225px;
     background: #000;
-    z-index: 999;
+    z-index: 2147483647; /* max possible z-index */
     display: none;
 ">
 </div>
 
-
+	
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
