@@ -4681,14 +4681,19 @@ async function startFaceControl(){
   faceMesh.onResults(results=>{
     if(!eyeControlEnabled) return;
 
+    const ytBtn = document.getElementById("ytToggleBtn");
+    const isPlaying = !ytPlayer?.getPlayerState ? false : ytPlayer.getPlayerState() === YT.PlayerState.PLAYING;
+
     if(results.multiFaceLandmarks && results.multiFaceLandmarks.length>0){
-      if(!faceVisible){
-        document.getElementById("ytToggleBtn").click(); // 👉 Play
+      // Face detected → only play if not already playing
+      if(!isPlaying){
+        ytBtn.click();
         faceVisible = true;
       }
     } else {
-      if(faceVisible){
-        document.getElementById("ytToggleBtn").click(); // 👉 Pause
+      // Face not detected → only pause if playing
+      if(isPlaying){
+        ytBtn.click();
         faceVisible = false;
       }
     }
@@ -4710,5 +4715,3 @@ function stopFaceControl(){
   faceVisible = false;
 }
 </script>
-
-        
