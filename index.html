@@ -170,8 +170,7 @@ if (window !== window.top) {
 
   
 
-  
-/* Music Item same as before */
+/* Favorites / music items */
 .music-item {
   width: 95%;
   height: 100px;
@@ -183,9 +182,10 @@ if (window !== window.top) {
   box-sizing: border-box;
   background: linear-gradient(90deg, rgba(255,120,80,0.2), rgba(255,120,80,0));
   position: relative;
-  margin: 0 auto 12px; /* 12px gap between items */
   cursor: pointer;
 }
+
+/* Gap between items handled in JS with li margin-bottom */
 
 /* Thumbnail */
 .thumb-wrap {
@@ -223,8 +223,6 @@ if (window !== window.top) {
   transform: translateX(-50%);
   width: 40px;
   height: 40px;
-  background: transparent;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -236,7 +234,7 @@ if (window !== window.top) {
   fill: rgba(255,120,80,0.9);
 }
 
-/* Title multi-line */
+/* Title */
 .title {
   flex: 1;
   font-size: 15px;
@@ -252,8 +250,8 @@ if (window !== window.top) {
   padding-left: 10px;
 }
 
-/* Save button (replacing arrow-btn) */
-.save-btn {
+/* Delete / save button */
+.save-btn.delete-btn {
   background: radial-gradient(circle, rgba(255,120,80,0.4), rgba(255,120,80,0.1));
   border: none;
   border-radius: 50%;
@@ -264,17 +262,17 @@ if (window !== window.top) {
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
-  color: #333;
   font-size: 20px;
+  color: #333;
   transition: 0.2s all;
 }
 
-.save-btn:hover {
+.save-btn.delete-btn:hover {
   transform: scale(1.1);
   color: #ff5555;
 }
 
-.save-btn i {
+.save-btn.delete-btn i {
   display: block;
 }
 
@@ -284,9 +282,11 @@ if (window !== window.top) {
     background: linear-gradient(90deg, rgba(255,120,80,0.25), rgba(255,120,80,0));
     color: #fff;
   }
-  .save-btn { color: #fff; }
+  .save-btn.delete-btn { color: #fff; }
   .overlay-play svg path { fill: #fff; }
-}
+	}  
+
+
 
 	
 </style>
