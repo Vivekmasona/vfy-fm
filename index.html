@@ -1564,19 +1564,6 @@ $(document).on('click', '.overlay-play', function(e) {
     }
 
 
-
-
-
-
-            
-                
-
-
-
-
-
-	
-
 // --- Ensure audio never plays with video ---
 document.querySelectorAll("#SAudio").forEach(audio => {
     audio.addEventListener('play', () => {
@@ -1584,54 +1571,7 @@ document.querySelectorAll("#SAudio").forEach(audio => {
     });
 });
 
-// --- YouTube API ---
-function onYtReady() {
-    updateYtSeek();
-    document.getElementById("ytVol").addEventListener("input", e => ytPlayer.setVolume(e.target.value));
-    document.getElementById("ytSeek").addEventListener("input", e => {
-        let duration = ytPlayer.getDuration();
-        ytPlayer.seekTo((e.target.value / 100) * duration, true);
-    });
-}
 
-function updateYtSeek() {
-    if (ytPlayer && ytPlayer.getDuration) {
-        let duration = ytPlayer.getDuration();
-        let current = ytPlayer.getCurrentTime();
-        if (duration > 0) {
-            document.getElementById("ytSeek").value = (current / duration) * 100;
-        }
-    }
-    setTimeout(updateYtSeek, 1000);
-}
-
-function togglePlayPause() {
-    if (!ytPlayer) return;
-    if (isPlaying) {
-        ytPlayer.pauseVideo();
-        document.getElementById("ytToggleIcon").innerHTML = '<path d="M3 22v-20l18 10-18 10z"/>';
-    } else {
-        ytPlayer.playVideo();
-        document.getElementById("ytToggleIcon").innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-    }
-    isPlaying = !isPlaying;
-}
-
-function onYtStateChange(event) {
-    if (event.data == YT.PlayerState.ENDED) stopVideoIfPlaying();
-    else if (event.data == YT.PlayerState.PLAYING) {
-        isPlaying = true;
-        document.getElementById("ytToggleIcon").innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-    } else if (event.data == YT.PlayerState.PAUSED) {
-        isPlaying = false;
-        document.getElementById("ytToggleIcon").innerHTML = '<path d="M3 22v-20l18 10-18 10z"/>';
-    }
-}
-
-// --- Load YouTube API ---
-let tag = document.createElement('script');
-tag.src = "https://www.youtube.com/iframe_api";
-document.body.appendChild(tag);
 
 
 
