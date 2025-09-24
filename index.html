@@ -1561,10 +1561,10 @@ function playMiniVideoPlayer(videoId) {
     let overlay = $(`
         <div class="yt-mini-player" style="
             position:fixed;
-            bottom:10px;
+            bottom:60px; /* moved up from bottom */
             right:10px;
-            width:320px;
-            height:180px;
+            width:280px; /* reduced width */
+            height:160px; /* reduced height */
             background:#111;
             border-radius:16px;
             overflow:hidden;
@@ -1619,7 +1619,7 @@ function playMiniVideoPlayer(videoId) {
                     box-shadow: 0 0 8px #ff6a00, 0 0 12px #ee0979;
                     cursor:pointer;
                 ">
-                
+
                 <!-- Fullscreen -->
                 <button id="mini-fullscreen" style="
                     color:#00ffff;
@@ -1664,6 +1664,40 @@ function playMiniVideoPlayer(videoId) {
         }
     });
 
+    // Custom thumb styling
+    const style = document.createElement('style');
+    style.innerHTML = `
+        #mini-seekbar::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width:14px;
+            height:14px;
+            border-radius:50%;
+            background: yellow; /* custom yellow thumb */
+            box-shadow: 0 0 6px yellow;
+            cursor:pointer;
+            transition: transform 0.2s;
+        }
+        #mini-seekbar::-moz-range-thumb {
+            width:14px;
+            height:14px;
+            border-radius:50%;
+            background: yellow;
+            box-shadow: 0 0 6px yellow;
+            cursor:pointer;
+            transition: transform 0.2s;
+        }
+        #mini-seekbar::-ms-thumb {
+            width:14px;
+            height:14px;
+            border-radius:50%;
+            background: yellow;
+            box-shadow: 0 0 6px yellow;
+            cursor:pointer;
+            transition: transform 0.2s;
+        }
+    `;
+    document.head.appendChild(style);
+
     // Play/Pause button
     $("#mini-playpause").click(() => {
         if (!ytPlayer) return;
@@ -1684,7 +1718,7 @@ function playMiniVideoPlayer(videoId) {
             $(".yt-mini-player").css({ width: "100vw", height: "100vh", bottom: 0, right: 0, borderRadius: 0 });
             isMiniPlayerFullscreen = true;
         } else {
-            $(".yt-mini-player").css({ width: "320px", height: "180px", bottom: "10px", right: "10px", borderRadius: "16px" });
+            $(".yt-mini-player").css({ width: "280px", height: "160px", bottom: "60px", right: "10px", borderRadius: "16px" });
             isMiniPlayerFullscreen = false;
         }
     });
@@ -1720,9 +1754,7 @@ document.addEventListener("play", function(e) {
     if (isVideoMode && ytPlayer && isPlaying && e.target.id === "SAudio") {
         e.target.pause();
     }
-}, true);                  
-
-    
+}, true);
 	
 
 	
