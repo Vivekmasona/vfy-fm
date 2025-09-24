@@ -837,14 +837,14 @@ width: 50%;
      <input type="search"  name="search"   id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">search</button></sr>
 	    
-	<!-- Eye Detection Toggle Button -->
-<button id="ytEyeBtn" style="
-    width:28px; height:28px; border:none; border-radius:50%;
-    background:linear-gradient(145deg,#444,#222);
-    display:flex; align-items:center; justify-content:center;
-    cursor:pointer; color:white; font-size:14px; font-weight:bold;
-">
-    👁 OFF
+	<!-- Play / Pause Button -->
+<button id="ytToggleBtn" onclick="togglePlayPause()" style="  
+    width:30px; height:30px; border:none; border-radius:50%;  
+    background:linear-gradient(145deg,#ff9900,#3C8787);  
+    display:flex; align-items:center; justify-content:center; cursor:pointer;">  
+    <svg viewBox="0 0 24 24" id="ytToggleIcon" fill="white" width="14" height="14">  
+        <path d="M3 22v-20l18 10-18 10z"/>  
+    </svg>  
 </button>
 	
 
@@ -4638,74 +4638,85 @@ resetInactivityTimer();
 
 
 
+
+
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
 
 <script>
-let eyeControlEnabled = false;
-let faceVisible = false;
 let camVideo;
 let camera;
+let faceVisible = false; // track face status
+let isPlaying = false;   // track video state
 
-const eyeBtn = document.getElementById("ytEyeBtn");
-const playBtn = document.getElementById("ytToggleBtn"); // aapka play/pause button
-
-eyeBtn.addEventListener("click", async () => {
-    eyeControlEnabled = !eyeControlEnabled;
-    eyeBtn.innerText = eyeControlEnabled ? "👁 ON" : "👁 OFF";
-
-    if (eyeControlEnabled) {
-        if (!camVideo) {
-            camVideo = document.createElement("video");
-            camVideo.style.display = "none"; // hidden
-            document.body.appendChild(camVideo);
-
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                camVideo.srcObject = stream;
-                await camVideo.play();
-            } catch (err) {
-                alert("Camera access denied: " + err.message);
-                return;
-            }
-
-            const faceMesh = new FaceMesh({
-                locateFile: (file) =>
-                    `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`,
-            });
-            faceMesh.setOptions({
-                maxNumFaces: 1,
-                minDetectionConfidence: 0.5,
-                minTrackingConfidence: 0.5,
-            });
-
-            faceMesh.onResults((results) => {
-                if (!eyeControlEnabled) return;
-                if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
-                    if (!faceVisible) {
-                        playBtn.click(); // play
-                        faceVisible = true;
-                    }
-                } else {
-                    if (faceVisible) {
-                        playBtn.click(); // pause
-                        faceVisible = false;
-                    }
-                }
-            });
-
-            camera = new Camera(camVideo, {
-                onFrame: async () => {
-                    await faceMesh.send({ image: camVideo });
-                },
-                width: 200,
-                height: 150,
-            });
-            camera.start();
-        }
+// Yeh function aapke player ko toggle karega
+function togglePlayPause() {
+    const icon = document.getElementById("ytToggleIcon");
+    if (isPlaying) {
+        // pause
+        ytPlayer.pauseVideo(); // <-- apne YouTube player ka object lagao
+        icon.setAttribute("d", "M3 22v-20l18 10-18 10z"); // play icon
+        isPlaying = false;
     } else {
-        if (ytPlayer) ytPlayer.playVideo(); // off karte hi play chalta rahe
+        // play
+        ytPlayer.playVideo();  // <-- apne YouTube player ka object lagao
+        icon.setAttribute("d", "M6 19h4V5H6v14zm8-14v14h4V5h-4z"); // pause icon
+        isPlaying = true;
     }
-});
+}
+
+// Camera setup & face detection
+async function initFaceControl() {
+    if (!camVideo) {
+        camVideo = document.createElement("video");
+        camVideo.style.display = "none";
+        document.body.appendChild(camVideo);
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            camVideo.srcObject = stream;
+            await camVideo.play();
+        } catch (err) {
+            alert("Camera access denied: " + err.message);
+            return;
+        }
+
+        const faceMesh = new FaceMesh({
+            locateFile: (file) =>
+                `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`,
+        });
+        faceMesh.setOptions({
+            maxNumFaces: 1,
+            minDetectionConfidence: 0.5,
+            minTrackingConfidence: 0.5,
+        });
+
+        faceMesh.onResults((results) => {
+            if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
+                if (!faceVisible) {
+                    if (!isPlaying) document.getElementById("ytToggleBtn").click();
+                    faceVisible = true;
+                }
+            } else {
+                if (faceVisible) {
+                    if (isPlaying) document.getElementById("ytToggleBtn").click();
+                    faceVisible = false;
+                }
+            }
+        });
+
+        camera = new Camera(camVideo, {
+            onFrame: async () => {
+                await faceMesh.send({ image: camVideo });
+            },
+            width: 200,
+            height: 150,
+        });
+        camera.start();
+    }
+}
+
+// 👁 Face control auto start (ya aap button se bhi call kar sakte ho)
+initFaceControl();
 </script>
