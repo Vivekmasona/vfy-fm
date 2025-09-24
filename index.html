@@ -4673,7 +4673,137 @@ resetInactivityTimer();
 
 
 
-	
+
+<script>
+let eyeControlEnabled = false;
+let camVideo = null;
+let faceMesh = null;
+let camera = null;
+let pointerDot = null;
+let lastClickTime = 0;
+
+const detectionFPS = 3;
+const clickCooldown = 800; // milliseconds
+
+document.getElementById("eyeToggleBtn").addEventListener("click", toggleEyeControl);
+
+function toggleEyeControl(){
+    eyeControlEnabled = !eyeControlEnabled;
+    const btn = document.getElementById("eyeToggleBtn");
+
+    if(eyeControlEnabled){
+        btn.innerText = "ON";
+        btn.style.background = "linear-gradient(145deg,#00cc66,#006633)";
+        startFacePointer();
+    } else {
+        btn.innerText = "OFF";
+        btn.style.background = "linear-gradient(145deg,#3C8787,#ff9900)";
+        stopFacePointer();
+    }
+}
+
+async function startFacePointer() {
+    if(camVideo) return;
+
+    // Tiny low-quality camera
+    camVideo = document.createElement("video");
+    camVideo.width = 80;
+    camVideo.height = 60;
+    camVideo.style.display = "none";
+    document.body.appendChild(camVideo);
+
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 80, height: 60 } });
+        camVideo.srcObject = stream;
+        await camVideo.play();
+    } catch(err) {
+        console.error("Camera access denied:", err);
+        return;
+    }
+
+    // Pointer dot
+    pointerDot = document.createElement("div");
+    pointerDot.style.width = "15px";
+    pointerDot.style.height = "15px";
+    pointerDot.style.background = "red";
+    pointerDot.style.borderRadius = "50%";
+    pointerDot.style.position = "absolute";
+    pointerDot.style.pointerEvents = "none";
+    pointerDot.style.zIndex = "999999"; // on top
+    document.body.appendChild(pointerDot);
+
+    faceMesh = new FaceMesh({
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+    });
+
+    faceMesh.setOptions({
+        maxNumFaces: 1,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5
+    });
+
+    faceMesh.onResults(results => {
+        if(!eyeControlEnabled) return;
+
+        if(!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) return;
+
+        const landmarks = results.multiFaceLandmarks[0];
+
+        // Nose tip (landmark 1) → pointer position
+        const nose = landmarks[1];
+        const x = nose.x * window.innerWidth;
+        const y = nose.y * window.innerHeight;
+        pointerDot.style.left = `${x - 7}px`;
+        pointerDot.style.top = `${y - 7}px`;
+
+        // Mouth open detection (upper lip 13, lower lip 14)
+        const mouthOpen = landmarks[13].y - landmarks[14].y > 0.02; // adjust threshold
+
+        if(mouthOpen && Date.now() - lastClickTime > clickCooldown){
+            const element = document.elementFromPoint(x, y);
+            if(element) element.click();
+            lastClickTime = Date.now();
+        }
+    });
+
+    camera = new Camera(camVideo, {
+        onFrame: async () => await faceMesh.send({ image: camVideo }),
+        width: 80,
+        height: 60
+    });
+
+    // Throttle FPS
+    const originalStart = camera.start.bind(camera);
+    camera.start = () => {
+        let lastTime = 0;
+        const originalOnFrame = camera._onFrame;
+        camera._onFrame = async () => {
+            const now = Date.now();
+            if(now - lastTime >= 1000/detectionFPS){
+                await originalOnFrame();
+                lastTime = now;
+            }
+        };
+        originalStart();
+    };
+
+    camera.start();
+}
+
+function stopFacePointer() {
+    if(camera) camera.stop();
+    if(camVideo && camVideo.srcObject){
+        camVideo.srcObject.getTracks().forEach(t => t.stop());
+        camVideo.remove();
+        camVideo = null;
+    }
+    if(pointerDot) pointerDot.remove();
+    if(faceMesh) faceMesh.close();
+    pointerDot = null;
+    faceMesh = null;
+    lastClickTime = 0;
+}
+</script>	
 
         
             
