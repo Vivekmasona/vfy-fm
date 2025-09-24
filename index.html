@@ -1562,7 +1562,8 @@ function enforceAudioPause() {
 	
 	
 	// --- Play Mini Video Player ---
-   function playMiniVideoPlayer(videoId) {
+   
+    function playMiniVideoPlayer(videoId) {
     stopVideoIfPlaying();
     enforceAudioPause();
 
@@ -1571,7 +1572,7 @@ function enforceAudioPause() {
             position:fixed;
             bottom:10px;
             right:10px;
-            width:320px;
+            width:300px; /* reduced 20px */
             height:180px;
             background:#111;
             border-radius:16px;
@@ -1591,8 +1592,11 @@ function enforceAudioPause() {
 
             <!-- Glass-style Control Bar -->
             <div class="mini-control-bar" style="
+                position:absolute;
+                bottom:26%; /* move controls 26% from bottom */
+                left:0;
+                width:100%; /* same as video width */
                 height:50px;
-                width:100%;
                 display:flex;
                 align-items:center;
                 justify-content:space-between;
@@ -1692,7 +1696,7 @@ function enforceAudioPause() {
             $(".yt-mini-player").css({ width: "100vw", height: "100vh", bottom: 0, right: 0, borderRadius: 0 });
             isMiniPlayerFullscreen = true;
         } else {
-            $(".yt-mini-player").css({ width: "320px", height: "180px", bottom: "10px", right: "10px", borderRadius: "16px" });
+            $(".yt-mini-player").css({ width: "300px", height: "180px", bottom: "10px", right: "10px", borderRadius: "16px" });
             isMiniPlayerFullscreen = false;
         }
     });
