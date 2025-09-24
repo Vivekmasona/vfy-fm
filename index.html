@@ -4676,18 +4676,22 @@ resetInactivityTimer();
 
     
             
+        
 <script>
 let eyeControlEnabled = false;
 let camVideo = null;
 let faceMesh = null;
 let camera = null;
 let pointerDot = null;
-let lastClickTime = 0;
 
-const detectionFPS = 3;
-const clickCooldown = 800; // ms
+const detectionFPS = 3; 
 let prevX = window.innerWidth/2;
 let prevY = window.innerHeight/2;
+
+// Blink detection
+let lastBlinkTime = 0;
+let blinkCount = 0;
+const doubleBlinkInterval = 600; // ms
 
 document.getElementById("eyeToggleBtn").addEventListener("click", toggleEyeControl);
 
@@ -4706,9 +4710,13 @@ function toggleEyeControl(){
     }
 }
 
+// Helper: distance
+function distance(a,b){ return Math.hypot(a.x-b.x, a.y-b.y); }
+
 async function startFacePointer() {
     if(camVideo) return;
 
+    // Tiny camera
     camVideo = document.createElement("video");
     camVideo.width = 80;
     camVideo.height = 60;
@@ -4719,11 +4727,9 @@ async function startFacePointer() {
         const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 80, height: 60 } });
         camVideo.srcObject = stream;
         await camVideo.play();
-    } catch(err) {
-        console.error("Camera access denied:", err);
-        return;
-    }
+    } catch(err) { console.error(err); return; }
 
+    // Pointer dot
     pointerDot = document.createElement("div");
     pointerDot.style.width = "15px";
     pointerDot.style.height = "15px";
@@ -4734,15 +4740,8 @@ async function startFacePointer() {
     pointerDot.style.zIndex = "999999";
     document.body.appendChild(pointerDot);
 
-    faceMesh = new FaceMesh({
-        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
-    });
-
-    faceMesh.setOptions({
-        maxNumFaces: 1,
-        minDetectionConfidence: 0.5,
-        minTrackingConfidence: 0.5
-    });
+    faceMesh = new FaceMesh({ locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}` });
+    faceMesh.setOptions({ maxNumFaces: 1, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
 
     faceMesh.onResults(results => {
         if(!eyeControlEnabled) return;
@@ -4750,35 +4749,44 @@ async function startFacePointer() {
 
         const landmarks = results.multiFaceLandmarks[0];
 
-        // Fix mirror: invert X axis
+        // Pointer: nose landmark 1, mirror X
         const nose = landmarks[1];
-        const targetX = (1 - nose.x) * window.innerWidth; // invert horizontal
+        const targetX = (1 - nose.x) * window.innerWidth;
         const targetY = nose.y * window.innerHeight;
 
-        // Smooth movement
-        prevX += (targetX - prevX) * 0.2; // slower easing
+        // Smooth pointer
+        prevX += (targetX - prevX) * 0.2;
         prevY += (targetY - prevY) * 0.2;
-
         pointerDot.style.left = `${prevX - 7}px`;
         pointerDot.style.top = `${prevY - 7}px`;
 
-        // Mouth closed detection: upper 13, lower 14
-        const mouthOpen = (landmarks[14].y - landmarks[13].y) > 0.02;
-        const mouthClosed = !mouthOpen;
+        // EAR for eyes: 159-145 left, 386-374 right
+        const leftEAR = distance(landmarks[159], landmarks[145]);
+        const rightEAR = distance(landmarks[386], landmarks[374]);
+        const eyeClosed = (leftEAR < 0.015 && rightEAR < 0.015);
 
-        if(mouthClosed && Date.now() - lastClickTime > clickCooldown){
-            const element = document.elementFromPoint(prevX, prevY);
-            if(element) element.click();
-            lastClickTime = Date.now();
+        if(eyeClosed){
+            const now = Date.now();
+            if(now - lastBlinkTime > 150){ // debounce single blink
+                blinkCount++;
+                lastBlinkTime = now;
+            }
+
+            // Double blink check
+            if(blinkCount === 2 && now - lastBlinkTime < doubleBlinkInterval){
+                const element = document.elementFromPoint(prevX, prevY);
+                if(element) element.click();
+                blinkCount = 0;
+            }
+        } else {
+            // reset if eyes open
+            if(Date.now() - lastBlinkTime > doubleBlinkInterval){
+                blinkCount = 0;
+            }
         }
     });
 
-    camera = new Camera(camVideo, {
-        onFrame: async () => await faceMesh.send({ image: camVideo }),
-        width: 80,
-        height: 60
-    });
-
+    camera = new Camera(camVideo, { onFrame: async()=> await faceMesh.send({ image: camVideo }), width: 80, height: 60 });
     const originalStart = camera.start.bind(camera);
     camera.start = () => {
         let lastTime = 0;
@@ -4792,14 +4800,13 @@ async function startFacePointer() {
         };
         originalStart();
     };
-
     camera.start();
 }
 
 function stopFacePointer() {
     if(camera) camera.stop();
     if(camVideo && camVideo.srcObject){
-        camVideo.srcObject.getTracks().forEach(t => t.stop());
+        camVideo.srcObject.getTracks().forEach(t=>t.stop());
         camVideo.remove();
         camVideo = null;
     }
@@ -4807,8 +4814,9 @@ function stopFacePointer() {
     if(faceMesh) faceMesh.close();
     pointerDot = null;
     faceMesh = null;
-    lastClickTime = 0;
     prevX = window.innerWidth/2;
     prevY = window.innerHeight/2;
+    lastBlinkTime = 0;
+    blinkCount = 0;
 }
 </script>
