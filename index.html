@@ -1464,7 +1464,8 @@ function paginate(direction) {
     fetchResults(apiUrl);
 }
 
-          // --- Global Variables ---
+          
+// --- Global Variables ---
 let currentVideoListItem = null; 
 let ytPlayer = null;
 let isPlaying = false;
@@ -1476,8 +1477,6 @@ document.getElementById("modeToggleBtn").addEventListener("click", () => {
     document.getElementById("modeToggleBtn").innerText = `Mode: ${isVideoMode ? 'Video' : 'Audio'}`;
 });
 
-
-
 // --- Generate List Item ---
 function getOutput(item, i) {
     var id = item.id?.videoId || item.id;
@@ -1488,7 +1487,7 @@ function getOutput(item, i) {
 
     return `
 <div style="margin-bottom:12px;">
-  <b index="${i}" class="music-item list" vid="${id}" onclick="selectItem(this)">
+  <b index="${i}" class="music-item list" vid="${id}" onclick="handleItemClick(this)">
       <!-- Thumbnail -->
       <div class="thumb-wrap">
           <img src="${thumbUrl}" alt="${title}">
@@ -1514,8 +1513,8 @@ function getOutput(item, i) {
 // --- Handle Item Click Based on Mode ---
 function handleItemClick(el) {
     if (isVideoMode) {
-        // Trigger video overlay click
-        $(el).find('.overlay-play').click();
+        let videoId = $(el).attr("vid");
+        playVideoOverlay(videoId);
     } else {
         // Audio mode
         stopVideoIfPlaying();
@@ -1526,21 +1525,76 @@ function handleItemClick(el) {
 
 // --- Stop current video ---
 function stopVideoIfPlaying() {
-    if (currentVideoListItem) {
-        let iframeWrapper = currentVideoListItem.find('.yt-wrapper');
-        let prevThumbUrl = iframeWrapper.data('thumb');
-        if (iframeWrapper.length && prevThumbUrl) {
-            iframeWrapper.replaceWith(
-                `<img src="${prevThumbUrl}" alt="Video"
-                      class="video-thumbnail" style="width:100%;"
-                      data-thumb="${prevThumbUrl}">`
-            );
-        }
-        currentVideoListItem = null;
-        if (ytPlayer) ytPlayer.stopVideo();
+    if (ytPlayer) {
+        ytPlayer.stopVideo();
         ytPlayer = null;
-        isPlaying = false;
     }
+    $(".yt-full-overlay").remove();
+    currentVideoListItem = null;
+    isPlaying = false;
+}
+
+// --- Popup show/hide ---
+$("#showPopupbutto").click(() => $("#popupContainer").show());
+$("#closePopup").click(() => $("#popupContainer").hide());
+
+// --- List Item Click ---
+$(document).on('click', '.list', function(e) {
+    if (!$(e.target).hasClass('overlay-play') && !$(e.target).closest('.overlay-play').length) {
+        handleItemClick(this);
+    }
+});
+
+// --- Play Video on Overlay Click ---
+$(document).on('click', '.overlay-play', function(e) {
+    e.stopPropagation();
+    let listItem = $(this).closest('.list');
+    let videoId = listItem.attr('vid');
+
+    // Stop audio if any
+    document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
+
+    // Show overlay video
+    playVideoOverlay(videoId);
+});
+
+// --- Fullscreen Video Overlay ---
+function playVideoOverlay(videoId) {
+    stopVideoIfPlaying();
+
+    let overlay = $(`
+        <div class="yt-full-overlay" style="
+            position:fixed;
+            top:0; left:0; width:100vw; height:100vh;
+            background:rgba(0,0,0,0.9);
+            display:flex; align-items:center; justify-content:center;
+            flex-direction:column; z-index:99999;">
+            
+            <div id="yt-player-${videoId}" style="
+                width:90%; max-width:1280px; aspect-ratio:16/9; background:black;">
+            </div>
+
+            <button onclick="stopVideoIfPlaying()" style="
+                margin-top:15px; padding:8px 14px;
+                background:red; color:white; border:none; border-radius:6px; cursor:pointer;">
+                Close
+            </button>
+        </div>
+    `);
+
+    $("body").append(overlay);
+
+    ytPlayer = new YT.Player(`yt-player-${videoId}`, {
+        videoId: videoId,
+        width: "100%",
+        height: "100%",
+        playerVars: { autoplay: 1, controls: 1, modestbranding: 1 },
+        events: {
+            onReady: (e) => e.target.playVideo()
+        }
+    });
+
+    isPlaying = true;
 }
 
 // --- Popup show/hide ---
