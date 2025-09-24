@@ -4343,15 +4343,17 @@ document.getElementById('search-btn').addEventListener('click', function() {
 .big-clock #clockTime {
   font-size: 48px;
   font-weight: 700;
-  background: linear-gradient(90deg, white, yellow);
   
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .big-clock #clockDate {
   font-size: 18px;
   font-weight: 500;
-  background: linear-gradient(90deg, yellow, white);
   
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 	}
 
 /* Music Item same as before */
