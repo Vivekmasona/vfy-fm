@@ -196,6 +196,38 @@ if (window !== window.top) {
   overflow: hidden;
 }
 
+	/* Save button */
+.save-btn {
+  background: radial-gradient(circle, rgba(255,120,80,0.4), rgba(255,120,80,0.1));
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 20px;
+  color: #fff;
+  transition: 0.2s all;
+}
+
+.save-btn:hover {
+  transform: scale(1.1);
+  color: #ff5555; /* change color on hover */
+}
+
+.save-btn i {
+  display: block;
+}
+
+/* Dark mode for save button */
+@media (prefers-color-scheme: dark) {
+  .save-btn {
+    color: #fff;
+  }
+}
 .thumb-wrap img {
   width: 100%;
   height: 100%;
