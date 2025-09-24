@@ -4678,8 +4678,9 @@ resetInactivityTimer();
             
         
         
+            
 <script>
-let eyeControlEnabled = false;
+let controlEnabled = false;
 let camVideo = null;
 let faceMesh = null;
 let camera = null;
@@ -4688,36 +4689,33 @@ let pointerDot = null;
 const detectionFPS = 3; 
 let prevX = window.innerWidth/2;
 let prevY = window.innerHeight/2;
+let lastClickTime = 0;
+const clickCooldown = 800;
 
-// Double blink variables
-let blinkTimes = [];
-const doubleBlinkMaxInterval = 600; // ms
-let eyesCurrentlyClosed = false;
+// ON/OFF button
+document.getElementById("eyeToggleBtn").addEventListener("click", toggleControl);
 
-document.getElementById("eyeToggleBtn").addEventListener("click", toggleEyeControl);
-
-function toggleEyeControl(){
-    eyeControlEnabled = !eyeControlEnabled;
+function toggleControl(){
+    controlEnabled = !controlEnabled;
     const btn = document.getElementById("eyeToggleBtn");
 
-    if(eyeControlEnabled){
+    if(controlEnabled){
         btn.innerText = "ON";
         btn.style.background = "linear-gradient(145deg,#00cc66,#006633)";
-        startFacePointer();
+        startFaceControl();
     } else {
         btn.innerText = "OFF";
         btn.style.background = "linear-gradient(145deg,#3C8787,#ff9900)";
-        stopFacePointer();
+        stopFaceControl();
     }
 }
 
-// Helper distance
+// Helper: distance
 function distance(a,b){ return Math.hypot(a.x-b.x, a.y-b.y); }
 
-async function startFacePointer() {
+async function startFaceControl() {
     if(camVideo) return;
 
-    // Tiny camera
     camVideo = document.createElement("video");
     camVideo.width = 80;
     camVideo.height = 60;
@@ -4730,7 +4728,6 @@ async function startFacePointer() {
         await camVideo.play();
     } catch(err) { console.error(err); return; }
 
-    // Pointer dot
     pointerDot = document.createElement("div");
     pointerDot.style.width = "15px";
     pointerDot.style.height = "15px";
@@ -4745,7 +4742,7 @@ async function startFacePointer() {
     faceMesh.setOptions({ maxNumFaces: 1, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
 
     faceMesh.onResults(results => {
-        if(!eyeControlEnabled) return;
+        if(!controlEnabled) return;
         if(!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) return;
 
         const landmarks = results.multiFaceLandmarks[0];
@@ -4755,36 +4752,25 @@ async function startFacePointer() {
         const targetX = (1 - nose.x) * window.innerWidth;
         const targetY = nose.y * window.innerHeight;
 
-        // Smooth movement
+        // Smooth pointer
         prevX += (targetX - prevX) * 0.2;
         prevY += (targetY - prevY) * 0.2;
         pointerDot.style.left = `${prevX - 7}px`;
         pointerDot.style.top = `${prevY - 7}px`;
 
-        // Eye aspect ratio (EAR)
-        const leftEAR = distance(landmarks[159], landmarks[145]);
-        const rightEAR = distance(landmarks[386], landmarks[374]);
-        const eyesClosedNow = (leftEAR < 0.015 && rightEAR < 0.015);
-
-        // Detect transition: open → closed → open
-        if(eyesClosedNow && !eyesCurrentlyClosed){
-            // just closed
-            eyesCurrentlyClosed = true;
-        } else if(!eyesClosedNow && eyesCurrentlyClosed){
-            // just opened → count as one blink
-            blinkTimes.push(Date.now());
-            eyesCurrentlyClosed = false;
-
-            // Keep only recent blinks within double blink interval
-            blinkTimes = blinkTimes.filter(t => Date.now() - t < doubleBlinkMaxInterval);
-
-            // Trigger click if 2 blinks detected quickly
-            if(blinkTimes.length >= 2){
-                const element = document.elementFromPoint(prevX, prevY);
-                if(element) element.click();
-                blinkTimes = []; // reset
-            }
+        // Mouth open detection: landmarks 13 (upper) & 14 (lower)
+        const mouthOpen = (landmarks[14].y - landmarks[13].y) > 0.02; // tweak threshold
+        if(mouthOpen && Date.now() - lastClickTime > clickCooldown){
+            const element = document.elementFromPoint(prevX, prevY);
+            if(element) element.click();
+            lastClickTime = Date.now();
         }
+
+        // Vertical head movement scroll
+        const scrollFactor = 10; // adjust sensitivity
+        const centerY = window.innerHeight / 2;
+        const deltaY = prevY - centerY;
+        window.scrollBy({ top: deltaY * 0.05, behavior: 'smooth' });
     });
 
     camera = new Camera(camVideo, { onFrame: async()=> await faceMesh.send({ image: camVideo }), width: 80, height: 60 });
@@ -4804,7 +4790,7 @@ async function startFacePointer() {
     camera.start();
 }
 
-function stopFacePointer() {
+function stopFaceControl() {
     if(camera) camera.stop();
     if(camVideo && camVideo.srcObject){
         camVideo.srcObject.getTracks().forEach(t=>t.stop());
@@ -4817,7 +4803,6 @@ function stopFacePointer() {
     faceMesh = null;
     prevX = window.innerWidth/2;
     prevY = window.innerHeight/2;
-    blinkTimes = [];
-    eyesCurrentlyClosed = false;
+    lastClickTime = 0;
 }
 </script>
