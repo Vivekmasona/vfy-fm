@@ -307,7 +307,7 @@ if (window !== window.top) {
   .save-btn.delete { color: #fff; }
   .overlay-play svg path { fill: #fff; }
 }
-
+  
 
 
 	
@@ -1147,15 +1147,13 @@ function displayFavorites() {
 favContainer.innerHTML = '';
 favorites.forEach((song, i) => {
     const li = document.createElement('li');
-    li.style.marginBottom = "12px"; // 12px gap between items
+    li.style.marginBottom = "12px"; // gap between items
     li.innerHTML = `
         <b index="${i}" class="music-item list" vid="${song.id}" onclick="loadFavoriteSong('${song.id}')">
-            
+
             <!-- Thumbnail -->
             <div class="thumb-wrap">
                 <img src="${song.thumbUrl}" alt="${song.title}">
-                
-                <!-- Overlay play button -->
                 <div class="overlay-play">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
                         <path d="M3 22v-20l18 10-18 10z"/>
@@ -1166,8 +1164,13 @@ favorites.forEach((song, i) => {
             <!-- Title -->
             <div class="title">${song.title}</div>
 
+            <!-- Save button -->
+            <button class="save-btn save" onclick="event.stopPropagation(); saveFavorite(${i}, '${song.title}', '${song.thumbUrl}', '${song.id}')">
+                <i class="fas fa-heart"></i>
+            </button>
+
             <!-- Delete button -->
-            <button class="save-btn delete-btn" onclick="event.stopPropagation(); removeFavorite('${song.id}')">
+            <button class="save-btn delete" onclick="event.stopPropagation(); removeFavorite('${song.id}')">
                 <i class="fas fa-trash"></i>
             </button>
 
