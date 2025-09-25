@@ -48,7 +48,7 @@
 <script src="copy/copy.js" defer></script>
 <script src="slideshow/slide.js" defer></script>
 <script src="device/brand.js" defer></script>
-<script src="menu/sidemenu.js" defer></script>
+<script src="menu/sidemenux.js" defer></script>
 <script src="globlealert/alert.js" defer></script>
 <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -4542,9 +4542,8 @@ updateClock();
 
 
 
-	
-	<script>
-let lastScrollTop = 0;
+<script>
+/* ---------------- GLOBAL ELEMENTS ---------------- */
 const footer = document.querySelector('.fixed-footer');
 const progressBar = document.getElementById('progressBarContainer');
 const audioPlayerContainer = document.getElementById('audioPlayerContainer');
@@ -4554,21 +4553,25 @@ const overlayTitle = document.getElementById("overlayTitle");
 const overlayTime = document.getElementById("overlayTime");
 const audioPlayer = document.getElementById("SAudio");
 const themeMeta = document.getElementById("themeColorMeta");
-const modeToggle = document.getElementById("modeToggleBtn"); // audio/video toggle
-let inactivityTimer;
+const modeToggle = document.getElementById("modeToggleBtn");
+const sideMenu = document.getElementById('sideMenu');
+
+let lastScrollTop = 0;
+let overlayTimer;
+let sideMenuTimer;
 let wakeLock = null;
 
-// ---------- Scroll handling ----------
-window.addEventListener("scroll", function() {
+/* ---------------- SCROLL HANDLER ---------------- */
+window.addEventListener("scroll", () => {
     let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
     if (scrollTop < lastScrollTop) {
-        // Scroll up → show all
+        // scroll up → show footer/audio
         footer.classList.remove("hide");
         progressBar.classList.remove("hide");
         audioPlayerContainer.classList.remove("hide");
     } else {
-        // Scroll down → hide all
+        // scroll down → hide footer/audio
         footer.classList.add("hide");
         progressBar.classList.add("hide");
         audioPlayerContainer.classList.add("hide");
@@ -4577,7 +4580,7 @@ window.addEventListener("scroll", function() {
     lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
 }, false);
 
-// ---------- Overlay functions ----------
+/* ---------------- OVERLAY FUNCTIONS ---------------- */
 function setStatusBarColor(color) {
     if (themeMeta) themeMeta.setAttribute("content", color);
 }
@@ -4585,37 +4588,51 @@ function setStatusBarColor(color) {
 function showOverlay() {
     if (modeToggle.checked) return; // video mode → overlay na dikhe
     lockOverlay.style.display = "flex";
-    setStatusBarColor("#000000"); // overlay appear → black header
-    console.log("Overlay lock activated");
+    setStatusBarColor("#000000");
 }
 
 function hideOverlay() {
     lockOverlay.style.display = "none";
-    setStatusBarColor("#F70D1A"); // overlay hide → original color
-    resetInactivityTimer();
-    console.log("Overlay lock removed");
+    setStatusBarColor("#F70D1A");
+    resetOverlayTimer();
 }
 
-// Unlock button
+// unlock button
 document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
 
-// ---------- Inactivity tracker ----------
-function resetInactivityTimer(e) {
-    // Ignore scroll events, only mouse/keyboard/touch/click
-    if (e && e.type === "scroll") return;
+/* ---------------- SIDE MENU FUNCTIONS ---------------- */
+function hideMenu() { sideMenu.classList.add('hidden'); }
+function showMenu() { sideMenu.classList.remove('hidden'); }
 
-    if (inactivityTimer) clearTimeout(inactivityTimer);
+/* ---------------- TIMERS ---------------- */
+function resetOverlayTimer(e) {
+    // ignore scroll events for overlay
+    if (e && e.type === "scroll") return;
+    if (overlayTimer) clearTimeout(overlayTimer);
     if (!modeToggle.checked) {
-        inactivityTimer = setTimeout(showOverlay, 10000); // 10 sec inactivity
+        overlayTimer = setTimeout(showOverlay, 10000); // 10 sec inactivity
     }
 }
 
-// Listen to user activity but **not scroll**
-["mousemove", "keydown", "touchstart", "click"].forEach(evt => {
-    document.addEventListener(evt, resetInactivityTimer);
+function resetSideMenuTimer() {
+    showMenu();
+    if (sideMenuTimer) clearTimeout(sideMenuTimer);
+    sideMenuTimer = setTimeout(hideMenu, 4000); // 4 sec inactivity
+}
+
+/* ---------------- USER ACTIVITY ---------------- */
+['mousemove', 'keydown', 'touchstart', 'click'].forEach(evt => {
+    document.addEventListener(evt, e => {
+        resetOverlayTimer(e);
+        resetSideMenuTimer();
+    }, {passive: true});
 });
 
-// ---------- Overlay content updater ----------
+// start timers on load
+resetOverlayTimer();
+resetSideMenuTimer();
+
+/* ---------------- OVERLAY CONTENT UPDATER ---------------- */
 setInterval(() => {
     const thumbSrc = document.getElementById("Fimg")?.src;
     if (thumbSrc) overlayThumb.src = thumbSrc;
@@ -4628,12 +4645,11 @@ setInterval(() => {
     overlayTime.textContent = `${curr} / ${total}`;
 }, 500);
 
-// ---------- Wake Lock ----------
+/* ---------------- WAKE LOCK ---------------- */
 async function keepScreenOn() {
     try {
         if ('wakeLock' in navigator && !audioPlayer.paused) {
             wakeLock = await navigator.wakeLock.request('screen');
-            console.log('Wake Lock active!');
             wakeLock.addEventListener('release', () => { wakeLock = null; });
         }
     } catch (err) { console.error(err); }
@@ -4651,6 +4667,9 @@ window.addEventListener('beforeunload', () => {
     if (wakeLock) wakeLock.release().then(() => wakeLock = null);
 });
 
-// ---------- Init ----------
-resetInactivityTimer();
-	</script>
+/* ---------------- PLACEHOLDER FUNCTIONS ---------------- */
+function openPopup() { alert('Settings clicked'); }
+function startDictation() { alert('Microphone clicked'); }
+function showDetail() { alert('Heart clicked'); }
+</script>	
+	            
