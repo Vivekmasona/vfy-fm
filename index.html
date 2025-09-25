@@ -4651,3 +4651,26 @@ window.addEventListener('beforeunload', () => {
 // --------- Start inactivity timer on load ---------
 resetInactivityTimer();
 				</script>
+
+
+
+
+
+<script>
+// Current song ka thumbnail image fetch karo
+let currentImage = document.getElementById('Fimg').src;
+
+// Modal container ka background set karo
+let modal = document.querySelector('.modal-container1');
+modal.style.background = `url(${currentImage}) no-repeat center center / cover`;
+
+// Agar gradient bhi chahiye, CSS ke saath combine kar sakte ho
+modal.style.background = `
+  linear-gradient(180deg, rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.92) 8%, rgba(0,0,0,0.94) 14%, rgba(0,0,0,1) 100%),
+  url(${currentImage}) no-repeat center center / cover
+`;
+	
+	
+</script>
+
+	
