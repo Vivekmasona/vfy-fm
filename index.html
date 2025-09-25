@@ -4584,7 +4584,7 @@ document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
 function resetInactivityTimer() {
   if (inactivityTimer) clearTimeout(inactivityTimer);
   if (!modeToggle.checked) { // only audio mode
-    inactivityTimer = setTimeout(showOverlay, 1000); // 10 sec inactivity
+    inactivityTimer = setTimeout(showOverlay, 10000); // 10 sec inactivity
   }
 }
 
