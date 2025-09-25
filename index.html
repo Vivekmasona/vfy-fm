@@ -46,9 +46,9 @@
 <script src="setting/setting.js" defer></script>
 <script src="call/call.js" defer></script>
 <script src="copy/copy.js" defer></script>
-<script src="menu/sidemenu.js" defer></script>
 <script src="slideshow/slide.js" defer></script>
 <script src="device/brand.js" defer></script>
+<script src="menu/sidemenu.js" defer></script>
 <script src="globlealert/alert.js" defer></script>
 <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -1262,30 +1262,31 @@ body {
 }    
        
      </style>  
-       
-    <script>
-let lastScrollTop = 0;
-const footer = document.querySelector('.fixed-footer');
-const progressBar = document.getElementById('progressBarContainer');
+     <script > 
+    let lastScrollTop = 0;      
+const footer = document.querySelector('.fixed-footer');      
+const progressBar = document.getElementById('progressBarContainer');      
+const audioPlayer = document.getElementById('audioPlayerContainer'); // add this
 
-window.addEventListener("scroll", function() {
-  let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+window.addEventListener("scroll", function() {      
+  let scrollTop = window.pageYOffset || document.documentElement.scrollTop;      
 
-  if (scrollTop < lastScrollTop) {
-    // Scroll up → show
-    footer.classList.remove("hide");
-    progressBar.classList.remove("hide");
-  } else {
-    // Scroll down → hide
-    footer.classList.add("hide");
-    progressBar.classList.add("hide");
-  }
+  if (scrollTop < lastScrollTop) {      
+    // Scroll up → show all      
+    footer.classList.remove("hide");      
+    progressBar.classList.remove("hide");      
+    audioPlayer.classList.remove("hide");      
+  } else {      
+    // Scroll down → hide all      
+    footer.classList.add("hide");      
+    progressBar.classList.add("hide");      
+    audioPlayer.classList.add("hide");      
+  }      
 
-  lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // avoid negative
+  lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // avoid negative      
 }, false);
-</script>
 
-	
+	 </script>
 
 
 
@@ -4323,8 +4324,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
 <body>
-
-    <div class="side-menu" id="sideMenu">
+<div class="side-menu" id="sideMenu">
     <div class="menu-item">
         <i class="fas fa-cog" onclick="openPopup()"></i>
     </div>
@@ -4338,7 +4338,6 @@ document.getElementById('search-btn').addEventListener('click', function() {
         <i id="heartDot" class="fas fa-heart"></i>
     </div>
 </div>
-
     <!-- detail -->
 <div id="customAlert"></div>
 	
