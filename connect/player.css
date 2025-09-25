@@ -1,4 +1,4 @@
-#audioPlayerContainer {
+/*#audioPlayerContainer {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -10,9 +10,9 @@
 
 
     background-image: url('/connect/c.gif');
-    background-size: cover; /* This makes the background image cover the whole element */
-    background-position: center; /* This centers the background image */
-    background-repeat: no-repeat; /* This prevents the background image from repeating */
+    background-size: cover;
+    background-position: center; 
+    background-repeat: no-repeat; 
 
 
 
@@ -23,9 +23,36 @@
             position: fixed;
             bottom: 60px;
             right: 20px;
-        }
+        }*/
 
+#audioPlayerContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: auto;
+    height: 40px;
+    z-index: 99999;
+    border-radius: 5px;
 
+    background-image: url('/connect/c.gif');
+    background-size: cover;       /* background cover */
+    background-position: center;  /* center image */
+    background-repeat: no-repeat; /* no repeat */
+
+    padding: 0 10px;
+    position: fixed;
+    bottom: 60px;
+    right: 20px;
+
+    opacity: 1;                   /* default fully visible */
+    transition: opacity 0.5s ease; /* smooth fade */
+}
+
+/* Scroll fade out state */
+#audioPlayerContainer.hide {
+    opacity: 0.1;                 /* fade to almost invisible on scroll up */
+    pointer-events: none;          /* optional: avoid clicks when faded */
+}
 
         #playPauseButton, #topButton, #volumeControl, #skipSlider {
             margin-left: 2px;
