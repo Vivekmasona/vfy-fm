@@ -46,6 +46,7 @@
 <script src="setting/setting.js" defer></script>
 <script src="call/call.js" defer></script>
 <script src="copy/copy.js" defer></script>
+<script src="menu/sidemenu.js" defer></script>
 <script src="slideshow/slide.js" defer></script>
 <script src="device/brand.js" defer></script>
 <script src="globlealert/alert.js" defer></script>
@@ -4323,28 +4324,20 @@ document.getElementById('search-btn').addEventListener('click', function() {
 </head>
 <body>
 
-    <div class="side-menu">
-        <div class="menu-item">
-            <i class="fas fa-cog" onclick="openPopup()" ></i>
-            
-        </div>
-        <div class="menu-item">
-            <i class="fas fa-microphone" onclick="startDictation()"></i>
-            
-          
-		</div>
-
-
-<div class="menu-item">
-            <i class="fa fa-database" id="openJsonPopup"></i>
-            </div>
-		
-
-  <div class="menu-item" onclick="showDetail()">
-  <i id="heartDot" class="fas fa-heart"></i>
-</div>
-		
+    <div class="side-menu" id="sideMenu">
+    <div class="menu-item">
+        <i class="fas fa-cog" onclick="openPopup()"></i>
     </div>
+    <div class="menu-item">
+        <i class="fas fa-microphone" onclick="startDictation()"></i>
+    </div>
+    <div class="menu-item">
+        <i class="fa fa-database" id="openJsonPopup"></i>
+    </div>
+    <div class="menu-item" onclick="showDetail()">
+        <i id="heartDot" class="fas fa-heart"></i>
+    </div>
+</div>
 
     <!-- detail -->
 <div id="customAlert"></div>
