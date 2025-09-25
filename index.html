@@ -48,7 +48,7 @@
 <script src="copy/copy.js" defer></script>
 <script src="slideshow/slide.js" defer></script>
 <script src="device/brand.js" defer></script>
-<script src="menu/sidemenu.js" defer></script>
+<script src="menu/sidemenu2.js" defer></script>
 <script src="globlealert/alert.js" defer></script>
 <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -4609,7 +4609,7 @@ document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
 function resetInactivityTimer() {
   if (inactivityTimer) clearTimeout(inactivityTimer);
   if (!modeToggle.checked) { // only audio mode
-    inactivityTimer = setTimeout(showOverlay, 1000); // 10 sec inactivity
+    inactivityTimer = setTimeout(showOverlay, 10000); // 10 sec inactivity
   }
 }
 
