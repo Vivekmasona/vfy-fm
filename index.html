@@ -600,8 +600,6 @@ Color:#E74C3C;
 
 
 
-
-
 #progressBarContainer {
   position: fixed;
   overflow: hidden;
@@ -621,7 +619,8 @@ Color:#E74C3C;
   height: 100%;
 }
 
-		
+
+
 
 
 
@@ -640,8 +639,9 @@ border-radius: 50px;
   margin-top : 10px;
   text-align : center;
   border-radius : 8px;
-  padding-bottom: 160px;
+  
 }
+
 
 
 	#SAudio {
@@ -856,7 +856,9 @@ width: 50%;
     
     </div>
 
-
+<div id="progressBarContainer">
+    <div id="progress"></div>
+  </div>
 		
     <div data-role="main" class="ui-content">
      <input type="search"  name="search"   id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
@@ -1066,7 +1068,89 @@ width: 50%;
 
 
 	  
+<style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
 
+        .fixed-footer {
+
+	
+    border-radius: 10px, 10px, 10px, 10px; /* Adjust the pixel value as needed */
+    	
+    position: fixed;
+box-shadow: 0 0 15px #000;	
+    bottom: 0;
+    width: 100%;
+    
+    height: 59.5px;
+    background: rgb(231,76,60);
+background-color: transparent;
+display: flex;	
+    justify-content: space-between;
+    align-items: center; /* Center vertically */
+    padding: 10px;
+}
+
+.song-title {
+    width: 80%;
+    text-align: center;
+}
+
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.play-button {
+  position: relative;
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center;     /* Center vertically */
+  width: 40px;             /* Button ka width */
+  height: 40px;            /* Button ka height */
+  border-radius: 5%;      /* Circular button */
+  cursor: pointer;
+  overflow: hidden;
+  background: transparent; /* Button background transparent */
+}
+
+/* Icon & text ek hi jagah */
+.play-button i {
+  color: #B9F56C;
+  font-size: 40px;
+  z-index: 2;
+  position: relative;
+}
+
+/* Glossy blur background */
+.play-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.3); /* semi-transparent white */
+  backdrop-filter: blur(2px);            /* blur effect */
+  border-radius: 50%;                     /* same as button */
+  z-index: 1;
+  pointer-events: none;                   /* click pass through */
+}
+
+
+
+
+
+    </style>
     
 <script>
 
@@ -1159,69 +1243,28 @@ displayFavorites();
 
 <!-- Your webpage content goes here -->
 
+<footer class="fixed-footer" >
+ <div class="play-button">
+ <b  id="play"> <i class="fa fa-play" aria-hidden="true"></i></b>
+</i></div>
+<div class="song-title">
 
-<footer class="fixed-footer">
-  <div class="footer-content">  
-    <div id="progressBarContainer">  
-      <div id="progress"></div>  
-    </div>  
+<span id="callStatus"></span>
+ 
 
-    <div class="play-button">  
-      <b id="play"><i class="fa fa-play" aria-hidden="true"></i></b>  
-    </div>  
 
-    <div class="song-title">  
-      <span id="callStatus"></span>  
-      <span onclick="openModal()" id="vfytitle"></span>  
-    </div>   
-
-    <div id="mybutton">  
-      <img id="Fimg" src="/img/play.jpg" alt="Thumbnail">
-    </div>	  
-  </div>  
-
-  <div class="up-arrow" onclick="toggleFooter()">
-    <!-- Double arrow SVG -->
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <path d="M6 15L12 9L18 15" stroke="#00ffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M6 19L12 13L18 19" stroke="#00ffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </div>
+	
+<span onclick="openModal()" id="vfytitle" style="width: auto; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
+</div> 
+<div id="mybutton">
+<b class="feedback"><img id="Fimg" src="/img/play.jpg" alt="Thumbnail" onclick="clickButton()">
+</b>
+</div>	
+</div>
 </footer>
-
-
-
-
-<script>
-let footer = document.querySelector('.fixed-footer');
-let lastScroll = window.pageYOffset;
-
-window.addEventListener('scroll', () => {
-    let currentScroll = window.pageYOffset;
-
-    if (currentScroll < lastScroll) {
-        // Scrolling up → hide footer
-        footer.classList.add('hide');
-    } else {
-        // Scrolling down → show footer
-        footer.classList.remove('hide');
-    }
-
-    lastScroll = currentScroll <= 0 ? 0 : currentScroll;
-});
-	
-</script>
-
-
-
-
-
-
-
-	
-
-
-	
+</!doctype>	
+       
+ 
 <script>
 
 $(document).ready(function() {
@@ -1972,8 +2015,7 @@ function play(id,Sid){
      //data = "https://audioserver-dev-cgen.2.sg-1.fl0.io/"+id;
     document.getElementById("SThumb").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
     document.getElementById("Fimg").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
-	document.getElementById("BGimg").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
-	document.getElementById("pahilagana").onclick = ()=>{
+     document.getElementById("pahilagana").onclick = ()=>{
        location.href= "https://vivekfy.vercel.app/dl?url=https://youtu.be/"+id;
         //location.href= "https://vivekfy.vercel.app/download/audio?url=https://youtu.be/"+id;
         //location.href= "https://vivekfy-server.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
@@ -4610,38 +4652,3 @@ window.addEventListener('beforeunload', () => {
 // --------- Start inactivity timer on load ---------
 resetInactivityTimer();
 				</script>
-
-
-<div id="BGimg"></div>
-
-<script>
-// Function to update modal background with current song image
-function updateModalBackground() {
-    let currentImg = document.getElementById('BGimg');
-    let modal = document.querySelector('.modal-container1');
-
-    if (currentImg && modal) {
-        let imgUrl = currentImg.src;
-        modal.style.background = `
-          linear-gradient(180deg, rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.92) 8%, rgba(0,0,0,0.94) 14%, rgba(0,0,0,1) 100%),
-          url(${imgUrl}) no-repeat center center / cover
-        `;
-    }
-}
-
-// Example: song change event
-function onSongChange() {
-    // yaha tumhara audio player code jo current song change karta hai
-    // fir background update call karo
-    updateModalBackground();
-}
-
-// Agar autoplay ya next button se song change hota hai
-audioElement.addEventListener('ended', () => {
-    nextSong();      // tumhara function jo next song play karta hai
-    onSongChange();  // background update
-});
-	
-</script>
-
-	
