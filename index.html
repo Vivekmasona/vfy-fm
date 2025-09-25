@@ -1262,31 +1262,7 @@ body {
 }    
        
      </style>  
-     <script > 
-    let lastScrollTop = 0;      
-const footer = document.querySelector('.fixed-footer');      
-const progressBar = document.getElementById('progressBarContainer');      
-const audioPlayer = document.getElementById('audioPlayerContainer1'); // add this
-
-window.addEventListener("scroll", function() {      
-  let scrollTop = window.pageYOffset || document.documentElement.scrollTop;      
-
-  if (scrollTop < lastScrollTop) {      
-    // Scroll up → show all      
-    footer.classList.remove("hide");      
-    progressBar.classList.remove("hide");      
-    audioPlayer.classList.remove("hide");      
-  } else {      
-    // Scroll down → hide all      
-    footer.classList.add("hide");      
-    progressBar.classList.add("hide");      
-    audioPlayer.classList.add("hide");      
-  }      
-
-  lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // avoid negative      
-}, false);
-
-	 </script>
+     
 
 
 
@@ -4567,11 +4543,11 @@ updateClock();
 
 
 	
-	<!-- Meta tag for PWA status bar -->
-
-
-                <script>
-let inactivityTimer;
+	<script>
+let lastScrollTop = 0;
+const footer = document.querySelector('.fixed-footer');
+const progressBar = document.getElementById('progressBarContainer');
+const audioPlayerContainer = document.getElementById('audioPlayerContainer');
 const lockOverlay = document.getElementById("lockOverlay");
 const overlayThumb = document.getElementById("overlayThumb");
 const overlayTitle = document.getElementById("overlayTitle");
@@ -4579,107 +4555,102 @@ const overlayTime = document.getElementById("overlayTime");
 const audioPlayer = document.getElementById("SAudio");
 const themeMeta = document.getElementById("themeColorMeta");
 const modeToggle = document.getElementById("modeToggleBtn"); // audio/video toggle
-
+let inactivityTimer;
 let wakeLock = null;
 
-// --------- Status bar color ---------
+// ---------- Scroll handling ----------
+window.addEventListener("scroll", function() {
+    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+    if (scrollTop < lastScrollTop) {
+        // Scroll up → show all
+        footer.classList.remove("hide");
+        progressBar.classList.remove("hide");
+        audioPlayerContainer.classList.remove("hide");
+    } else {
+        // Scroll down → hide all
+        footer.classList.add("hide");
+        progressBar.classList.add("hide");
+        audioPlayerContainer.classList.add("hide");
+    }
+
+    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+}, false);
+
+// ---------- Overlay functions ----------
 function setStatusBarColor(color) {
-  if (themeMeta) themeMeta.setAttribute("content", color);
+    if (themeMeta) themeMeta.setAttribute("content", color);
 }
 
-// --------- Overlay functions ---------
 function showOverlay() {
-  if (modeToggle.checked) return; // video mode → overlay na dikhe
-  lockOverlay.style.display = "flex";
-  setStatusBarColor("#000000"); // overlay appear → black header
-  console.log("Overlay lock activated");
+    if (modeToggle.checked) return; // video mode → overlay na dikhe
+    lockOverlay.style.display = "flex";
+    setStatusBarColor("#000000"); // overlay appear → black header
+    console.log("Overlay lock activated");
 }
 
 function hideOverlay() {
-  lockOverlay.style.display = "none";
-  setStatusBarColor("#F70D1A"); // overlay hide → original color
-  resetInactivityTimer();
-  console.log("Overlay lock removed");
+    lockOverlay.style.display = "none";
+    setStatusBarColor("#F70D1A"); // overlay hide → original color
+    resetInactivityTimer();
+    console.log("Overlay lock removed");
 }
 
-// Unlock button click
+// Unlock button
 document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
 
-// --------- Inactivity tracker ---------
-function resetInactivityTimer() {
-  if (inactivityTimer) clearTimeout(inactivityTimer);
-  if (!modeToggle.checked) { // only audio mode
-    inactivityTimer = setTimeout(showOverlay, 10000); // 10 sec inactivity
-  }
-}
+// ---------- Inactivity tracker ----------
+function resetInactivityTimer(e) {
+    // Ignore scroll events, only mouse/keyboard/touch/click
+    if (e && e.type === "scroll") return;
 
-// User activity listeners (only reset timer)
-["mousemove", "keydown", "touchstart", "click"].forEach(evt => {
-  document.addEventListener(evt, resetInactivityTimer);
-});
-
-// --------- Overlay background updater (always) ---------
-setInterval(() => {
-  // Thumbnail
-  const thumbSrc = document.getElementById("Fimg")?.src;
-  if (thumbSrc) overlayThumb.src = thumbSrc;
-
-  // Song title
-  const songTitle = document.getElementById("vfytitle")?.textContent;
-  overlayTitle.textContent = songTitle || "";
-
-  // Current time / total time
-  const curr = document.getElementById("current-time")?.textContent || "0:00";
-  const total = document.getElementById("total-time")?.textContent || "0:00";
-  overlayTime.textContent = `${curr} / ${total}`;
-}, 500); // har 0.5 sec update
-
-// --------- Wake Lock ---------
-async function keepScreenOn() {
-    try {
-        if ('wakeLock' in navigator) {
-            if (!audioPlayer.paused) {
-                wakeLock = await navigator.wakeLock.request('screen');
-                console.log('Wake Lock active!');
-                wakeLock.addEventListener('release', () => {
-                    console.log('Wake Lock released');
-                    wakeLock = null;
-                });
-            }
-        } else {
-            console.warn('Wake Lock API not supported in this browser.');
-        }
-    } catch (err) {
-        console.error(`Wake Lock request failed: ${err.name}, ${err.message}`);
+    if (inactivityTimer) clearTimeout(inactivityTimer);
+    if (!modeToggle.checked) {
+        inactivityTimer = setTimeout(showOverlay, 10000); // 10 sec inactivity
     }
 }
 
-// Monitor audio playback to acquire/release wake lock
+// Listen to user activity but **not scroll**
+["mousemove", "keydown", "touchstart", "click"].forEach(evt => {
+    document.addEventListener(evt, resetInactivityTimer);
+});
+
+// ---------- Overlay content updater ----------
+setInterval(() => {
+    const thumbSrc = document.getElementById("Fimg")?.src;
+    if (thumbSrc) overlayThumb.src = thumbSrc;
+
+    const songTitle = document.getElementById("vfytitle")?.textContent;
+    overlayTitle.textContent = songTitle || "";
+
+    const curr = document.getElementById("current-time")?.textContent || "0:00";
+    const total = document.getElementById("total-time")?.textContent || "0:00";
+    overlayTime.textContent = `${curr} / ${total}`;
+}, 500);
+
+// ---------- Wake Lock ----------
+async function keepScreenOn() {
+    try {
+        if ('wakeLock' in navigator && !audioPlayer.paused) {
+            wakeLock = await navigator.wakeLock.request('screen');
+            console.log('Wake Lock active!');
+            wakeLock.addEventListener('release', () => { wakeLock = null; });
+        }
+    } catch (err) { console.error(err); }
+}
+
 setInterval(() => {
     if (audioPlayer && !audioPlayer.paused) {
         if (!wakeLock) keepScreenOn();
     } else {
-        if (wakeLock) {
-            wakeLock.release().then(() => wakeLock = null);
-        }
+        if (wakeLock) wakeLock.release().then(() => wakeLock = null);
     }
-}, 2000); // check every 2 sec
+}, 2000);
 
-// Release wake lock on page unload
 window.addEventListener('beforeunload', () => {
-    if (wakeLock) {
-        wakeLock.release().then(() => wakeLock = null);
-    }
+    if (wakeLock) wakeLock.release().then(() => wakeLock = null);
 });
 
-// --------- Start inactivity timer on load ---------
+// ---------- Init ----------
 resetInactivityTimer();
-				</script>
-
-
-
-
-
-
-
-	  
+	</script>
