@@ -2014,8 +2014,7 @@ function play(id,Sid){
      //data = "https://audioserver-dev-cgen.2.sg-1.fl0.io/"+id;
     document.getElementById("SThumb").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
     document.getElementById("Fimg").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
-	document.getElementById("BGimg").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
-     document.getElementById("pahilagana").onclick = ()=>{
+	document.getElementById("pahilagana").onclick = ()=>{
        location.href= "https://vivekfy.vercel.app/dl?url=https://youtu.be/"+id;
         //location.href= "https://vivekfy.vercel.app/download/audio?url=https://youtu.be/"+id;
         //location.href= "https://vivekfy-server.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
@@ -4655,22 +4654,34 @@ resetInactivityTimer();
 
 
 
-<div id="BGimg"></div>
 
 <script>
-// Current song ka thumbnail image fetch karo
-let currentImage = document.getElementById('BGimg').src;
+// Function to update modal background with current song image
+function updateModalBackground() {
+    let currentImg = document.getElementById('Fimg');
+    let modal = document.querySelector('.modal-container1');
 
-// Modal container ka background set karo
-let modal = document.querySelector('.modal-container1');
-modal.style.background = `url(${currentImage}) no-repeat center center / cover`;
+    if (currentImg && modal) {
+        let imgUrl = currentImg.src;
+        modal.style.background = `
+          linear-gradient(180deg, rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.92) 8%, rgba(0,0,0,0.94) 14%, rgba(0,0,0,1) 100%),
+          url(${imgUrl}) no-repeat center center / cover
+        `;
+    }
+}
 
-// Agar gradient bhi chahiye, CSS ke saath combine kar sakte ho
-modal.style.background = `
-  linear-gradient(180deg, rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.92) 8%, rgba(0,0,0,0.94) 14%, rgba(0,0,0,1) 100%),
-  url(${currentImage}) no-repeat center center / cover
-`;
-	
+// Example: song change event
+function onSongChange() {
+    // yaha tumhara audio player code jo current song change karta hai
+    // fir background update call karo
+    updateModalBackground();
+}
+
+// Agar autoplay ya next button se song change hota hai
+audioElement.addEventListener('ended', () => {
+    nextSong();      // tumhara function jo next song play karta hai
+    onSongChange();  // background update
+});
 	
 </script>
 
