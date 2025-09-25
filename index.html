@@ -1266,33 +1266,7 @@ body {
 
 
 
-<script>
-let lastScrollTop = 0;
-const footer = document.querySelector('.fixed-footer');
-const progressBar = document.getElementById('progressBarContainer');
-const audioPlayerContainer = document.getElementById('audioPlayerContainer'); 
-const lockOverlay = document.getElementById("lockOverlay");
 
-// ---------- SCROLL LOGIC (conflict-free) ----------
-window.addEventListener("scroll", function() {
-    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-    // Overlay active → scroll se kuch mat karo
-    if (lockOverlay && lockOverlay.style.display === "flex") return;
-
-    if (scrollTop < lastScrollTop) {
-        footer?.classList.remove("hide");
-        progressBar?.classList.remove("hide");
-        audioPlayerContainer?.classList.remove("hide");
-    } else {
-        footer?.classList.add("hide");
-        progressBar?.classList.add("hide");
-        audioPlayerContainer?.classList.add("hide");
-    }
-
-    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-}, false);
-</script>
 
 	
 
