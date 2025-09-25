@@ -2014,6 +2014,7 @@ function play(id,Sid){
      //data = "https://audioserver-dev-cgen.2.sg-1.fl0.io/"+id;
     document.getElementById("SThumb").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
     document.getElementById("Fimg").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
+	document.getElementById("BGimg").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
 	document.getElementById("pahilagana").onclick = ()=>{
        location.href= "https://vivekfy.vercel.app/dl?url=https://youtu.be/"+id;
         //location.href= "https://vivekfy.vercel.app/download/audio?url=https://youtu.be/"+id;
@@ -4653,12 +4654,12 @@ resetInactivityTimer();
 				</script>
 
 
-
+<img sec="BGimg"></img>
 
 <script>
 // Function to update modal background with current song image
 function updateModalBackground() {
-    let currentImg = document.getElementById('Fimg');
+    let currentImg = document.getElementById('BGimg');
     let modal = document.querySelector('.modal-container1');
 
     if (currentImg && modal) {
