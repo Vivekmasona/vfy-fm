@@ -2014,6 +2014,7 @@ function play(id,Sid){
      //data = "https://audioserver-dev-cgen.2.sg-1.fl0.io/"+id;
     document.getElementById("SThumb").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
     document.getElementById("Fimg").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
+	document.getElementById("BGimg").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
      document.getElementById("pahilagana").onclick = ()=>{
        location.href= "https://vivekfy.vercel.app/dl?url=https://youtu.be/"+id;
         //location.href= "https://vivekfy.vercel.app/download/audio?url=https://youtu.be/"+id;
@@ -4658,7 +4659,7 @@ resetInactivityTimer();
 
 <script>
 // Current song ka thumbnail image fetch karo
-let currentImage = document.getElementById('SThumb').src;
+let currentImage = document.getElementById('BGimg').src;
 
 // Modal container ka background set karo
 let modal = document.querySelector('.modal-container1');
