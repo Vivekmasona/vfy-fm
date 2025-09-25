@@ -1262,13 +1262,35 @@ body {
 }    
        
      </style>  
-     
+     <script > 
+    let lastScrollTop = 0;      
+const footer = document.querySelector('.fixed-footer');      
+const progressBar = document.getElementById('progressBarContainer');      
+const audioPlayer = document.getElementById('audioPlayerContainer'); // add this
+
+window.addEventListener("scroll", function() {      
+  let scrollTop = window.pageYOffset || document.documentElement.scrollTop;      
+
+  if (scrollTop < lastScrollTop) {      
+    // Scroll up → show all      
+    footer.classList.remove("hide");      
+    progressBar.classList.remove("hide");      
+    audioPlayer.classList.remove("hide");      
+  } else {      
+    // Scroll down → hide all      
+    footer.classList.add("hide");      
+    progressBar.classList.add("hide");      
+    audioPlayer.classList.add("hide");      
+  }      
+
+  lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // avoid negative      
+}, false);
+
+	 </script>
 
 
 
 
-
-	
 
 
 
@@ -4516,10 +4538,13 @@ background: linear-gradient(90deg, rgba(40, 19, 13, 0) 10%, rgba(40, 19, 13, 0.4
   z-index: 99999; /* sabse upar */  
   color: white;  
   font-family: sans-serif;  
-
+/* Agar aap chahte ho ki overlay active hote hi body scroll bhi block ho jaye */
+body:has(#lockOverlay:visible) {
+  overflow: hidden;
 }  
 
-
+	
+	
 </style>
 	
 	
