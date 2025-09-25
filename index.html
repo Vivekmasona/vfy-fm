@@ -4579,14 +4579,14 @@ function resetOverlayTimer(e) {
     if (e && e.type === "scroll") return;
     if (overlayTimer) clearTimeout(overlayTimer);
     if (!modeToggle.checked) {
-        overlayTimer = setTimeout(showOverlay, 10000); // 10 sec inactivity
+        overlayTimer = setTimeout(showOverlay, 12000); // 10 sec inactivity
     }
 }
 
 function resetSideMenuTimer() {
     showMenu();
     if (sideMenuTimer) clearTimeout(sideMenuTimer);
-    sideMenuTimer = setTimeout(hideMenu, 4000); // 4 sec inactivity
+    sideMenuTimer = setTimeout(hideMenu, 2000); // 4 sec inactivity
 }
 
 /* ---------------- USER ACTIVITY ---------------- */
