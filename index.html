@@ -1273,25 +1273,21 @@ const progressBar = document.getElementById('progressBarContainer');
 const audioPlayerContainer = document.getElementById('audioPlayerContainer'); 
 const lockOverlay = document.getElementById("lockOverlay");
 
-// Scroll listener
+// ---------- SCROLL LOGIC (conflict-free) ----------
 window.addEventListener("scroll", function() {
     let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-    // ---------- IMPORTANT ----------
-    // Agar overlay visible hai → scroll se kuch na kare
+    // Overlay active → scroll se kuch mat karo
     if (lockOverlay && lockOverlay.style.display === "flex") return;
 
-    // ---------- Scroll logic ----------
     if (scrollTop < lastScrollTop) {
-        // Scroll up → show footer/progress/audio
-        footer.classList.remove("hide");
-        progressBar.classList.remove("hide");
-        audioPlayerContainer.classList.remove("hide");
+        footer?.classList.remove("hide");
+        progressBar?.classList.remove("hide");
+        audioPlayerContainer?.classList.remove("hide");
     } else {
-        // Scroll down → hide footer/progress/audio
-        footer.classList.add("hide");
-        progressBar.classList.add("hide");
-        audioPlayerContainer.classList.add("hide");
+        footer?.classList.add("hide");
+        progressBar?.classList.add("hide");
+        audioPlayerContainer?.classList.add("hide");
     }
 
     lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
@@ -4551,7 +4547,9 @@ body:has(#lockOverlay:visible) {
   overflow: hidden;
 }  
 
-	
+#lockOverlay { display: none; z-index: 99999; }
+.fixed-footer.hide { display: none; }
+#audioPlayerContainer.hide { display: none; }	
 	
 </style>
 	
