@@ -48,6 +48,7 @@
 <script src="copy/copy.js" defer></script>
 <script src="slideshow/slide.js" defer></script>
 <script src="device/brand.js" defer></script>
+<script src="menu/sidemenu.js" defer></script>
 <script src="globlealert/alert.js" defer></script>
 <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -4323,30 +4324,20 @@ document.getElementById('search-btn').addEventListener('click', function() {
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
 <body>
-
-    <div class="side-menu">
-        <div class="menu-item">
-            <i class="fas fa-cog" onclick="openPopup()" ></i>
-            
-        </div>
-        <div class="menu-item">
-            <i class="fas fa-microphone" onclick="startDictation()"></i>
-            
-          
-		</div>
-
-
-<div class="menu-item">
-            <i class="fa fa-database" id="openJsonPopup"></i>
-            </div>
-		
-
-  <div class="menu-item" onclick="showDetail()">
-  <i id="heartDot" class="fas fa-heart"></i>
-</div>
-		
+<div class="side-menu" id="sideMenu">
+    <div class="menu-item">
+        <i class="fas fa-cog" onclick="openPopup()"></i>
     </div>
-
+    <div class="menu-item">
+        <i class="fas fa-microphone" onclick="startDictation()"></i>
+    </div>
+    <div class="menu-item">
+        <i class="fa fa-database" id="openJsonPopup"></i>
+    </div>
+    <div class="menu-item" onclick="showDetail()">
+        <i id="heartDot" class="fas fa-heart"></i>
+    </div>
+</div>
     <!-- detail -->
 <div id="customAlert"></div>
 	
