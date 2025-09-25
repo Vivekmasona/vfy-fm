@@ -1264,34 +1264,42 @@ body {
      </style>  
      
 
+
+
 <script>
 let lastScrollTop = 0;
 const footer = document.querySelector('.fixed-footer');
 const progressBar = document.getElementById('progressBarContainer');
-const audioPlayer = document.getElementById('audioPlayerContainer'); 
+const audioPlayerContainer = document.getElementById('audioPlayerContainer'); 
 const lockOverlay = document.getElementById("lockOverlay");
 
+// Scroll listener
 window.addEventListener("scroll", function() {
     let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-    // Agar overlay active hai, scroll se kuch hide/show mat karo
+    // ---------- IMPORTANT ----------
+    // Agar overlay visible hai → scroll se kuch na kare
     if (lockOverlay && lockOverlay.style.display === "flex") return;
 
+    // ---------- Scroll logic ----------
     if (scrollTop < lastScrollTop) {
-        // Scroll up → show all
+        // Scroll up → show footer/progress/audio
         footer.classList.remove("hide");
         progressBar.classList.remove("hide");
-        audioPlayer.classList.remove("hide");
+        audioPlayerContainer.classList.remove("hide");
     } else {
-        // Scroll down → hide all
+        // Scroll down → hide footer/progress/audio
         footer.classList.add("hide");
         progressBar.classList.add("hide");
-        audioPlayer.classList.add("hide");
+        audioPlayerContainer.classList.add("hide");
     }
 
-    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // avoid negative
+    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
 }, false);
 </script>
+
+	
+
 
 
 
