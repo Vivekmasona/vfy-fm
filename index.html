@@ -66,7 +66,7 @@
 
  
 <script>
-// === Full Page Swipe Anywhere ===
+// === Bottom 40% Swipe Area Only ===
 (function(){
   let touchStartX = null;
   const swipeThreshold = 50; // px, adjust sensitivity
@@ -81,12 +81,22 @@
 
   // Touch start anywhere
   window.addEventListener("touchstart", (e) => {
+    const y = e.changedTouches[0].clientY;
+    const windowHeight = window.innerHeight;
+    if(y < windowHeight * 0.6) return; // ignore upper 60%
     touchStartX = e.changedTouches[0].clientX;
   }, {passive:true});
 
   // Touch end anywhere
   window.addEventListener("touchend", (e) => {
     if(touchStartX === null) return;
+
+    const y = e.changedTouches[0].clientY;
+    const windowHeight = window.innerHeight;
+    if(y < windowHeight * 0.6){
+      touchStartX = null;
+      return; // ignore upper 60%
+    }
 
     const touchEndX = e.changedTouches[0].clientX;
     const diff = touchEndX - touchStartX;
