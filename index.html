@@ -108,7 +108,7 @@
       color:#dadada;
       text-shadow:0 0 5px #dadada,0 0 10px #dadada;
       opacity:0;
-      transition:opacity 1.5s;
+      transition:opacity 0.8s;
     ">F Y</span>
   </h1>
 
@@ -119,7 +119,7 @@
     color:#dadada;
     text-shadow:0 0 10px #dadada,0 0 20px #dadada;
     margin-bottom:20px;
-  ">V F Y - Depression Gone</p>
+  ">V F Y On- Depression Is Gone</p>
 
   <!-- Loader Bar -->
   <div style="
@@ -152,7 +152,7 @@
     bottom:10px;
     font-size:12px;
     color:#dadada;
-  ">Powered By VivekFy</p>
+  "> {•v•} Powered By VivekFy</p>
 </div>
 
 <script>
@@ -198,7 +198,7 @@ window.addEventListener("load", ()=>{
         setTimeout(()=>loader.style.display="none",500);
 
         // --- Play welcome audio ---
-        const audio = new Audio('YOUR_AUDIO_URL_HERE.mp3');
+        const audio = new Audio('/sound/fw.mp3');
         audio.volume=1.0;
         audio.play().catch(e=>console.log("Autoplay blocked", e));
       },200);
@@ -301,26 +301,7 @@ window.addEventListener("load", setRandomGradient);
 		
     </script>
 
-<audio id="myAudio" src="/sound/fw.mp3"></audio>
 
-<script>
-  // Audio element ko select karein
-  var audio = document.getElementById("myAudio");
-
-  // Sound ko autoplay karein jab webpage load hoti hai
-  audio.autoplay = true;
-
-  // Sound play hone par event listener lagayein
-  audio.addEventListener('ended', function() {
-    // Sound ko stop karein
-    audio.pause();
-  });
-</script>
-<script>
-if (window !== window.top) {
-    document.documentElement.innerHTML = '';
-}
-</script>
 
 
 
