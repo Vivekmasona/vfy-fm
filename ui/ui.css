@@ -4,30 +4,30 @@ html, body {
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   font-family: "Public Sans", sans-serif;
   background: radial-gradient(circle at top, #1b1a25, #0d0c16 85%);
   color: #fff;
-  overflow: hidden;
+  overflow-y: auto; /* scroll enable */
 }
 
 body {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
+  align-items: flex-start;
   box-sizing: border-box;
   padding-top: 60px;
 }
 
-/* --- Left side: thumbnail + song details --- */
+/* --- Left Panel --- */
 #left-panel {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 15px;
   width: 55%;
+  max-width: 600px;
 }
 
 /* --- Thumbnail --- */
@@ -43,6 +43,7 @@ body {
   align-items: center;
   box-shadow: 8px 8px 20px rgba(0,0,0,0.3),
               -8px -8px 20px rgba(255,255,255,0.05);
+  transition: all 0.3s ease;
 }
 
 .thumbnail-border img {
@@ -82,6 +83,8 @@ body {
   justify-content: center;
   align-items: center;
   width: 15%;
+  max-width: 150px;
+  min-width: 120px;
 }
 
 #play {
@@ -106,16 +109,17 @@ body {
               inset -6px -6px 20px rgba(255,255,255,0.05);
 }
 
-/* --- Right side: vertical controls --- */
+/* --- Right Panel --- */
 #right-panel {
   display: flex;
   flex-direction: column;
   gap: 20px;
   width: 20%;
+  max-width: 150px;
   align-items: center;
 }
 
-/* --- Control buttons --- */
+/* --- Buttons --- */
 .button {
   width: 60px;
   height: 60px;
@@ -142,7 +146,7 @@ body {
   transform: scale(0.95);
 }
 
-/* --- Volume slider vertical --- */
+/* --- Volume Slider Vertical --- */
 .volume-container {
   display: flex;
   flex-direction: column;
@@ -192,8 +196,25 @@ body {
 
 /* --- Responsive --- */
 @media(max-width:768px){
-  body { flex-direction: column; padding-top: 70px; }
-  #left-panel, #center-panel, #right-panel { width: 100%; flex-direction: row; justify-content: center; gap: 20px; }
-  #volumeSliderContainer { transform: rotate(0deg); height: 8px; width: 120px; }
-  #play { width: 80px; height: 80px; font-size: 1.8rem; }
+  body { 
+    flex-direction: column; 
+    align-items: center;
+    padding-top: 70px; 
+  }
+  #left-panel, #center-panel, #right-panel { 
+    width: 100%; 
+    flex-direction: row; 
+    justify-content: center; 
+    gap: 20px; 
+  }
+  #volumeSliderContainer { 
+    transform: rotate(0deg); 
+    height: 8px; 
+    width: 120px; 
+  }
+  #play { 
+    width: 80px; 
+    height: 80px; 
+    font-size: 1.8rem; 
+  }
 }
