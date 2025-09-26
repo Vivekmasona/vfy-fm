@@ -1,8 +1,10 @@
-(function(){
-  let gesturesEnabled = true; 
-  const toggleBtn = document.getElementById("gestureToggle");
 
-  // Read saved state from localStorage
+        (function(){
+  let gesturesEnabled = true;
+  const toggleBtn = document.getElementById("gestureToggle");
+  const circle = toggleBtn.querySelector(".toggle-circle");
+
+  // Read from localStorage
   const savedState = localStorage.getItem("gestureEnabled");
   if(savedState !== null){
     gesturesEnabled = savedState === "true";
@@ -133,29 +135,25 @@
     })();
   }
 
-  // Toggle button update
-  function updateToggleBtn(){
+  function updateToggleUI(){
     if(gesturesEnabled){
-      toggleBtn.textContent="Swipe ON";
-      toggleBtn.style.background="linear-gradient(45deg,#ff416c,#ff4b2b)";
+      toggleBtn.classList.add("active");
     } else {
-      toggleBtn.textContent="Swipe OFF";
-      toggleBtn.style.background="gray";
+      toggleBtn.classList.remove("active");
     }
   }
 
   // Apply saved state
   if(gesturesEnabled) initGestures();
   else if(gestureModule) gestureModule.destroy();
-  updateToggleBtn();
+  updateToggleUI();
 
-  // Toggle button click
   toggleBtn.addEventListener("click",()=>{
     gesturesEnabled=!gesturesEnabled;
-    localStorage.setItem("gestureEnabled",gesturesEnabled); // save state
+    localStorage.setItem("gestureEnabled",gesturesEnabled);
     if(gesturesEnabled) initGestures();
     else if(gestureModule) gestureModule.destroy();
-    updateToggleBtn();
+    updateToggleUI();
   });
 
 })();
