@@ -41,7 +41,7 @@
 .mode-toggle .icon {
   width: 30px;
   height: 30px;
-  color: yellow;
+  color: #dadada;
   transition: transform .25s, opacity .2s;
 }
 
