@@ -62,74 +62,128 @@
 <button id="pichhe">Prev</button>
 <b id="play"></b>
 
-
-        <script>
-(function(){
-  let touchStartX = null;
-  let touchStartY = null;
-  let lastTap = 0;
+<script>
+// === Neon Swipe & Double-Tap Overlay + Long Press ===
+(function(){  
+  let touchStartX = null;  
   let longPressTimeout = null;
-  const swipeThreshold = 50; 
-  const doubleTapDelay = 300; 
-  const bottomArea = 0.4; // bottom 40%
+  const swipeThreshold = 50;  
+  let lastTap = 0;  
+  const doubleTapDelay = 300;  
+  
+  const nextBtn = document.getElementById("nextbutto");  
+  const prevBtn = document.getElementById("pichhe");  
+  const playBtn = document.getElementById("play");  
+  const volLowBtn = document.getElementById("volume10");   // long press action
+  const volHighBtn = document.getElementById("volume100"); // release action
+  
+  if(!nextBtn || !prevBtn || !playBtn || !volLowBtn || !volHighBtn){  
+    console.warn("Required elements not found! Check IDs: 'nextbutto','pichhe','play','volume10','volume100'");  
+    return;  
+  }  
+  
+  // Create overlay SVG on top of all content  
+  const svgNS = "http://www.w3.org/2000/svg";  
+  const overlay = document.createElementNS(svgNS,"svg");  
+  overlay.style.position = "fixed";  
+  overlay.style.left = 0;  
+  overlay.style.top = 0;  
+  overlay.style.width = "100%";  
+  overlay.style.height = "100%";  
+  overlay.style.pointerEvents = "none";  
+  overlay.style.overflow = "visible";  
+  overlay.style.zIndex = 999999;  
+  document.body.appendChild(overlay);  
+  
+  function createLine(x1,y1,x2,y2,color="#00ffff"){  
+    const line = document.createElementNS(svgNS,"line");  
+    line.setAttribute("x1",x1);  
+    line.setAttribute("y1",y1);  
+    line.setAttribute("x2",x2);  
+    line.setAttribute("y2",y2);  
+    line.setAttribute("stroke",color);  
+    line.setAttribute("stroke-width",3);  
+    line.setAttribute("stroke-linecap","round");  
+    line.style.opacity = 1;  
+    overlay.appendChild(line);  
+    const fade = setInterval(()=>{  
+      line.style.opacity -= 0.05;  
+      if(line.style.opacity <= 0){  
+        line.remove();  
+        clearInterval(fade);  
+      }  
+    },16);  
+  }  
+  
+  function createDot(x,y,color="#ff00ff"){  
+    const dot = document.createElementNS(svgNS,"circle");  
+    dot.setAttribute("cx",x);  
+    dot.setAttribute("cy",y);  
+    dot.setAttribute("r",8);  
+    dot.setAttribute("fill",color);  
+    dot.style.opacity = 1;  
+    overlay.appendChild(dot);  
+    const fade = setInterval(()=>{  
+      dot.style.opacity -= 0.05;  
+      if(dot.style.opacity <= 0){  
+        dot.remove();  
+        clearInterval(fade);  
+      }  
+    },16);  
+  }  
+  
+  window.addEventListener("touchstart",(e)=>{  
+    const y = e.changedTouches[0].clientY;  
+    const windowHeight = window.innerHeight;  
+    if(y < windowHeight*0.6) return; // only bottom 40%  
+    touchStartX = e.changedTouches[0].clientX;  
 
-  const audio = document.getElementById("SAudio");
-  const nextBtn = document.getElementById("nextbutto");
-  const prevBtn = document.getElementById("pichhe");
-  const playBtn = document.getElementById("play");
-
-  if(!audio || !nextBtn || !prevBtn || !playBtn){
-    console.warn("Required elements not found!");
-    return;
-  }
-
-  function nextSong(){ if(nextBtn) nextBtn.click(); }
-  function prevSong(){ if(prevBtn) prevBtn.click(); }
-  function togglePlay(){ if(audio.paused) audio.play(); else audio.pause(); }
-
-  window.addEventListener("touchstart", (e)=>{
-    const touch = e.changedTouches[0];
-    const y = touch.clientY;
-    const windowHeight = window.innerHeight;
-    if(y < windowHeight*(1-bottomArea)) return; // ignore upper area
-    touchStartX = touch.clientX;
-    touchStartY = touch.clientY;
-
-    // Start long press
+    // Long press detection → click volume10
     longPressTimeout = setTimeout(()=>{
-      audio.playbackRate = 4; // speed up
-    }, 500); // 500ms for long press
-  }, {passive:true});
-
-  window.addEventListener("touchend", (e)=>{
-    const touch = e.changedTouches[0];
-    const y = touch.clientY;
-    const windowHeight = window.innerHeight;
-    if(y < windowHeight*(1-bottomArea)){ 
-      clearTimeout(longPressTimeout); audio.playbackRate=1; touchStartX=null; return;
-    }
+      volLowBtn.click();
+    }, 500); // press >500ms
+  }, {passive:true});  
+  
+  window.addEventListener("touchend",(e)=>{  
+    const y = e.changedTouches[0].clientY;  
+    const windowHeight = window.innerHeight;  
+    if(y < windowHeight*0.6){ 
+      touchStartX=null; 
+      clearTimeout(longPressTimeout);
+      volHighBtn.click(); // release action
+      return; 
+    }  
 
     clearTimeout(longPressTimeout);
-    audio.playbackRate = 1; // reset speed after release
+    volHighBtn.click(); // release action
 
-    const diffX = touch.clientX - (touchStartX || touch.clientX);
+    const touchEndX = e.changedTouches[0].clientX;  
+    const diff = touchEndX - (touchStartX||touchEndX);  
 
-    if(Math.abs(diffX) > swipeThreshold){
-      if(diffX < 0) nextSong();
-      else prevSong();
-    } else {
-      const now = Date.now();
-      if(now - lastTap < doubleTapDelay){
-        togglePlay();
-        lastTap = 0;
-      } else lastTap = now;
-    }
+    if(Math.abs(diff) > swipeThreshold){  
+      const midY = windowHeight*0.8;  
+      if(diff<0){  
+        nextBtn.click();  
+        createLine(touchEndX,midY,touchEndX+100,midY);  
+      } else {  
+        prevBtn.click();  
+        createLine(touchEndX,midY,touchEndX-100,midY);  
+      }  
+    } else {  
+      const now = Date.now();  
+      if(now-lastTap<doubleTapDelay){  
+        playBtn.click();  
+        createDot(touchEndX,y);  
+        lastTap = 0;  
+      } else lastTap = now;  
+    }  
 
-    touchStartX = null;
-  }, {passive:true});
-})();
-		</script>
-
+    touchStartX = null;  
+  },{passive:true});  
+})();  
+</script>
+        
+  
     
   
     
