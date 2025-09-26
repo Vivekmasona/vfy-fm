@@ -1593,12 +1593,12 @@ function paginate(direction) {
 
 
 // --- Global Variables ---
-let currentVideoListItem = null; 
+let currentVideoListItem = null;
 let ytPlayer = null;
 let isPlaying = false;
 let isVideoMode = false; // default Audio mode
 let isMiniPlayerFullscreen = false;
-let isAutoNext = false; // 🔥 New Auto Next toggle
+let isAutoNext = false; // dot toggle
 
 // --- Mode Toggle Button ---
 document.getElementById("modeToggleBtn").addEventListener("click", () => {
@@ -1642,13 +1642,21 @@ function getOutput(item, i) {
 // --- Handle Item Click Based on Mode ---
 function handleItemClick(el) {
     if (isVideoMode) {
-        currentVideoListItem = el;
+        setCurrentVideo(el);
         playMiniVideoPlayer($(el).attr("vid"));
     } else {
         stopVideoIfPlaying();
         document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
         loadSong(el);
     }
+}
+
+// --- Set current video and highlight in list ---
+function setCurrentVideo(el) {
+    // Remove previous highlight
+    document.querySelectorAll(".music-item.active").forEach(item => item.classList.remove("active"));
+    el.classList.add("active");
+    currentVideoListItem = el;
 }
 
 // --- Stop current video ---
@@ -1658,11 +1666,10 @@ function stopVideoIfPlaying() {
         ytPlayer = null;
     }
     $(".yt-mini-player").remove();
-    currentVideoListItem = null;
     isPlaying = false;
 }
 
-// --- Force Audio Stop Always When Video Playing ---
+// --- Force Audio Stop ---
 function enforceAudioPause() {
     document.querySelectorAll("#SAudio").forEach(audio => {
         audio.pause();
@@ -1671,112 +1678,21 @@ function enforceAudioPause() {
 }
 
 // --- Play Mini Video Player ---
-function playMiniVideoPlayer(videoId) {  
-    stopVideoIfPlaying();  
-    enforceAudioPause();  
+function playMiniVideoPlayer(videoId) {
+    stopVideoIfPlaying();
+    enforceAudioPause();
 
     let overlay = $(`
-        <div class="yt-mini-player" style="
-            position:fixed;
-            bottom:110px;
-            right:10px;
-            width:271px;
-            height:180px;
-            background:#111;
-            border-radius:6px;
-            overflow:hidden;
-            z-index:99999;
-            display:flex;
-            flex-direction:column;
-            box-shadow: 0 12px 28px rgba(0,0,0,0.7);
-            border: 0px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(4px);
-        ">
-            <!-- Video Container -->
-            <div id="yt-mini-${videoId}" style="
-                flex:1;
-                background:black;
-                position:relative;
-            "></div>
-
-            <!-- Glass-style Control Bar -->
-            <div class="mini-control-bar" style="
-                height:50px;
-                width:100%;
-                display:flex;
-                align-items:center;
-                justify-content:space-between;
-                padding:0 12px;
-                backdrop-filter: blur(4px);
-                background: rgba(255,255,255,0.08);
-                border-top:1px solid rgba(255,255,255,0.15);
-                box-shadow: 0 -2px 8px rgba(255,255,255,0.05);
-            ">
-                <!-- Play/Pause -->
-                <button id="mini-playpause" style="
-                    color:#00ffff;
-                    border:none;
-                    background:none;
-                    cursor:pointer;
-                    font-size:20px;
-                    margin-right:8px;
-                    transition: transform 0.2s, text-shadow 0.2s;
-                    text-shadow: 0 0 8px #00ffff;
-                ">
-                    <i class="fas fa-pause"></i>
-                </button>
-
-                <!-- Seek Bar -->
-                <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="
-                    flex:1;
-                    margin:0 8px;
-                    -webkit-appearance:none;
-                    height:4px;
-                    border-radius:2px;
-                    background: linear-gradient(to right, #ff6a00, #ee0979);
-                    box-shadow: 0 0 8px #ff6a00, 0 0 12px #ee0979;
-                    cursor:pointer;
-                ">  
-
-                <!-- Fullscreen -->
-                <button id="mini-fullscreen" style="
-                    color:#00ffff;
-                    border:none;
-                    background:none;
-                    cursor:pointer;
-                    font-size:20px;
-                    margin-right:8px;
-                    text-shadow: 0 0 8px #00ffff;
-                ">
-                    <i class="fas fa-expand"></i>
-                </button>
-
-                <!-- Auto Next -->
-                <button id="mini-auto-next" style="
-                    color:#ffea00;
-                    border:none;
-                    background:none;
-                    cursor:pointer;
-                    font-size:18px;
-                    margin-right:8px;
-                    text-shadow: 0 0 8px #ffea00;
-                ">
-                    Auto Next: Off
-                </button>
-
-                <!-- Close -->
-                <button id="mini-close" style="
-                    color:#ff4f4f;
-                    border:none;
-                    background:none;
-                    cursor:pointer;
-                    font-size:22px;
-                    text-shadow: 0 0 8px #ff4f4f;
-                ">
-                    <i class="fa fa-close"></i>
-                </button>
-            </div>
+    <div class="yt-mini-player" style="position:fixed; bottom:110px; right:10px; width:271px; height:180px; background:#111; border-radius:6px; overflow:hidden; z-index:99999; display:flex; flex-direction:column; box-shadow: 0 12px 28px rgba(0,0,0,0.7);">
+        <div id="yt-mini-${videoId}" style="flex:1; background:black; position:relative;"></div>
+        <div class="mini-control-bar" style="height:50px; width:100%; display:flex; align-items:center; justify-content:space-between; padding:0 12px; backdrop-filter: blur(4px); background: rgba(255,255,255,0.08); border-top:1px solid rgba(255,255,255,0.15);">
+            <button id="mini-playpause" style="color:#00ffff; border:none; background:none; cursor:pointer; font-size:20px; margin-right:8px; text-shadow:0 0 8px #00ffff;"><i class="fas fa-pause"></i></button>
+            <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="flex:1; margin:0 8px; -webkit-appearance:none; height:4px; border-radius:2px; background: linear-gradient(to right, #ff6a00, #ee0979); box-shadow: 0 0 8px #ff6a00,0 0 12px #ee0979; cursor:pointer;">
+            <button id="mini-fullscreen" style="color:#00ffff; border:none; background:none; cursor:pointer; font-size:20px; margin-right:8px; text-shadow:0 0 8px #00ffff;"><i class="fas fa-expand"></i></button>
+            <button id="mini-auto-next" style="width:18px; height:18px; border-radius:50%; background:#555; margin-right:8px; border:none; cursor:pointer;"></button>
+            <button id="mini-close" style="color:#ff4f4f; border:none; background:none; cursor:pointer; font-size:22px; text-shadow:0 0 8px #ff4f4f;"><i class="fa fa-close"></i></button>
         </div>
+    </div>
     `);
 
     $("body").append(overlay);
@@ -1787,12 +1703,12 @@ function playMiniVideoPlayer(videoId) {
         height: "100%",
         playerVars: { autoplay: 1, controls: 0, modestbranding: 1 },
         events: {
-            onReady: (e) => {
+            onReady: e => {
                 e.target.playVideo();
                 isPlaying = true;
                 updateSeekBar();
             },
-            onStateChange: (event) => {
+            onStateChange: event => {
                 if (event.data === YT.PlayerState.ENDED && isAutoNext) {
                     playNextVideo();
                 }
@@ -1800,7 +1716,7 @@ function playMiniVideoPlayer(videoId) {
         }
     });
 
-    // Play/Pause button
+    // Play/Pause
     $("#mini-playpause").click(() => {
         if (!ytPlayer) return;
         const state = ytPlayer.getPlayerState();
@@ -1813,30 +1729,27 @@ function playMiniVideoPlayer(videoId) {
         }
     });
 
-    // Fullscreen button
+    // Fullscreen
     $("#mini-fullscreen").click(() => {
-        if (!ytPlayer) return;
         if (!isMiniPlayerFullscreen) {
-            $(".yt-mini-player").css({ width: "100vw", height: "100vh", bottom: 0, right: 0, borderRadius: 0 });
+            $(".yt-mini-player").css({ width:"100vw", height:"100vh", bottom:0, right:0, borderRadius:0 });
             isMiniPlayerFullscreen = true;
         } else {
-            $(".yt-mini-player").css({ width: "271px", height: "180px", bottom: "110px", right: "10px", borderRadius: "6px" });
+            $(".yt-mini-player").css({ width:"271px", height:"180px", bottom:"110px", right:"10px", borderRadius:"6px" });
             isMiniPlayerFullscreen = false;
         }
     });
 
-    // Auto Next toggle button
+    // Auto Next toggle (dot style)
     $("#mini-auto-next").click(() => {
         isAutoNext = !isAutoNext;
-        $("#mini-auto-next").text(`Auto Next: ${isAutoNext ? 'On' : 'Off'}`);
+        $("#mini-auto-next").css("background", isAutoNext ? "#ffea00" : "#555");
     });
 
-    // Close button
-    $("#mini-close").click(() => {
-        stopVideoIfPlaying();
-    });
+    // Close
+    $("#mini-close").click(() => stopVideoIfPlaying());
 
-    // Seek bar input
+    // Seekbar
     $("#mini-seekbar").on("input", function() {
         if (!ytPlayer) return;
         const duration = ytPlayer.getDuration();
@@ -1844,23 +1757,19 @@ function playMiniVideoPlayer(videoId) {
         ytPlayer.seekTo(seekTo, true);
     });
 
-    // Update seek bar continuously
     function updateSeekBar() {
         if (!ytPlayer) return;
         const state = ytPlayer.getPlayerState();
         if (state === YT.PlayerState.PLAYING || state === YT.PlayerState.PAUSED) {
             const currentTime = ytPlayer.getCurrentTime();
             const duration = ytPlayer.getDuration();
-            if (duration > 0) {
-                const percent = (currentTime / duration) * 100;
-                $("#mini-seekbar").val(percent);
-            }
+            if (duration > 0) $("#mini-seekbar").val((currentTime/duration)*100);
         }
         requestAnimationFrame(updateSeekBar);
     }
 }
 
-// --- Auto Next Video Function ---
+// --- Auto Next Video & select in list ---
 function playNextVideo() {
     if (!currentVideoListItem) return;
     let parentDiv = currentVideoListItem.parentElement;
@@ -1868,7 +1777,7 @@ function playNextVideo() {
     if (nextDiv) {
         let nextItem = nextDiv.querySelector(".music-item");
         if (nextItem) {
-            currentVideoListItem = nextItem;
+            setCurrentVideo(nextItem); // highlight next item
             playMiniVideoPlayer($(nextItem).attr("vid"));
         }
     }
@@ -1876,11 +1785,8 @@ function playNextVideo() {
 
 // Prevent Audio Play During Video Mode
 document.addEventListener("play", function(e) {
-    if (isVideoMode && ytPlayer && isPlaying && e.target.id === "SAudio") {
-        e.target.pause();
-    }
+    if (isVideoMode && ytPlayer && isPlaying && e.target.id === "SAudio") e.target.pause();
 }, true);
-
 
 	
 	
