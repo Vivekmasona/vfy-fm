@@ -60,26 +60,29 @@
 
 <button id="nextbutto">Next</button>
 <button id="pichhe">Prev</button>
+<b id="play"></b>
   
 
   <!-- Neon fullscreen loader with watery gradient follow -->
 
- 
-<script>
-// === Bottom 40% Swipe Area Only ===
+ <script>
+// === Bottom 40% Swipe + Double Tap for Play/Pause ===
 (function(){
   let touchStartX = null;
-  const swipeThreshold = 50; // px, adjust sensitivity
+  const swipeThreshold = 50; // px
+  let lastTap = 0;
+  const doubleTapDelay = 300; // ms
 
   const nextBtn = document.getElementById("nextbutto");
   const prevBtn = document.getElementById("pichhe");
+  const playBtn = document.getElementById("play"); // double-tap trigger
 
-  if(!nextBtn || !prevBtn){
-    console.warn("Next/Prev buttons with IDs 'nextbutto' and 'pichhe' not found!");
+  if(!nextBtn || !prevBtn || !playBtn){
+    console.warn("Required elements not found! IDs: 'nextbutto', 'pichhe', 'play'");
     return;
   }
 
-  // Touch start anywhere
+  // Touch start
   window.addEventListener("touchstart", (e) => {
     const y = e.changedTouches[0].clientY;
     const windowHeight = window.innerHeight;
@@ -87,10 +90,8 @@
     touchStartX = e.changedTouches[0].clientX;
   }, {passive:true});
 
-  // Touch end anywhere
+  // Touch end
   window.addEventListener("touchend", (e) => {
-    if(touchStartX === null) return;
-
     const y = e.changedTouches[0].clientY;
     const windowHeight = window.innerHeight;
     if(y < windowHeight * 0.6){
@@ -99,23 +100,31 @@
     }
 
     const touchEndX = e.changedTouches[0].clientX;
-    const diff = touchEndX - touchStartX;
+    const diff = touchEndX - (touchStartX || touchEndX);
 
+    // --- Swipe Left/Right ---
     if(Math.abs(diff) > swipeThreshold){
-      if(diff < 0){
-        // swipe left → next song
-        nextBtn.click();
+      if(diff < 0) nextBtn.click();  // swipe left → next
+      else prevBtn.click();           // swipe right → prev
+    } else {
+      // --- Double Tap Detection ---
+      const now = Date.now();
+      if(now - lastTap < doubleTapDelay){
+        // double tap detected → trigger play button
+        playBtn.click();
+        lastTap = 0;
       } else {
-        // swipe right → previous song
-        prevBtn.click();
+        lastTap = now;
       }
     }
 
     touchStartX = null;
   }, {passive:true});
 })();
-</script>
-  
+ </script>
+
+
+
   
     
 <!-- Fullscreen Loader with Neon VFY Music -->
