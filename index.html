@@ -171,10 +171,177 @@ if (window !== window.top) {
 
   
 
-    font-size: 14px;
-  co
+/* Music Item */
+.music-item {
+  width: 95%;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  padding: 8px 1px;
+  box-sizing: border-box;
+  background: linear-gradient(90deg, rgba(255,120,80,0.2), rgba(255,120,80,0));
+  position: relative;
+  margin: 0 auto 12px; /* 12px gap between items */
+  cursor: pointer;
+}
+
+/* Thumbnail */
+.thumb-wrap {
+  position: relative;
+  width: 135px;
+  height: 100px;
+  flex-shrink: 0;
+  border-radius: 8px 0 0 8px;
+  overflow: hidden;
+}
+
+	/* Save button */
+.save-btn {
+  background: radial-gradient(circle, rgba(255,120,80,0.4), rgba(255,120,80,0.1));
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 20px;
+  color: #00ffff;
+  transition: 0.2s all;
+}
+
+.save-btn:hover {
+  transform: scale(1.1);
+  color: red; /* change color on hover */
+}
+
+.save-btn i {
+  display: block;
+}
+
+/* Dark mode for save button */
+@media (prefers-color-scheme: dark) {
+  .save-btn {
+    color: #fff;
+  }
+}
+.thumb-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.thumb-wrap::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+   background: #28130D;
+background: linear-gradient(90deg, rgba(40, 19, 13, 0) 10%, rgba(40, 19, 13, 0.48) 65%, rgba(40, 19, 13, 0.86) 85%, rgba(40, 19, 13, 1) 95%);
+  pointer-events: none;
+}
+
+/* Overlay play button */
+.overlay-play {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.overlay-play svg path {
+  fill: rgba(255,120,80,0.9);
+}
+/* Title multi-line */
+.title {
+  flex: 1;
+  font-size: 15px;
+  opacity: 0.5;
+  letter-spacing: 2px;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  padding-left: 10px;
+}
+
+/* Delete button */
+.save-btn.delete {
+  background: radial-gradient(circle, rgba(255,0,0,0.4), rgba(200,0,0,0.1));
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 20px;
+  color: #fff;
+  transition: 0.2s all;
+}
+
+.save-btn.delete:hover {
+  transform: scale(1.1);
+  color: #ff5555;
+}
+
+.save-btn i {
+  display: block;
+}
+
+/* Keep save button CSS for future use */
+.save-btn.save {
+  background: radial-gradient(circle, rgba(0,200,0,0.4), rgba(0,150,0,0.1));
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 20px;
+  color: #fff;
+  transition: 0.2s all;
+}
+
+.save-btn.save:hover {
+  transform: scale(1.1);
+  color: #00ff00;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .music-item {
+    background: linear-gradient(90deg, rgba(255,120,80,0.25), rgba(255,120,80,0));
+    color: #fff;
+  }
+  .save-btn.save { color: #fff; }
+  .save-btn.delete { color: #fff; }
+  .overlay-play svg path { fill: #fff; }
+}
   
-    
+
 
 	
 </style>
@@ -210,166 +377,10 @@ if (window !== window.top) {
     </div>
 
 
-,<stule>
-/* ----------------------------- */
-/* Music Item - Neumorphic Light */
-/* ----------------------------- */
-.music-item {
-  width: 95%;
-  height: 100px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border-radius: 16px;
-  padding: 8px 1px;
-  box-sizing: border-box;
-  margin: 0 auto 12px;
-  cursor: pointer;
-  background: #dadada;
-  box-shadow: 8px 8px 16px #babecc, -8px -8px 16px #ffffff;
-  transition: 0.3s all;
-}
-
-.music-item:hover {
-  box-shadow: inset 4px 4px 8px #babecc, inset -4px -4px 8px #ffffff;
-}
-
-/* ----------------------------- */
-/* Thumbnail */
-.thumb-wrap {
-  position: relative;
-  width: 135px;
-  height: 100px;
-  flex-shrink: 0;
-  border-radius: 12px 0 0 12px;
-  overflow: hidden;
-  background: #dadada;
-  box-shadow: inset 4px 4px 6px #babecc, inset -4px -4px 6px #ffffff;
-}
-
-.thumb-wrap img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* Gradient overlay for thumbnail */
-.thumb-wrap::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  background: linear-gradient(90deg, rgba(218,218,218,0) 10%, rgba(0,0,0,0.2) 65%, rgba(0,0,0,0.4) 85%, rgba(0,0,0,0.6) 95%);
-  pointer-events: none;
-}
-
-/* ----------------------------- */
-/* Overlay Play Button */
-.overlay-play {
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-radius: 50%;
-  background: #dadada;
-  box-shadow: 4px 4px 8px #babecc, -4px -4px 8px #ffffff;
-  transition: 0.2s all;
-}
-
-.overlay-play:hover {
-  box-shadow: inset 2px 2px 4px #babecc, inset -2px -2px 4px #ffffff;
-}
-
-/* Inner circle for play icon */
-.overlay-play svg {
-  width: 20px;
-  height: 20px;
-  background: #dadada;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2px;
-}
-
-.overlay-play svg path {
-  fill: #000000;
-}
-
-/* ----------------------------- */
-/* Title Multi-line */
-.title {
-  flex: 1;
-  font-size: 15px;
-  opacity: 0.85;
-  letter-spacing: 1px;
-  font-weight: 600;
-  line-height: 1.3;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  padding-left: 10px;
-  color: #000000;
-}
-
-/* ----------------------------- */
-/* Save/Delete Buttons - Neumorphic Small */
-.save-btn {
-  border: none;
-  border-radius: 5px;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  font-size: 14px;
-  color: #000000;
-  background: #dadada;
-  box-shadow: 4px 4px 8px #babecc, -4px -4px 8px #ffffff;
-  transition: 0.3s all;
-}
-
-.save-btn:hover {
-  box-shadow: inset 2px 2px 4px #babecc, inset -2px -2px 4px #ffffff;
-}
-
-.save-btn i {
-  display: block;
-  font-size: 12px;
-}
-
-/* Delete Button Variant */
-.save-btn.delete {
-  color: #ff5555;
-  background: #dadada;
-}
-
-/* Save Button Variant */
-.save-btn.save {
-  color: #00ff00;
-  background: #dadada;
-}
-
-	</style>
 
 
 
 
-
-	
 <b id="callbutto"></b>
 
     <b id="hide"></b>
