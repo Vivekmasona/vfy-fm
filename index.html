@@ -1628,6 +1628,8 @@ function paginate(direction) {
 
 
 
+
+
 // === Global Variables ===
 let currentVideoListItem = null;
 let ytPlayer = null;
@@ -1698,7 +1700,7 @@ function enforceAudioPause(){
     document.querySelectorAll("#SAudio").forEach(a=>{a.pause(); a.currentTime=0;});
 }
 
-// === Play Mini Video Player with V F Y overlay ===
+// === Play Mini Video Player with V F Y overlay, draggable & resizable ===
 function playMiniVideoPlayer(videoId){
     stopVideoIfPlaying();
     enforceAudioPause();
@@ -1754,7 +1756,7 @@ transition: all 1s ease;">V F Y</div>`);
         height:"100%",
         playerVars:{autoplay:1,controls:0,modestbranding:1,rel:0,showinfo:0},
         events:{
-            onReady:e=>{ e.target.playVideo(); isPlaying=true; updateSeekBar(); },
+            onReady:e=>{ e.target.playVideo(); isPlaying=true; updateSeekBar(); makeMiniPlayerDraggableAndResizable(".yt-mini-player"); },
             onStateChange:event=>{
                 if(event.data===YT.PlayerState.ENDED && isAutoNext) playNextVideo();
             }
@@ -1814,6 +1816,67 @@ function playNextVideo(){
 document.addEventListener("play",e=>{
     if(isVideoMode && ytPlayer && isPlaying && e.target.id==="SAudio") e.target.pause();
 },true);
+
+// === Drag & Resize Function ===
+function makeMiniPlayerDraggableAndResizable(playerSelector){
+    const player = document.querySelector(playerSelector);
+    let isDragging=false, isResizing=false;
+    let startX, startY, startWidth, startHeight;
+
+    // Create resize handle
+    const resizeHandle = document.createElement("div");
+    resizeHandle.style.width="12px";
+    resizeHandle.style.height="12px";
+    resizeHandle.style.background="#00ffff";
+    resizeHandle.style.position="absolute";
+    resizeHandle.style.right="0";
+    resizeHandle.style.bottom="0";
+    resizeHandle.style.cursor="se-resize";
+    player.appendChild(resizeHandle);
+
+    // --- Drag ---
+    let longPressTimer=null;
+    player.addEventListener("mousedown",(e)=>{
+        e.preventDefault();
+        longPressTimer=setTimeout(()=>{
+            isDragging=true;
+            startX=e.clientX - player.offsetLeft;
+            startY=e.clientY - player.offsetTop;
+        },500);
+    });
+
+    document.addEventListener("mouseup",(e)=>{
+        isDragging=false;
+        isResizing=false;
+        clearTimeout(longPressTimer);
+    });
+
+    document.addEventListener("mousemove",(e)=>{
+        if(isDragging){
+            e.preventDefault();
+            player.style.left=(e.clientX-startX)+"px";
+            player.style.top=(e.clientY-startY)+"px";
+            player.style.position="fixed";
+        }
+        if(isResizing){
+            e.preventDefault();
+            const newWidth=startWidth + (e.clientX-startX);
+            const newHeight=startHeight + (e.clientY-startY);
+            player.style.width=newWidth+"px";
+            player.style.height=newHeight+"px";
+        }
+    });
+
+    // --- Resize ---
+    resizeHandle.addEventListener("mousedown",(e)=>{
+        e.stopPropagation();
+        isResizing=true;
+        startX=e.clientX;
+        startY=e.clientY;
+        startWidth=player.offsetWidth;
+        startHeight=player.offsetHeight;
+    });
+}
 
 
     
