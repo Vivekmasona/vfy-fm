@@ -1,43 +1,44 @@
-
-
 (function(){
-  let gesturesEnabled = true; // start as enabled
+  let gesturesEnabled = true; 
   const toggleBtn = document.getElementById("gestureToggle");
 
-  // Reference to the gesture overlay functions
+  // Read saved state from localStorage
+  const savedState = localStorage.getItem("gestureEnabled");
+  if(savedState !== null){
+    gesturesEnabled = savedState === "true";
+  }
+
   let gestureModule = null;
 
   function initGestures(){
-    if(gestureModule) return; // already initialized
+    if(gestureModule) return;
     gestureModule = (function(){
       let touchStartX=null, touchStartY=null;
       let lastTap=0;
       let longPressTimeout=null;
-      const bottomArea = 0.2; // bottom 20%
-      const doubleTapDelay = 300;
+      const bottomArea=0.2;
+      const doubleTapDelay=300;
 
-      const nextBtn = document.getElementById("nextbutto");
-      const prevBtn = document.getElementById("pichhe");
-      const playBtn = document.getElementById("play");
-      const volLowBtn = document.getElementById("volume10");
-      const volHighBtn = document.getElementById("volume100");
+      const nextBtn=document.getElementById("nextbutto");
+      const prevBtn=document.getElementById("pichhe");
+      const playBtn=document.getElementById("play");
+      const volLowBtn=document.getElementById("volume10");
+      const volHighBtn=document.getElementById("volume100");
       if(!nextBtn||!prevBtn||!playBtn||!volLowBtn||!volHighBtn){
         console.warn("Check all required IDs");
         return;
       }
 
-      const svgNS = "http://www.w3.org/2000/svg";
-      const overlay = document.createElementNS(svgNS,"svg");
+      const svgNS="http://www.w3.org/2000/svg";
+      const overlay=document.createElementNS(svgNS,"svg");
       overlay.style.position="fixed";
-      overlay.style.left=0;
-      overlay.style.top=0;
-      overlay.style.width="100%";
-      overlay.style.height="100%";
+      overlay.style.left=0; overlay.style.top=0;
+      overlay.style.width="100%"; overlay.style.height="100%";
       overlay.style.pointerEvents="none";
       overlay.style.zIndex=999999;
       document.body.appendChild(overlay);
 
-      let lastX=null, lastY=null;
+      let lastX=null,lastY=null;
 
       function createTrailLine(x1,y1,x2,y2,color="#00ffff"){
         const line=document.createElementNS(svgNS,"line");
@@ -50,7 +51,7 @@
         overlay.appendChild(line);
         const fade=setInterval(()=>{
           line.style.opacity-=0.03;
-          if(line.style.opacity<=0){ line.remove(); clearInterval(fade); }
+          if(line.style.opacity<=0){ line.remove(); clearInterval(fade);}
         },16);
       }
 
@@ -66,7 +67,6 @@
         },16);
       }
 
-      // Touch handlers
       function touchStartHandler(e){
         const touch=e.changedTouches[0];
         const y=touch.clientY;
@@ -122,7 +122,7 @@
       window.addEventListener("touchend",touchEndHandler,{passive:true});
 
       return {
-        destroy: function(){
+        destroy:function(){
           overlay.remove();
           window.removeEventListener("touchstart",touchStartHandler);
           window.removeEventListener("touchmove",touchMoveHandler);
@@ -133,21 +133,29 @@
     })();
   }
 
-  // Initial gestures
-  initGestures();
+  // Toggle button update
+  function updateToggleBtn(){
+    if(gesturesEnabled){
+      toggleBtn.textContent="Swipe ON";
+      toggleBtn.style.background="linear-gradient(45deg,#ff416c,#ff4b2b)";
+    } else {
+      toggleBtn.textContent="Swipe OFF";
+      toggleBtn.style.background="gray";
+    }
+  }
+
+  // Apply saved state
+  if(gesturesEnabled) initGestures();
+  else if(gestureModule) gestureModule.destroy();
+  updateToggleBtn();
 
   // Toggle button click
   toggleBtn.addEventListener("click",()=>{
     gesturesEnabled=!gesturesEnabled;
-    if(gesturesEnabled){
-      initGestures();
-      toggleBtn.textContent="Swipe ON";
-      toggleBtn.style.background="linear-gradient(45deg,#ff416c,#ff4b2b)";
-    } else {
-      if(gestureModule) gestureModule.destroy();
-      toggleBtn.textContent="Swipe OFF";
-      toggleBtn.style.background="gray";
-    }
+    localStorage.setItem("gestureEnabled",gesturesEnabled); // save state
+    if(gesturesEnabled) initGestures();
+    else if(gestureModule) gestureModule.destroy();
+    updateToggleBtn();
   });
 
 })();
