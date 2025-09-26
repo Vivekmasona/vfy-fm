@@ -30,7 +30,7 @@ body {
 
 .side-menu.hidden {
     left: -20px; /* hide off-screen */
-    opacity: 0;
+    opacity: 1;
 }
 
 .menu-item {  
