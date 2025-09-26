@@ -1,0 +1,39 @@
+.neumorphic-toggle {
+  
+  bottom: 20px;
+  right: 20px;
+  width: 70px;
+  height: 35px;
+  border-radius: 35px;
+  background: #e0e0e0;
+  box-shadow: 6px 6px 12px #b8b8b8,
+              -6px -6px 12px #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  transition: all 0.3s ease;
+  z-index: 1000000;
+}
+
+.toggle-circle {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #ff4b2b;
+  box-shadow: inset 3px 3px 6px #b8b8b8,
+              inset -3px -3px 6px #ffffff;
+  transition: all 0.3s ease;
+  transform: translateX(0);
+}
+
+.neumorphic-toggle.active {
+  background: #d1f7d1;
+  box-shadow: inset 6px 6px 12px #b8b8b8,
+              inset -6px -6px 12px #ffffff;
+}
+
+.neumorphic-toggle.active .toggle-circle {
+  background: #4CAF50;
+  transform: translateX(35px);
+}
