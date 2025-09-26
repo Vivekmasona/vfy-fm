@@ -64,7 +64,46 @@
   <!-- Neon fullscreen loader with watery gradient follow -->
 
  
+<script>
+// === Full Page Swipe Anywhere ===
+(function(){
+  let touchStartX = null;
+  const swipeThreshold = 50; // px, adjust sensitivity
 
+  const nextBtn = document.getElementById("nextbutto");
+  const prevBtn = document.getElementById("pichhe");
+
+  if(!nextBtn || !prevBtn){
+    console.warn("Next/Prev buttons with IDs 'nextbutto' and 'pichhe' not found!");
+    return;
+  }
+
+  // Touch start anywhere
+  window.addEventListener("touchstart", (e) => {
+    touchStartX = e.changedTouches[0].clientX;
+  }, {passive:true});
+
+  // Touch end anywhere
+  window.addEventListener("touchend", (e) => {
+    if(touchStartX === null) return;
+
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchEndX - touchStartX;
+
+    if(Math.abs(diff) > swipeThreshold){
+      if(diff < 0){
+        // swipe left → next song
+        nextBtn.click();
+      } else {
+        // swipe right → previous song
+        prevBtn.click();
+      }
+    }
+
+    touchStartX = null;
+  }, {passive:true});
+})();
+</script>
   
   
     
