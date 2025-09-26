@@ -91,29 +91,33 @@
 ">
 
   <!-- Logo -->
-  <h1 style="margin:0 0 10px 0; font-weight:bold;">
+  <h1 style="margin:0 0 10px 0; font-weight:bold; display:flex; align-items:center; gap:10px;">
     <span style="
       display:inline-block;
-      padding:10px;
-      background:#00ffff;
-      color:#000;
-      box-shadow:0 0 10px #00ffff;
+      width:90px; height:80px;
+      line-height:80px;
+      text-align:center;
+      font-size:80px;
+      color:#00ffff;
+      text-shadow:0 0 10px #00ffff, 0 0 20px #00ffff;
+      background:rgba(0,255,255,0.1);
+      border-radius:5px;
     ">V</span>
     <span style="
-      font-size:48px;
+      font-size:40px;
       color:#dadada;
-      text-shadow:0 0 5px #dadada;
+      text-shadow:0 0 5px #dadada, 0 0 10px #dadada;
     ">F Y</span>
   </h1>
 
   <!-- Slogan -->
   <p style="
-    font-size:16px;
-    font-weight:bold;
+    font-size:20px;
+    font-weight:normal;
     color:#dadada;
     text-shadow:0 0 5px #dadada;
     margin-bottom:20px;
-  ">V F Y -ON- Depression Is Gone</p>
+  ">V F Y On- Depression Is Gone</p>
 
   <!-- Loader Bar -->
   <div style="
@@ -145,8 +149,7 @@
     bottom:10px;
     font-size:12px;
     color:#dadada;
-    text-shadow:0 0 3px #dadada;
-  ">{-}Powered By VivekFy</p>
+  ">{°_°}Powered By VivekFy</p>
 </div>
 
 <script>
@@ -155,18 +158,19 @@ const bar = document.getElementById("bar");
 const text = document.getElementById("percent");
 const loader = document.getElementById("loader");
 
-// Fake progress to 75%
+// Increase 5% every 1 second, stop at 75% until page load
 let interval = setInterval(()=>{
   if(percent < 75){
-    percent++;
+    percent +=5;
+    if(percent>75) percent=75;
     bar.style.width = percent+"%";
     text.textContent = percent+"%";
   } else {
     clearInterval(interval);
   }
-}, 50);
+},1000);
 
-// On page load complete → fill to 100% and play welcome audio
+// When page fully loaded → fill to 100%
 window.addEventListener("load", ()=>{
   let start = percent;
   let end = 100;
@@ -184,18 +188,15 @@ window.addEventListener("load", ()=>{
         loader.style.opacity="0";
         setTimeout(()=>loader.style.display="none",500);
 
-        // --- Auto-play welcome audio ---
-        const audio = new Audio('YOUR_AUDIO_URL_HERE.mp3'); // Replace with your URL
+        // Play welcome audio after loader
+        const audio = new Audio('YOUR_AUDIO_URL_HERE.mp3');
         audio.volume = 1.0;
-        audio.play().catch(e => {
-          console.log("Autoplay blocked:", e);
-        });
+        audio.play().catch(e=>console.log("Autoplay blocked", e));
       },200);
     }
   },100);
 });
 </script>
-  
 
 
     
