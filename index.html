@@ -74,7 +74,10 @@
     
 
 
-  <!-- Fullscreen Loader -->
+  
+    
+
+<!-- Fullscreen Loader -->
 <div id="loader" style="
   position:fixed;
   top:0; left:0;
@@ -92,21 +95,17 @@
 
   <!-- Logo -->
   <h1 style="margin:0 0 10px 0; font-weight:bold; display:flex; align-items:center; gap:10px;">
-    <span style="
+    <span id="vLetter" style="
       display:inline-block;
-      width:90px; height:80px;
-      line-height:80px;
-      text-align:center;
       font-size:80px;
-      color:#00ffff;
-      text-shadow:0 0 10px #00ffff, 0 0 20px #00ffff;
-      background:rgba(0,255,255,0.1);
-      border-radius:5px;
+      color:#ff0000;
+      text-shadow:0 0 10px #ff0000,0 0 20px #ff5555;
     ">V</span>
-    <span style="
+    <span id="fyLetters" style="
       font-size:40px;
       color:#dadada;
-      text-shadow:0 0 5px #dadada, 0 0 10px #dadada;
+      text-shadow:0 0 5px #dadada;
+      visibility:hidden;
     ">F Y</span>
   </h1>
 
@@ -130,15 +129,16 @@
     <div id="bar" style="
       height:100%;
       width:0%;
-      background:#00ffff;
+      background:linear-gradient(90deg, #ff0000, #ff5555);
+      box-shadow:0 0 10px #ff0000,0 0 20px #ff5555;
       transition:width .3s;
     "></div>
   </div>
 
   <!-- Percentage -->
   <span id="percent" style="
-    color:#00ffff;
-    text-shadow:0 0 5px #00ffff;
+    color:#ff0000;
+    text-shadow:0 0 5px #ff0000;
     margin-bottom:20px;
     display:block;
   ">0%</span>
@@ -149,22 +149,27 @@
     bottom:10px;
     font-size:12px;
     color:#dadada;
-  ">{°_°}Powered By VivekFy</p>
+  ">{°∆°} Powered By VivekFy</p>
 </div>
 
 <script>
 let percent = 0;
 const bar = document.getElementById("bar");
 const text = document.getElementById("percent");
+const vLetter = document.getElementById("vLetter");
+const fyLetters = document.getElementById("fyLetters");
 const loader = document.getElementById("loader");
 
-// Increase 5% every 1 second, stop at 75% until page load
+// Increment 5% every 1 second, stop at 75% until page load
 let interval = setInterval(()=>{
   if(percent < 75){
     percent +=5;
     if(percent>75) percent=75;
     bar.style.width = percent+"%";
     text.textContent = percent+"%";
+
+    // Show F Y at 40%
+    if(percent>=40) fyLetters.style.visibility="visible";
   } else {
     clearInterval(interval);
   }
@@ -181,6 +186,10 @@ window.addEventListener("load", ()=>{
     percent = Math.min(100, Math.floor(start + stepValue*i));
     bar.style.width = percent+"%";
     text.textContent = percent+"%";
+
+    // Ensure F Y visible after 40% in case still hidden
+    if(percent>=40) fyLetters.style.visibility="visible";
+
     i++;
     if(percent >= 100){
       clearInterval(fast);
@@ -188,16 +197,15 @@ window.addEventListener("load", ()=>{
         loader.style.opacity="0";
         setTimeout(()=>loader.style.display="none",500);
 
-        // Play welcome audio after loader
+        // Auto-play audio after loader
         const audio = new Audio('YOUR_AUDIO_URL_HERE.mp3');
-        audio.volume = 1.0;
+        audio.volume=1.0;
         audio.play().catch(e=>console.log("Autoplay blocked", e));
       },200);
     }
   },100);
 });
 </script>
-
 
     
     
