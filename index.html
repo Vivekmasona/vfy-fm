@@ -61,12 +61,8 @@
 <button id="nextbutto">Next</button>
 <button id="pichhe">Prev</button>
 <b id="play"></b>
-  
-
-  <!-- Neon fullscreen loader with watery gradient follow -->
-
  <script>
-// === Neon Swipe & Double-Tap Effect ===
+// === Neon Swipe & Double-Tap Overlay ===
 (function(){
   let touchStartX = null;
   const swipeThreshold = 50;
@@ -82,7 +78,7 @@
     return;
   }
 
-  // Create overlay SVG
+  // Create overlay SVG on top of all content
   const svgNS = "http://www.w3.org/2000/svg";
   const overlay = document.createElementNS(svgNS,"svg");
   overlay.style.position = "fixed";
@@ -90,9 +86,9 @@
   overlay.style.top = 0;
   overlay.style.width = "100%";
   overlay.style.height = "100%";
-  overlay.style.pointerEvents = "none";
+  overlay.style.pointerEvents = "none"; // Pass through all clicks/touches
   overlay.style.overflow = "visible";
-  overlay.style.zIndex = 9999;
+  overlay.style.zIndex = 999999; // Very high to be on top visually
   document.body.appendChild(overlay);
 
   function createLine(x1,y1,x2,y2,color="#00ffff"){
@@ -106,7 +102,6 @@
     line.setAttribute("stroke-linecap","round");
     line.style.opacity = 1;
     overlay.appendChild(line);
-    // Animate fade out
     const fade = setInterval(()=>{
       line.style.opacity -= 0.05;
       if(line.style.opacity <= 0){
@@ -124,7 +119,6 @@
     dot.setAttribute("fill",color);
     dot.style.opacity = 1;
     overlay.appendChild(dot);
-    // Fade out
     const fade = setInterval(()=>{
       dot.style.opacity -= 0.05;
       if(dot.style.opacity <= 0){
@@ -137,7 +131,7 @@
   window.addEventListener("touchstart",(e)=>{
     const y = e.changedTouches[0].clientY;
     const windowHeight = window.innerHeight;
-    if(y < windowHeight*0.6) return; // bottom 40%
+    if(y < windowHeight*0.6) return; // only bottom 40%
     touchStartX = e.changedTouches[0].clientX;
   }, {passive:true});
 
@@ -150,16 +144,15 @@
     const diff = touchEndX - (touchStartX||touchEndX);
 
     if(Math.abs(diff) > swipeThreshold){
-      const midY = windowHeight*0.8; // effect y position
+      const midY = windowHeight*0.8;
       if(diff<0){
         nextBtn.click();
-        createLine(touchEndX,midY,touchEndX+100,midY); // right lightning
+        createLine(touchEndX,midY,touchEndX+100,midY);
       } else {
         prevBtn.click();
-        createLine(touchEndX,midY,touchEndX-100,midY); // left lightning
+        createLine(touchEndX,midY,touchEndX-100,midY);
       }
     } else {
-      // Double tap
       const now = Date.now();
       if(now-lastTap<doubleTapDelay){
         playBtn.click();
@@ -171,7 +164,9 @@
     touchStartX = null;
   },{passive:true});
 })();
-</script>
+ </script> 
+
+  
 
 
 
