@@ -66,114 +66,135 @@
 
 <script>
 (function(){
-  let touchStartX=null, touchStartY=null;
-  let lastTap=0, longPressTimeout=null;
-  const bottomArea=0.4;
-  const doubleTapDelay=300;
+  let isTouching = false;
+  let lastX = 0, lastY = 0;
+  let longPressTimeout = null;
+  let lastTap = 0;
+  const doubleTapDelay = 300;
+  const bottomArea = 0.4;
+  const swipeThreshold = 50;
 
-  const nextBtn=document.getElementById("nextbutto");
-  const prevBtn=document.getElementById("pichhe");
-  const playBtn=document.getElementById("play");
-  const volLowBtn=document.getElementById("volume10");
-  const volHighBtn=document.getElementById("volume100");
+  const nextBtn = document.getElementById("nextbutto");
+  const prevBtn = document.getElementById("pichhe");
+  const playBtn = document.getElementById("play");
+  const volLowBtn = document.getElementById("volume10");
+  const volHighBtn = document.getElementById("volume100");
 
-  if(!nextBtn||!prevBtn||!playBtn||!volLowBtn||!volHighBtn){
-    console.warn("Check required IDs"); return;
+  if(!nextBtn || !prevBtn || !playBtn || !volLowBtn || !volHighBtn){
+    console.warn("Check all IDs");
+    return;
   }
 
-  // --- Canvas overlay ---
-  const canvas=document.createElement("canvas");
-  canvas.style.position="fixed";
-  canvas.style.left=0; canvas.style.top=0;
-  canvas.style.width="100%"; canvas.style.height="100%";
-  canvas.style.pointerEvents="none"; canvas.style.zIndex=999999;
+  // --- Canvas setup ---
+  const canvas = document.createElement("canvas");
+  canvas.style.position = "fixed";
+  canvas.style.left = 0;
+  canvas.style.top = 0;
+  canvas.style.width = "100%";
+  canvas.style.height = "100%";
+  canvas.style.pointerEvents = "none";
+  canvas.style.zIndex = 999999;
   document.body.appendChild(canvas);
-  const ctx=canvas.getContext("2d");
+
+  const ctx = canvas.getContext("2d");
 
   function resizeCanvas(){
-    canvas.width=window.innerWidth;
-    canvas.height=window.innerHeight;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
   }
   window.addEventListener("resize", resizeCanvas);
   resizeCanvas();
 
-  let prevX=null, prevY=null;
+  // --- Finger trail array ---
+  let points = [];
 
-  function drawTrail(x,y){
-    if(prevX!==null && prevY!==null){
-      ctx.strokeStyle="rgba(0,255,255,0.6)";
-      ctx.lineWidth=3;
-      ctx.lineCap="round";
-      ctx.beginPath();
-      ctx.moveTo(prevX,prevY);
-      ctx.lineTo(x,y);
-      ctx.stroke();
-    }
-    prevX=x; prevY=y;
-  }
-
-  // --- Animation loop for fade ---
+  // --- Animation loop ---
   function animate(){
-    ctx.fillStyle="rgba(0,0,0,0.05)"; // transparent black fade
+    // Fade previous trails
+    ctx.fillStyle = "rgba(0,0,0,0.1)"; // adjust alpha for fade speed
     ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    ctx.strokeStyle = "cyan";
+    ctx.lineWidth = 3;
+    ctx.lineCap = "round";
+
+    ctx.beginPath();
+    for(let i=0; i<points.length-1; i++){
+      const p = points[i];
+      const p2 = points[i+1];
+      ctx.strokeStyle = `rgba(0,255,255,${p.opacity})`;
+      ctx.beginPath();
+      ctx.moveTo(p.x,p.y);
+      ctx.lineTo(p2.x,p2.y);
+      ctx.stroke();
+
+      // Fade opacity
+      p.opacity -= 0.02;
+    }
+    // Remove faded points
+    points = points.filter(p => p.opacity > 0);
+
     requestAnimationFrame(animate);
   }
   animate();
 
   // --- Touch Events ---
-  window.addEventListener("touchstart",(e)=>{
-    const touch=e.changedTouches[0];
-    const y=touch.clientY;
-    const windowHeight=window.innerHeight;
-    if(y<windowHeight*(1-bottomArea)) return;
+  window.addEventListener("touchstart", (e)=>{
+    const t = e.changedTouches[0];
+    const y = t.clientY;
+    const windowHeight = window.innerHeight;
+    if(y < windowHeight*(1-bottomArea)) return;
 
-    touchStartX=touch.clientX; touchStartY=touch.clientY;
-    prevX=touchStartX; prevY=touchStartY;
+    isTouching = true;
+    lastX = t.clientX;
+    lastY = t.clientY;
 
-    longPressTimeout=setTimeout(()=>{ volLowBtn.click(); },500);
+    points.push({x:lastX, y:lastY, opacity:1});
+
+    longPressTimeout = setTimeout(()=>{ volLowBtn.click(); },500);
   }, {passive:true});
 
   window.addEventListener("touchmove",(e)=>{
-    const touch=e.changedTouches[0];
-    const y=touch.clientY;
-    const windowHeight=window.innerHeight;
-    if(y<windowHeight*(1-bottomArea)) return;
+    if(!isTouching) return;
+    const t = e.changedTouches[0];
+    const y = t.clientY;
+    const windowHeight = window.innerHeight;
+    if(y < windowHeight*(1-bottomArea)) return;
 
-    drawTrail(touch.clientX, touch.clientY);
+    const x = t.clientX;
+    const yPos = t.clientY;
+
+    // Add point for trail
+    points.push({x:x, y:yPos, opacity:1});
+
+    lastX = x; lastY = yPos;
   }, {passive:true});
 
   window.addEventListener("touchend",(e)=>{
-    const touch=e.changedTouches[0];
-    const y=touch.clientY;
-    const windowHeight=window.innerHeight;
-    if(y<windowHeight*(1-bottomArea)){
-      prevX=prevY=null;
-      clearTimeout(longPressTimeout);
-      volHighBtn.click();
-      return;
-    }
+    if(!isTouching) return;
+    isTouching = false;
 
     clearTimeout(longPressTimeout);
     volHighBtn.click();
-    const diffX=touch.clientX-touchStartX;
 
-    if(Math.abs(diffX)>50){
+    const t = e.changedTouches[0];
+    const diffX = t.clientX - lastX;
+
+    // Swipe detection
+    if(Math.abs(diffX) > swipeThreshold){
       if(diffX<0) nextBtn.click();
       else prevBtn.click();
     } else {
-      const now=Date.now();
-      if(now-lastTap<doubleTapDelay){
+      // Double tap detection
+      const now = Date.now();
+      if(now - lastTap < doubleTapDelay){
         playBtn.click();
-        // draw dot
-        ctx.fillStyle="rgba(255,0,255,0.8)";
-        ctx.beginPath();
-        ctx.arc(touch.clientX,touch.clientY,8,0,Math.PI*2);
-        ctx.fill();
-        lastTap=0;
-      } else lastTap=now;
+        // dot effect
+        points.push({x:t.clientX, y:t.clientY, opacity:1});
+        lastTap = 0;
+      } else lastTap = now;
     }
 
-    prevX=prevY=touchStartX=null;
   }, {passive:true});
 
 })();
