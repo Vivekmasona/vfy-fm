@@ -941,7 +941,13 @@ width: 50%;
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">search</button></sr>
 	    
 	
-	
+	<div class="mode-toggle">
+   <button id="modeToggleBtn">Mode: Audio</button>
+</div>
+
+<div class="autonext-toggle">
+   <button id="autoNextBtn">Auto Next: Off</button>
+</div>
 
    <div id="autocomplete-results"></div>
 <!-- Mode Toggle -->
@@ -1590,17 +1596,26 @@ function paginate(direction) {
 
 
 
+
+
 // --- Global Variables ---
 let currentVideoListItem = null; 
 let ytPlayer = null;
 let isPlaying = false;
 let isVideoMode = false; // default Audio mode
 let isMiniPlayerFullscreen = false;
+let isAutoNext = false; // 🔥 New Auto Next Mode
 
 // --- Mode Toggle Button ---
 document.getElementById("modeToggleBtn").addEventListener("click", () => {
     isVideoMode = !isVideoMode;
     document.getElementById("modeToggleBtn").innerText = `Mode: ${isVideoMode ? 'Video' : 'Audio'}`;
+});
+
+// --- Auto Next Toggle Button ---
+document.getElementById("autoNextBtn").addEventListener("click", () => {
+    isAutoNext = !isAutoNext;
+    document.getElementById("autoNextBtn").innerText = `Auto Next: ${isAutoNext ? 'On' : 'Off'}`;
 });
 
 // --- Generate List Item ---
@@ -1640,6 +1655,7 @@ function getOutput(item, i) {
 function handleItemClick(el) {
     if (isVideoMode) {
         let videoId = $(el).attr("vid");
+        currentVideoListItem = el; // 🔥 current item save
         playMiniVideoPlayer(videoId);
     } else {
         stopVideoIfPlaying();
@@ -1667,6 +1683,43 @@ function enforceAudioPause() {
     });
 }
 
+// --- Mini Video Player ---
+function playMiniVideoPlayer(videoId) {
+    stopVideoIfPlaying();
+    enforceAudioPause();
+
+    let container = document.createElement("div");
+    container.className = "yt-mini-player";
+    container.innerHTML = `<div id="ytPlayer"></div>`;
+    document.body.appendChild(container);
+
+    ytPlayer = new YT.Player("ytPlayer", {
+        videoId: videoId,
+        playerVars: { autoplay: 1 },
+        events: {
+            onReady: (event) => event.target.playVideo(),
+            onStateChange: (event) => {
+                if (event.data === YT.PlayerState.ENDED && isAutoNext) {
+                    playNextVideo();
+                }
+            }
+        }
+    });
+}
+
+// --- Auto Next Play ---
+function playNextVideo() {
+    if (!currentVideoListItem) return;
+    let next = currentVideoListItem.parentElement.nextElementSibling;
+    if (next) {
+        let nextItem = next.querySelector(".music-item");
+        if (nextItem) {
+            currentVideoListItem = nextItem;
+            let videoId = $(nextItem).attr("vid");
+            playMiniVideoPlayer(videoId);
+        }
+    }
+}
 
 	
 	
