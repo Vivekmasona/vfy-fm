@@ -1595,9 +1595,9 @@ function paginate(direction) {
 let currentVideoListItem = null;
 let ytPlayer = null;
 let isPlaying = false;
-let isVideoMode = false; // default Audio mode
+let isVideoMode = false;
 let isMiniPlayerFullscreen = false;
-let isAutoNext = true; // default ON (green)
+let isAutoNext = true;
 
 // --- Mode Toggle Button ---
 document.getElementById("modeToggleBtn").addEventListener("click", () => {
@@ -1606,13 +1606,11 @@ document.getElementById("modeToggleBtn").addEventListener("click", () => {
 });
 
 // --- Generate List Item ---
-function getOutput(item, i) {
+function getOutput(item, i){
     var id = item.id?.videoId || item.id;
     var title = item.snippet?.title || "No title";
     var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
-
-    if (item.snippet?.liveBroadcastContent === "live") return '';
-
+    if(item.snippet?.liveBroadcastContent==="live") return '';
     return `
 <div style="margin-bottom:12px;">
   <b index="${i}" class="music-item list" vid="${id}" onclick="handleItemClick(this)">
@@ -1629,212 +1627,175 @@ function getOutput(item, i) {
           <i class="fas fa-heart"></i>
       </button>
   </b>
-</div>
-`;
+</div>`;
 }
 
-// --- Handle Item Click Based on Mode ---
-function handleItemClick(el) {
-    if (isVideoMode) {
+// --- Handle Item Click ---
+function handleItemClick(el){
+    if(isVideoMode){
         setCurrentVideo(el);
         playMiniVideoPlayer($(el).attr("vid"));
     } else {
         stopVideoIfPlaying();
-        document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
+        document.querySelectorAll("#SAudio").forEach(a=>a.pause());
         loadSong(el);
     }
 }
 
-// --- Set current video and highlight in list ---
-function setCurrentVideo(el) {
-    document.querySelectorAll(".music-item.active").forEach(item => item.classList.remove("active"));
+// --- Highlight current video ---
+function setCurrentVideo(el){
+    document.querySelectorAll(".music-item.active").forEach(x=>x.classList.remove("active"));
     el.classList.add("active");
     currentVideoListItem = el;
 }
 
-// --- Stop current video ---
-function stopVideoIfPlaying() {
-    if (ytPlayer) {
-        ytPlayer.stopVideo();
-        ytPlayer = null;
-    }
+// --- Stop Video ---
+function stopVideoIfPlaying(){
+    if(ytPlayer){ ytPlayer.stopVideo(); ytPlayer = null; }
     $(".yt-mini-player").remove();
-    isPlaying = false;
+    isPlaying=false;
 }
 
-// --- Force Audio Stop ---
-function enforceAudioPause() {
-    document.querySelectorAll("#SAudio").forEach(audio => {
-        audio.pause();
-        audio.currentTime = 0;
+// --- Force Audio Pause ---
+function enforceAudioPause(){
+    document.querySelectorAll("#SAudio").forEach(a=>{
+        a.pause(); a.currentTime=0;
     });
 }
 
-// --- Create V F Y overlay ---
-function createVFYOverlay(videoId) {
-    $(".vfy-overlay").remove();
-
-    let overlay = $(`
-        <div class="vfy-overlay" style="
-            position:absolute; top:0; left:0;
-            width:100%; height:100%;
-            display:flex; justify-content:center; align-items:center;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(8px);
-            z-index:9999; pointer-events:none;
-            font-family: 'Khula', sans-serif;
-            font-size:36px; font-weight:700;
-            color:#00ffff; text-shadow:0 0 8px #00ffff, 0 0 16px #00ffff;
-            transition: all 1s ease;
-        ">V F Y</div>
-    `);
-
-    $(`#yt-mini-${videoId}`).append(overlay);
-
-    setTimeout(() => {
-        overlay.css({ top: '-50px', opacity: 0 });
-        setTimeout(() => overlay.remove(), 1000);
-    }, 100);
-}
-
-// --- Attach click event to show overlay on user click ---
-function attachOverlayClick(videoId) {
-    $(`#yt-mini-${videoId}`).off("click").on("click", () => {
-        let overlay = $(`
-            <div class="vfy-overlay" style="
-                position:absolute; top:0; left:0;
-                width:100%; height:100%;
-                display:flex; justify-content:center; align-items:center;
-                background: rgba(0,0,0,0.5);
-                backdrop-filter: blur(8px);
-                z-index:9999; pointer-events:none;
-                font-family: 'Khula', sans-serif;
-                font-size:36px; font-weight:700;
-                color:#00ffff; text-shadow:0 0 8px #00ffff,0 0 16px #00ffff;
-                transition: all 1s ease;
-            ">V F Y</div>
-        `);
-        $(`#yt-mini-${videoId}`).append(overlay);
-        setTimeout(() => {
-            overlay.css({ top: '-50px', opacity: 0 });
-            setTimeout(() => overlay.remove(), 1000);
-        }, 100);
-    });
-}
-
-// --- Play Mini Video Player ---
-function playMiniVideoPlayer(videoId) {
+// --- Play Mini Video Player with pre-roll overlay ---
+function playMiniVideoPlayer(videoId){
     stopVideoIfPlaying();
     enforceAudioPause();
 
-    let overlay = $(`
+    // Create mini player container
+    let overlay=$(`
     <div class="yt-mini-player" style="position:fixed; bottom:110px; right:10px; width:271px; height:180px; background:#111; border-radius:6px; overflow:hidden; z-index:99999; display:flex; flex-direction:column; box-shadow:0 12px 28px rgba(0,0,0,0.7);">
         <div id="yt-mini-${videoId}" style="flex:1; background:black; position:relative;"></div>
         <div class="mini-control-bar" style="height:50px; width:100%; display:flex; align-items:center; justify-content:space-between; padding:0 12px; backdrop-filter: blur(4px); background: rgba(255,255,255,0.08); border-top:1px solid rgba(255,255,255,0.15);">
-            <button id="mini-playpause" style="color:#00ffff; border:none; background:none; cursor:pointer; font-size:20px; margin-right:8px; text-shadow:0 0 8px #00ffff;"><i class="fas fa-pause"></i></button>
-            <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="flex:1; margin:0 8px; -webkit-appearance:none; height:4px; border-radius:2px; background:linear-gradient(to right,#ff6a00,#ee0979); box-shadow:0 0 8px #ff6a00,0 0 12px #ee0979; cursor:pointer;">
-            <button id="mini-fullscreen" style="color:#00ffff; border:none; background:none; cursor:pointer; font-size:20px; margin-right:8px; text-shadow:0 0 8px #00ffff;"><i class="fas fa-expand"></i></button>
-            <button id="mini-auto-next" style="width:18px; height:18px; border-radius:50%; margin-right:8px; border:none; cursor:pointer;"></button>
-            <button id="mini-close" style="color:#ff4f4f; border:none; background:none; cursor:pointer; font-size:22px; text-shadow:0 0 8px #ff4f4f;"><i class="fa fa-close"></i></button>
+            <button id="mini-playpause" style="color:#00ffff;border:none;background:none;cursor:pointer;font-size:20px;margin-right:8px;text-shadow:0 0 8px #00ffff;"><i class="fas fa-pause"></i></button>
+            <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="flex:1;margin:0 8px;-webkit-appearance:none;height:4px;border-radius:2px;background:linear-gradient(to right,#ff6a00,#ee0979);box-shadow:0 0 8px #ff6a00,0 0 12px #ee0979;cursor:pointer;">
+            <button id="mini-fullscreen" style="color:#00ffff;border:none;background:none;cursor:pointer;font-size:20px;margin-right:8px;text-shadow:0 0 8px #00ffff;"><i class="fas fa-expand"></i></button>
+            <button id="mini-auto-next" style="width:18px;height:18px;border-radius:50%;margin-right:8px;border:none;cursor:pointer;"></button>
+            <button id="mini-close" style="color:#ff4f4f;border:none;background:none;cursor:pointer;font-size:22px;text-shadow:0 0 8px #ff4f4f;"><i class="fa fa-close"></i></button>
         </div>
     </div>
     `);
-
     $("body").append(overlay);
 
-    // Auto Next dot
-    const autoNextBtn = $("#mini-auto-next");
-    autoNextBtn.css("background", isAutoNext ? "#00ff00" : "#555");
-    autoNextBtn.click(() => {
-        isAutoNext = !isAutoNext;
-        autoNextBtn.css("background", isAutoNext ? "#00ff00" : "#555");
+    // Auto next dot
+    const autoNextBtn=$("#mini-auto-next");
+    autoNextBtn.css("background",isAutoNext?"#00ff00":"#555");
+    autoNextBtn.click(()=>{ isAutoNext=!isAutoNext; autoNextBtn.css("background",isAutoNext?"#00ff00":"#555"); });
+
+    // --- V F Y pre-roll overlay ---
+    function showVFYOverlay(){
+        $(".vfy-overlay").remove();
+        let vfy=$(`
+            <div class="vfy-overlay" style="
+                position:absolute;top:0;left:0;width:100%;height:100%;
+                display:flex;justify-content:center;align-items:center;
+                background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);
+                z-index:9999;font-family:'Khula',sans-serif;font-size:36px;font-weight:700;
+                color:#00ffff;text-shadow:0 0 8px #00ffff,0 0 16px #00ffff;
+                transition: all 1s ease;
+            ">V F Y</div>
+        `);
+        $(`#yt-mini-${videoId}`).append(vfy);
+
+        // Animate 1 second blink overlay → fade up
+        let progress=0;
+        const interval=setInterval(()=>{
+            progress+=10;
+            if(progress>=100){
+                clearInterval(interval);
+                vfy.css({top:'-50px',opacity:0});
+                setTimeout(()=>vfy.remove(),1000);
+            }
+        },10); // ~1 second
+    }
+
+    // Click to show overlay again
+    $(`#yt-mini-${videoId}`).click(()=>{
+        showVFYOverlay();
     });
 
-    ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
-        videoId: videoId,
-        width: "100%",
-        height: "100%",
-        playerVars: { autoplay:1, controls:0, modestbranding:1 },
-        events: {
-            onReady: e => {
-                e.target.playVideo();
-                isPlaying = true;
-                updateSeekBar();
-                createVFYOverlay(videoId);    // show V F Y overlay
-                attachOverlayClick(videoId);  // click to show overlay again
+    showVFYOverlay(); // initial pre-roll overlay
+
+    // --- YT Player ---
+    ytPlayer=new YT.Player(`yt-mini-${videoId}`,{
+        videoId:videoId,
+        width:"100%",
+        height:"100%",
+        playerVars:{autoplay:1,controls:0,modestbranding:1,rel:0,showinfo:0},
+        events:{
+            onReady:e=>{
+                e.target.playVideo(); isPlaying=true; updateSeekBar();
             },
-            onStateChange: event => {
-                if (event.data === YT.PlayerState.ENDED && isAutoNext) playNextVideo();
+            onStateChange:event=>{
+                if(event.data===YT.PlayerState.ENDED && isAutoNext) playNextVideo();
             }
         }
     });
 
-    // Play/Pause
-    $("#mini-playpause").click(() => {
-        if (!ytPlayer) return;
-        const state = ytPlayer.getPlayerState();
-        if (state === YT.PlayerState.PLAYING) {
-            ytPlayer.pauseVideo();
-            $("#mini-playpause i").removeClass("fa-pause").addClass("fa-play");
+    // --- Controls ---
+    $("#mini-playpause").click(()=>{
+        if(!ytPlayer) return;
+        const state=ytPlayer.getPlayerState();
+        if(state===YT.PlayerState.PLAYING){
+            ytPlayer.pauseVideo(); $("#mini-playpause i").removeClass("fa-pause").addClass("fa-play");
         } else {
-            ytPlayer.playVideo();
-            $("#mini-playpause i").removeClass("fa-play").addClass("fa-pause");
+            ytPlayer.playVideo(); $("#mini-playpause i").removeClass("fa-play").addClass("fa-pause");
         }
     });
 
-    // Fullscreen
-    $("#mini-fullscreen").click(() => {
-        if (!isMiniPlayerFullscreen) {
-            $(".yt-mini-player").css({ width:"100vw", height:"100vh", bottom:0, right:0, borderRadius:0 });
-            isMiniPlayerFullscreen = true;
-        } else {
-            $(".yt-mini-player").css({ width:"271px", height:"180px", bottom:"110px", right:"10px", borderRadius:"6px" });
-            isMiniPlayerFullscreen = false;
+    $("#mini-fullscreen").click(()=>{
+        if(!isMiniPlayerFullscreen){
+            $(".yt-mini-player").css({width:"100vw",height:"100vh",bottom:0,right:0,borderRadius:0});
+            isMiniPlayerFullscreen=true;
+        } else{
+            $(".yt-mini-player").css({width:"271px",height:"180px",bottom:"110px",right:"10px",borderRadius:"6px"});
+            isMiniPlayerFullscreen=false;
         }
     });
 
-    // Close
-    $("#mini-close").click(() => stopVideoIfPlaying());
+    $("#mini-close").click(()=>stopVideoIfPlaying());
 
-    // Seekbar
-    $("#mini-seekbar").on("input", function() {
-        if (!ytPlayer) return;
-        const duration = ytPlayer.getDuration();
-        const seekTo = (this.value/100)*duration;
-        ytPlayer.seekTo(seekTo,true);
+    $("#mini-seekbar").on("input",function(){
+        if(!ytPlayer) return;
+        const duration=ytPlayer.getDuration();
+        ytPlayer.seekTo((this.value/100)*duration,true);
     });
 
-    function updateSeekBar() {
-        if (!ytPlayer) return;
-        const state = ytPlayer.getPlayerState();
-        if (state === YT.PlayerState.PLAYING || state === YT.PlayerState.PAUSED) {
-            const currentTime = ytPlayer.getCurrentTime();
-            const duration = ytPlayer.getDuration();
-            if(duration>0) $("#mini-seekbar").val((currentTime/duration)*100);
+    function updateSeekBar(){
+        if(!ytPlayer) return;
+        const state=ytPlayer.getPlayerState();
+        if(state===YT.PlayerState.PLAYING||state===YT.PlayerState.PAUSED){
+            const current=ytPlayer.getCurrentTime();
+            const dur=ytPlayer.getDuration();
+            if(dur>0) $("#mini-seekbar").val((current/dur)*100);
         }
         requestAnimationFrame(updateSeekBar);
     }
 }
 
-// --- Auto Next Video & select in list ---
-function playNextVideo() {
-    if (!currentVideoListItem) return;
-    let parentDiv = currentVideoListItem.parentElement;
-    let nextDiv = parentDiv.nextElementSibling;
+// --- Auto Next Video ---
+function playNextVideo(){
+    if(!currentVideoListItem) return;
+    let nextDiv=currentVideoListItem.parentElement.nextElementSibling;
     if(nextDiv){
-        let nextItem = nextDiv.querySelector(".music-item");
+        let nextItem=nextDiv.querySelector(".music-item");
         if(nextItem){
-            setCurrentVideo(nextItem); // highlight next item
+            setCurrentVideo(nextItem);
             playMiniVideoPlayer($(nextItem).attr("vid"));
         }
     }
 }
 
-// Prevent Audio Play During Video Mode
-document.addEventListener("play", function(e){
-    if(isVideoMode && ytPlayer && isPlaying && e.target.id === "SAudio") e.target.pause();
-}, true);
-
+// Prevent Audio play during video
+document.addEventListener("play",e=>{
+    if(isVideoMode && ytPlayer && isPlaying && e.target.id==="SAudio") e.target.pause();
+},true);
 	
 	
 	
