@@ -1,4 +1,3 @@
-/* --- Fonts & base (keep your import) --- */
 @import url('https://fonts.googleapis.com/css2?family=Khula:wght@400;600;700&family=Public+Sans:wght@100;300;400;600&display=swap');
 
 html, body {
@@ -10,31 +9,18 @@ html, body {
   font-family: "Public Sans", sans-serif;
   background: radial-gradient(circle at top, #1e1c2a, #0d0b12 80%);
   color: #fff;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
 }
 
-/* keep your layout exactly the same */
 body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 100vh;
   box-sizing: border-box;
-  padding-top: 50px; /* same as before */
+  padding-top: 50px; /* header offset */
 }
 
-/* --- shared neumorphic values --- */
-:root{
-  --neo-bg: #0f0e13;         /* underlying dark surface (matches body) */
-  --soft-gray: #dadada;      /* main neumorphic surface color for controls */
-  --accent: #00ffff;         /* cyan accent */
-  --muted: rgba(218,218,218,0.18);
-  --inset-shadow: rgba(0,0,0,0.6);
-  --raised-shadow: rgba(0,0,0,0.55);
-}
-
-/* make the top menu look neumorphic */
+/* 🔝 Top Menu Fixed Header */
 #top-menu {
   position: fixed;
   top: 0;
@@ -45,91 +31,16 @@ body {
   justify-content: space-between;
   padding: 10px 20px;
   font-size: 1.2rem;
-  color: var(--accent);
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.35));
+  color: #00ffff;
+  background: rgba(0, 0, 0, 0.8);
   z-index: 9999;
   box-shadow:
     0 6px 18px rgba(0,0,0,0.6),
     inset 0 1px 0 rgba(255,255,255,0.02);
-  border-bottom: 1px solid rgba(255,255,255,0.02);
   backdrop-filter: blur(6px);
 }
 
-/* Volume container kept same layout but with neo styling */
-#volumeSliderContainer {
-  flex: 1;
-  margin: 0 15px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px;
-  border-radius: 14px;
-  background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(0,0,0,0.35));
-  box-shadow:
-    6px 6px 18px rgba(0,0,0,0.6),
-    -6px -6px 18px rgba(255,255,255,0.02),
-    inset 0 1px 0 rgba(255,255,255,0.03);
-}
-
-/* Neomorphic slider track */
-#volumeSlider, .slider {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 10px; /* keep similar thickness */
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(218,218,218,0.06), rgba(0,255,255,0.03));
-  box-shadow:
-    inset 6px 6px 12px rgba(0,0,0,0.6),
-    inset -6px -6px 12px rgba(255,255,255,0.02);
-  outline: none;
-  transition: box-shadow .15s ease, transform .12s ease;
-}
-
-/* thumb: raised circular neo style with cyan accent */
-#volumeSlider::-webkit-slider-thumb,
-.slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: linear-gradient(180deg, var(--soft-gray), rgba(218,218,218,0.95));
-  border: 2px solid rgba(0,0,0,0.45);
-  box-shadow:
-    4px 6px 14px rgba(0,0,0,0.6),
-    -3px -3px 8px rgba(255,255,255,0.02),
-    0 0 18px rgba(0,255,255,0.06);
-  cursor: pointer;
-  transition: transform .12s ease, box-shadow .12s ease;
-}
-
-/* firefox thumb */
-#volumeSlider::-moz-range-thumb,
-.slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: linear-gradient(180deg, var(--soft-gray), rgba(218,218,218,0.95));
-  border: 2px solid rgba(0,0,0,0.45);
-  box-shadow:
-    4px 6px 14px rgba(0,0,0,0.6),
-    -3px -3px 8px rgba(255,255,255,0.02),
-    0 0 18px rgba(0,255,255,0.06);
-  cursor: pointer;
-}
-
-/* thumb hover/active */
-#volumeSlider:active::-webkit-slider-thumb,
-.slider:active::-webkit-slider-thumb {
-  transform: scale(1.05);
-  box-shadow:
-    2px 3px 10px rgba(0,0,0,0.65),
-    0 0 26px rgba(0,255,255,0.12),
-    inset 0 1px 0 rgba(255,255,255,0.02);
-}
-
-/* Thumbnail kept same shape/size but styled neo */
+/* 🎵 Thumbnail */
 .thumbnail-border {
   height: 45vw;
   width: 45vw;
@@ -143,15 +54,13 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(145deg, rgba(218,218,218,0.02), rgba(0,0,0,0.4));
+  background: #dadada;
   box-shadow:
-    14px 14px 30px rgba(0,0,0,0.65),
-    -10px -10px 24px rgba(255,255,255,0.02),
-    inset 0 4px 10px rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.02);
+    14px 14px 30px rgba(0,0,0,0.6),
+    -10px -10px 24px rgba(255,255,255,0.2),
+    inset 0 4px 10px rgba(255,255,255,0.15);
 }
 
-/* make inner image slightly raised/inset */
 .thumbnail-border img {
   height: 100%;
   width: 100%;
@@ -159,11 +68,10 @@ body {
   object-fit: cover;
   box-shadow:
     inset 0 6px 18px rgba(0,0,0,0.6),
-    0 8px 22px rgba(0,0,0,0.6);
-  transform: translateZ(0);
+    0 8px 22px rgba(0,0,0,0.5);
 }
 
-/* Song details: keep sizes but adjust color */
+/* 🎶 Song details */
 #song-details {
   text-align: center;
   margin: 10px 15px;
@@ -174,10 +82,8 @@ body {
   font-weight: 600;
   letter-spacing: 2px;
   margin-bottom: 5px;
-  color: #e6fefe; /* little cyan tint */
-  text-shadow:
-    0 1px 0 rgba(0,0,0,0.7),
-    0 6px 18px rgba(0,0,0,0.6);
+  color: #e6fefe;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.7), 0 6px 18px rgba(0,0,0,0.6);
 }
 
 .artist {
@@ -185,13 +91,67 @@ body {
   color: rgba(218,218,218,0.7);
 }
 
-/* Time slider wrapper */
-#time-slider {
+/* 📊 Time + Volume slider (unified neumorphic) */
+#time-slider, #volumeSliderContainer {
   width: 90%;
   margin: 15px auto;
 }
 
-/* small time text */
+#volumeSlider, .slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: #dadada;
+  box-shadow:
+    inset 4px 4px 8px rgba(0,0,0,0.35),
+    inset -4px -4px 8px rgba(255,255,255,0.6);
+  outline: none;
+}
+
+/* Thumb for both */
+#volumeSlider::-webkit-slider-thumb,
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #dadada;
+  border: 2px solid #00ffff;
+  box-shadow:
+    2px 2px 6px rgba(0,0,0,0.4),
+    -2px -2px 6px rgba(255,255,255,0.4),
+    0 0 8px rgba(0,255,255,0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#volumeSlider::-moz-range-thumb,
+.slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #dadada;
+  border: 2px solid #00ffff;
+  box-shadow:
+    2px 2px 6px rgba(0,0,0,0.4),
+    -2px -2px 6px rgba(255,255,255,0.4),
+    0 0 8px rgba(0,255,255,0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#volumeSlider:active::-webkit-slider-thumb,
+.slider:active::-webkit-slider-thumb {
+  transform: scale(1.1);
+  box-shadow:
+    inset 2px 2px 6px rgba(0,0,0,0.4),
+    0 0 12px rgba(0,255,255,0.6);
+}
+
+/* Slider time stamps */
 .slider-times {
   display: flex;
   justify-content: space-between;
@@ -200,100 +160,84 @@ body {
   margin-top: 5px;
 }
 
-/* --- Controls area: strong neumorphic buttons --- */
+/* 🎛 Controls fixed bottom */
 #song-controls {
   display: flex;
   justify-content: space-around;
   align-items: center;
   width: 100%;
   padding: 15px 20px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.45));
+  background: rgba(0,0,0,0.2);
   backdrop-filter: blur(10px);
   position: fixed;
   bottom: 0;
   left: 0;
   box-sizing: border-box;
-  border-top: 1px solid rgba(255,255,255,0.02);
+  border-top: 1px solid rgba(255,255,255,0.05);
 }
 
-/* Default raised button */
+/* Transparent buttons with cyan icons */
 #song-controls .button {
   height: 60px;
   width: 60px;
   border-radius: 14px;
-  background: linear-gradient(145deg, rgba(218,218,218,0.04), rgba(0,0,0,0.45));
+  background: transparent;
+  color: #00ffff;
+  font-size: 1.4rem;
+  cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: var(--accent);
-  font-size: 1.4rem;
-  cursor: pointer;
-  transition: all 0.18s cubic-bezier(.2,.9,.2,1);
+  transition: all 0.2s ease;
   box-shadow:
-    8px 10px 24px rgba(0,0,0,0.65),
-    -6px -6px 18px rgba(255,255,255,0.01);
-  border: 1px solid rgba(255,255,255,0.02);
+    6px 6px 12px rgba(0,0,0,0.45),
+    -6px -6px 12px rgba(255,255,255,0.25);
+  border: 1px solid rgba(218,218,218,0.4);
 }
 
-/* hover: lift and cyan rim */
+/* Hover lift */
 #song-controls .button:hover {
-  transform: translateY(-4px) scale(1.03);
+  transform: translateY(-3px) scale(1.05);
   box-shadow:
-    12px 14px 32px rgba(0,0,0,0.7),
-    0 0 26px rgba(0,255,255,0.06);
+    8px 8px 16px rgba(0,0,0,0.5),
+    -6px -6px 14px rgba(255,255,255,0.3),
+    0 0 12px rgba(0,255,255,0.4);
 }
 
-/* pressed/inset state (when active) */
+/* Active pressed */
 #song-controls .button:active {
-  transform: translateY(1px) scale(.99);
+  transform: scale(0.95);
   box-shadow:
-    inset 6px 6px 14px rgba(0,0,0,0.65),
-    inset -4px -4px 10px rgba(255,255,255,0.02);
-  color: #e6ffff;
+    inset 4px 4px 8px rgba(0,0,0,0.45),
+    inset -4px -4px 8px rgba(255,255,255,0.2);
 }
 
-/* Play button - replaced red with neo cyan/gray styling, same size */
+/* 🔘 Play button (special cyan glow) */
 #play {
   height: 60px;
   width: 60px;
   border-radius: 12px;
-  background: linear-gradient(180deg, var(--soft-gray), rgba(218,218,218,0.92));
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: var(--neo-bg);
+  background: transparent;
+  color: #00ffff;
   font-size: 1.6rem;
   cursor: pointer;
-  transition: transform .15s ease, box-shadow .15s ease;
+  transition: all 0.2s ease;
   box-shadow:
-    10px 12px 30px rgba(0,0,0,0.65),
-    -8px -8px 20px rgba(255,255,255,0.02),
-    0 0 18px rgba(0,255,255,0.04);
-  position: relative;
-  border: 1px solid rgba(0,0,0,0.38);
+    6px 6px 12px rgba(0,0,0,0.45),
+    -6px -6px 12px rgba(255,255,255,0.25),
+    0 0 12px rgba(0,255,255,0.4);
+  border: 1px solid rgba(218,218,218,0.4);
 }
 
-/* small cyan glow when playing / active */
 #play.playing {
-  color: #012;
   box-shadow:
-    6px 8px 20px rgba(0,0,0,0.6),
-    0 0 30px rgba(0,255,255,0.18),
-    inset 0 2px 8px rgba(0,255,255,0.02);
-  transform: scale(1.03);
+    6px 6px 12px rgba(0,0,0,0.45),
+    -6px -6px 12px rgba(255,255,255,0.25),
+    0 0 20px rgba(0,255,255,0.8);
+  transform: scale(1.05);
 }
 
-/* Play icon pseudo rim */
-#play::after{
-  content: "";
-  position: absolute;
-  inset: -6px;
-  border-radius: 14px;
-  box-shadow: 0 0 20px rgba(0,255,255,0.03);
-  pointer-events: none;
-}
-
-/* small responsive adjustments - keep your sizes */
+/* 📱 Responsive */
 @media (max-width: 500px) {
   .thumbnail-border {
     height: 50vw;
@@ -305,25 +249,12 @@ body {
   .artist {
     font-size: 0.9rem;
   }
-  #song-controls .button {
+  #song-controls .button, #play {
     height: 50px;
     width: 50px;
     font-size: 1.2rem;
-    border-radius: 12px;
   }
   #volumeSliderContainer {
     width: 95%;
   }
 }
-
-/* small utility: make active control have stronger cyan */
-.control-active {
-  color: #001717 !important;
-  background: linear-gradient(180deg, #e6ffff, var(--soft-gray));
-  box-shadow:
-    inset 6px 6px 14px rgba(0,0,0,0.45),
-    0 0 30px rgba(0,255,255,0.18);
-}
-
-/* keep subtle focus outlines accessible */
-:focus { outline: 2px solid rgba(0,255,255,0.08); outline-offset: 2px; }
