@@ -1,37 +1,16 @@
 {
-  "name": "Your Choice",
-  "short_name": "𝐕𝐅𝐘 𝐌𝐮𝐬𝐢𝐜",
+  "name": "VFy Music",
+  "short_name": "VFy",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#E74C3C",
   "theme_color": "#E74C3C",
+  "description": "YouTube music background play, copy detect, shake AI voice control, ad-free video",
   "icons": [
     {
       "src": "./img/newdp.png",
       "type": "image/png",
       "sizes": "512x512"
     }
-  ],
-  "share_target": {
-    "action": "/",
-    "params": {
-      "title": "title",
-      "text": "text",
-      "url": "url"
-    }
-  },
-  "screenshots": [
-    {"src": "./img/1.jpg", "type": "image/jpeg", "sizes": "320x640"},
-    {"src": "./img/2.jpg", "type": "image/jpeg", "sizes": "320x640"},
-    {"src": "./img/4.jpg", "type": "image/jpeg", "sizes": "320x640"},
-    {"src": "./img/5.jpg", "type": "image/jpeg", "sizes": "320x640"}
-  ],
-  "shortcuts": [
-    {
-      "name": "Sawan music",
-      "url": "/sawan",
-      "icons": [{"src": "/vivek2.png", "type": "image/png", "sizes": "192x192"}]
-    }
-  ],
-  "description": "VFy:Support:- YouTube music background play, Share to download, Copy detect, Call with session id, Shake ai voice control, Ad free video, Developer:-vivek💞masona"
+  ]
 }
