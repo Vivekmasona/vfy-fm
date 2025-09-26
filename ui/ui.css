@@ -20,7 +20,7 @@ body {
   padding-top: 50px; /* header offset */
 }
 
-/* 🔝 Top Menu Fixed Header */
+/* 🔝 Top Menu */
 #top-menu {
   position: fixed;
   top: 0;
@@ -34,9 +34,7 @@ body {
   color: #00ffff;
   background: rgba(0, 0, 0, 0.8);
   z-index: 9999;
-  box-shadow:
-    0 6px 18px rgba(0,0,0,0.6),
-    inset 0 1px 0 rgba(255,255,255,0.02);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
   backdrop-filter: blur(6px);
 }
 
@@ -66,9 +64,7 @@ body {
   width: 100%;
   border-radius: 50%;
   object-fit: cover;
-  box-shadow:
-    inset 0 6px 18px rgba(0,0,0,0.6),
-    0 8px 22px rgba(0,0,0,0.5);
+  box-shadow: inset 0 6px 18px rgba(0,0,0,0.6);
 }
 
 /* 🎶 Song details */
@@ -83,7 +79,7 @@ body {
   letter-spacing: 2px;
   margin-bottom: 5px;
   color: #e6fefe;
-  text-shadow: 0 1px 0 rgba(0,0,0,0.7), 0 6px 18px rgba(0,0,0,0.6);
+  text-shadow: 0 6px 18px rgba(0,0,0,0.6);
 }
 
 .artist {
@@ -91,7 +87,7 @@ body {
   color: rgba(218,218,218,0.7);
 }
 
-/* 📊 Time + Volume slider (unified neumorphic) */
+/* 📊 Sliders */
 #time-slider, #volumeSliderContainer {
   width: 90%;
   margin: 15px auto;
@@ -110,7 +106,7 @@ body {
   outline: none;
 }
 
-/* Thumb for both */
+/* Thumb */
 #volumeSlider::-webkit-slider-thumb,
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
@@ -118,14 +114,9 @@ body {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #dadada;
-  border: 2px solid #00ffff;
-  box-shadow:
-    2px 2px 6px rgba(0,0,0,0.4),
-    -2px -2px 6px rgba(255,255,255,0.4),
-    0 0 8px rgba(0,255,255,0.3);
+  background: #00ffff;
+  box-shadow: 0 0 10px rgba(0,255,255,0.7);
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
 #volumeSlider::-moz-range-thumb,
@@ -133,25 +124,12 @@ body {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #dadada;
-  border: 2px solid #00ffff;
-  box-shadow:
-    2px 2px 6px rgba(0,0,0,0.4),
-    -2px -2px 6px rgba(255,255,255,0.4),
-    0 0 8px rgba(0,255,255,0.3);
+  background: #00ffff;
+  box-shadow: 0 0 10px rgba(0,255,255,0.7);
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-#volumeSlider:active::-webkit-slider-thumb,
-.slider:active::-webkit-slider-thumb {
-  transform: scale(1.1);
-  box-shadow:
-    inset 2px 2px 6px rgba(0,0,0,0.4),
-    0 0 12px rgba(0,255,255,0.6);
-}
-
-/* Slider time stamps */
+/* Time stamps */
 .slider-times {
   display: flex;
   justify-content: space-between;
@@ -173,17 +151,16 @@ body {
   bottom: 0;
   left: 0;
   box-sizing: border-box;
-  border-top: 1px solid rgba(255,255,255,0.05);
 }
 
-/* Transparent buttons with cyan icons */
+/* Buttons (next/prev etc.) */
 #song-controls .button {
-  height: 60px;
-  width: 60px;
-  border-radius: 14px;
-  background: transparent;
+  height: 55px;
+  width: 55px;
+  border-radius: 18px;
+  background: #dadada;
   color: #00ffff;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   cursor: pointer;
   display: flex;
   justify-content: center;
@@ -192,49 +169,46 @@ body {
   box-shadow:
     6px 6px 12px rgba(0,0,0,0.45),
     -6px -6px 12px rgba(255,255,255,0.25);
-  border: 1px solid rgba(218,218,218,0.4);
 }
 
-/* Hover lift */
+/* Hover */
 #song-controls .button:hover {
-  transform: translateY(-3px) scale(1.05);
+  transform: translateY(-3px);
   box-shadow:
     8px 8px 16px rgba(0,0,0,0.5),
-    -6px -6px 14px rgba(255,255,255,0.3),
-    0 0 12px rgba(0,255,255,0.4);
+    -6px -6px 14px rgba(255,255,255,0.3);
 }
 
-/* Active pressed */
+/* Active press */
 #song-controls .button:active {
   transform: scale(0.95);
   box-shadow:
     inset 4px 4px 8px rgba(0,0,0,0.45),
-    inset -4px -4px 8px rgba(255,255,255,0.2);
+    inset -4px -4px 8px rgba(255,255,255,0.25);
 }
 
-/* 🔘 Play button (special cyan glow) */
+/* 🔘 Play button (bigger + glow) */
 #play {
-  height: 60px;
-  width: 60px;
-  border-radius: 12px;
-  background: transparent;
+  height: 70px;
+  width: 70px;
+  border-radius: 20px;
+  background: #dadada;
   color: #00ffff;
-  font-size: 1.6rem;
+  font-size: 1.8rem;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow:
     6px 6px 12px rgba(0,0,0,0.45),
     -6px -6px 12px rgba(255,255,255,0.25),
-    0 0 12px rgba(0,255,255,0.4);
-  border: 1px solid rgba(218,218,218,0.4);
+    0 0 15px rgba(0,255,255,0.5);
 }
 
 #play.playing {
   box-shadow:
     6px 6px 12px rgba(0,0,0,0.45),
     -6px -6px 12px rgba(255,255,255,0.25),
-    0 0 20px rgba(0,255,255,0.8);
-  transform: scale(1.05);
+    0 0 25px rgba(0,255,255,0.8);
+  transform: scale(1.08);
 }
 
 /* 📱 Responsive */
@@ -246,15 +220,14 @@ body {
   .song-title {
     font-size: 1.5rem;
   }
-  .artist {
-    font-size: 0.9rem;
-  }
-  #song-controls .button, #play {
+  #song-controls .button {
     height: 50px;
     width: 50px;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
-  #volumeSliderContainer {
-    width: 95%;
+  #play {
+    height: 65px;
+    width: 65px;
+    font-size: 1.6rem;
   }
 }
