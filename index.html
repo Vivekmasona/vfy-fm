@@ -1591,14 +1591,13 @@ function paginate(direction) {
 
 
 
-
 // --- Global Variables ---
 let currentVideoListItem = null;
 let ytPlayer = null;
 let isPlaying = false;
 let isVideoMode = false; // default Audio mode
 let isMiniPlayerFullscreen = false;
-let isAutoNext = false; // dot toggle
+let isAutoNext = true; // default ON (green)
 
 // --- Mode Toggle Button ---
 document.getElementById("modeToggleBtn").addEventListener("click", () => {
@@ -1617,7 +1616,6 @@ function getOutput(item, i) {
     return `
 <div style="margin-bottom:12px;">
   <b index="${i}" class="music-item list" vid="${id}" onclick="handleItemClick(this)">
-      <!-- Thumbnail -->
       <div class="thumb-wrap">
           <img src="${thumbUrl}" alt="${title}">
           <div class="overlay-play">
@@ -1626,11 +1624,7 @@ function getOutput(item, i) {
               </svg>
           </div>
       </div>
-
-      <!-- Title -->
       <div class="title">${title}</div>
-
-      <!-- Save button -->
       <button class="save-btn" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">
           <i class="fas fa-heart"></i>
       </button>
@@ -1653,7 +1647,6 @@ function handleItemClick(el) {
 
 // --- Set current video and highlight in list ---
 function setCurrentVideo(el) {
-    // Remove previous highlight
     document.querySelectorAll(".music-item.active").forEach(item => item.classList.remove("active"));
     el.classList.add("active");
     currentVideoListItem = el;
@@ -1677,19 +1670,71 @@ function enforceAudioPause() {
     });
 }
 
+// --- Create V F Y overlay ---
+function createVFYOverlay(videoId) {
+    $(".vfy-overlay").remove();
+
+    let overlay = $(`
+        <div class="vfy-overlay" style="
+            position:absolute; top:0; left:0;
+            width:100%; height:100%;
+            display:flex; justify-content:center; align-items:center;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            z-index:9999; pointer-events:none;
+            font-family: 'Khula', sans-serif;
+            font-size:36px; font-weight:700;
+            color:#00ffff; text-shadow:0 0 8px #00ffff, 0 0 16px #00ffff;
+            transition: all 1s ease;
+        ">V F Y</div>
+    `);
+
+    $(`#yt-mini-${videoId}`).append(overlay);
+
+    setTimeout(() => {
+        overlay.css({ top: '-50px', opacity: 0 });
+        setTimeout(() => overlay.remove(), 1000);
+    }, 100);
+}
+
+// --- Attach click event to show overlay on user click ---
+function attachOverlayClick(videoId) {
+    $(`#yt-mini-${videoId}`).off("click").on("click", () => {
+        let overlay = $(`
+            <div class="vfy-overlay" style="
+                position:absolute; top:0; left:0;
+                width:100%; height:100%;
+                display:flex; justify-content:center; align-items:center;
+                background: rgba(0,0,0,0.5);
+                backdrop-filter: blur(8px);
+                z-index:9999; pointer-events:none;
+                font-family: 'Khula', sans-serif;
+                font-size:36px; font-weight:700;
+                color:#00ffff; text-shadow:0 0 8px #00ffff,0 0 16px #00ffff;
+                transition: all 1s ease;
+            ">V F Y</div>
+        `);
+        $(`#yt-mini-${videoId}`).append(overlay);
+        setTimeout(() => {
+            overlay.css({ top: '-50px', opacity: 0 });
+            setTimeout(() => overlay.remove(), 1000);
+        }, 100);
+    });
+}
+
 // --- Play Mini Video Player ---
 function playMiniVideoPlayer(videoId) {
     stopVideoIfPlaying();
     enforceAudioPause();
 
     let overlay = $(`
-    <div class="yt-mini-player" style="position:fixed; bottom:110px; right:10px; width:271px; height:180px; background:#111; border-radius:6px; overflow:hidden; z-index:99999; display:flex; flex-direction:column; box-shadow: 0 12px 28px rgba(0,0,0,0.7);">
+    <div class="yt-mini-player" style="position:fixed; bottom:110px; right:10px; width:271px; height:180px; background:#111; border-radius:6px; overflow:hidden; z-index:99999; display:flex; flex-direction:column; box-shadow:0 12px 28px rgba(0,0,0,0.7);">
         <div id="yt-mini-${videoId}" style="flex:1; background:black; position:relative;"></div>
         <div class="mini-control-bar" style="height:50px; width:100%; display:flex; align-items:center; justify-content:space-between; padding:0 12px; backdrop-filter: blur(4px); background: rgba(255,255,255,0.08); border-top:1px solid rgba(255,255,255,0.15);">
             <button id="mini-playpause" style="color:#00ffff; border:none; background:none; cursor:pointer; font-size:20px; margin-right:8px; text-shadow:0 0 8px #00ffff;"><i class="fas fa-pause"></i></button>
-            <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="flex:1; margin:0 8px; -webkit-appearance:none; height:4px; border-radius:2px; background: linear-gradient(to right, #ff6a00, #ee0979); box-shadow: 0 0 8px #ff6a00,0 0 12px #ee0979; cursor:pointer;">
+            <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="flex:1; margin:0 8px; -webkit-appearance:none; height:4px; border-radius:2px; background:linear-gradient(to right,#ff6a00,#ee0979); box-shadow:0 0 8px #ff6a00,0 0 12px #ee0979; cursor:pointer;">
             <button id="mini-fullscreen" style="color:#00ffff; border:none; background:none; cursor:pointer; font-size:20px; margin-right:8px; text-shadow:0 0 8px #00ffff;"><i class="fas fa-expand"></i></button>
-            <button id="mini-auto-next" style="width:18px; height:18px; border-radius:50%; background:#555; margin-right:8px; border:none; cursor:pointer;"></button>
+            <button id="mini-auto-next" style="width:18px; height:18px; border-radius:50%; margin-right:8px; border:none; cursor:pointer;"></button>
             <button id="mini-close" style="color:#ff4f4f; border:none; background:none; cursor:pointer; font-size:22px; text-shadow:0 0 8px #ff4f4f;"><i class="fa fa-close"></i></button>
         </div>
     </div>
@@ -1697,21 +1742,29 @@ function playMiniVideoPlayer(videoId) {
 
     $("body").append(overlay);
 
+    // Auto Next dot
+    const autoNextBtn = $("#mini-auto-next");
+    autoNextBtn.css("background", isAutoNext ? "#00ff00" : "#555");
+    autoNextBtn.click(() => {
+        isAutoNext = !isAutoNext;
+        autoNextBtn.css("background", isAutoNext ? "#00ff00" : "#555");
+    });
+
     ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
         videoId: videoId,
         width: "100%",
         height: "100%",
-        playerVars: { autoplay: 1, controls: 0, modestbranding: 1 },
+        playerVars: { autoplay:1, controls:0, modestbranding:1 },
         events: {
             onReady: e => {
                 e.target.playVideo();
                 isPlaying = true;
                 updateSeekBar();
+                createVFYOverlay(videoId);    // show V F Y overlay
+                attachOverlayClick(videoId);  // click to show overlay again
             },
             onStateChange: event => {
-                if (event.data === YT.PlayerState.ENDED && isAutoNext) {
-                    playNextVideo();
-                }
+                if (event.data === YT.PlayerState.ENDED && isAutoNext) playNextVideo();
             }
         }
     });
@@ -1740,12 +1793,6 @@ function playMiniVideoPlayer(videoId) {
         }
     });
 
-    // Auto Next toggle (dot style)
-    $("#mini-auto-next").click(() => {
-        isAutoNext = !isAutoNext;
-        $("#mini-auto-next").css("background", isAutoNext ? "#ffea00" : "#555");
-    });
-
     // Close
     $("#mini-close").click(() => stopVideoIfPlaying());
 
@@ -1753,8 +1800,8 @@ function playMiniVideoPlayer(videoId) {
     $("#mini-seekbar").on("input", function() {
         if (!ytPlayer) return;
         const duration = ytPlayer.getDuration();
-        const seekTo = (this.value / 100) * duration;
-        ytPlayer.seekTo(seekTo, true);
+        const seekTo = (this.value/100)*duration;
+        ytPlayer.seekTo(seekTo,true);
     });
 
     function updateSeekBar() {
@@ -1763,7 +1810,7 @@ function playMiniVideoPlayer(videoId) {
         if (state === YT.PlayerState.PLAYING || state === YT.PlayerState.PAUSED) {
             const currentTime = ytPlayer.getCurrentTime();
             const duration = ytPlayer.getDuration();
-            if (duration > 0) $("#mini-seekbar").val((currentTime/duration)*100);
+            if(duration>0) $("#mini-seekbar").val((currentTime/duration)*100);
         }
         requestAnimationFrame(updateSeekBar);
     }
@@ -1774,9 +1821,9 @@ function playNextVideo() {
     if (!currentVideoListItem) return;
     let parentDiv = currentVideoListItem.parentElement;
     let nextDiv = parentDiv.nextElementSibling;
-    if (nextDiv) {
+    if(nextDiv){
         let nextItem = nextDiv.querySelector(".music-item");
-        if (nextItem) {
+        if(nextItem){
             setCurrentVideo(nextItem); // highlight next item
             playMiniVideoPlayer($(nextItem).attr("vid"));
         }
@@ -1784,8 +1831,8 @@ function playNextVideo() {
 }
 
 // Prevent Audio Play During Video Mode
-document.addEventListener("play", function(e) {
-    if (isVideoMode && ytPlayer && isPlaying && e.target.id === "SAudio") e.target.pause();
+document.addEventListener("play", function(e){
+    if(isVideoMode && ytPlayer && isPlaying && e.target.id === "SAudio") e.target.pause();
 }, true);
 
 	
