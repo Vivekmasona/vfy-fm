@@ -66,62 +66,112 @@
   <!-- Neon fullscreen loader with watery gradient follow -->
 
  <script>
-// === Bottom 40% Swipe + Double Tap for Play/Pause ===
+// === Neon Swipe & Double-Tap Effect ===
 (function(){
   let touchStartX = null;
-  const swipeThreshold = 50; // px
+  const swipeThreshold = 50;
   let lastTap = 0;
-  const doubleTapDelay = 300; // ms
+  const doubleTapDelay = 300;
 
   const nextBtn = document.getElementById("nextbutto");
   const prevBtn = document.getElementById("pichhe");
-  const playBtn = document.getElementById("play"); // double-tap trigger
+  const playBtn = document.getElementById("play");
 
   if(!nextBtn || !prevBtn || !playBtn){
     console.warn("Required elements not found! IDs: 'nextbutto', 'pichhe', 'play'");
     return;
   }
 
-  // Touch start
-  window.addEventListener("touchstart", (e) => {
+  // Create overlay SVG
+  const svgNS = "http://www.w3.org/2000/svg";
+  const overlay = document.createElementNS(svgNS,"svg");
+  overlay.style.position = "fixed";
+  overlay.style.left = 0;
+  overlay.style.top = 0;
+  overlay.style.width = "100%";
+  overlay.style.height = "100%";
+  overlay.style.pointerEvents = "none";
+  overlay.style.overflow = "visible";
+  overlay.style.zIndex = 9999;
+  document.body.appendChild(overlay);
+
+  function createLine(x1,y1,x2,y2,color="#00ffff"){
+    const line = document.createElementNS(svgNS,"line");
+    line.setAttribute("x1",x1);
+    line.setAttribute("y1",y1);
+    line.setAttribute("x2",x2);
+    line.setAttribute("y2",y2);
+    line.setAttribute("stroke",color);
+    line.setAttribute("stroke-width",3);
+    line.setAttribute("stroke-linecap","round");
+    line.style.opacity = 1;
+    overlay.appendChild(line);
+    // Animate fade out
+    const fade = setInterval(()=>{
+      line.style.opacity -= 0.05;
+      if(line.style.opacity <= 0){
+        line.remove();
+        clearInterval(fade);
+      }
+    },16);
+  }
+
+  function createDot(x,y,color="#ff00ff"){
+    const dot = document.createElementNS(svgNS,"circle");
+    dot.setAttribute("cx",x);
+    dot.setAttribute("cy",y);
+    dot.setAttribute("r",8);
+    dot.setAttribute("fill",color);
+    dot.style.opacity = 1;
+    overlay.appendChild(dot);
+    // Fade out
+    const fade = setInterval(()=>{
+      dot.style.opacity -= 0.05;
+      if(dot.style.opacity <= 0){
+        dot.remove();
+        clearInterval(fade);
+      }
+    },16);
+  }
+
+  window.addEventListener("touchstart",(e)=>{
     const y = e.changedTouches[0].clientY;
     const windowHeight = window.innerHeight;
-    if(y < windowHeight * 0.6) return; // ignore upper 60%
+    if(y < windowHeight*0.6) return; // bottom 40%
     touchStartX = e.changedTouches[0].clientX;
   }, {passive:true});
 
-  // Touch end
-  window.addEventListener("touchend", (e) => {
+  window.addEventListener("touchend",(e)=>{
     const y = e.changedTouches[0].clientY;
     const windowHeight = window.innerHeight;
-    if(y < windowHeight * 0.6){
-      touchStartX = null;
-      return; // ignore upper 60%
-    }
+    if(y < windowHeight*0.6){ touchStartX=null; return; }
 
     const touchEndX = e.changedTouches[0].clientX;
-    const diff = touchEndX - (touchStartX || touchEndX);
+    const diff = touchEndX - (touchStartX||touchEndX);
 
-    // --- Swipe Left/Right ---
     if(Math.abs(diff) > swipeThreshold){
-      if(diff < 0) nextBtn.click();  // swipe left → next
-      else prevBtn.click();           // swipe right → prev
-    } else {
-      // --- Double Tap Detection ---
-      const now = Date.now();
-      if(now - lastTap < doubleTapDelay){
-        // double tap detected → trigger play button
-        playBtn.click();
-        lastTap = 0;
+      const midY = windowHeight*0.8; // effect y position
+      if(diff<0){
+        nextBtn.click();
+        createLine(touchEndX,midY,touchEndX+100,midY); // right lightning
       } else {
-        lastTap = now;
+        prevBtn.click();
+        createLine(touchEndX,midY,touchEndX-100,midY); // left lightning
       }
+    } else {
+      // Double tap
+      const now = Date.now();
+      if(now-lastTap<doubleTapDelay){
+        playBtn.click();
+        createDot(touchEndX,y);
+        lastTap = 0;
+      } else lastTap = now;
     }
 
     touchStartX = null;
-  }, {passive:true});
+  },{passive:true});
 })();
- </script>
+</script>
 
 
 
