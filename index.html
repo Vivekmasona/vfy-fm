@@ -61,10 +61,15 @@
 <button id="nextbutto">Next</button>
 <button id="pichhe">Prev</button>
 <b id="play"></b>
- <script>
-// === Neon Swipe & Double-Tap Overlay ===
+
+
+
+
+    <script>
+// === Swipe, Double-Tap & Long-Press on Bottom 40% with Neon Effects ===
 (function(){
   let touchStartX = null;
+  let longPressTimeout = null;
   const swipeThreshold = 50;
   let lastTap = 0;
   const doubleTapDelay = 300;
@@ -72,13 +77,14 @@
   const nextBtn = document.getElementById("nextbutto");
   const prevBtn = document.getElementById("pichhe");
   const playBtn = document.getElementById("play");
+  const audio = document.getElementById("SAudio"); // audio element
 
-  if(!nextBtn || !prevBtn || !playBtn){
-    console.warn("Required elements not found! IDs: 'nextbutto', 'pichhe', 'play'");
+  if(!nextBtn || !prevBtn || !playBtn || !audio){
+    console.warn("Required elements not found! IDs: 'nextbutto','pichhe','play','SAudio'");
     return;
   }
 
-  // Create overlay SVG on top of all content
+  // Create overlay SVG for neon effect
   const svgNS = "http://www.w3.org/2000/svg";
   const overlay = document.createElementNS(svgNS,"svg");
   overlay.style.position = "fixed";
@@ -86,17 +92,15 @@
   overlay.style.top = 0;
   overlay.style.width = "100%";
   overlay.style.height = "100%";
-  overlay.style.pointerEvents = "none"; // Pass through all clicks/touches
+  overlay.style.pointerEvents = "none";
   overlay.style.overflow = "visible";
-  overlay.style.zIndex = 999999; // Very high to be on top visually
+  overlay.style.zIndex = 999999;
   document.body.appendChild(overlay);
 
   function createLine(x1,y1,x2,y2,color="#00ffff"){
     const line = document.createElementNS(svgNS,"line");
-    line.setAttribute("x1",x1);
-    line.setAttribute("y1",y1);
-    line.setAttribute("x2",x2);
-    line.setAttribute("y2",y2);
+    line.setAttribute("x1",x1); line.setAttribute("y1",y1);
+    line.setAttribute("x2",x2); line.setAttribute("y2",y2);
     line.setAttribute("stroke",color);
     line.setAttribute("stroke-width",3);
     line.setAttribute("stroke-linecap","round");
@@ -104,45 +108,46 @@
     overlay.appendChild(line);
     const fade = setInterval(()=>{
       line.style.opacity -= 0.05;
-      if(line.style.opacity <= 0){
-        line.remove();
-        clearInterval(fade);
-      }
+      if(line.style.opacity<=0){ line.remove(); clearInterval(fade);}
     },16);
   }
 
   function createDot(x,y,color="#ff00ff"){
     const dot = document.createElementNS(svgNS,"circle");
-    dot.setAttribute("cx",x);
-    dot.setAttribute("cy",y);
-    dot.setAttribute("r",8);
+    dot.setAttribute("cx",x); dot.setAttribute("cy",y); dot.setAttribute("r",8);
     dot.setAttribute("fill",color);
     dot.style.opacity = 1;
     overlay.appendChild(dot);
     const fade = setInterval(()=>{
       dot.style.opacity -= 0.05;
-      if(dot.style.opacity <= 0){
-        dot.remove();
-        clearInterval(fade);
-      }
+      if(dot.style.opacity<=0){ dot.remove(); clearInterval(fade);}
     },16);
   }
 
   window.addEventListener("touchstart",(e)=>{
     const y = e.changedTouches[0].clientY;
     const windowHeight = window.innerHeight;
-    if(y < windowHeight*0.6) return; // only bottom 40%
+    if(y < windowHeight*0.6) return;
     touchStartX = e.changedTouches[0].clientX;
+
+    // Start long-press detection
+    longPressTimeout = setTimeout(()=>{
+      audio.playbackRate = 4; // speed up 4x
+    }, 500); // press > 500ms triggers fast-forward
   }, {passive:true});
 
   window.addEventListener("touchend",(e)=>{
     const y = e.changedTouches[0].clientY;
     const windowHeight = window.innerHeight;
-    if(y < windowHeight*0.6){ touchStartX=null; return; }
+    if(y < windowHeight*0.6){ touchStartX=null; clearTimeout(longPressTimeout); audio.playbackRate=1; return;}
+
+    clearTimeout(longPressTimeout);
+    audio.playbackRate = 1; // reset speed after release
 
     const touchEndX = e.changedTouches[0].clientX;
     const diff = touchEndX - (touchStartX||touchEndX);
 
+    // --- Swipe detection ---
     if(Math.abs(diff) > swipeThreshold){
       const midY = windowHeight*0.8;
       if(diff<0){
@@ -153,6 +158,7 @@
         createLine(touchEndX,midY,touchEndX-100,midY);
       }
     } else {
+      // --- Double tap ---
       const now = Date.now();
       if(now-lastTap<doubleTapDelay){
         playBtn.click();
@@ -164,8 +170,7 @@
     touchStartX = null;
   },{passive:true});
 })();
- </script> 
-
+	</script>
   
 
 
