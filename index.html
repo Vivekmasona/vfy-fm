@@ -74,6 +74,7 @@
     
 
 <!-- Fullscreen Centered Loader with VFY Logo -->
+<!-- Fullscreen Page Load Loader -->
 <div id="loader" style="
   position:fixed;
   top:0;
@@ -91,34 +92,25 @@
   text-align:center;
   transition:opacity .5s;
 ">
-  <!-- Logo with background -->
-  <div style="
-    padding:20px 40px;
-    background: linear-gradient(135deg, #fff 0%, #ff0000 100%);
-    border-radius:12px;
-    margin-bottom:20px;
+
+  <!-- Logo: V big, F Y smaller -->
+  <h1 style="
+    font-size:72px;
+    margin:0 0 10px 0;
+    font-weight:bold;
+    color:#ff0000;
   ">
-    <h1 style="
-      font-size:48px; 
-      letter-spacing:8px;
-      margin:0;
-      text-transform:uppercase;
-      background:linear-gradient(90deg,#ff004c,#00ffff);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-      text-shadow:0 0 15px #ff004c,0 0 25px #00ffff;
-    ">V F Y</h1>
-  </div>
+    V <span style="font-size:48px;">F Y</span>
+  </h1>
 
   <!-- Slogan -->
   <p style="
     font-size:16px;
-    margin-bottom:30px;
+    margin-bottom:20px;
     color:#fff;
-    text-shadow: 0 0 5px #ff004c, 0 0 10px #00ffff;
-  ">V F Y -On- Dipression Is Gone</p>
+  ">V F Y -on- Depression Is Gone</p>
 
-  <!-- Progress bar -->
+  <!-- Laser-style loader -->
   <div style="
     width:200px;
     height:4px;
@@ -130,19 +122,30 @@
     <div id="bar" style="
       height:100%;
       width:0%;
-      background: linear-gradient(90deg,#00ffff,#ff004c);
-      transition: width .3s;
+      background:#ff0000;
+      transition:width .3s;
     "></div>
   </div>
+
+  <!-- Percentage -->
   <span id="percent">0%</span>
+
+  <!-- Footer -->
+  <p style="
+    position:absolute;
+    bottom:10px;
+    font-size:12px;
+    color:#aaa;
+  ">Powered-By VivekFy</p>
 </div>
 
 <script>
 let percent = 0;
 const bar = document.getElementById("bar");
 const text = document.getElementById("percent");
+const loader = document.getElementById("loader");
 
-// Increment loader slowly till 75%
+// Fake progress to 75%
 let interval = setInterval(()=>{
   if(percent < 75){
     percent++;
@@ -151,7 +154,29 @@ let interval = setInterval(()=>{
   } else {
     clearInterval(interval);
   }
-}, 100); // adjust speed here
+}, 50);
+
+// On page load complete → fill to 100%
+window.addEventListener("load", ()=>{
+  let start = percent;
+  let end = 100;
+  let steps = 10;
+  let stepValue = (end - start)/steps;
+  let i=0;
+  let fast = setInterval(()=>{
+    percent = Math.min(100, Math.floor(start + stepValue*i));
+    bar.style.width = percent+"%";
+    text.textContent = percent+"%";
+    i++;
+    if(percent >= 100){
+      clearInterval(fast);
+      setTimeout(()=>{
+        loader.style.opacity="0";
+        setTimeout(()=>loader.style.display="none",500);
+      },200);
+    }
+  },100);
+});
 </script>
 
   
