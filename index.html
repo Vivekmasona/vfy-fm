@@ -941,13 +941,7 @@ width: 50%;
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">search</button></sr>
 	    
 	
-	<div class="mode-toggle">
-   <button id="modeToggleBtn">Mode: Audio</button>
-</div>
-
-<div class="autonext-toggle">
-   <button id="autoNextBtn">Auto Next: Off</button>
-</div>
+	
 
    <div id="autocomplete-results"></div>
 <!-- Mode Toggle -->
@@ -1604,18 +1598,12 @@ let ytPlayer = null;
 let isPlaying = false;
 let isVideoMode = false; // default Audio mode
 let isMiniPlayerFullscreen = false;
-let isAutoNext = false; // 🔥 New Auto Next Mode
+let isAutoNext = false; // 🔥 New Auto Next toggle
 
 // --- Mode Toggle Button ---
 document.getElementById("modeToggleBtn").addEventListener("click", () => {
     isVideoMode = !isVideoMode;
     document.getElementById("modeToggleBtn").innerText = `Mode: ${isVideoMode ? 'Video' : 'Audio'}`;
-});
-
-// --- Auto Next Toggle Button ---
-document.getElementById("autoNextBtn").addEventListener("click", () => {
-    isAutoNext = !isAutoNext;
-    document.getElementById("autoNextBtn").innerText = `Auto Next: ${isAutoNext ? 'On' : 'Off'}`;
 });
 
 // --- Generate List Item ---
@@ -1654,9 +1642,8 @@ function getOutput(item, i) {
 // --- Handle Item Click Based on Mode ---
 function handleItemClick(el) {
     if (isVideoMode) {
-        let videoId = $(el).attr("vid");
-        currentVideoListItem = el; // 🔥 current item save
-        playMiniVideoPlayer(videoId);
+        currentVideoListItem = el;
+        playMiniVideoPlayer($(el).attr("vid"));
     } else {
         stopVideoIfPlaying();
         document.querySelectorAll("#SAudio").forEach(audio => audio.pause());
@@ -1683,58 +1670,7 @@ function enforceAudioPause() {
     });
 }
 
-// --- Mini Video Player ---
-function playMiniVideoPlayer(videoId) {
-    stopVideoIfPlaying();
-    enforceAudioPause();
-
-    let container = document.createElement("div");
-    container.className = "yt-mini-player";
-    container.innerHTML = `<div id="ytPlayer"></div>`;
-    document.body.appendChild(container);
-
-    ytPlayer = new YT.Player("ytPlayer", {
-        videoId: videoId,
-        playerVars: { autoplay: 1 },
-        events: {
-            onReady: (event) => event.target.playVideo(),
-            onStateChange: (event) => {
-                if (event.data === YT.PlayerState.ENDED && isAutoNext) {
-                    playNextVideo();
-                }
-            }
-        }
-    });
-}
-
-// --- Auto Next Play ---
-function playNextVideo() {
-    if (!currentVideoListItem) return;
-
-    // 🔥 current <b> ke parent div se agla sibling lo
-    let parentDiv = currentVideoListItem.parentElement;
-    let nextDiv = parentDiv.nextElementSibling;
-
-    if (nextDiv) {
-        let nextItem = nextDiv.querySelector(".music-item");
-        if (nextItem) {
-            currentVideoListItem = nextItem;
-            let videoId = $(nextItem).attr("vid");
-            playMiniVideoPlayer(videoId);
-        }
-    }
-}
-
-	
-	
-	
-	
-	
-	
-	
-	// --- Play Mini Video Player ---
-
-
+// --- Play Mini Video Player ---
 function playMiniVideoPlayer(videoId) {  
     stopVideoIfPlaying();  
     enforceAudioPause();  
@@ -1815,6 +1751,19 @@ function playMiniVideoPlayer(videoId) {
                     <i class="fas fa-expand"></i>
                 </button>
 
+                <!-- Auto Next -->
+                <button id="mini-auto-next" style="
+                    color:#ffea00;
+                    border:none;
+                    background:none;
+                    cursor:pointer;
+                    font-size:18px;
+                    margin-right:8px;
+                    text-shadow: 0 0 8px #ffea00;
+                ">
+                    Auto Next: Off
+                </button>
+
                 <!-- Close -->
                 <button id="mini-close" style="
                     color:#ff4f4f;
@@ -1842,6 +1791,11 @@ function playMiniVideoPlayer(videoId) {
                 e.target.playVideo();
                 isPlaying = true;
                 updateSeekBar();
+            },
+            onStateChange: (event) => {
+                if (event.data === YT.PlayerState.ENDED && isAutoNext) {
+                    playNextVideo();
+                }
             }
         }
     });
@@ -1871,6 +1825,12 @@ function playMiniVideoPlayer(videoId) {
         }
     });
 
+    // Auto Next toggle button
+    $("#mini-auto-next").click(() => {
+        isAutoNext = !isAutoNext;
+        $("#mini-auto-next").text(`Auto Next: ${isAutoNext ? 'On' : 'Off'}`);
+    });
+
     // Close button
     $("#mini-close").click(() => {
         stopVideoIfPlaying();
@@ -1886,14 +1846,31 @@ function playMiniVideoPlayer(videoId) {
 
     // Update seek bar continuously
     function updateSeekBar() {
-        if (!ytPlayer || ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) return;
-        const currentTime = ytPlayer.getCurrentTime();
-        const duration = ytPlayer.getDuration();
-        if (duration > 0) {
-            const percent = (currentTime / duration) * 100;
-            $("#mini-seekbar").val(percent);
+        if (!ytPlayer) return;
+        const state = ytPlayer.getPlayerState();
+        if (state === YT.PlayerState.PLAYING || state === YT.PlayerState.PAUSED) {
+            const currentTime = ytPlayer.getCurrentTime();
+            const duration = ytPlayer.getDuration();
+            if (duration > 0) {
+                const percent = (currentTime / duration) * 100;
+                $("#mini-seekbar").val(percent);
+            }
         }
         requestAnimationFrame(updateSeekBar);
+    }
+}
+
+// --- Auto Next Video Function ---
+function playNextVideo() {
+    if (!currentVideoListItem) return;
+    let parentDiv = currentVideoListItem.parentElement;
+    let nextDiv = parentDiv.nextElementSibling;
+    if (nextDiv) {
+        let nextItem = nextDiv.querySelector(".music-item");
+        if (nextItem) {
+            currentVideoListItem = nextItem;
+            playMiniVideoPlayer($(nextItem).attr("vid"));
+        }
     }
 }
 
@@ -1903,7 +1880,6 @@ document.addEventListener("play", function(e) {
         e.target.pause();
     }
 }, true);
-
 
 
 	
