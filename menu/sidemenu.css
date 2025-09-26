@@ -29,7 +29,7 @@ body {
 }  
 
 .side-menu.hidden {
-    left: -40px; /* hide off-screen */
+    left: -38px; /* hide off-screen */
     opacity: 0.8;
 }
 
