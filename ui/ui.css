@@ -171,7 +171,7 @@ body {
 .button {
   width: 60px;
   height: 60px;
-  border-radius: 20px;
+  border-radius: 6px;
   background: #111;
   color: #ff0080;
   font-size: 1.4rem;
@@ -196,7 +196,7 @@ body {
 #play {
   width: 90px;
   height: 90px;
-  border-radius: 25px;
+  border-radius: 6px;
   background: #111;
   color: #ff0080;
   font-size: 2rem;
