@@ -1,5 +1,5 @@
 
-<script>
+
 (function(){
   let gesturesEnabled = true; // start as enabled
   const toggleBtn = document.getElementById("gestureToggle");
