@@ -59,64 +59,75 @@
 
 
 
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-  <!-- Fullscreen VFY Music Loader -->
-<div id="loader" style="
-  position:fixed; top:0; left:0; width:100%; height:100%;
-  background:#111; color:#fff; font-family:sans-serif;
-  display:flex; justify-content:center; align-items:center;
-  flex-direction:column; z-index:9999999;
-">
-  <h1 style="margin-bottom:20px; font-size:32px; color:#ff416c;">VFY Music</h1>
-  <div style="width:300px; height:20px; background:#333; border-radius:10px; overflow:hidden; margin-bottom:10px;">
-    <div id="bar" style="height:100%; width:0%; background:linear-gradient(90deg,#ff416c,#ff4b2b);"></div>
+    #loader {
+      text-align: center;
+    }
+
+    #logo {
+      font-size: 32px;
+      font-weight: bold;
+      color: #E74C3C;
+      margin-bottom: 20px;
+    }
+
+    #progress {
+      font-size: 22px;
+    }
+  </style>
+
+
+  <div id="loader">
+    <div id="logo">VFY Music</div>
+    <div id="progress">Loading 1%</div>
   </div>
-  <span id="percent">0%</span>
-</div>
 
-<!-- Page Content -->
-<div id="content" style="display:none;">
-  <h1 style="text-align:center; margin-top:50px;">Welcome to VFY Music!</h1>
-  <p style="text-align:center;"></p>
-</div>
+  <script>
+    let progress = 1;
+    const progressEl = document.getElementById("progress");
 
-<script>
-let percent = 0;
-const bar = document.getElementById('bar');
-const text = document.getElementById('percent');
-const loader = document.getElementById('loader');
-const content = document.getElementById('content');
+    // Fake progress till 75
+    const fakeInterval = setInterval(() => {
+      if (progress < 75) {
+        progress++;
+        progressEl.textContent = `Loading ${progress}%`;
+      } else {
+        clearInterval(fakeInterval);
+      }
+    }, 50); // speed of fake load
 
-// Simulate realistic loading
-function fakeLoad() {
-  let increment = Math.random()*3; // 0 to 3%
-  percent += increment;
-  if(percent>99) percent=99; // Keep it <100 until real load
+    // Jab page load hoga
+    window.addEventListener("load", () => {
+      let realInterval = setInterval(() => {
+        if (progress < 99) {
+          progress++;
+          progressEl.textContent = `Loading ${progress}%`;
+        } else {
+          clearInterval(realInterval);
+          progressEl.textContent = `Loading 100%`;
+          // 0.5 sec baad loader remove
+          setTimeout(() => {
+            document.getElementById("loader").style.display = "none";
+          }, 500);
+        }
+      }, 30);
+    });
+  </script>
+  
 
-  bar.style.width = percent + '%';
-  text.textContent = Math.floor(percent) + '%';
-
-  if(percent < 99) {
-    requestAnimationFrame(fakeLoad);
-  }
-}
-
-// Start simulation
-fakeLoad();
-
-// When page actually loads
-window.addEventListener('load', ()=>{
-  // Complete to 100%
-  percent = 100;
-  bar.style.width = '100%';
-  text.textContent = '100%';
-  setTimeout(()=>{
-    loader.style.display='none';
-    content.style.display='block';
-  },500);
-});
-</script>
-
+    
     
 
 
