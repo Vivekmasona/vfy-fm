@@ -1,7 +1,8 @@
+/* --- Fonts & base (keep your import) --- */
 @import url('https://fonts.googleapis.com/css2?family=Khula:wght@400;600;700&family=Public+Sans:wght@100;300;400;600&display=swap');
 
 html, body {
-  z-index:999999;
+  z-index: 999999;
   margin: 0;
   padding: 0;
   width: 100%;
@@ -9,76 +10,126 @@ html, body {
   font-family: "Public Sans", sans-serif;
   background: radial-gradient(circle at top, #1e1c2a, #0d0b12 80%);
   color: #fff;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
 }
 
+/* keep your layout exactly the same */
 body {
-  z-index:999999;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 100vh;
   box-sizing: border-box;
+  padding-top: 50px; /* same as before */
 }
 
-/* 🔝 Top Menu Fixed Header */
+/* --- shared neumorphic values --- */
+:root{
+  --neo-bg: #0f0e13;         /* underlying dark surface (matches body) */
+  --soft-gray: #dadada;      /* main neumorphic surface color for controls */
+  --accent: #00ffff;         /* cyan accent */
+  --muted: rgba(218,218,218,0.18);
+  --inset-shadow: rgba(0,0,0,0.6);
+  --raised-shadow: rgba(0,0,0,0.55);
+}
+
+/* make the top menu look neumorphic */
 #top-menu {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   display: flex;
-  align-items: center;          /* vertical alignment */
-  justify-content: space-between; /* icons at edges */
+  align-items: center;
+  justify-content: space-between;
   padding: 10px 20px;
   font-size: 1.2rem;
-  color: #ff4c6a;
-  background: rgba(0, 0, 0, 0.95); /* semi-transparent dark background */
+  color: var(--accent);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.35));
   z-index: 9999;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  box-shadow:
+    0 6px 18px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.02);
+  border-bottom: 1px solid rgba(255,255,255,0.02);
+  backdrop-filter: blur(6px);
 }
 
-/* 🔊 Volume slider */
+/* Volume container kept same layout but with neo styling */
 #volumeSliderContainer {
-  flex: 1;               /* fill space between icons */
+  flex: 1;
   margin: 0 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(0,0,0,0.35));
+  box-shadow:
+    6px 6px 18px rgba(0,0,0,0.6),
+    -6px -6px 18px rgba(255,255,255,0.02),
+    inset 0 1px 0 rgba(255,255,255,0.03);
 }
 
-#volumeSlider {
+/* Neomorphic slider track */
+#volumeSlider, .slider {
   -webkit-appearance: none;
+  appearance: none;
   width: 100%;
-  height: 8px;
-  border-radius: 5px;
-  background: linear-gradient(90deg, #ff4c6a, #ffc75f);
+  height: 10px; /* keep similar thickness */
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(218,218,218,0.06), rgba(0,255,255,0.03));
+  box-shadow:
+    inset 6px 6px 12px rgba(0,0,0,0.6),
+    inset -6px -6px 12px rgba(255,255,255,0.02);
   outline: none;
+  transition: box-shadow .15s ease, transform .12s ease;
 }
 
-#volumeSlider::-webkit-slider-thumb {
+/* thumb: raised circular neo style with cyan accent */
+#volumeSlider::-webkit-slider-thumb,
+.slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 18px;
-  height: 18px;
+  appearance: none;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: #fff;
-  border: 2px solid #ff4c6a;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  background: linear-gradient(180deg, var(--soft-gray), rgba(218,218,218,0.95));
+  border: 2px solid rgba(0,0,0,0.45);
+  box-shadow:
+    4px 6px 14px rgba(0,0,0,0.6),
+    -3px -3px 8px rgba(255,255,255,0.02),
+    0 0 18px rgba(0,255,255,0.06);
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+
+/* firefox thumb */
+#volumeSlider::-moz-range-thumb,
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, var(--soft-gray), rgba(218,218,218,0.95));
+  border: 2px solid rgba(0,0,0,0.45);
+  box-shadow:
+    4px 6px 14px rgba(0,0,0,0.6),
+    -3px -3px 8px rgba(255,255,255,0.02),
+    0 0 18px rgba(0,255,255,0.06);
   cursor: pointer;
 }
 
-#volumeSlider::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #fff;
-  border: 2px solid #ff4c6a;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  cursor: pointer;
+/* thumb hover/active */
+#volumeSlider:active::-webkit-slider-thumb,
+.slider:active::-webkit-slider-thumb {
+  transform: scale(1.05);
+  box-shadow:
+    2px 3px 10px rgba(0,0,0,0.65),
+    0 0 26px rgba(0,255,255,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.02);
 }
 
-/* optional: add top padding to body so content isn't hidden under header */
-body {
-  padding-top: 50px; /* same height as top-menu */
-}
-
-/* 🎵 Thumbnail */
+/* Thumbnail kept same shape/size but styled neo */
 .thumbnail-border {
   height: 45vw;
   width: 45vw;
@@ -88,23 +139,31 @@ body {
   min-height: 180px;
   margin: 15px auto 10px auto;
   border-radius: 50%;
-  padding: 5px;
-  background: linear-gradient(135deg, #ff4c6a, #ff9671, #ffc75f);
+  padding: 8px;
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 12px 30px rgba(255,76,106,0.3);
+  background: linear-gradient(145deg, rgba(218,218,218,0.02), rgba(0,0,0,0.4));
+  box-shadow:
+    14px 14px 30px rgba(0,0,0,0.65),
+    -10px -10px 24px rgba(255,255,255,0.02),
+    inset 0 4px 10px rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.02);
 }
 
+/* make inner image slightly raised/inset */
 .thumbnail-border img {
   height: 100%;
   width: 100%;
   border-radius: 50%;
   object-fit: cover;
-  box-shadow: inset 0 0 20px rgba(255,255,255,0.2);
+  box-shadow:
+    inset 0 6px 18px rgba(0,0,0,0.6),
+    0 8px 22px rgba(0,0,0,0.6);
+  transform: translateZ(0);
 }
 
-/* 🎶 Song details */
+/* Song details: keep sizes but adjust color */
 #song-details {
   text-align: center;
   margin: 10px 15px;
@@ -114,88 +173,127 @@ body {
   font-size: 1.8rem;
   font-weight: 600;
   letter-spacing: 2px;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
   margin-bottom: 5px;
+  color: #e6fefe; /* little cyan tint */
+  text-shadow:
+    0 1px 0 rgba(0,0,0,0.7),
+    0 6px 18px rgba(0,0,0,0.6);
 }
 
 .artist {
   font-size: 1rem;
-  color: #ccc;
+  color: rgba(218,218,218,0.7);
 }
 
-/* 📊 Time slider */
+/* Time slider wrapper */
 #time-slider {
   width: 90%;
   margin: 15px auto;
 }
 
-.slider {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 8px;
-  border-radius: 5px;
-  background: linear-gradient(90deg, #ff4c6a, #ffc75f);
-  outline: none;
-}
-
-.slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #fff;
-  border: 2px solid #ff4c6a;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  cursor: pointer;
-}
-
+/* small time text */
 .slider-times {
   display: flex;
   justify-content: space-between;
   font-size: 0.75rem;
-  color: #ccc;
+  color: rgba(218,218,218,0.6);
   margin-top: 5px;
 }
 
-/* 🎛 Controls fixed bottom */
+/* --- Controls area: strong neumorphic buttons --- */
 #song-controls {
   display: flex;
   justify-content: space-around;
   align-items: center;
   width: 100%;
-  padding: 15px 0;
-  background: rgba(0,0,0,0.2);
-  backdrop-filter: blur(15px);
+  padding: 15px 20px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.45));
+  backdrop-filter: blur(10px);
   position: fixed;
   bottom: 0;
   left: 0;
   box-sizing: border-box;
+  border-top: 1px solid rgba(255,255,255,0.02);
 }
 
+/* Default raised button */
 #song-controls .button {
   height: 60px;
   width: 60px;
-  border-radius: 20px;
-  background: rgba(0,0,0,0.1);
-  backdrop-filter: blur(10px);
+  border-radius: 14px;
+  background: linear-gradient(145deg, rgba(218,218,218,0.04), rgba(0,0,0,0.45));
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #ff4c6a;
+  color: var(--accent);
   font-size: 1.4rem;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+  transition: all 0.18s cubic-bezier(.2,.9,.2,1);
+  box-shadow:
+    8px 10px 24px rgba(0,0,0,0.65),
+    -6px -6px 18px rgba(255,255,255,0.01);
+  border: 1px solid rgba(255,255,255,0.02);
 }
 
+/* hover: lift and cyan rim */
 #song-controls .button:hover {
-  background: linear-gradient(135deg, #ff4c6a, #ff9671);
-  color: #fff;
-  transform: scale(1.1);
-  box-shadow: 0 10px 25px rgba(255,76,106,0.4);
+  transform: translateY(-4px) scale(1.03);
+  box-shadow:
+    12px 14px 32px rgba(0,0,0,0.7),
+    0 0 26px rgba(0,255,255,0.06);
 }
 
-/* Responsive adjustments */
+/* pressed/inset state (when active) */
+#song-controls .button:active {
+  transform: translateY(1px) scale(.99);
+  box-shadow:
+    inset 6px 6px 14px rgba(0,0,0,0.65),
+    inset -4px -4px 10px rgba(255,255,255,0.02);
+  color: #e6ffff;
+}
+
+/* Play button - replaced red with neo cyan/gray styling, same size */
+#play {
+  height: 60px;
+  width: 60px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--soft-gray), rgba(218,218,218,0.92));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--neo-bg);
+  font-size: 1.6rem;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+  box-shadow:
+    10px 12px 30px rgba(0,0,0,0.65),
+    -8px -8px 20px rgba(255,255,255,0.02),
+    0 0 18px rgba(0,255,255,0.04);
+  position: relative;
+  border: 1px solid rgba(0,0,0,0.38);
+}
+
+/* small cyan glow when playing / active */
+#play.playing {
+  color: #012;
+  box-shadow:
+    6px 8px 20px rgba(0,0,0,0.6),
+    0 0 30px rgba(0,255,255,0.18),
+    inset 0 2px 8px rgba(0,255,255,0.02);
+  transform: scale(1.03);
+}
+
+/* Play icon pseudo rim */
+#play::after{
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 14px;
+  box-shadow: 0 0 20px rgba(0,255,255,0.03);
+  pointer-events: none;
+}
+
+/* small responsive adjustments - keep your sizes */
 @media (max-width: 500px) {
   .thumbnail-border {
     height: 50vw;
@@ -211,42 +309,21 @@ body {
     height: 50px;
     width: 50px;
     font-size: 1.2rem;
+    border-radius: 12px;
   }
   #volumeSliderContainer {
     width: 95%;
   }
 }
 
-#play {
-  height: 60px;
-  width: 60px;
-  border-radius: 10px; /* <-- 10px radius */
-  background: red; /* red button */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white; /* icon color */
-  font-size: 1.6rem;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  box-shadow: 0 0 15px rgba(255, 0, 0, 0.8),
-              0 0 30px rgba(255, 0, 0, 0.6),
-              0 0 45px rgba(255, 0, 0, 0.4);
-  animation: glowPulse 1.5s infinite alternate;
+/* small utility: make active control have stronger cyan */
+.control-active {
+  color: #001717 !important;
+  background: linear-gradient(180deg, #e6ffff, var(--soft-gray));
+  box-shadow:
+    inset 6px 6px 14px rgba(0,0,0,0.45),
+    0 0 30px rgba(0,255,255,0.18);
 }
 
-@keyframes glowPulse {
-  from {
-    box-shadow: 0 0 10px rgba(255, 0, 0, 0.7),
-                0 0 20px rgba(255, 0, 0, 0.5),
-                0 0 30px rgba(255, 0, 0, 0.3);
-  }
-  to {
-    box-shadow: 0 0 20px rgba(255, 0, 0, 1),
-                0 0 40px rgba(255, 0, 0, 0.8),
-                0 0 60px rgba(255, 0, 0, 0.6);
-  }
-}
-
-
-
+/* keep subtle focus outlines accessible */
+:focus { outline: 2px solid rgba(0,255,255,0.08); outline-offset: 2px; }
