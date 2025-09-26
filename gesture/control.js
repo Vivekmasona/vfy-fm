@@ -1,10 +1,8 @@
-
-        (function(){
-  let gesturesEnabled = true;
+(function(){
+  let gesturesEnabled = false; // 🚨 default OFF
   const toggleBtn = document.getElementById("gestureToggle");
-  const circle = toggleBtn.querySelector(".toggle-circle");
 
-  // Read from localStorage
+  // Read saved state
   const savedState = localStorage.getItem("gestureEnabled");
   if(savedState !== null){
     gesturesEnabled = savedState === "true";
@@ -143,9 +141,8 @@
     }
   }
 
-  // Apply saved state
+  // Load initial state
   if(gesturesEnabled) initGestures();
-  else if(gestureModule) gestureModule.destroy();
   updateToggleUI();
 
   toggleBtn.addEventListener("click",()=>{
