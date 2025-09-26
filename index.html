@@ -3538,7 +3538,8 @@ var offlineMsg = document.getElementById("offline-message");
 
 <style>
     
-    /* --- Button Styling --- */
+    
+    /* --- Neumorphic Button Styling --- */
 .download-popup-button {
     position: fixed;
     bottom: 15%;
@@ -3547,27 +3548,42 @@ var offlineMsg = document.getElementById("offline-message");
     height: 70px;
     border-radius: 50%;
     border: none;
-    background: linear-gradient(45deg, #ff416c, #ff4b2b);
-    color: white;
-    font-size: 30px;
+    background: #dadada;
+    color: #555;
+    font-size: 28px;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 0 20px #ff416c, 0 0 40px #ff4b2b, 0 0 60px #ff416c;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    /* Neumorphic shadows */
+    box-shadow: 
+        6px 6px 14px #b0b0b0,
+        -6px -6px 14px #ffffff;
+    
+    transition: all 0.3s ease;
     z-index: 9999;
 }
 
-/* Button hover effect */
+/* Hover effect - thoda 3D upar uthne jaisa */
 .download-popup-button:hover {
-    transform: scale(1.2) rotate(-5deg);
-    box-shadow: 0 0 30px #ff416c, 0 0 60px #ff4b2b, 0 0 90px #ff416c;
+    transform: scale(1.1);
+    box-shadow: 
+        8px 8px 16px #b0b0b0,
+        -8px -8px 16px #ffffff;
+    color: #222;
+}
+
+/* Active click effect - dabane jaisa */
+.download-popup-button:active {
+    box-shadow: 
+        inset 6px 6px 12px #b0b0b0,
+        inset -6px -6px 12px #ffffff;
 }
 
 /* --- Button icon --- */
 .download-popup-button a {
-    color: white;
+    color: inherit;
     text-decoration: none;
 }
 
@@ -3581,20 +3597,20 @@ var offlineMsg = document.getElementById("offline-message");
     pointer-events: none;
 }
 
-/* --- Each Orbiting Icon --- */
+/* --- Orbiting Icons --- */
 .icon-wrapper svg {
     position: absolute;
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     top: 50%;
     left: 50%;
     transform-origin: -50% -50%;
     animation: spin 1.2s linear infinite;
-    fill: #00ffff;
-    filter: drop-shadow(0 0 8px #00ffff);
+    fill: #777;
+    filter: drop-shadow(0 0 6px rgba(0,0,0,0.2));
 }
 
-/* Slight delay for each icon for staggered orbit */
+/* Orbiting delay */
 .icon-wrapper svg:nth-child(1) { animation-delay: 0s; }
 .icon-wrapper svg:nth-child(2) { animation-delay: 0.2s; }
 .icon-wrapper svg:nth-child(3) { animation-delay: 0.4s; }
@@ -3602,22 +3618,10 @@ var offlineMsg = document.getElementById("offline-message");
 .icon-wrapper svg:nth-child(5) { animation-delay: 0.8s; }
 .icon-wrapper svg:nth-child(6) { animation-delay: 1s; }
 
-/* --- Spin Animation --- */
+/* Orbit Animation */
 @keyframes spin {
     0%   { transform: rotate(0deg) translate(40px) rotate(0deg); }
     100% { transform: rotate(360deg) translate(40px) rotate(-360deg); }
-}
-
-/* --- Optional: Button shake on click --- */
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-8px); }
-    40%, 80% { transform: translateX(8px); }
-}
-
-/* Add shake effect on click */
-.download-popup-button.shake {
-    animation: shake 0.5s;
 }
 </style>
 
