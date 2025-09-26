@@ -1710,9 +1710,13 @@ function playMiniVideoPlayer(videoId) {
 // --- Auto Next Play ---
 function playNextVideo() {
     if (!currentVideoListItem) return;
-    let next = currentVideoListItem.parentElement.nextElementSibling;
-    if (next) {
-        let nextItem = next.querySelector(".music-item");
+
+    // 🔥 current <b> ke parent div se agla sibling lo
+    let parentDiv = currentVideoListItem.parentElement;
+    let nextDiv = parentDiv.nextElementSibling;
+
+    if (nextDiv) {
+        let nextItem = nextDiv.querySelector(".music-item");
         if (nextItem) {
             currentVideoListItem = nextItem;
             let videoId = $(nextItem).attr("vid");
