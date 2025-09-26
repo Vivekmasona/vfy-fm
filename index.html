@@ -71,13 +71,7 @@
 
 
   
-    
-
-
-  
-    
-
-<!-- Fullscreen Loader -->
+ <!-- Fullscreen Stylish Loader -->
 <div id="loader" style="
   position:fixed;
   top:0; left:0;
@@ -94,29 +88,38 @@
 ">
 
   <!-- Logo -->
-  <h1 style="margin:0 0 10px 0; font-weight:bold; display:flex; align-items:center; gap:10px;">
+  <h1 style="margin:0 0 10px 0; font-weight:bold; display:flex; align-items:center; gap:10px; position:relative;">
     <span id="vLetter" style="
       display:inline-block;
+      width:40px; height:40px;
+      position:absolute;
+      left:-10px; top:20px;
+      background:red;
+      border-radius:3px;
+    "></span>
+    <span style="
       font-size:80px;
-      color:#ff0000;
-      text-shadow:0 0 10px #ff0000,0 0 20px #ff5555;
+      color:#00ffff;
+      text-shadow:0 0 10px #00ffff,0 0 20px #00ffff;
+      position:relative;
     ">V</span>
     <span id="fyLetters" style="
       font-size:40px;
       color:#dadada;
-      text-shadow:0 0 5px #dadada;
-      visibility:hidden;
+      text-shadow:0 0 5px #dadada,0 0 10px #dadada;
+      opacity:0;
+      transition:opacity 1.5s;
     ">F Y</span>
   </h1>
 
   <!-- Slogan -->
   <p style="
     font-size:20px;
-    font-weight:normal;
+    font-weight:bold;
     color:#dadada;
-    text-shadow:0 0 5px #dadada;
+    text-shadow:0 0 10px #dadada,0 0 20px #dadada;
     margin-bottom:20px;
-  ">V F Y On- Depression Is Gone</p>
+  ">V F Y - Depression Gone</p>
 
   <!-- Loader Bar -->
   <div style="
@@ -129,16 +132,16 @@
     <div id="bar" style="
       height:100%;
       width:0%;
-      background:linear-gradient(90deg, #ff0000, #ff5555);
-      box-shadow:0 0 10px #ff0000,0 0 20px #ff5555;
+      background:#00ffff;
+      box-shadow:0 0 10px #00ffff,0 0 20px #00ffff, 0 0 30px #00ffff inset;
       transition:width .3s;
     "></div>
   </div>
 
   <!-- Percentage -->
   <span id="percent" style="
-    color:#ff0000;
-    text-shadow:0 0 5px #ff0000;
+    color:#00ffff;
+    text-shadow:0 0 5px #00ffff,0 0 10px #00ffff;
     margin-bottom:20px;
     display:block;
   ">0%</span>
@@ -149,18 +152,17 @@
     bottom:10px;
     font-size:12px;
     color:#dadada;
-  ">{°∆°} Powered By VivekFy</p>
+  ">Powered By VivekFy</p>
 </div>
 
 <script>
 let percent = 0;
 const bar = document.getElementById("bar");
 const text = document.getElementById("percent");
-const vLetter = document.getElementById("vLetter");
 const fyLetters = document.getElementById("fyLetters");
 const loader = document.getElementById("loader");
 
-// Increment 5% every 1 second, stop at 75% until page load
+// Loader progress: 5% every 1 second, stop at 75% until page loads
 let interval = setInterval(()=>{
   if(percent < 75){
     percent +=5;
@@ -168,14 +170,16 @@ let interval = setInterval(()=>{
     bar.style.width = percent+"%";
     text.textContent = percent+"%";
 
-    // Show F Y at 40%
-    if(percent>=40) fyLetters.style.visibility="visible";
+    // Fade in FY at 40%
+    if(percent>=40 && fyLetters.style.opacity==="0"){
+      fyLetters.style.opacity="1";
+    }
   } else {
     clearInterval(interval);
   }
 },1000);
 
-// When page fully loaded → fill to 100%
+// On full page load → fill to 100%
 window.addEventListener("load", ()=>{
   let start = percent;
   let end = 100;
@@ -186,10 +190,6 @@ window.addEventListener("load", ()=>{
     percent = Math.min(100, Math.floor(start + stepValue*i));
     bar.style.width = percent+"%";
     text.textContent = percent+"%";
-
-    // Ensure F Y visible after 40% in case still hidden
-    if(percent>=40) fyLetters.style.visibility="visible";
-
     i++;
     if(percent >= 100){
       clearInterval(fast);
@@ -197,7 +197,7 @@ window.addEventListener("load", ()=>{
         loader.style.opacity="0";
         setTimeout(()=>loader.style.display="none",500);
 
-        // Auto-play audio after loader
+        // --- Play welcome audio ---
         const audio = new Audio('YOUR_AUDIO_URL_HERE.mp3');
         audio.volume=1.0;
         audio.play().catch(e=>console.log("Autoplay blocked", e));
@@ -205,9 +205,13 @@ window.addEventListener("load", ()=>{
     }
   },100);
 });
-</script>
+</script>   
 
+
+  
     
+
+  
     
 
 
