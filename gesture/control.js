@@ -4,7 +4,7 @@
   let touchStartX = null, touchStartY = null;
   let lastTap = 0;
   let longPressTimeout = null;
-  const bottomArea = 0.4; // bottom 40%
+  const bottomArea = 0.2; // bottom 40%
   const doubleTapDelay = 300; // ms
 
   const nextBtn = document.getElementById("nextbutto");
