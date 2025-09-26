@@ -59,72 +59,288 @@
 
 
 
-  <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      background: #111;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+  
 
-    #loader {
-      text-align: center;
-    }
+  <!-- Neon fullscreen loader with watery gradient follow -->
 
-    #logo {
-      font-size: 32px;
-      font-weight: bold;
-      color: #E74C3C;
-      margin-bottom: 20px;
-    }
+<head>
+<style>
+  :root{
+    --bg:#070707;
+    --neon-main:#ff416c;
+    --neon-accent:#ff4b2b;
+    --cyan:#00ffff;
+    --red:#ff416c;
+  }
 
-    #progress {
-      font-size: 22px;
-    }
-  </style>
+  /* fullscreen loader */
+  #loader{
+    position:fixed; inset:0;
+    background:linear-gradient(180deg,#050505 0%, #0b0b0b 60%);
+    color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    flex-direction:column;
+    z-index:9999999;
+    gap:18px;
+    font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
 
+  /* container for text so it's perfectly centered */
+  .brand-wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    user-select:none;
+    transform:translateY(-20px);
+  }
+
+  /* neon big letters V F Y */
+  .vfy {
+    font-weight:800;
+    letter-spacing:28px; /* big spacing between letters */
+    font-size:92px;
+    line-height:0.9;
+    text-transform:uppercase;
+    position:relative;
+    padding:0 6px;
+    -webkit-text-stroke: 0.6px rgba(255,255,255,0.04);
+    /* use background clip to show animated gradient */
+    background:linear-gradient(90deg,var(--neon-main), var(--neon-accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color:transparent;
+    filter: drop-shadow(0 6px 18px rgba(255,65,108,0.18))
+            drop-shadow(0 0 24px rgba(255,65,108,0.06));
+    transition: transform .35s ease;
+  }
+
+  /* smaller 'music' text */
+  .music {
+    font-size:20px;
+    font-weight:700;
+    letter-spacing:6px;
+    text-transform:lowercase;
+    margin-top:-6px;
+    position:relative;
+    z-index:3;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    background:linear-gradient(90deg,var(--neon-accent), var(--neon-main));
+    filter: drop-shadow(0 8px 26px rgba(0,0,0,0.5));
+  }
+
+  /* sliding gradient overlay (animated, alternates cyan/red) */
+  .gradient-anim{
+    position:absolute;
+    top:0; left:0; right:0; bottom:0;
+    pointer-events:none;
+    z-index:2;
+    mix-blend-mode:screen; /* nice glow effect */
+    overflow:hidden;
+  }
+
+  .gbar{
+    position:absolute;
+    left:-40%;
+    top:-30%;
+    width:180%;
+    height:160%;
+    transform:rotate(-12deg);
+    background:linear-gradient(90deg, rgba(0,255,255,0.15), rgba(255,65,108,0.15) 40%, rgba(255,65,108,0.25));
+    filter: blur(36px) saturate(130%);
+    opacity:.9;
+    animation: glide 6s linear infinite;
+  }
+
+  /* progress bar and percent (kept from original) */
+  .progress-wrap{
+    width:340px;
+    display:flex;
+    gap:10px;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+  }
+  .bar-outer{
+    width:300px;height:18px;background:#111;border-radius:999px;overflow:hidden;
+    box-shadow: inset 0 0 12px rgba(0,0,0,0.6);
+  }
+  #bar{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#00ffff,#ff416c);
+    transition: width .12s linear;
+  }
+  #percent{font-weight:700; opacity:.9; font-size:15px; letter-spacing:1px; color:#dcdcdc;}
+
+  /* subtle pulsing glow on the big letters */
+  @keyframes neonPulse {
+    0% { text-shadow: 0 6px 22px rgba(255,65,108,0.25), 0 0 4px rgba(255,65,108,0.08); transform: translateY(0); }
+    50%{ text-shadow: 0 10px 48px rgba(255,65,108,0.32), 0 0 10px rgba(255,65,108,0.12); transform: translateY(-2px); }
+    100%{ text-shadow: 0 6px 22px rgba(255,65,108,0.25), 0 0 4px rgba(255,65,108,0.08); transform: translateY(0); }
+  }
+  .vfy { animation: neonPulse 2.6s ease-in-out infinite; }
+
+  /* gradient glide */
+  @keyframes glide {
+    0% { transform: translateX(-20%) rotate(-12deg) scale(1); }
+    50% { transform: translateX(0%) rotate(-12deg) scale(1.05); }
+    100% { transform: translateX(20%) rotate(-12deg) scale(1); }
+  }
+
+  /* watery ripple filter will be applied via SVG filter id 'ripple' */
+  .ripple-apply {
+    filter: url(#ripple);
+  }
+
+  /* small responsive tweaks */
+  @media (max-width:600px){
+    .vfy{font-size:56px; letter-spacing:18px;}
+    .music{font-size:16px;}
+    .progress-wrap{width:86%}
+    .bar-outer{width:90%}
+  }
+</style>
+</head>
+<body>
+  <!-- SVG filter for water-like ripple (feTurbulence + displacement) -->
+  <svg style="position:absolute; width:0; height:0;" aria-hidden="true">
+    <filter id="ripple">
+      <!-- base turbulence -->
+      <feTurbulence id="turb" baseFrequency="0.015 0.02" numOctaves="2" seed="2" stitchTiles="stitch" />
+      <!-- animate baseFrequency via SMIL fallback through JS if smil disabled -->
+      <feDisplacementMap in="SourceGraphic" scale="14" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </svg>
 
   <div id="loader">
-    <div id="logo">VFY Music</div>
-    <div id="progress">Loading 1%</div>
+    <div class="brand-wrap">
+      <div style="position:relative; width:100%; display:flex; align-items:center; justify-content:center;">
+        <div class="gradient-anim" aria-hidden="true">
+          <div class="gbar"></div>
+        </div>
+
+        <!-- main neon heading -->
+        <div id="bigtext" class="vfy ripple-apply">V F Y</div>
+      </div>
+
+      <div id="smalltext" class="music ripple-apply">music</div>
+    </div>
+
+    <!-- progress area -->
+    <div class="progress-wrap" style="margin-top:14px;">
+      <div class="bar-outer">
+        <div id="bar"></div>
+      </div>
+      <span id="percent">0%</span>
+    </div>
   </div>
 
-  <script>
-    let progress = 1;
-    const progressEl = document.getElementById("progress");
+<script>
+/* ---------- loader progress (keeps your original behavior but smoother) ---------- */
+let percent = 0;
+const bar = document.getElementById('bar');
+const text = document.getElementById('percent');
 
-    // Fake progress till 75
-    const fakeInterval = setInterval(() => {
-      if (progress < 75) {
-        progress++;
-        progressEl.textContent = `Loading ${progress}%`;
-      } else {
-        clearInterval(fakeInterval);
-      }
-    }, 50); // speed of fake load
+const incTick = ()=> {
+  // make increments variable so it doesn't finish in a single jump
+  // smaller increments near start, slower near 75-95 to feel realistic
+  let add;
+  if(percent < 40) add = Math.floor(Math.random()*3)+2;         // 2-4
+  else if(percent < 75) add = Math.floor(Math.random()*2)+1;    // 1-2
+  else add = Math.random()*1.2 + 0.2;                           // 0.2-1.4
+  percent = Math.min(100, +(percent + add).toFixed(2));
+  bar.style.width = percent + '%';
+  text.textContent = Math.floor(percent) + '%';
 
-    // Jab page load hoga
-    window.addEventListener("load", () => {
-      let realInterval = setInterval(() => {
-        if (progress < 99) {
-          progress++;
-          progressEl.textContent = `Loading ${progress}%`;
-        } else {
-          clearInterval(realInterval);
-          progressEl.textContent = `Loading 100%`;
-          // 0.5 sec baad loader remove
-          setTimeout(() => {
-            document.getElementById("loader").style.display = "none";
-          }, 500);
-        }
-      }, 30);
-    });
-  </script>
+  if(percent >= 100){
+    clearInterval(ti);
+    // short finish flourish
+    bar.style.transition = 'width .5s cubic-bezier(.2,.8,.2,1)';
+    setTimeout(()=> document.getElementById('loader').style.opacity = '0', 350);
+    setTimeout(()=> document.getElementById('loader').style.display = 'none', 800);
+  }
+};
+const ti = setInterval(incTick, 120);
+
+/* ---------- watery ripple animation controller ---------- */
+// animate feTurbulence baseFrequency slightly to simulate water movement
+const turb = document.getElementById('turb');
+let bf = 0.015;
+let dir = 1;
+setInterval(()=>{
+  // oscillate baseFrequency for ripple movement
+  bf += 0.0015 * dir;
+  if(bf > 0.035 || bf < 0.008) dir *= -1;
+  turb.setAttribute('baseFrequency', bf + ' ' + (bf+0.004));
+}, 180);
+
+/* ---------- random color swap between cyan and red and stronger ripple on change ---------- */
+const big = document.getElementById('bigtext');
+const small = document.getElementById('smalltext');
+const gbar = document.querySelector('.gbar');
+
+function pickRandomColorMode(){
+  return Math.random() > 0.5 ? 'cyan' : 'red';
+}
+
+function applyColorMode(mode){
+  if(mode === 'cyan'){
+    // cyan dominant gradient
+    gbar.style.background = 'linear-gradient(90deg, rgba(0,255,255,0.18), rgba(0,255,255,0.12) 40%, rgba(255,65,108,0.08))';
+    big.style.background = 'linear-gradient(90deg,#00ffff,#66ffff)';
+    small.style.background = 'linear-gradient(90deg,#00e5ff,#aaffff)';
+  } else {
+    gbar.style.background = 'linear-gradient(90deg, rgba(255,65,108,0.18), rgba(255,75,43,0.12) 40%, rgba(0,255,255,0.06))';
+    big.style.background = 'linear-gradient(90deg,#ff416c,#ff4b2b)';
+    small.style.background = 'linear-gradient(90deg,#ff704b,#ffb3a7)';
+  }
+
+  // stronger ripple flash
+  big.classList.remove('ripple-apply');
+  small.classList.remove('ripple-apply');
+  // force reflow then re-add so filter restarts
+  void big.offsetWidth;
+  big.classList.add('ripple-apply');
+  small.classList.add('ripple-apply');
+}
+
+/* start with a random color */
+applyColorMode(pickRandomColorMode());
+
+/* every few seconds switch randomly so it feels alive */
+setInterval(()=>{
+  applyColorMode(pickRandomColorMode());
+}, 4200 + Math.floor(Math.random()*3000));
+
+/* ---------- optional: gently animate letter spacing on hover/tap for taste ---------- */
+big.addEventListener('mouseenter', ()=> big.style.transform = 'scale(1.02) translateY(-2px)');
+big.addEventListener('mouseleave', ()=> big.style.transform = 'scale(1) translateY(0)');
+
+/* ---------- extra: if you want to change text between two strings with watery transition ----------
+   This cycles alternate text for demonstration. Remove if you don't want text to change.
+*/
+const texts = ["V F Y", "V F Y"]; // keep same here, but you can add different phrase to switch
+let idx = 0;
+setInterval(()=> {
+  idx = (idx + 1) % texts.length;
+  // quick fade + ripple
+  big.style.transition = 'opacity .35s ease, transform .35s ease';
+  big.style.opacity = '0.02';
+  setTimeout(()=>{
+    big.textContent = texts[idx];
+    big.style.opacity = '1';
+    // small ripple jolt
+    turb.setAttribute('baseFrequency', '0.045 0.05');
+    setTimeout(()=> turb.setAttribute('baseFrequency', bf + ' ' + (bf+0.004)), 280);
+  }, 280);
+}, 9000);
+
+</script>
+</body>
+</html>
   
 
     
