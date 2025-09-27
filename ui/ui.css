@@ -14,25 +14,9 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   padding-top: 20px;
   box-sizing: border-box;
-}
-
-/* Top Menu */
-#top-menu {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  padding: 10px 20px;
-  font-size: 1rem;
-  color: #333;
-  background: #f5f5f5;
-  border-bottom: 1px solid #ccc;
-  display: flex;
-  justify-content: space-between;
-  z-index: 999;
 }
 
 /* Thumbnail */
@@ -43,7 +27,7 @@ body {
   max-height: 300px;
   min-width: 180px;
   min-height: 180px;
-  margin: 40px 0 20px;
+  margin: 60px 0 20px;
   border-radius: 50%;
   padding: 4px;
   background: #fff;
@@ -65,7 +49,7 @@ body {
   transform: scale(1.03);
 }
 
-/* Buttons vertical, next to thumbnail */
+/* Vertical buttons near thumbnail */
 #thumbnail-buttons {
   display: flex;
   flex-direction: column;
@@ -93,11 +77,33 @@ body {
   transform: scale(1.05);
 }
 
-/* Play button larger */
+/* Play button bigger */
 #play {
   width: 80px;
   height: 80px;
   font-size: 1.6rem;
+}
+
+/* Bottom playback controls */
+#song-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 12px 0;
+  background: #f5f5f5;
+  border-top: 1px solid #ccc;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  box-sizing: border-box;
+}
+
+#song-controls .button {
+  width: 50px;
+  height: 50px;
+  font-size: 1.2rem;
 }
 
 /* Sliders */
@@ -136,15 +142,6 @@ body {
   background: #888;
 }
 
-/* Time display */
-.slider-times {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  color: #555;
-  margin-top: 5px;
-}
-
 /* Song info */
 #song-details {
   text-align: center;
@@ -161,6 +158,15 @@ body {
 .artist {
   font-size: 1rem;
   color: #666;
+}
+
+/* Time display */
+.slider-times {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #555;
+  margin-top: 5px;
 }
 
 /* Responsive */
