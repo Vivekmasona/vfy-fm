@@ -30,11 +30,11 @@ body {
   justify-content: space-between;
   padding: 12px 20px;
   font-size: 1.2rem;
-  color: #0ff;
+  color: transparent;
   background: transparent;
   z-index: 9999;
   
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(2px);
 }
 
 /* 🎵 Neon Thumbnail */
