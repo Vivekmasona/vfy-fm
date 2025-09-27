@@ -3900,7 +3900,33 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 
 
 
+<script>
+/* 
+Template: call these functions from your existing audio player code 
+Example usage: updateSeekBar(percent), updateTime(currentSec, totalSec)
+*/
 
+const seekbar = document.getElementById('seekbar');
+const currentTimeEl = document.getElementById('current-time');
+const totalTimeEl = document.getElementById('total-time');
+
+function updateSeekBar(percent){
+  // percent: 0 to 100
+  const pathLength = 400; // SVG width
+  const progress = pathLength * (percent / 100);
+  seekbar.setAttribute("d", `M0,20 Q50,0 100,20 T200,20 T300,20 T${progress},20`);
+}
+
+function updateTime(currentSec, totalSec){
+  let curMinutes = Math.floor(currentSec / 60);
+  let curSeconds = currentSec % 60;
+  let totalMinutes = Math.floor(totalSec / 60);
+  let totalSeconds = totalSec % 60;
+  
+  currentTimeEl.textContent = `${curMinutes}:${curSeconds.toString().padStart(2,'0')}`;
+  totalTimeEl.textContent = `${totalMinutes}:${totalSeconds.toString().padStart(2,'0')}`;
+}
+</script>
 
         
 
@@ -3914,6 +3940,42 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 
 <style>
 
+
+.progress-container{
+  position: relative;
+  width: 90%;
+  max-width: 500px;
+  margin: 20px auto;
+}
+
+.wave{
+  width: 100%;
+  height: 50px;
+}
+
+.wave path{
+  stroke-width: 3;
+  fill: transparent;
+}
+
+.wave-bg{
+  stroke: rgba(128,128,128,0.6);
+}
+
+.wave-progress{
+  stroke: #00ffff;
+  stroke-width: 3;
+  filter: drop-shadow(0 0 2px #00ffff);
+}
+
+.slider-times{
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: grey;
+  margin-top: 5px;
+}
+	
 .modal-container1 {
     display: none;
     position: fixed;
@@ -4011,15 +4073,16 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
     <br>
     	<div id="currentSongTitle"></div>
     <br>
-      <div class="slider-times">
-        <span id="current-time"></span> 
-        <span id="total-time"></span> 
-      </div>
-      <input type="range" min="1" max="100" value="0" class="slider" id="seekbar" />
-      
-      
-      
-    </div> <!-- /time-slider -->
+      <div class="progress-container">
+  <svg class="wave" viewBox="0 0 400 40" preserveAspectRatio="none">
+    <path id="waveBg" class="wave-bg" d="M0,20 Q50,0 100,20 T200,20 T300,20 T400,20"></path>
+    <path id="seekbar" class="wave-progress" d="M0,20 Q50,0 100,20 T200,20 T300,20 T400,20"></path>
+  </svg>
+  <div class="slider-times">
+    <span id="current-time">0:00</span>
+    <span id="total-time">0:00</span>
+  </div>
+</div>-slider -->
     
     
 	
