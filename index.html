@@ -23,7 +23,7 @@
 <link rel="stylesheet" href="remote/remote.css" />
 <link rel="stylesheet" href="slideshow/slide.css" />
 <link rel="stylesheet" href="thumbnail/thumbnail.css" />
-<link rel="stylesheet" href="ui/ui11.css" />
+<link rel="stylesheet" href="ui/ui.css" />
 <link rel="stylesheet" href="footer/footer.css" />
 <link rel="stylesheet" href="mode/ytcontrol.css" />
 <link rel="stylesheet" href="mode/mode.css" />
@@ -3959,298 +3959,108 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 <b id="play"></b>
 
 
-
-	
-	
-	
-	
-	
-	<script>
-// aapke existing audio element aur controls
-const audio = document.getElementById('SAudio');
-const waveProgress = document.getElementById('seekbar');
-const progressContainer = document.querySelector('.progress-container');
-const currentTimeEl = document.getElementById('current-time');
-const durationEl = document.getElementById('total-time');
-
-// SVG wave path setup
-const pathLength = waveProgress.getTotalLength();
-waveProgress.style.strokeDasharray = pathLength;
-waveProgress.style.strokeDashoffset = pathLength;
-
-// Audio timeupdate se seekbar animate
-audio.addEventListener('timeupdate', () => {
-  if(!audio.duration) return;
-  const percent = audio.currentTime / audio.duration;
-  waveProgress.style.strokeDashoffset = pathLength * (1 - percent);
-
-  const m = Math.floor(audio.currentTime/60);
-  const s = Math.floor(audio.currentTime%60).toString().padStart(2,'0');
-  currentTimeEl.textContent = `${m}:${s}`;
-
-  const dm = Math.floor(audio.duration/60);
-  const ds = Math.floor(audio.duration%60).toString().padStart(2,'0');
-  durationEl.textContent = `${dm}:${ds}`;
-});
-
-// Click on wave to seek audio
-progressContainer.addEventListener('click', e => {
-  const rect = progressContainer.getBoundingClientRect();
-  const offsetX = e.clientX - rect.left;
-  const percent = offsetX / rect.width;
-  audio.currentTime = percent * audio.duration;
-});
-</script>
-	<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-html, body{width:100%;height:100%;font-family:Arial,sans-serif;position:relative;overflow:hidden;background:#dadada;}
-
-/* Background image top 50% */
-#background-image{
-  position:absolute;top:0;left:0;width:100%;height:50vh;
-  background-size:cover;
-  background-position:center;
-  z-index:0;
-}
-
-/* Overlay fade upar aur neeche */
-#overlay{
-  position:absolute;top:0;left:0;width:100%;height:50vh;
-  background: linear-gradient(to bottom, rgba(218,218,218,0.8) 0%, rgba(218,218,218,0) 15%, rgba(218,218,218,0) 85%, rgba(218,218,218,0.8) 100%);
-  z-index:1;
-}
-
-/* Player UI layout */
-.player{
-  position:relative;
-  width:100%;
-  height:100%;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-  align-items:center;
-  padding:20px;
-  z-index:2;
-  background:transparent;
-}
-
-/* Thumbnail + volume + right buttons container */
-.thumb-container{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  width:95%;
-  max-width:900px;
-  margin-top:20px;
-}
-
-/* Vertical volume slider left */
-.volume-container{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  height:10px;
-}
-#volumeSlider{
-  -webkit-appearance:none;
-  width:60px;
-  height:10px;
-  background:#555;
-  border-radius:5px;
-  transform: rotate(-90deg);
-  cursor:pointer;
-}
-#volumeSlider::-webkit-slider-thumb{
-  -webkit-appearance:none;
-  width:16px;
-  height:16px;
-  background:#00ffff;
-  border-radius:50%;
-  cursor:pointer;
-  box-shadow:0 0 5px #00ffff;
-}
-
-/* Thumbnail */
-#SThumb{
-  width:50%;
-  max-width:250px;
-  border-radius:20px;
-  box-shadow:0 10px 20px rgba(0,0,0,0.15);
-  object-fit:cover;
-  cursor:pointer;
-}
-
-/* Right side buttons vertical */
-.right-buttons{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:12px;
-  margin-right:20px;
-}
-.btn-wrapper{
-  width:40px;
-  height:40px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:#000;
-  border-radius:10px;
-  box-shadow:0 5px 10px rgba(0,0,0,0.25);
-}
-.btn-wrapper .btn{
-  width:30px;
-  height:30px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  cursor:pointer;
-}
-.btn-wrapper .btn svg{
-  width:22px;
-  height:22px;
-  fill:#fff;
-}
-
-/* Song Info */
-.song-info{
-  margin:15px 0 8px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:8px;
-  flex-wrap:wrap;
-}
-.song-title{font-size:1.7rem;font-weight:bold;color:#000;}
-.song-artist{font-size:1.1rem;color:grey;margin-bottom:12px;}
-.heart{width:24px;height:24px;cursor:pointer;fill:#e74c3c;}
-
-/* Progress curved bar */
-.progress-container{
-  position:relative;
-  width:90%;
-  max-width:500px;
-  margin:20px 0 8px;
-  height:50px;
-}
-.wave{width:100%;height:100%;}
-.wave path{stroke-width:3;fill:transparent;transition:stroke-width 0.2s;}
-.wave-bg{stroke: rgba(128,128,128,0.6);}
-.wave-progress{stroke:#00ffff;stroke-width:3;filter: drop-shadow(0 0 2px #00ffff);}
-.time{font-size:0.9rem;color:grey;display:flex;justify-content:space-between;margin-top:5px;}
-
-/* Bottom Controls */
-.controls{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-top:25px;
-  width:250px;
-}
-.controls .btn{width:50px;height:50px;background:#000;border-radius:50%;display:flex;justify-content:center;align-items:center;cursor:pointer;box-shadow:0 5px 10px rgba(0,0,0,0.25);}
-.controls .btn svg{fill:#fff;width:24px;height:24px;}
-.controls .btn.play{width:70px;height:70px;} /* Play/Pause bigger */
-
-/* Playlist */
-.menu{margin-top:22px;cursor:pointer;}
-.menu svg{width:26px;height:26px;fill:#000;}
-
-@media(max-width:500px){
-  #SThumb{width:60%;}
-  .btn{width:40px;height:40px;}
-  .btn.play{width:60px;height:60px;}
-  .song-title{font-size:1.4rem;}
-  .song-artist{font-size:0.9rem;}
-}
-	</style>
-	
-	<!-- The modal container -->
+<!-- The modal container -->
 <div id="modal" class="modal-container1">
   <div class="modal-content1">
     <span onclick="closeModal()" style="float: right;"></span>
 
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-	  
-	  
-	  <div id="background-image"></div>
-<div id="overlay"></div>
-
-<div class="player">
-
-  <!-- Thumbnail + volume + right buttons -->
-  <div class="thumb-container">
-    <div class="volume-container">
-      <input type="range" id="volumeSlider" min="0" max="100" step="1" value="50" />
-    </div>
-    <img id="SThumb" class="thumbnail" src="https://i.ibb.co/f2h8kJg/music.jpg" alt="thumbnail" />
-    <div class="right-buttons">
-      <div class="btn-wrapper">
-        <div class="btn" id="repeat">
-          <svg viewbox="0 0 24 24"><path d="M7 7h10v2l3-3-3-3v2H7a5 5 0 000 10h1v-2H7a3 3 0 010-6zm10 10H7v-2l-3 3 3 3v-2h10a5 5 0 000-10h-1v2h1a3 3 0 010 6z"/></svg>
+<div class="container"> 
+  
+  <div id="phone">
+  
+    <div id="top-menu">
+  <i class="fas fa-volume-mute" id="volume10"></i>
+  
+  <div id="volumeSliderContainer">
+    <input type="range" id="volumeSlider" min="0" max="100" step="1" value="100"/>
+  </div>
+  
+  <i id="volume100" class="fa fa-volume-up"></i>
+</div><!-- /top-menu -->
+    
+    <div class="thumbnail-border">
+      <div class="audio-player">
+        <div id="thumbnailContainer">
+          <img id="SThumb" src="" alt="/img/newdp.png" onclick="clickButton()">
+          <div id="playButtonOverlay" onclick="playPause()"></div>
         </div>
+      </div>  
+    </div> <!--/thumbnail-border -->
+    
+    <br>
+    
+    
+    <div id="song-details">
+      <h1 class="song-title" id="vfytitle"></h1>
+      <span class="artist"></span>
+    </div> <!-- /song-details -->
+
+    
+    
+    <b id="stop"></b>
+    <br>
+    <br>
+    <br>
+	 <br>
+	  
+    <div id="time-slider">
+    	
+    <br>
+    	<div id="currentSongTitle"></div>
+    <br>
+      <div class="slider-times">
+        <span id="current-time"></span> 
+        <span id="total-time"></span> 
       </div>
-      <div class="btn-wrapper">
-        <div class="btn" id="VFYmp3">
-          <svg viewbox="0 0 24 24"><path d="M5 20h14v-2H5v2zm7-18l-5 5h3v4h4V7h3l-5-5z"/></svg>
-        </div>
+      <input type="range" min="1" max="100" value="0" class="slider" id="seekbar" />
+      
+      
+      
+    </div> <!-- /time-slider -->
+    
+    
+	
+    <div id="song-controls">
+
+      <!-- Previous -->
+      <div class="button">
+        <i id="pichhe" class="fas fa-step-backward"></i>
       </div>
-      <div class="btn-wrapper">
-        <div class="btn" id="volume10">
-          <svg id="muteIcon" viewbox="0 0 24 24"><path d="M5 9v6h4l5 5V4l-5 5H5z"/></svg>
-        </div>
+
+      <!-- Play -->
+      <div class="button">
+        <b id="play" onclick="clickButton()">	
+          <i id="playvfy" class="fas fa-pause" onclick="togglePause()"></i>
+        </b>
       </div>
-    </div>
-  </div>
-
-  <!-- Song info & heart -->
-  <div class="song-info">
-    <span class="song-title" id="vfytitle">ELEKTRO</span>
-    <svg class="heart" viewbox="0 0 24 24">
-      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6 4 4 6.5 4c1.74 0 3.41 1.01 4.13 2.44h1.74C14.09 5.01 15.76 4 17.5 4 20 4 22 6 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></path></svg>
-  </div>
-  <div class="song-artist" id="artist">Low Voltage</div>
-
-  <!-- Progress wave -->
-  <div class="progress-container">
-    <svg class="wave" viewbox="0 0 400 40" preserveaspectratio="none">
-      <path id="waveBg" class="wave-bg" d="M0,20 Q50,0 100,20 T200,20 T300,20 T400,20"></path>
-      <path id="seekbar" class="wave-progress" d="M0,20 Q50,0 100,20 T200,20 T300,20 T400,20"></path>
-    </svg>
-    <div class="time">
-      <span id="current-time">0:00</span>
-      <span id="total-time">0:00</span>
-    </div>
-  </div>
-
-  <!-- Bottom Controls -->
-  <div class="controls">
-    <div class="btn" id="pichhe">
-      <svg viewbox="0 0 24 24"><path d="M6 19l-6-7 6-7v14zm2-14h2v14H8V5zm6 0h2v14h-2V5zm4 0l6 7-6 7V5z"/></path></svg>
-    </div>
-    <div class="btn play" id="play">
-      <svg viewbox="0 0 24 24"><path d="M8 5v14l11-7z"/></path></svg>
-    </div>
-    <div class="btn" id="nextbutto">
-      <svg viewbox="0 0 24 24"><path d="M18 5l6 7-6 7V5zm-2 0h-2v14h2V5zM8 5H6v14h2V5zM0 12l6-7v14L0 12z"/></path></svg>
-    </div>
-  </div>
-
-  <!-- Menu -->
-  <div class="menu">
-    <svg viewbox="0 0 24 24"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></path></svg>
-  </div>
-	  
-	  
-	  
-	  
-	  
 
       <!-- Next -->
-      
+      <div class="button">
+        <i id="nextbutto" class="fas fa-step-forward"></i>
+      </div>
+
+      <!-- Repeat -->
+      <div class="button">
+        <i id="repeat" class="fas fa-redo"></i>
+      </div>
+
+      <!-- Home -->
+      <div class="button">
+        <i onclick="closeModal()" class="fa fa-home"></i>
+      </div> 
+
+      <!-- Download -->
+      <div class="button">
+        <i id="VFYmp3" class="fas fa-download"></i>
+      </div>
 	    
- </div>  
+    </div><!-- /song-controls -->
+    
+  </div> <!-- /phone -->
+  
 </div> <!-- /container -->
 
 <div id="audio-player">
