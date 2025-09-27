@@ -8,245 +8,173 @@ html, body {
   font-family: "Public Sans", sans-serif;
   background: radial-gradient(circle at top, #0f0c1d, #050309 90%);
   color: #fff;
+  overflow: hidden;
 }
 
-body {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100vh;
-  box-sizing: border-box;
-  padding-top: 60px; /* top-menu height */
+/* Background & overlay */
+#background-image {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 50vh;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.5);
+  z-index: 0;
+}
+#overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 50vh;
+  background: linear-gradient(to bottom, rgba(15,12,29,0.6) 0%, rgba(5,3,9,0) 80%);
+  z-index: 1;
 }
 
-/* 🔝 Top Menu */
-#top-menu {
-  position: fixed;
-  top: 0;
-  left: 0;
+/* Player container */
+.player {
+  position: relative;
+  z-index: 2;
   width: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px 20px;
-  font-size: 1.2rem;
-  color: #0ff;
-  background: rgba(0, 0, 0, 0.7);
-  z-index: 9999;
-  box-shadow: 0 0 15px rgba(0,255,255,0.3);
-  backdrop-filter: blur(10px);
+  justify-content: flex-end;
+  padding-bottom: 120px;
 }
 
-/* 🎵 Neon Thumbnail */
-.thumbnail-border {
-  height: 46vw;
+/* Thumbnail */
+#SThumb {
   width: 46vw;
   max-width: 320px;
   max-height: 320px;
   min-width: 180px;
   min-height: 180px;
-  margin: 20px auto;
   border-radius: 50%;
   padding: 6px;
   background: linear-gradient(45deg, #0ff, #ff0000);
-  box-shadow:
-    0 0 25px #0ff,
-    0 0 45px #ff0000,
-    0 0 65px #ff0000,
-    inset 0 0 15px rgba(255,255,255,0.2);
+  box-shadow: 0 0 25px #0ff, 0 0 45px #ff0000, 0 0 65px #ff0000, inset 0 0 15px rgba(255,255,255,0.2);
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: 20px 0;
 }
-
-.thumbnail-border img {
-  height: 100%;
+#SThumb img {
   width: 100%;
+  height: 100%;
   border-radius: 50%;
   object-fit: cover;
   box-shadow: inset 0 0 25px rgba(0,255,255,0.3);
   transition: all 0.3s ease;
 }
-
-.thumbnail-border img:hover {
+#SThumb img:hover {
   transform: scale(1.05);
   box-shadow: inset 0 0 35px rgba(0,255,255,0.5);
 }
 
-/* 🎶 Song info */
-#song-details {
-  text-align: center;
-  margin: 15px 20px;
-}
-
-.song-title {
-  font-size: 1.9rem;
-  font-weight: 700;
-  color: #0ff;
-  text-shadow:
-    0 0 5px #0ff,
-    0 0 15px #0ff,
-    0 0 25px #ff0000;
-  margin-bottom: 5px;
-}
-
-.artist {
-  font-size: 1rem;
-  color: #ff0000;
-  text-shadow: 0 0 5px #ff0000;
-}
-
-/* 📊 Neon Sliders */
-#time-slider, #volumeSliderContainer {
-  width: 90%;
-  margin: 20px auto;
-}
-
-.slider, #volumeSlider {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 12px;
-  border-radius: 15px;
+/* Right buttons neon style */
+.right-buttons .btn-wrapper {
+  width: 50px; height: 50px;
+  margin: 10px 0;
   background: #111;
-  box-shadow: inset 0 0 6px rgba(0,255,255,0.3);
-  outline: none;
+  border-radius: 8px;
+  box-shadow: 0 0 12px #ff0000, 0 0 24px #0ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
   transition: all 0.25s ease;
 }
-
-.slider::-webkit-slider-thumb,
-#volumeSlider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: #0ff;
-  box-shadow: 0 0 10px #0ff, 0 0 20px #ff0000;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.right-buttons .btn-wrapper:hover {
+  box-shadow: 0 0 20px #0ff, 0 0 40px #ff0000;
+}
+.right-buttons .btn-wrapper .btn svg {
+  width: 24px; height: 24px;
+  fill: #ff0000;
+  transition: fill 0.25s ease;
+}
+.right-buttons .btn-wrapper:hover .btn svg {
+  fill: #0ff;
 }
 
-.slider::-webkit-slider-thumb:hover,
-#volumeSlider::-webkit-slider-thumb:hover {
-  background: #ff0000;
-  box-shadow: 0 0 12px #ff0000, 0 0 25px #0ff;
-}
-
-.slider::-moz-range-thumb,
-#volumeSlider::-moz-range-thumb {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: #0ff;
-  box-shadow: 0 0 10px #0ff, 0 0 20px #ff0000;
+/* Progress slider */
+#seekbar {
+  stroke: #0ff;
+  stroke-width: 3;
+  filter: drop-shadow(0 0 2px #0ff);
 }
 
 /* Time display */
-.slider-times {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.75rem;
+.time span {
   color: #0ff;
-  margin-top: 5px;
+  font-size: 0.75rem;
   text-shadow: 0 0 5px #0ff;
 }
 
-/* 🎛 Controls fixed bottom */
-#song-controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 16px;
-  width: 100%;
-  padding: 16px 0;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  background: rgba(0,0,0,0.2);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 0 15px rgba(0,255,255,0.2);
-}
-
-/* Buttons Neon style */
-.button {
-  width: 60px;
-  height: 60px;
-  border-radius: 6px; /* less curved */
-  background: #111;
-  color: #ff0000;
-  font-size: 1.4rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  box-shadow: 0 0 12px #ff0000, 0 0 24px #0ff;
-  transition: all 0.25s ease;
-}
-
-.button:hover {
-  color: #0ff;
-  box-shadow: 0 0 20px #0ff, 0 0 40px #ff0000;
-}
-
-.button:active {
-  transform: scale(0.95);
-}
-
-/* 🔘 Play button square + neon */
-#play {
-  width: 90px;
-  height: 90px;
-  border-radius: 6px; /* square with small curve */
-  background: #111;
-  color: #ff0000;
-  font-size: 2rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  box-shadow: 0 0 25px #0ff, 0 0 50px #ff0000, 0 0 70px #ff0000;
-  transition: all 0.3s ease;
-}
-
-#play:hover {
-  transform: scale(1.1);
-  color: #0ff;
-  box-shadow: 0 0 35px #0ff, 0 0 70px #ff0000, 0 0 90px #ff0000;
-}
-
-/* Volume container with neon speaker */
-.volume-container {
-  display: flex;
-  align-items: center;
-  width: 90%;
-  justify-content: center;
-  gap: 10px;
-}
-
-.speaker {
-  width: 35px;
-  height: 35px;
+/* Bottom controls neon */
+.controls .btn {
+  width: 60px; height: 60px;
   background: #111;
   border-radius: 6px;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #ff0000;
-  box-shadow: 0 0 12px #ff0000, 0 0 24px #0ff;
   cursor: pointer;
+  box-shadow: 0 0 12px #ff0000, 0 0 24px #0ff;
   transition: all 0.25s ease;
 }
-
-.speaker:hover {
-  color: #0ff;
+.controls .btn svg {
+  width: 24px; height: 24px;
+  fill: #ff0000;
+  transition: fill 0.25s ease;
+}
+.controls .btn:hover {
   box-shadow: 0 0 20px #0ff, 0 0 40px #ff0000;
+}
+.controls .btn:hover svg {
+  fill: #0ff;
+}
+.controls .btn.play {
+  width: 90px; height: 90px;
+  box-shadow: 0 0 25px #0ff, 0 0 50px #ff0000, 0 0 70px #ff0000;
+}
+.controls .btn.play:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 35px #0ff, 0 0 70px #ff0000, 0 0 90px #ff0000;
+}
+
+/* Volume slider vertical neon */
+#volumeSlider {
+  -webkit-appearance: none;
+  width: 60px; height: 10px;
+  background: #111;
+  border-radius: 5px;
+  transform: rotate(-90deg);
+  cursor: pointer;
+  box-shadow: inset 0 0 6px rgba(0,255,255,0.3);
+}
+#volumeSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: #0ff;
+  box-shadow: 0 0 10px #0ff, 0 0 20px #ff0000;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+#volumeSlider::-webkit-slider-thumb:hover {
+  background: #ff0000;
+  box-shadow: 0 0 12px #ff0000, 0 0 25px #0ff;
+}
+#volumeSlider::-moz-range-thumb {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: #0ff;
+  box-shadow: 0 0 10px #0ff, 0 0 20px #ff0000;
 }
 
 /* Responsive */
 @media(max-width:500px){
-  .thumbnail-border { height: 50vw; width: 50vw; }
-  .song-title { font-size: 1.5rem; }
-  .button { width: 50px; height: 50px; font-size: 1.2rem; }
-  #play { width: 70px; height: 70px; font-size: 1.6rem; }
-  #volumeSliderContainer, .volumebar { width: 150px; }
+  #SThumb { width: 50vw; height: 50vw; }
+  .controls .btn { width: 50px; height: 50px; }
+  .controls .btn.play { width: 70px; height: 70px; }
+  .right-buttons .btn-wrapper { width: 40px; height: 40px; }
 }
