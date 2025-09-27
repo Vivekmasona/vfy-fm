@@ -59,7 +59,7 @@ function displaySongs(songs) {
 }
 
 async function loadTrendingSongs() {
-    const userQuery = localStorage.getItem("songQuery") || "latest released hindi songs";
+    const userQuery = localStorage.getItem("songQuery") || "SR lofi 2.0";
     document.getElementById("songs").innerHTML = `
       <div class="loading-dots">
           <span></span><span></span><span></span>
