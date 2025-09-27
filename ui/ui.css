@@ -7,173 +7,123 @@ html, body {
   height: 100%;
   font-family: "Public Sans", sans-serif;
   background: #dadada;
-  color: #333;
-}
-
-body {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  justify-content: space-between;
-  padding-top: 20px;
   box-sizing: border-box;
 }
 
-/* Thumbnail */
-.thumbnail-border {
-  height: 46vw;
-  width: 46vw;
-  max-width: 300px;
-  max-height: 300px;
-  min-width: 180px;
-  min-height: 180px;
-  margin: 60px 0 20px;
-  border-radius: 50%;
-  padding: 4px;
-  background: #fff;
+/* Container for thumbnail + vertical buttons */
+#player-container {
   display: flex;
-  justify-content: center;
+  flex-direction: row;
   align-items: center;
-  border: 1px solid #ccc;
+  justify-content: center;
+  gap: 40px;
 }
 
-.thumbnail-border img {
-  height: 100%;
-  width: 100%;
-  border-radius: 50%;
+/* Thumbnail */
+.thumbnail {
+  width: 300px;
+  height: 300px;
   object-fit: cover;
-  transition: all 0.3s ease;
+  border-radius: 12px; /* slightly curved */
+  border: none;
+  transition: none;
 }
 
-.thumbnail-border img:hover {
-  transform: scale(1.03);
-}
-
-/* Vertical buttons near thumbnail */
-#thumbnail-buttons {
+/* Vertical buttons left & right */
+.vertical-buttons {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin: 10px 0;
+  gap: 20px;
 }
 
+/* Neumorphic button style */
 .button {
   width: 60px;
   height: 60px;
-  border-radius: 8px;
-  background: #fff;
-  border: 1px solid #ccc;
-  color: #333;
-  font-size: 1.2rem;
+  border-radius: 12px;
+  border: none;
+  background: #dadada;
+  box-shadow: 4px 4px 8px #c2c2c2,
+              -4px -4px 8px #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;
+  font-size: 1.2rem;
+  color: #333;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.button:hover {
-  background: #eee;
-  transform: scale(1.05);
+.button:active {
+  box-shadow: inset 4px 4px 8px #c2c2c2,
+              inset -4px -4px 8px #ffffff;
 }
 
-/* Play button bigger */
-#play {
-  width: 80px;
-  height: 80px;
-  font-size: 1.6rem;
-}
-
-/* Bottom playback controls */
-#song-controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 16px;
+/* Sliders */
+.slider {
+  -webkit-appearance: none;
   width: 100%;
-  padding: 12px 0;
-  background: #f5f5f5;
-  border-top: 1px solid #ccc;
+  height: 12px;
+  border-radius: 6px;
+  background: #e0e0e0;
+  outline: none;
+  margin: 20px 0;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #c2c2c2;
+  cursor: pointer;
+  box-shadow: 2px 2px 5px #a0a0a0,
+              -2px -2px 5px #ffffff;
+}
+
+.slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #c2c2c2;
+  cursor: pointer;
+  box-shadow: 2px 2px 5px #a0a0a0,
+              -2px -2px 5px #ffffff;
+}
+
+/* Bottom playback controls horizontal */
+#song-controls {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  box-sizing: border-box;
+  bottom: 20px;
+  width: 90%;
+  max-width: 500px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 12px 0;
 }
 
 #song-controls .button {
   width: 50px;
   height: 50px;
-  font-size: 1.2rem;
-}
-
-/* Sliders */
-#time-slider, #volumeSliderContainer {
-  width: 90%;
-  max-width: 400px;
-  margin: 20px auto;
-}
-
-.slider, #volumeSlider {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 10px;
-  border-radius: 5px;
-  background: #ccc;
-  outline: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.slider::-webkit-slider-thumb,
-#volumeSlider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #888;
-  cursor: pointer;
-}
-
-.slider::-moz-range-thumb,
-#volumeSlider::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #888;
-}
-
-/* Song info */
-#song-details {
-  text-align: center;
-  margin: 10px 20px;
-}
-
-.song-title {
-  font-size: 1.6rem;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 5px;
-}
-
-.artist {
   font-size: 1rem;
-  color: #666;
-}
-
-/* Time display */
-.slider-times {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  color: #555;
-  margin-top: 5px;
 }
 
 /* Responsive */
-@media(max-width:500px){
-  .thumbnail-border { height: 50vw; width: 50vw; }
-  .song-title { font-size: 1.3rem; }
-  .button { width: 50px; height: 50px; font-size: 1rem; }
-  #play { width: 70px; height: 70px; font-size: 1.3rem; }
-  #time-slider, #volumeSliderContainer { width: 80%; }
+@media(max-width:700px){
+  #player-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .vertical-buttons {
+    flex-direction: row;
+    gap: 15px;
+  }
+  .thumbnail {
+    width: 80%;
+    height: auto;
+  }
 }
