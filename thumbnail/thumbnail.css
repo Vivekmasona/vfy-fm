@@ -41,31 +41,4 @@ box-shadow: 0 0 20px #000; /* Add dark black shadow */
   left: 5px;
 }
 
-.rotate {
-  animation: spin 5s linear infinite, hueBlink 2s infinite; /* Adjust durations as needed */
-}
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes hueBlink {
-  0% {
-    filter: hue-rotate(0deg);
-  }
-  50% {
-    filter: hue-rotate(180deg); /* Adjust the degree for half of the color spectrum */
-  }
-  100% {
-    filter: hue-rotate(0deg);
-  }
-}
-
-.spin-stop {
-  animation: none;
-}
