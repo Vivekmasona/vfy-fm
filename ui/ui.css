@@ -31,9 +31,9 @@ body {
   padding: 12px 20px;
   font-size: 1.2rem;
   color: #0ff;
-  background: rgba(0, 0, 0, 0.7);
+  background: transparent;
   z-index: 9999;
-  box-shadow: 0 0 15px rgba(0,255,255,0.3);
+  
   backdrop-filter: blur(10px);
 }
 
