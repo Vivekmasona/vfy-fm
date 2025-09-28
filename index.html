@@ -2365,7 +2365,9 @@ audio.addEventListener("ended", function() {
 
 // Pichhe button listener  
 document.getElementById("pichhe").addEventListener("click", playPreviousSong);  
-
+// Pichhe button listener  
+document.getElementById("back").addEventListener("click", playPreviousSong);  
+	
 // Repeat button listener  
 document.getElementById("repeat").addEventListener("click", function() {  
     isRepeat = !isRepeat; // toggle repeat  
@@ -2407,7 +2409,11 @@ nextbutto.addEventListener("click", function () {
     playNextSong();
 });
 
-
+// butto click event
+var nextbutto = document.getElementById("next");
+nextbutto.addEventListener("click", function () {
+    playNextSong();
+});
 
 
 
@@ -3986,7 +3992,8 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 
 
 
-
+<div id="next"></div>
+<div id="back"></div>
 
     	
 <!-- The modal container -->
@@ -4057,7 +4064,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 
       <!-- Previous -->
       <div class="button">
-        <i id="rewindbutto" class="fas fa-step-backward"></i>
+        <i id="back" class="fas fa-step-backward"></i>
       </div>
 
       <!-- Play -->
@@ -4069,7 +4076,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 
       <!-- Next -->
       <div class="button">
-        <i id="fastForwardbutto" class="fas fa-step-forward"></i>
+        <i id="next" class="fas fa-step-forward"></i>
       </div>
 
       <!-- Repeat -->
