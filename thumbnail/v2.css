@@ -1,10 +1,4 @@
-#SThumb {
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  position: relative;
-box-shadow: 0 0 20px #000; /* Add dark black shadow */
-}
+
 #Fimg {
   width: 80;
   height: 60px;
