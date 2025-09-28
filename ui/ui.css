@@ -171,7 +171,7 @@ body {
 .button {
   width: 60px;
   height: 60px;
-  border-radius: 6px; /* less curved */
+  border-radius: 6px;
   background: #111;
   color: #ff0000;
   font-size: 1.4rem;
@@ -192,13 +192,13 @@ body {
   transform: scale(0.95);
 }
 
-/* 🔘 Play button square + neon */
-#play {
+/* 🔘 Play button larger neon */
+#play, #playvfy {
   width: 90px;
   height: 90px;
-  border-radius: 6px; /* square with small curve */
+  border-radius: 6px;
   background: #111;
-  color: #ff0000;
+  color: #0ff;
   font-size: 2rem;
   display: flex;
   justify-content: center;
@@ -208,38 +208,120 @@ body {
   transition: all 0.3s ease;
 }
 
-#play:hover {
+#play:hover, #playvfy:hover {
   transform: scale(1.1);
   color: #0ff;
   box-shadow: 0 0 35px #0ff, 0 0 70px #ff0000, 0 0 90px #ff0000;
 }
 
-/* Volume container with neon speaker */
-.volume-container {
-  display: flex;
-  align-items: center;
-  width: 90%;
-  justify-content: center;
-  gap: 10px;
-}
-
-.speaker {
-  width: 35px;
-  height: 35px;
-  background: #111;
+/* All other buttons neon style */
+#pichhe, #nextbutto, #repeat, #VFYmp3, #volume10, #volume100, .fa-home {
+  width: 60px;
+  height: 60px;
   border-radius: 6px;
+  background: #111;
+  color: #ff0000;
+  font-size: 1.4rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #ff0000;
-  box-shadow: 0 0 12px #ff0000, 0 0 24px #0ff;
   cursor: pointer;
+  box-shadow: 0 0 12px #ff0000, 0 0 24px #0ff;
   transition: all 0.25s ease;
 }
 
-.speaker:hover {
+#pichhe:hover, #nextbutto:hover, #repeat:hover, #VFYmp3:hover, #volume10:hover, #volume100:hover, .fa-home:hover {
   color: #0ff;
   box-shadow: 0 0 20px #0ff, 0 0 40px #ff0000;
+}
+
+#pichhe:active, #nextbutto:active, #repeat:active, #VFYmp3:active, #volume10:active, #volume100:active, .fa-home:active {
+  transform: scale(0.95);
+}
+
+/* Volume container */
+#volume-container {
+  position: absolute;
+  right: 15px;
+  top: 60%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 3;
+}
+
+#volumeBox {
+  position: relative;
+  width: 50px;
+  height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 3;
+}
+
+/* Dark background behind volume slider and speakers */
+#volume-bg {
+  position: absolute;
+  width: 50px;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  border-radius: 25px;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.speaker-top, .speaker-bottom {
+  width: 40px;
+  height: 40px;
+  background: rgba(0,0,0,0.7);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  color: #ff0000;
+  box-shadow: 0 0 12px #ff0000, 0 0 24px #0ff;
+  cursor: pointer;
+}
+
+.speaker-top:hover, .speaker-bottom:hover {
+  color: #0ff;
+  box-shadow: 0 0 20px #0ff, 0 0 40px #ff0000;
+}
+
+/* Vertical Slider */
+#volumeSlider {
+  -webkit-appearance: none;
+  width: 150px;
+  height: 6px;
+  transform: rotate(-90deg);
+  background: rgba(0,255,255,0.2);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+  z-index: 3;
+}
+
+#volumeSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #0ff;
+  cursor: pointer;
+  box-shadow: 0 0 10px #0ff;
+}
+
+#volumeSlider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #0ff;
+  cursor: pointer;
+  box-shadow: 0 0 10px #0ff;
 }
 
 /* Responsive */
@@ -247,6 +329,6 @@ body {
   .thumbnail-border { height: 50vw; width: 50vw; }
   .song-title { font-size: 1.5rem; }
   .button { width: 50px; height: 50px; font-size: 1.2rem; }
-  #play { width: 70px; height: 70px; font-size: 1.6rem; }
-  #volumeSliderContainer, .volumebar { width: 150px; }
+  #play, #playvfy { width: 70px; height: 70px; font-size: 1.6rem; }
+  #volumeSliderContainer, #volumeBox { width: 150px; }
 }
