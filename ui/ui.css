@@ -6,8 +6,8 @@ html, body {
   width: 100%;
   height: 100%;
   font-family: "Public Sans", sans-serif;
-  background: radial-gradient(circle at top, #0f0c1d, #050309 90%);
-  color: #fff;
+  background: linear-gradient(135deg, #dadada, #f5f5f5);
+  color: #333;
 }
 
 body {
@@ -30,14 +30,14 @@ body {
   justify-content: space-between;
   padding: 12px 20px;
   font-size: 1.2rem;
-  color: #0ff;
-  background: rgba(0, 0, 0, 0.1);
+  color: #222;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(15px);
   z-index: 9999;
-  box-shadow: 0 0 15px rgba(0,255,255,0.3);
-  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-/* 🎵 Neon Thumbnail */
+/* 🎵 Thumbnail */
 .thumbnail-border {
   height: 46vw;
   width: 46vw;
@@ -46,14 +46,10 @@ body {
   min-width: 180px;
   min-height: 180px;
   margin: 20px auto;
-  border-radius: 50%;
+  border-radius: 12px;
   padding: 6px;
-  background: linear-gradient(45deg, #0ff, #ff0000);
-  box-shadow:
-    0 0 25px #0ff,
-    0 0 45px #ff0000,
-    0 0 65px #ff0000,
-    inset 0 0 15px rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -62,15 +58,15 @@ body {
 .thumbnail-border img {
   height: 100%;
   width: 100%;
-  border-radius: 50%;
+  border-radius: 12px;
   object-fit: cover;
-  box-shadow: inset 0 0 25px rgba(0,255,255,0.3);
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.1);
   transition: all 0.3s ease;
 }
 
 .thumbnail-border img:hover {
-  transform: scale(1.05);
-  box-shadow: inset 0 0 35px rgba(0,255,255,0.5);
+  transform: scale(1.03);
+  box-shadow: inset 0 0 12px rgba(0,0,0,0.15);
 }
 
 /* 🎶 Song info */
@@ -82,21 +78,17 @@ body {
 .song-title {
   font-size: 1.9rem;
   font-weight: 700;
-  color: #0ff;
-  text-shadow:
-    0 0 5px #0ff,
-    0 0 15px #0ff,
-    0 0 25px #ff0000;
+  color: #222;
+  text-shadow: none;
   margin-bottom: 5px;
 }
 
 .artist {
   font-size: 1rem;
-  color: #ff0000;
-  text-shadow: 0 0 5px #ff0000;
+  color: #666;
 }
 
-/* 📊 Neon Sliders */
+/* 📊 Sliders */
 #time-slider, #volumeSliderContainer {
   width: 90%;
   margin: 20px auto;
@@ -105,10 +97,9 @@ body {
 .slider, #volumeSlider {
   -webkit-appearance: none;
   width: 100%;
-  height: 12px;
-  border-radius: 15px;
-  background: #111;
-  box-shadow: inset 0 0 6px rgba(0,255,255,0.3);
+  height: 10px;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.1);
   outline: none;
   cursor: pointer;
   transition: all 0.25s ease;
@@ -117,28 +108,27 @@ body {
 .slider::-webkit-slider-thumb,
 #volumeSlider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: #0ff;
-  box-shadow: 0 0 10px #0ff, 0 0 20px #ff0000;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  background: #444;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .slider::-webkit-slider-thumb:hover,
 #volumeSlider::-webkit-slider-thumb:hover {
-  background: #ff0000;
-  box-shadow: 0 0 12px #ff0000, 0 0 25px #0ff;
+  background: #222;
 }
 
 .slider::-moz-range-thumb,
 #volumeSlider::-moz-range-thumb {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: #0ff;
-  box-shadow: 0 0 10px #0ff, 0 0 20px #ff0000;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  background: #444;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
 /* Time display */
@@ -146,13 +136,11 @@ body {
   display: flex;
   justify-content: space-between;
   font-size: 0.75rem;
-  color: #0ff;
+  color: #444;
   margin-top: 5px;
-  text-shadow: 0 0 5px #0ff;
 }
 
-
-/* 🎛 Controls Bottom Glass */
+/* 🎛 Controls bottom */
 #song-controls {
   display: flex;
   justify-content: center;
@@ -163,38 +151,60 @@ body {
   position: fixed;
   bottom: 0;
   left: 0;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.4);
   backdrop-filter: blur(15px);
-  border-top: 1px solid rgba(255,255,255,0.2);
-  border-radius: 12px 12px 0 0;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
 }
 
-/* Buttons Glass */
-.button, #play, .speaker {
+/* Buttons style */
+.button {
   width: 60px;
   height: 60px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.1);
-  color: #fff;
+  border-radius: 10px; /* हल्का curve */
+  background: rgba(255, 255, 255, 0.5);
+  color: #333;
+  font-size: 1.4rem;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transition: all 0.25s ease;
 }
 
-.button:hover, #play:hover, .speaker:hover {
-  box-shadow: 0 0 8px rgba(255,255,255,0.3);
+.button:hover {
+  background: rgba(255,255,255,0.8);
+  color: #000;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.2);
 }
 
+.button:active {
+  transform: scale(0.95);
+}
+
+/* 🔘 Play button */
 #play {
-  width: 0px;
-  height: 80px;
-  font-size: 1.8rem;
+  width: 90px;
+  height: 90px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.5);
+  color: #333;
+  font-size: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
 }
 
-/* Volume container with neon speaker */
+#play:hover {
+  transform: scale(1.07);
+  background: rgba(255,255,255,0.8);
+  color: #000;
+}
+
+/* Volume container */
 .volume-container {
   display: flex;
   align-items: center;
@@ -206,20 +216,20 @@ body {
 .speaker {
   width: 35px;
   height: 35px;
-  background: #111;
-  border-radius: 6px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 8px;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #ff0000;
-  box-shadow: 0 0 12px #ff0000, 0 0 24px #0ff;
+  color: #333;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
   cursor: pointer;
   transition: all 0.25s ease;
 }
 
 .speaker:hover {
-  color: #0ff;
-  box-shadow: 0 0 20px #0ff, 0 0 40px #ff0000;
+  background: rgba(255,255,255,0.8);
+  color: #000;
 }
 
 /* Responsive */
