@@ -38,7 +38,7 @@ function shareSessionId() {
         return;
     }
 
-    const shareUrl = `https://vfy.netlify.app?sid=${sessionId}`;
+    const shareUrl = `https://vidofy.vercel.app?sid=${sessionId}`;
 
     if (navigator.share) {
         navigator.share({
