@@ -189,7 +189,7 @@ body {
 }
 
 #play {
-  width: 80px;
+  width: 0px;
   height: 80px;
   font-size: 1.8rem;
 }
