@@ -66,13 +66,6 @@
 
     
 
-<button id="nextsong"></button>
-<button id="prevsing"></button>
-
-
-
-
-
 <button id="nextbutto">Next</button>
 <button id="pichhe">Pichhe</button>
 <button id="volume50">Volume 50%</button>
@@ -82,30 +75,36 @@
 </b>
 
 <script>
-function addAlias(newId, oldId) {
-  let el = document.getElementById(oldId);
-  if (!el) return;
+// Function to add alias with alert
+function addAlias(oldId, newId, message) {
+  const original = document.getElementById(oldId);
+  if (!original) return;
 
-  // original button ka action
-  el.onclick = () => alert(oldId + " clicked!");
+  // Original button click
+  original.addEventListener("click", () => alert(message + " (Original)"));
 
-  // proxy element with new id
-  let proxy = document.createElement("div");
+  // Create proxy button for alias
+  const proxy = document.createElement("button");
   proxy.id = newId;
-  proxy.style.display = "none";
+  proxy.style.display = "none"; // hidden
   proxy.addEventListener("click", () => {
-    el.click();
-    alert(newId + " clicked!");
+    original.click(); // trigger original
+    alert(message + " (Alias)"); // alias alert
   });
   document.body.appendChild(proxy);
 }
 
-// sabhi buttons ke liye alias banao
-addAlias("nextsong", "nextbutto");
-addAlias("prevsong", "pichhe");
-addAlias("vol50song", "volume50");
-addAlias("vol100song", "volume100");
-addAlias("playsong", "play");
+// Mapping: oldId, newId, message
+const buttons = [
+  ["nextbutto", "nextsong", "Next clicked"],
+  ["pichhe", "prevsong", "Prev clicked"],
+  ["volume50", "vol50song", "Volume 50 clicked"],
+  ["volume100", "vol100song", "Volume 100 clicked"],
+  ["play", "playsong", "Play clicked"]
+];
+
+// Apply alias for all
+buttons.forEach(b => addAlias(b[0], b[1], b[2]));
 </script>
 
 
