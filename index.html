@@ -2272,45 +2272,21 @@ document.getElementById("vivekmasona").onclick = ()=>{
         };
 
     
-var audio = document.getElementById("SAudio");  
-var isRepeat = false; // repeat flag
+
+var audio = document.getElementById("SAudio");
+var isRepeat = false;
 var Sid = 0; // Current song index
-
-// Playlist items
 var playlistItems = document.getElementsByClassName("list");
+var currentNotification = null;
+var marqueeInterval = null;
+var marqueeIndex = 0;
+var titleParts = [];
 
-// ==================== FUNCTIONS ==================== //
-
-// Play next song (common)
-function playNextSong() {
-    var nextSongIndex = Sid + 1;
-    if(nextSongIndex < playlistItems.length) {
-        playlistItems[nextSongIndex].click();
-        audio.play();
-        Sid = nextSongIndex;
-        updateProfileThumbnail();
-        console.log("Next song played. Index:", Sid);
-    } else {
-        console.log("End of playlist");
-    }
-}
-
-// Play previous song (common)
-function playPreviousSong() {
-    var prevSongIndex = Sid - 1;
-    if(prevSongIndex >= 0) {
-        playlistItems[prevSongIndex].click();
-        audio.play();
-        Sid = prevSongIndex;
-        updateProfileThumbnail();
-        console.log("Previous song played. Index:", Sid);
-    } else {
-        console.log("Start of playlist");
-    }
-}
+// ==================== HELPER FUNCTIONS ==================== //
 
 // Update profile thumbnail & video ID
 function updateProfileThumbnail() {
+    if(!playlistItems[Sid]) return;
     var currentSong = playlistItems[Sid];
     var thumbnail = $(currentSong).children('img').attr("src");
     var videoId = $(currentSong).attr("vid");
@@ -2318,51 +2294,161 @@ function updateProfileThumbnail() {
     $("#profileThumbnail").data("videoId", videoId);
 }
 
-// Profile player functions
-function playNextSongProfile() {
-    playNextSong(); // reuse logic
-    console.log("Profile next clicked");
+// Get current song title
+function getCurrentTitle() {
+    if(!playlistItems[Sid]) return "Unknown Title";
+    return $(playlistItems[Sid]).attr("title") || "Unknown Title";
 }
 
-function playPreviousSongProfile() {
-    playPreviousSong(); // reuse logic
-    console.log("Profile previous clicked");
+// Split title for marquee
+function splitTitleForMarquee(fullTitle) {
+    const length = fullTitle.length;
+    const partSize = Math.ceil(length / 4);
+    titleParts = [];
+    for (let i = 0; i < 4; i++) {
+        const start = i * partSize;
+        const end = start + partSize;
+        titleParts.push(fullTitle.substring(start, end));
+    }
+    while(titleParts.length < 4) titleParts.push("");
+    marqueeIndex = 0;
 }
 
-// ==================== EVENT LISTENERS ==================== //
+// Show marquee notification
+function showNotification() {
+    const title = getCurrentTitle();
+    const thumbnailUrl = playlistItems[Sid] ? $(playlistItems[Sid]).children('img').attr("src") : "";
 
-// MAIN PLAYER
-document.getElementById("nextbutto").addEventListener("click", playNextSong);
-document.getElementById("pichhe").addEventListener("click", playPreviousSong);
+    splitTitleForMarquee(title);
 
-// PROFILE PLAYER
-document.getElementById("nextbutton").addEventListener("click", playNextSongProfile);
-document.getElementById("prev").addEventListener("click", playPreviousSongProfile);
+    if (Notification.permission === 'granted') {
+        createNotification(titleParts[marqueeIndex], thumbnailUrl);
 
-// PLAY / PAUSE BUTTON
+        if (marqueeInterval) clearInterval(marqueeInterval);
+        marqueeInterval = setInterval(() => {
+            marqueeIndex = (marqueeIndex + 1) % titleParts.length;
+            createNotification(titleParts[marqueeIndex], thumbnailUrl);
+        }, 2000);
+    } else if(Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+            if(permission === 'granted') showNotification();
+        });
+    }
+}
+
+// Create / update notification
+function createNotification(part, thumbnailUrl) {
+    const options = {
+        body: 'Audio is playing',
+        icon: thumbnailUrl,
+        tag: "song-marquee",
+        renotify: true,
+        actions: [
+            { action: 'prev', title: 'Previous', icon: '' },
+            { action: 'seekbackward', title: 'Rewind', icon: '' },
+            { action: 'seekforward', title: 'Fast Forward', icon: '' },
+            { action: 'heart', title: 'Favorite', icon: '' },
+            { action: 'next', title: 'Next', icon: '' },
+            { action: 'download', title: 'Download', icon: '' }
+        ]
+    };
+
+    currentNotification = new Notification(part, options);
+    currentNotification.onclick = (event) => {
+        if(event.action === 'next') playNextSong();
+        else if(event.action === 'prev') playPreviousSong();
+        else if(event.action === 'seekbackward') audio.currentTime = Math.max(audio.currentTime - 10, 0);
+        else if(event.action === 'seekforward') audio.currentTime = Math.min(audio.currentTime + 10, audio.duration);
+    }
+}
+
+// ==================== MAIN FUNCTIONS ==================== //
+
+function playNextSong() {
+    if(!playlistItems || playlistItems.length === 0) return;
+    var nextIndex = Sid + 1;
+    if(nextIndex >= playlistItems.length) return;
+
+    Sid = nextIndex;
+    playlistItems[Sid].click();
+    audio.play();
+    updateProfileThumbnail();
+    updateMediaSessionMetadata();
+    showNotification();
+}
+
+function playPreviousSong() {
+    if(!playlistItems || playlistItems.length === 0) return;
+    var prevIndex = Sid - 1;
+    if(prevIndex < 0) return;
+
+    Sid = prevIndex;
+    playlistItems[Sid].click();
+    audio.play();
+    updateProfileThumbnail();
+    updateMediaSessionMetadata();
+    showNotification();
+}
+
 function playPause() {
     if(audio.paused) audio.play();
     else audio.pause();
 }
 
-// REPEAT BUTTON
+// ==================== MEDIA SESSION ==================== //
+
+function updateMediaSessionMetadata() {
+    var title = getCurrentTitle();
+    var thumbnailUrl = playlistItems[Sid] ? $(playlistItems[Sid]).children('img').attr("src") : "";
+
+    if('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: title,
+            artist: 'www.vivekmasona.com',
+            album: 'VivekFy',
+            artwork: [
+                { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '192x192', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '256x256', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
+            ]
+        });
+
+        navigator.mediaSession.setActionHandler('play', () => audio.play());
+        navigator.mediaSession.setActionHandler('pause', () => audio.pause());
+        navigator.mediaSession.setActionHandler('nexttrack', playNextSong);
+        navigator.mediaSession.setActionHandler('previoustrack', playPreviousSong);
+        navigator.mediaSession.setActionHandler('seekbackward', () => audio.currentTime = Math.max(audio.currentTime - 10, 0));
+        navigator.mediaSession.setActionHandler('seekforward', () => audio.currentTime = Math.min(audio.currentTime + 10, audio.duration));
+    }
+}
+
+// ==================== EVENT LISTENERS ==================== //
+
+// Buttons
+document.getElementById("nextbutto").addEventListener("click", playNextSong);
+document.getElementById("pichhe").addEventListener("click", playPreviousSong);
+document.getElementById("nextbutton").addEventListener("click", playNextSong);
+document.getElementById("prev").addEventListener("click", playPreviousSong);
 document.getElementById("repeat").addEventListener("click", function() {
     isRepeat = !isRepeat;
     console.log("Repeat mode:", isRepeat ? "ON" : "OFF");
 });
 
-// AUDIO ENDED EVENT
+// Audio events
 audio.addEventListener("ended", function() {
     if(isRepeat) {
         audio.currentTime = 0;
         audio.play();
-        console.log("Song repeated.");
     } else {
-        playNextSong(); // default main player
+        playNextSong();
     }
 });
 
-// AUDIO ERROR HANDLING (fallback sources)
+// ==================== AUDIO FALLBACK ==================== //
+
 var alternativeAudioSources = [
     "https://vivekfy.vercel.app/inv1?id=" + Sid,
     "https://vivekfy.vercel.app/inv2?id=" + Sid,
@@ -2374,8 +2460,8 @@ var alternativeAudioSources = [
 
 var currentAlternativeIndex = 0;
 
-audio.addEventListener("error", function () {
-    setTimeout(function () {
+audio.addEventListener("error", function() {
+    setTimeout(() => {
         audio.src = alternativeAudioSources[currentAlternativeIndex];
         audio.load();
         audio.play();
@@ -2383,6 +2469,11 @@ audio.addEventListener("error", function () {
         console.log("Audio fallback source loaded:", currentAlternativeIndex);
     }, 1000);
 });
+
+// INITIALIZE
+updateProfileThumbnail();
+updateMediaSessionMetadata();
+showNotification();
 
 
 
@@ -2448,186 +2539,11 @@ volumeSlider.addEventListener('input', function () {
    
 
  
- const titleaudio = document.getElementById('SAudio');
-const songTitleElement = document.getElementById('vfytitle');
-const thumbnailElement = document.getElementById('SThumb');
-const nextButtonElement = document.getElementById('nextbutto');
-const prevButtonElement = document.getElementById('pichhe'); // Previous button
-const heartButtonElement = document.getElementById('VFYmp3v2');
-const downloadButtonElement = document.getElementById('VFYmp3');
-
-// Global title variable
-let title = "Vivekfy Har Dil Ki Dhadkan";
-
-// Notification + marquee variables
-let currentNotification = null;
-let marqueeInterval = null;
-let marqueeIndex = 0;
-let titleParts = [];
-
-// Function to update the song title
-function updateTitle() {
-    title = songTitleElement ? songTitleElement.textContent.trim() : "Unknown Title"; 
-    console.log("Updated Title:", title);
-}
-
-// Function to update Media Session metadata
-function updateMediaSessionMetadata() {
-    updateTitle();
-    const thumbnailUrl = thumbnailElement ? thumbnailElement.src : '';
-
-    if ('mediaSession' in navigator) {
-        navigator.mediaSession.metadata = new MediaMetadata({
-            title: title,
-            artist: 'www.vivekmasona.com',
-            album: 'VivekFy',
-            artwork: [
-                { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '192x192', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '256x256', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
-            ]
-        });
-
-        // Media session action handlers
-        navigator.mediaSession.setActionHandler('play', () => titleaudio.play());
-        navigator.mediaSession.setActionHandler('pause', () => titleaudio.pause());
-        navigator.mediaSession.setActionHandler('nexttrack', () => nextButtonElement.click());
-        navigator.mediaSession.setActionHandler('previoustrack', () => prevButtonElement.click());
-        navigator.mediaSession.setActionHandler('seekbackward', () => {
-            titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
-        });
-        navigator.mediaSession.setActionHandler('seekforward', () => {
-            titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
-        });
-    }
-}
-
-// Function to split title into 4 parts
-function splitTitleForMarquee(fullTitle) {
-    const length = fullTitle.length;
-    const partSize = Math.ceil(length / 4);
-    titleParts = [];
-
-    for (let i = 0; i < 4; i++) {
-        const start = i * partSize;
-        const end = start + partSize;
-        titleParts.push(fullTitle.substring(start, end));
-    }
-
-    if (titleParts.length < 4) {
-        while (titleParts.length < 4) titleParts.push("");
-    }
-
-    marqueeIndex = 0;
-}
-
-// Function to create or replace notification
-function createNotification(part, thumbnailUrl) {
-    const options = {
-        body: 'Audio is playing',
-        icon: thumbnailUrl,
-        tag: "song-marquee", // same tag => replaces old notification
-        renotify: true,
-        actions: [
-            { action: 'prev', title: 'Previous', icon: 'path/to/prev-icon.png' },
-            { action: 'seekbackward', title: 'Rewind', icon: 'path/to/seek-back-icon.png' },
-            { action: 'seekforward', title: 'Fast Forward', icon: 'path/to/seek-forward-icon.png' },
-            { action: 'heart', title: 'Favorite', icon: 'path/to/heart-icon.png' },
-            { action: 'next', title: 'Next', icon: 'path/to/next-icon.png' },
-            { action: 'download', title: 'Download', icon: 'path/to/download-icon.png' }
-        ]
-    };
-
-    currentNotification = new Notification(part, options);
-
-    // Handle actions
-    currentNotification.addEventListener('click', (event) => {
-        if (event.action === 'next') nextButtonElement.click();
-        else if (event.action === 'prev') prevButtonElement.click();
-        else if (event.action === 'heart') heartButtonElement.click();
-        else if (event.action === 'download') downloadButtonElement.click();
-        else if (event.action === 'seekbackward') titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
-        else if (event.action === 'seekforward') titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
-    });
-}
-
-// Function to show marquee notification
-function showNotification() {
-    updateTitle();
-    const thumbnailUrl = thumbnailElement ? thumbnailElement.src : '';
-
-    // Split title
-    splitTitleForMarquee(title);
-
-    if (Notification.permission === 'granted') {
-        // First part
-        createNotification(titleParts[marqueeIndex], thumbnailUrl);
-
-        // Clear old interval if any
-        if (marqueeInterval) clearInterval(marqueeInterval);
-
-        // Rotate parts every 2 sec
-        marqueeInterval = setInterval(() => {
-            marqueeIndex = (marqueeIndex + 1) % titleParts.length;
-            createNotification(titleParts[marqueeIndex], thumbnailUrl);
-        }, 2000);
-    } else if (Notification.permission !== 'denied') {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                showNotification();
-            }
-        });
-    }
-}
-
-// Update the Media Session metadata initially
-updateMediaSessionMetadata();
-
-// Event listener when audio plays
-titleaudio.addEventListener('play', () => {
-    updateTitle();
-    document.title = `${title} - ${Math.floor(titleaudio.currentTime)} seconds`;
-    showNotification();
-});
-
-// Event listener when audio pauses
-titleaudio.addEventListener('pause', () => {
-    document.title = 'VIVEKFY-AI';
-});
-
-// Next button
-nextButtonElement.addEventListener('click', () => {
-    updateTitle();
-    updateMediaSessionMetadata();
-    showNotification();
-    console.log('Next song button clicked:', title);
-});
-
-// Previous button
-prevButtonElement.addEventListener('click', () => {
-    updateTitle();
-    updateMediaSessionMetadata();
-    showNotification();
-    console.log('Previous song button clicked:', title);
-});
-
-// Heart button
-heartButtonElement.addEventListener('click', () => {
-    console.log('Heart button clicked:', title);
-});
-
-// Download button
-downloadButtonElement.addEventListener('click', () => {
-    console.log('Download button clicked:', title);
-});
-
-
-
-
-
+ 
+	
+	
+	
+	
 	
 
 const audioPlayer = document.getElementById("SAudio");
