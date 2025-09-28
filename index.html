@@ -59,58 +59,6 @@
 <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <b onclick="alert('This is a stylish alert!')"></b>
-
-
-
-
-
-    
-
-<button id="nextbutto">Next</button>
-<button id="pichhe">Pichhe</button>
-<button id="volume50">Volume 50%</button>
-<button id="volume100">Volume 100%</button>
-<b id="play" style="display:inline-block; padding:5px; border:1px solid #000; cursor:pointer;">
-</b>
-
-<script>
-// Function to add alias with alert
-function addAlias(oldId, newId, message) {
-  const original = document.getElementById(oldId);
-  if (!original) return;
-
-  // Original button click
-  original.addEventListener("click", () => alert(message + " (Original)"));
-
-  // Create proxy button for alias
-  const proxy = document.createElement("button");
-  proxy.id = newId;
-  proxy.style.display = "none"; // hidden
-  proxy.addEventListener("click", () => {
-    original.click(); // trigger original
-    alert(message + " (Alias)"); // alias alert
-  });
-  document.body.appendChild(proxy);
-}
-
-// Mapping: oldId, newId, message
-const buttons = [
-  ["nextbutto", "nextsong", "Next clicked"],
-  ["pichhe", "prevsong", "Prev clicked"],
-  ["volume50", "vol50song", "Volume 50 clicked"],
-  ["volume100", "vol100song", "Volume 100 clicked"],
-  ["play", "play12", "Play clicked"]
-];
-
-// Apply alias for all
-buttons.forEach(b => addAlias(b[0], b[1], b[2]));
-</script>
-
-
-
-
-
-
   
  <!-- Fullscreen Stylish Loader -->
 <div id="loader" style="
