@@ -6,13 +6,13 @@ html, body {
   width: 100%;
   height: 100%;
   font-family: "Public Sans", sans-serif;
-  background: rgba(255,255,255,0.05); /* light glass feel */
+  background: rgba(255,255,255,0.05);
   color: #fff;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   box-sizing: border-box;
-  padding-top: 60px;
+  padding-top: 60px; /* top-menu height */
   backdrop-filter: blur(10px);
 }
 
@@ -23,14 +23,14 @@ html, body {
   left: 0;
   width: 100%;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 12px 20px;
   font-size: 1.2rem;
-  color: #0ff; /* neon accent */
+  color: #fff;
   background: rgba(255,255,255,0.1);
   backdrop-filter: blur(15px);
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.2);
   z-index: 9999;
 }
@@ -64,10 +64,10 @@ html, body {
 
 .thumbnail-border img:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 15px rgba(0,255,255,0.3);
+  box-shadow: inset 0 0 10px rgba(255,255,255,0.2);
 }
 
-/* 🎶 Song Info */
+/* 🎶 Song info */
 #song-details {
   text-align: center;
   margin: 15px 20px;
@@ -76,22 +76,22 @@ html, body {
 .song-title {
   font-size: 1.9rem;
   font-weight: 700;
-  color: #0ff; /* neon accent */
-  text-shadow: 0 0 5px #0ff;
+  color: #fff;
+  text-shadow: 0 0 3px rgba(255,255,255,0.2);
   margin-bottom: 5px;
 }
 
 .artist {
   font-size: 1rem;
-  color: #0ff;
-  text-shadow: 0 0 5px #0ff;
+  color: #fff;
+  text-shadow: 0 0 3px rgba(255,255,255,0.2);
 }
 
-/* 📊 Sliders minimal neon glass */
+/* 📊 Sliders Glass */
 #time-slider, #volumeSliderContainer {
   width: 90%;
   margin: 20px auto;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.08);
   border-radius: 12px;
   padding: 6px;
   backdrop-filter: blur(10px);
@@ -102,7 +102,7 @@ html, body {
   width: 100%;
   height: 10px;
   border-radius: 15px;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.15);
   outline: none;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -114,21 +114,21 @@ html, body {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #0ff;
+  background: #fff;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .slider::-webkit-slider-thumb:hover,
 #volumeSlider::-webkit-slider-thumb:hover {
-  box-shadow: 0 0 10px #0ff;
+  box-shadow: 0 0 6px rgba(255,255,255,0.3);
 }
 
 .slider-times {
   display: flex;
   justify-content: space-between;
   font-size: 0.75rem;
-  color: #0ff;
+  color: #fff;
   margin-top: 5px;
 }
 
@@ -137,25 +137,25 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   width: 100%;
-  padding: 14px 0;
+  padding: 16px 0;
   position: fixed;
   bottom: 0;
   left: 0;
   background: rgba(255,255,255,0.08);
   backdrop-filter: blur(15px);
   border-top: 1px solid rgba(255,255,255,0.2);
-  border-radius: 10px 10px 0 0;
+  border-radius: 12px 12px 0 0;
 }
 
-/* Buttons minimal neon */
+/* Buttons Glass */
 .button, #play, .speaker {
   width: 60px;
   height: 60px;
   border-radius: 12px;
   background: rgba(255,255,255,0.1);
-  color: #0ff;
+  color: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -165,7 +165,7 @@ html, body {
 }
 
 .button:hover, #play:hover, .speaker:hover {
-  box-shadow: 0 0 12px #0ff;
+  box-shadow: 0 0 8px rgba(255,255,255,0.3);
 }
 
 #play {
