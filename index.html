@@ -1,7 +1,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
-<link  href='/img/nf.png' rel='apple-touch-icon' sizes='180x180'/>
-<link  href='/img/nf.png' rel='icon' sizes='32x32' type='image/png'/>
-<link  href='/img/nf.png' rel='icon' sizes='16x16' type='image/png'/>
+<link href='/img/nf.png' rel='apple-touch-icon' sizes='180x180'/>
+<link href='/img/nf.png' rel='icon' sizes='32x32' type='image/png'/>
+<link href='/img/nf.png' rel='icon' sizes='16x16' type='image/png'/>
 <script src="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery-1.11.3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery-mobile.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery.mobile-1.4.5.min.css" />
@@ -22,9 +22,8 @@
 <link rel="stylesheet" href="gesture/toggle.css" />
 <link rel="stylesheet" href="remote/remote.css" />
 <link rel="stylesheet" href="slideshow/slide.css" />
-<link rel="stylesheet" href="thumbnail/v2.css" />
+<link rel="stylesheet" href="thumbnail/thumbnail.css" />
 <link rel="stylesheet" href="ui/ui.css" />
-<link rel="stylesheet" href="uimodal/modal11.css" />
 <link rel="stylesheet" href="footer/footer.css" />
 <link rel="stylesheet" href="mode/ytcontrol.css" />
 <link rel="stylesheet" href="mode/mode.css" />
@@ -50,7 +49,6 @@
 <script src="detail/detail.js" defer></script>
 <script src="setting/setting.js" defer></script>
 <script src="call/call.js" defer></script>
-<script src="ui/uicolor11.js" defer></script>
 <script src="copy/copy.js" defer></script>
 <script src="slideshow/slide.js" defer></script>
 <script src="device/brand.js" defer></script>
@@ -59,6 +57,15 @@
 <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <b onclick="alert('This is a stylish alert!')"></b>
+
+
+
+
+
+
+    
+
+
   
  <!-- Fullscreen Stylish Loader -->
 <div id="loader" style="
@@ -201,11 +208,7 @@ window.addEventListener("load", ()=>{
     
 
   
-
     
-
-
-
 
 
 
@@ -2272,208 +2275,120 @@ document.getElementById("vivekmasona").onclick = ()=>{
         };
 
     
+var audio = document.getElementById("SAudio");  
+var isRepeat = false; // repeat flag
 
-var audio = document.getElementById("SAudio");
-var isRepeat = false;
-var Sid = 0; // Current song index
-var playlistItems = document.getElementsByClassName("list");
-var currentNotification = null;
-var marqueeInterval = null;
-var marqueeIndex = 0;
-var titleParts = [];
+// Function to play the next song  
+function playNextSong() {  
+    var nextSongIndex = Sid + 1; // Calculate the index of the next song  
+    var playlistItems = document.getElementsByClassName("list");  
 
-// ==================== HELPER FUNCTIONS ==================== //
+    if (nextSongIndex < playlistItems.length) {  
+        playlistItems[nextSongIndex].click(); // Play the next song  
+        audio.play(); // Play the audio  
 
-// Update profile thumbnail & video ID
-function updateProfileThumbnail() {
-    if(!playlistItems[Sid]) return;
-    var currentSong = playlistItems[Sid];
-    var thumbnail = $(currentSong).children('img').attr("src");
-    var videoId = $(currentSong).attr("vid");
-    $("#profileThumbnail").html('<img src="' + thumbnail + '" alt="Profile Thumbnail">');
-    $("#profileThumbnail").data("videoId", videoId);
-}
+        // Update the profile thumbnail and video ID for the next song  
+        var nextSong = playlistItems[nextSongIndex];  
+        var nextThumbnail = $(nextSong).children('img').attr("src");  
+        var nextVideoId = $(nextSong).attr("vid");  
+        $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');  
+        $("#profileThumbnail").data("videoId", nextVideoId);  
 
-// Get current song title
-function getCurrentTitle() {
-    if(!playlistItems[Sid]) return "Unknown Title";
-    return $(playlistItems[Sid]).attr("title") || "Unknown Title";
-}
+        Sid = nextSongIndex; // update Sid  
+        console.log('Automatically went to the next song and started playing.');  
+    } else {  
+        console.log('End of playlist');  
+    }  
+}  
 
-// Split title for marquee
-function splitTitleForMarquee(fullTitle) {
-    const length = fullTitle.length;
-    const partSize = Math.ceil(length / 4);
-    titleParts = [];
-    for (let i = 0; i < 4; i++) {
-        const start = i * partSize;
-        const end = start + partSize;
-        titleParts.push(fullTitle.substring(start, end));
-    }
-    while(titleParts.length < 4) titleParts.push("");
-    marqueeIndex = 0;
-}
+// Function to play the previous song  
+function playPreviousSong() {  
+    var prevSongIndex = Sid - 1; // Calculate the index of the previous song  
+    var playlistItems = document.getElementsByClassName("list");  
 
-// Show marquee notification
-function showNotification() {
-    const title = getCurrentTitle();
-    const thumbnailUrl = playlistItems[Sid] ? $(playlistItems[Sid]).children('img').attr("src") : "";
+    if (prevSongIndex >= 0) {  
+        playlistItems[prevSongIndex].click(); // Play the previous song  
+        audio.play(); // Play the audio  
 
-    splitTitleForMarquee(title);
+        // Update the profile thumbnail and video ID for the previous song  
+        var prevSong = playlistItems[prevSongIndex];  
+        var prevThumbnail = $(prevSong).children('img').attr("src");  
+        var prevVideoId = $(prevSong).attr("vid");  
+        $("#profileThumbnail").html('<img src="' + prevThumbnail + '" alt="Profile Thumbnail">');  
+        $("#profileThumbnail").data("videoId", prevVideoId);  
 
-    if (Notification.permission === 'granted') {
-        createNotification(titleParts[marqueeIndex], thumbnailUrl);
+        Sid = prevSongIndex; // update Sid  
+        console.log('Automatically went to the previous song and started playing.');  
+    } else {  
+        console.log('Start of playlist');  
+    }  
+}  
 
-        if (marqueeInterval) clearInterval(marqueeInterval);
-        marqueeInterval = setInterval(() => {
-            marqueeIndex = (marqueeIndex + 1) % titleParts.length;
-            createNotification(titleParts[marqueeIndex], thumbnailUrl);
-        }, 2000);
-    } else if(Notification.permission !== 'denied') {
-        Notification.requestPermission().then(permission => {
-            if(permission === 'granted') showNotification();
-        });
-    }
-}
+function playPause() {  
+   var audio = document.getElementById("SAudio");  
 
-// Create / update notification
-function createNotification(part, thumbnailUrl) {
-    const options = {
-        body: 'Audio is playing',
-        icon: thumbnailUrl,
-        tag: "song-marquee",
-        renotify: true,
-        actions: [
-            { action: 'prev', title: 'Previous', icon: '' },
-            { action: 'seekbackward', title: 'Rewind', icon: '' },
-            { action: 'seekforward', title: 'Fast Forward', icon: '' },
-            { action: 'heart', title: 'Favorite', icon: '' },
-            { action: 'next', title: 'Next', icon: '' },
-            { action: 'download', title: 'Download', icon: '' }
-        ]
-    };
+   if (audio.paused) {  
+      audio.play();  
+   } else {  
+      audio.pause();  
+   }  
+}  
 
-    currentNotification = new Notification(part, options);
-    currentNotification.onclick = (event) => {
-        if(event.action === 'next') playNextSong();
-        else if(event.action === 'prev') playPreviousSong();
-        else if(event.action === 'seekbackward') audio.currentTime = Math.max(audio.currentTime - 10, 0);
-        else if(event.action === 'seekforward') audio.currentTime = Math.min(audio.currentTime + 10, audio.duration);
-    }
-}
+// Listen for the 'ended' event  
+audio.addEventListener("ended", function() {  
+    if (isRepeat) {  
+        audio.currentTime = 0;  
+        audio.play();  
+        console.log("Song repeated.");  
+    } else {  
+        playNextSong();  
+    }  
+});  
 
-// ==================== MAIN FUNCTIONS ==================== //
+// Pichhe button listener  
+document.getElementById("pichhe").addEventListener("click", playPreviousSong);  
 
-function playNextSong() {
-    if(!playlistItems || playlistItems.length === 0) return;
-    var nextIndex = Sid + 1;
-    if(nextIndex >= playlistItems.length) return;
-
-    Sid = nextIndex;
-    playlistItems[Sid].click();
-    audio.play();
-    updateProfileThumbnail();
-    updateMediaSessionMetadata();
-    showNotification();
-}
-
-function playPreviousSong() {
-    if(!playlistItems || playlistItems.length === 0) return;
-    var prevIndex = Sid - 1;
-    if(prevIndex < 0) return;
-
-    Sid = prevIndex;
-    playlistItems[Sid].click();
-    audio.play();
-    updateProfileThumbnail();
-    updateMediaSessionMetadata();
-    showNotification();
-}
-
-function playPause() {
-    if(audio.paused) audio.play();
-    else audio.pause();
-}
-
-// ==================== MEDIA SESSION ==================== //
-
-function updateMediaSessionMetadata() {
-    var title = getCurrentTitle();
-    var thumbnailUrl = playlistItems[Sid] ? $(playlistItems[Sid]).children('img').attr("src") : "";
-
-    if('mediaSession' in navigator) {
-        navigator.mediaSession.metadata = new MediaMetadata({
-            title: title,
-            artist: 'www.vivekmasona.com',
-            album: 'VivekFy',
-            artwork: [
-                { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '192x192', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '256x256', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
-            ]
-        });
-
-        navigator.mediaSession.setActionHandler('play', () => audio.play());
-        navigator.mediaSession.setActionHandler('pause', () => audio.pause());
-        navigator.mediaSession.setActionHandler('nexttrack', playNextSong);
-        navigator.mediaSession.setActionHandler('previoustrack', playPreviousSong);
-        navigator.mediaSession.setActionHandler('seekbackward', () => audio.currentTime = Math.max(audio.currentTime - 10, 0));
-        navigator.mediaSession.setActionHandler('seekforward', () => audio.currentTime = Math.min(audio.currentTime + 10, audio.duration));
-    }
-}
-
-// ==================== EVENT LISTENERS ==================== //
-
-// Buttons
-document.getElementById("nextbutto").addEventListener("click", playNextSong);
-document.getElementById("pichhe").addEventListener("click", playPreviousSong);
-document.getElementById("nextbutton").addEventListener("click", playNextSong);
-document.getElementById("prev").addEventListener("click", playPreviousSong);
-document.getElementById("repeat").addEventListener("click", function() {
-    isRepeat = !isRepeat;
-    console.log("Repeat mode:", isRepeat ? "ON" : "OFF");
+// Repeat button listener  
+document.getElementById("repeat").addEventListener("click", function() {  
+    isRepeat = !isRepeat; // toggle repeat  
+    console.log("Repeat mode: " + (isRepeat ? "ON" : "OFF"));  
 });
 
-// Audio events
-audio.addEventListener("ended", function() {
-    if(isRepeat) {
-        audio.currentTime = 0;
-        audio.play();
-    } else {
-        playNextSong();
-    }
-});
-
-// ==================== AUDIO FALLBACK ==================== //
-
+// Listen for the 'error' event
 var alternativeAudioSources = [
-    "https://vivekfy.vercel.app/inv1?id=" + Sid,
-    "https://vivekfy.vercel.app/inv2?id=" + Sid,
-    "https://vivekfy.vercel.app/stream?url=https://youtu.be/" + Sid,
-    "https://vivekfy.vercel.app/tokyo?id=" + Sid,
-    "https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/" + Sid,
-    "https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + Sid
+//"https://vivekfy.vercel.app/tokyo?id=" + id,
+//"https://vivekfy.vercel.app/audio-dl?url=https://youtu.be/" + id,
+"https://vivekfy.vercel.app/inv1?id=" + id,
+"https://vivekfy.vercel.app/inv2?id=" + id,
+"https://vivekfy.vercel.app/stream?url=https://youtu.be/" + id,
+"https://vivekfy.vercel.app/tokyo?id=" + id,   
+//"https://vivekfy.vercel.app/mp3?url=https://vkrdownloader.xyz/download.php?vkr=https://youtu.be/" + id,
+//"https://vivekfy.vercel.app/mp3?url=https://vkrdownloader.xyz/download.php?vkr=https://youtu.be/" + id,
+//"https://distinctive-netta-vivekfy-608ee81c.koyeb.app/play?url=https://youtu.be/" + id,	
+//"https://distinctive-netta-vivekfy-608ee81c.koyeb.app/play?url=https://youtu.be/" + id,
+"https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/" + id,
+"https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + id,
+    
 ];
 
 var currentAlternativeIndex = 0;
 
-audio.addEventListener("error", function() {
-    setTimeout(() => {
+audio.addEventListener("error", function () {
+    setTimeout(function () {
         audio.src = alternativeAudioSources[currentAlternativeIndex];
         audio.load();
         audio.play();
         currentAlternativeIndex = (currentAlternativeIndex + 1) % alternativeAudioSources.length;
-        console.log("Audio fallback source loaded:", currentAlternativeIndex);
     }, 1000);
 });
 
-// INITIALIZE
-updateProfileThumbnail();
-updateMediaSessionMetadata();
-showNotification();
+
+// butto click event
+var nextbutto = document.getElementById("nextbutto");
+nextbutto.addEventListener("click", function () {
+    playNextSong();
+});
+
 
 
 
@@ -2539,11 +2454,186 @@ volumeSlider.addEventListener('input', function () {
    
 
  
- 
-	
-	
-	
-	
+ const titleaudio = document.getElementById('SAudio');
+const songTitleElement = document.getElementById('vfytitle');
+const thumbnailElement = document.getElementById('SThumb');
+const nextButtonElement = document.getElementById('nextbutto');
+const prevButtonElement = document.getElementById('pichhe'); // Previous button
+const heartButtonElement = document.getElementById('VFYmp3v2');
+const downloadButtonElement = document.getElementById('VFYmp3');
+
+// Global title variable
+let title = "Vivekfy Har Dil Ki Dhadkan";
+
+// Notification + marquee variables
+let currentNotification = null;
+let marqueeInterval = null;
+let marqueeIndex = 0;
+let titleParts = [];
+
+// Function to update the song title
+function updateTitle() {
+    title = songTitleElement ? songTitleElement.textContent.trim() : "Unknown Title"; 
+    console.log("Updated Title:", title);
+}
+
+// Function to update Media Session metadata
+function updateMediaSessionMetadata() {
+    updateTitle();
+    const thumbnailUrl = thumbnailElement ? thumbnailElement.src : '';
+
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: title,
+            artist: 'www.vivekmasona.com',
+            album: 'VivekFy',
+            artwork: [
+                { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '192x192', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '256x256', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
+                { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
+            ]
+        });
+
+        // Media session action handlers
+        navigator.mediaSession.setActionHandler('play', () => titleaudio.play());
+        navigator.mediaSession.setActionHandler('pause', () => titleaudio.pause());
+        navigator.mediaSession.setActionHandler('nexttrack', () => nextButtonElement.click());
+        navigator.mediaSession.setActionHandler('previoustrack', () => prevButtonElement.click());
+        navigator.mediaSession.setActionHandler('seekbackward', () => {
+            titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
+        });
+        navigator.mediaSession.setActionHandler('seekforward', () => {
+            titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
+        });
+    }
+}
+
+// Function to split title into 4 parts
+function splitTitleForMarquee(fullTitle) {
+    const length = fullTitle.length;
+    const partSize = Math.ceil(length / 4);
+    titleParts = [];
+
+    for (let i = 0; i < 4; i++) {
+        const start = i * partSize;
+        const end = start + partSize;
+        titleParts.push(fullTitle.substring(start, end));
+    }
+
+    if (titleParts.length < 4) {
+        while (titleParts.length < 4) titleParts.push("");
+    }
+
+    marqueeIndex = 0;
+}
+
+// Function to create or replace notification
+function createNotification(part, thumbnailUrl) {
+    const options = {
+        body: 'Audio is playing',
+        icon: thumbnailUrl,
+        tag: "song-marquee", // same tag => replaces old notification
+        renotify: true,
+        actions: [
+            { action: 'prev', title: 'Previous', icon: 'path/to/prev-icon.png' },
+            { action: 'seekbackward', title: 'Rewind', icon: 'path/to/seek-back-icon.png' },
+            { action: 'seekforward', title: 'Fast Forward', icon: 'path/to/seek-forward-icon.png' },
+            { action: 'heart', title: 'Favorite', icon: 'path/to/heart-icon.png' },
+            { action: 'next', title: 'Next', icon: 'path/to/next-icon.png' },
+            { action: 'download', title: 'Download', icon: 'path/to/download-icon.png' }
+        ]
+    };
+
+    currentNotification = new Notification(part, options);
+
+    // Handle actions
+    currentNotification.addEventListener('click', (event) => {
+        if (event.action === 'next') nextButtonElement.click();
+        else if (event.action === 'prev') prevButtonElement.click();
+        else if (event.action === 'heart') heartButtonElement.click();
+        else if (event.action === 'download') downloadButtonElement.click();
+        else if (event.action === 'seekbackward') titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
+        else if (event.action === 'seekforward') titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
+    });
+}
+
+// Function to show marquee notification
+function showNotification() {
+    updateTitle();
+    const thumbnailUrl = thumbnailElement ? thumbnailElement.src : '';
+
+    // Split title
+    splitTitleForMarquee(title);
+
+    if (Notification.permission === 'granted') {
+        // First part
+        createNotification(titleParts[marqueeIndex], thumbnailUrl);
+
+        // Clear old interval if any
+        if (marqueeInterval) clearInterval(marqueeInterval);
+
+        // Rotate parts every 2 sec
+        marqueeInterval = setInterval(() => {
+            marqueeIndex = (marqueeIndex + 1) % titleParts.length;
+            createNotification(titleParts[marqueeIndex], thumbnailUrl);
+        }, 2000);
+    } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                showNotification();
+            }
+        });
+    }
+}
+
+// Update the Media Session metadata initially
+updateMediaSessionMetadata();
+
+// Event listener when audio plays
+titleaudio.addEventListener('play', () => {
+    updateTitle();
+    document.title = `${title} - ${Math.floor(titleaudio.currentTime)} seconds`;
+    showNotification();
+});
+
+// Event listener when audio pauses
+titleaudio.addEventListener('pause', () => {
+    document.title = 'VIVEKFY-AI';
+});
+
+// Next button
+nextButtonElement.addEventListener('click', () => {
+    updateTitle();
+    updateMediaSessionMetadata();
+    showNotification();
+    console.log('Next song button clicked:', title);
+});
+
+// Previous button
+prevButtonElement.addEventListener('click', () => {
+    updateTitle();
+    updateMediaSessionMetadata();
+    showNotification();
+    console.log('Previous song button clicked:', title);
+});
+
+// Heart button
+heartButtonElement.addEventListener('click', () => {
+    console.log('Heart button clicked:', title);
+});
+
+// Download button
+downloadButtonElement.addEventListener('click', () => {
+    console.log('Download button clicked:', title);
+});
+
+
+
+
+
 	
 
 const audioPlayer = document.getElementById("SAudio");
@@ -2896,7 +2986,7 @@ recognition.onresult = function(event) {
 	    lastResult.toLowerCase() === 'song next' ||
             lastResult.toLowerCase() === 'change song') {
             // Handle commands for changing to the next song
-            const butto1 = document.getElementById('nextbutton');
+            const butto1 = document.getElementById('nextbutto');
             butto1.click();
             playAudio('/sound/nextsong.mp3'); // Replace with the appropriate audio URL
             commandMatched = true;
@@ -3937,7 +4027,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 
       <!-- Previous -->
       <div class="button">
-        <i id="prev" class="fas fa-step-backward"></i>
+        <i id="pichhe" class="fas fa-step-backward"></i>
       </div>
 
       <!-- Play -->
@@ -3949,7 +4039,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 
       <!-- Next -->
       <div class="button">
-        <i id="nextbutton" class="fas fa-step-forward"></i>
+        <i id="nextbutto" class="fas fa-step-forward"></i>
       </div>
 
       <!-- Repeat -->
@@ -4703,8 +4793,8 @@ window.addEventListener('beforeunload', () => {
 });
 
 /* ---------------- PLACEHOLDER FUNCTIONS ---------------- */
-//function openPopup() { alert('Settings clicked'); }
-//function startDictation() { alert('Microphone clicked'); }
-//function showDetail() { alert('Heart clicked'); }
+function openPopup() { alert('Settings clicked'); }
+function startDictation() { alert('Microphone clicked'); }
+function showDetail() { alert('Heart clicked'); }
 </script>	
 	            
