@@ -64,13 +64,7 @@
 
 
 
-    <button id="nextbutto">Next</button>
-<button id="pichhe">Pichhe</button>
-<button id="volume50">Volume 50%</button>
-<button id="volume100">Volume 100%</button>
-<b id="play" style="display:inline-block; padding:5px; border:1px solid #000; cursor:pointer;">
-  ▶ Play
-</b>
+    
 
 <button id="nextsong"></button>
 <button id="prevsing"></button>
@@ -79,27 +73,46 @@
 
 
 
+<button id="nextbutto">Next</button>
+<button id="pichhe">Pichhe</button>
+<button id="volume50">Volume 50%</button>
+<button id="volume100">Volume 100%</button>
+<b id="play" style="display:inline-block; padding:5px; border:1px solid #000; cursor:pointer;">
+  ▶ Play
+</b>
 
 <script>
 function addAlias(newId, oldId) {
   let el = document.getElementById(oldId);
   if (!el) return;
 
-  // ek invisible proxy element jisme naya id hoga
+  // original button ka action
+  el.onclick = () => alert(oldId + " clicked!");
+
+  // proxy element with new id
   let proxy = document.createElement("div");
   proxy.id = newId;
   proxy.style.display = "none";
-  proxy.addEventListener("click", () => el.click());
+  proxy.addEventListener("click", () => {
+    el.click();
+    alert(newId + " clicked!");
+  });
   document.body.appendChild(proxy);
 }
 
-// sabhi ke liye alias ids
+// sabhi buttons ke liye alias banao
 addAlias("nextsong", "nextbutto");
 addAlias("prevsong", "pichhe");
 addAlias("vol50song", "volume50");
 addAlias("vol100song", "volume100");
 addAlias("playsong", "play");
 </script>
+
+
+
+
+
+
   
  <!-- Fullscreen Stylish Loader -->
 <div id="loader" style="
