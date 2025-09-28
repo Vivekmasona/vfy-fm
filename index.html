@@ -1,7 +1,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
-<link href='/img/nf.png' rel='apple-touch-icon' sizes='180x180'/>
-<link href='/img/nf.png' rel='icon' sizes='32x32' type='image/png'/>
-<link href='/img/nf.png' rel='icon' sizes='16x16' type='image/png'/>
+<link  href='/img/nf.png' rel='apple-touch-icon' sizes='180x180'/>
+<link  href='/img/nf.png' rel='icon' sizes='32x32' type='image/png'/>
+<link  href='/img/nf.png' rel='icon' sizes='16x16' type='image/png'/>
 <script src="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery-1.11.3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery-mobile.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery.mobile-1.4.5.min.css" />
@@ -22,8 +22,9 @@
 <link rel="stylesheet" href="gesture/toggle.css" />
 <link rel="stylesheet" href="remote/remote.css" />
 <link rel="stylesheet" href="slideshow/slide.css" />
-<link rel="stylesheet" href="thumbnail/thumbnail.css" />
+<link rel="stylesheet" href="thumbnail/v2.css" />
 <link rel="stylesheet" href="ui/ui.css" />
+<link rel="stylesheet" href="uimodal/modal11.css" />
 <link rel="stylesheet" href="footer/footer.css" />
 <link rel="stylesheet" href="mode/ytcontrol.css" />
 <link rel="stylesheet" href="mode/mode.css" />
@@ -49,6 +50,7 @@
 <script src="detail/detail.js" defer></script>
 <script src="setting/setting.js" defer></script>
 <script src="call/call.js" defer></script>
+<script src="ui/uicolor11.js" defer></script>
 <script src="copy/copy.js" defer></script>
 <script src="slideshow/slide.js" defer></script>
 <script src="device/brand.js" defer></script>
@@ -62,8 +64,51 @@
 
 
 
-
     
+
+<button id="nextbutto">Next</button>
+<button id="pichhe">Pichhe</button>
+<button id="volume50">Volume 50%</button>
+<button id="volume100">Volume 100%</button>
+<b id="play" style="display:inline-block; padding:5px; border:1px solid #000; cursor:pointer;">
+</b>
+
+<script>
+// Function to add alias with alert
+function addAlias(oldId, newId, message) {
+  const original = document.getElementById(oldId);
+  if (!original) return;
+
+  // Original button click
+  original.addEventListener("click", () => alert(message + " (Original)"));
+
+  // Create proxy button for alias
+  const proxy = document.createElement("button");
+  proxy.id = newId;
+  proxy.style.display = "none"; // hidden
+  proxy.addEventListener("click", () => {
+    original.click(); // trigger original
+    alert(message + " (Alias)"); // alias alert
+  });
+  document.body.appendChild(proxy);
+}
+
+// Mapping: oldId, newId, message
+const buttons = [
+  ["nextbutto", "nextsong", "Next clicked"],
+  ["pichhe", "prevsong", "Prev clicked"],
+  ["volume50", "vol50song", "Volume 50 clicked"],
+  ["volume100", "vol100song", "Volume 100 clicked"],
+  ["play", "play12", "Play clicked"]
+];
+
+// Apply alias for all
+buttons.forEach(b => addAlias(b[0], b[1], b[2]));
+</script>
+
+
+
+
 
 
   
@@ -208,7 +253,11 @@ window.addEventListener("load", ()=>{
     
 
   
+
     
+
+
+
 
 
 
@@ -2986,7 +3035,7 @@ recognition.onresult = function(event) {
 	    lastResult.toLowerCase() === 'song next' ||
             lastResult.toLowerCase() === 'change song') {
             // Handle commands for changing to the next song
-            const butto1 = document.getElementById('nextbutto');
+            const butto1 = document.getElementById('nextbutton');
             butto1.click();
             playAudio('/sound/nextsong.mp3'); // Replace with the appropriate audio URL
             commandMatched = true;
@@ -4793,8 +4842,8 @@ window.addEventListener('beforeunload', () => {
 });
 
 /* ---------------- PLACEHOLDER FUNCTIONS ---------------- */
-function openPopup() { alert('Settings clicked'); }
-function startDictation() { alert('Microphone clicked'); }
-function showDetail() { alert('Heart clicked'); }
+//function openPopup() { alert('Settings clicked'); }
+//function startDictation() { alert('Microphone clicked'); }
+//function showDetail() { alert('Heart clicked'); }
 </script>	
 	            
