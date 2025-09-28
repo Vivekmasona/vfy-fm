@@ -151,7 +151,8 @@ body {
   text-shadow: 0 0 5px #0ff;
 }
 
-/* 🎛 Controls fixed bottom */
+
+/* 🎛 Controls Bottom Glass */
 #song-controls {
   display: flex;
   justify-content: center;
@@ -162,56 +163,35 @@ body {
   position: fixed;
   bottom: 0;
   left: 0;
-  background: rgba(0,0,0,0.2);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 0 15px rgba(0,255,255,0.2);
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(15px);
+  border-top: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px 12px 0 0;
 }
 
-/* Buttons Neon style */
-.button {
+/* Buttons Glass */
+.button, #play, .speaker {
   width: 60px;
   height: 60px;
-  border-radius: 6px; /* less curved */
-  background: #111;
-  color: #ff0000;
-  font-size: 1.4rem;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  box-shadow: 0 0 12px #ff0000, 0 0 24px #0ff;
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
 }
 
-.button:hover {
-  color: #0ff;
-  box-shadow: 0 0 20px #0ff, 0 0 40px #ff0000;
+.button:hover, #play:hover, .speaker:hover {
+  box-shadow: 0 0 8px rgba(255,255,255,0.3);
 }
 
-.button:active {
-  transform: scale(0.95);
-}
-
-/* 🔘 Play button square + neon */
 #play {
-  width: 90px;
-  height: 90px;
-  border-radius: 6px; /* square with small curve */
-  background: #111;
-  color: #ff0000;
-  font-size: 2rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  box-shadow: 0 0 25px #0ff, 0 0 50px #ff0000, 0 0 70px #ff0000;
-  transition: all 0.3s ease;
-}
-
-#play:hover {
-  transform: scale(1.1);
-  color: #0ff;
-  box-shadow: 0 0 35px #0ff, 0 0 70px #ff0000, 0 0 90px #ff0000;
+  width: 80px;
+  height: 80px;
+  font-size: 1.8rem;
 }
 
 /* Volume container with neon speaker */
