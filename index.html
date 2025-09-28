@@ -3991,7 +3991,133 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 </style>
 
 
+<script>
+    // ===== Variables =====
+    const modal = document.getElementById("modal");
+    const audio = document.getElementById("SAudio");
+    let songList = []; // Update this dynamically with your YouTube search results
+    let currentIndex = 0;
 
+    // ===== Load Song =====
+    function loadSong(index) {
+        if(songList.length === 0) return;
+        currentIndex = index;
+        const song = songList[index];
+
+        audio.src = song.url; // Already fetched audio URL
+        audio.play();
+
+        document.getElementById("vfytitle").textContent = song.title;
+        document.getElementById("SThumb").src = song.thumbnail || "/img/newdp.png";
+    }
+
+    // ===== Next / Back =====
+    function playNextSong() {
+        if(songList.length === 0) return;
+        currentIndex++;
+        if(currentIndex >= songList.length) currentIndex = 0;
+        loadSong(currentIndex);
+    }
+
+    function playPreviousSong() {
+        if(songList.length === 0) return;
+        currentIndex--;
+        if(currentIndex < 0) currentIndex = songList.length - 1;
+        loadSong(currentIndex);
+    }
+
+    // ===== Modal Buttons Event Delegation =====
+    modal.addEventListener("click", function(e) {
+        if(e.target.id === "next") playNextSong();
+        if(e.target.id === "back") playPreviousSong();
+        if(e.target.id === "playvfy") {
+            if(audio.paused) audio.play();
+            else audio.pause();
+        }
+    });
+
+    // ===== Autoplay next song on end =====
+    audio.addEventListener("ended", function() {
+        playNextSong();
+    });
+
+    // ===== Modal Open / Close =====
+    function openModal() {
+        modal.style.display = "block";
+        modal.style.opacity = 0;
+        document.addEventListener("keydown", closeModalOnEscape);
+
+        let op = 0;
+        const timer = setInterval(function() {
+            if(op >= 1){
+                clearInterval(timer);
+            }
+            modal.style.opacity = op;
+            op += 0.05;
+        }, 15);
+
+        if(songList.length > 0) loadSong(currentIndex);
+    }
+
+    function closeModal() {
+        document.removeEventListener("keydown", closeModalOnEscape);
+
+        let op = 1;
+        const timer = setInterval(function() {
+            if(op <= 0){
+                clearInterval(timer);
+                modal.style.display = "none";
+            }
+            modal.style.opacity = op;
+            op -= 0.05;
+        }, 15);
+    }
+
+    function closeModalOnEscape(event) {
+        if(event.key === "Escape") closeModal();
+    }
+
+    window.onload = openModal;
+
+    // ===== Volume Slider =====
+    const volumeSlider = document.getElementById("volumeSlider");
+    if(volumeSlider){
+        volumeSlider.addEventListener("input", function() {
+            audio.volume = this.value / 100;
+        });
+    }
+
+    // ===== Quick Volume Buttons =====
+    const volume10 = document.getElementById("volume10");
+    if(volume10) volume10.addEventListener("click", () => { audio.volume = 0; if(volumeSlider) volumeSlider.value = 0; });
+
+    const volume100 = document.getElementById("volume100");
+    if(volume100) volume100.addEventListener("click", () => { audio.volume = 1; if(volumeSlider) volumeSlider.value = 100; });
+
+    // ===== Seekbar =====
+    const seekbar = document.getElementById("seekbar");
+    if(seekbar){
+        audio.addEventListener("timeupdate", function() {
+            if(audio.duration){
+                seekbar.value = (audio.currentTime / audio.duration) * 100;
+                document.getElementById("current-time").textContent = formatTime(audio.currentTime);
+                document.getElementById("total-time").textContent = formatTime(audio.duration);
+            }
+        });
+
+        seekbar.addEventListener("input", function() {
+            if(audio.duration){
+                audio.currentTime = (seekbar.value / 100) * audio.duration;
+            }
+        });
+    }
+
+    function formatTime(seconds){
+        const min = Math.floor(seconds / 60);
+        const sec = Math.floor(seconds % 60);
+        return `${min}:${sec < 10 ? "0"+sec : sec}`;
+    }
+</script>
 
     	
 <!-- The modal container -->
@@ -4133,6 +4259,7 @@ for (let i = 0; i < 5; i++) {
 
 
 }</script>
+	
 
 
 
