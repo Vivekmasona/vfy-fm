@@ -1,32 +1,30 @@
+// Thumbnail jo UI me dikh raha hai
+const poster = document.getElementById("SThumb"); 
+const colorThief = new ColorThief();
+const metaTheme = document.querySelector('meta[name="theme-color"]');
 
-function getAverageColor(imgEl) {
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-  canvas.width = imgEl.naturalWidth;
-  canvas.height = imgEl.naturalHeight;
-  ctx.drawImage(imgEl, 0, 0);
+function updateThemeFromPoster() {
+  if (poster.complete) {
+    let color = colorThief.getColor(poster); // dominant color
+    let rgb = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
 
-  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  let r = 0, g = 0, b = 0, count = 0;
+    // contrast text color
+    let brightness = (color[0]*0.299 + color[1]*0.587 + color[2]*0.114);
+    let textColor = brightness > 186 ? "#000" : "#fff";
 
-  for (let i = 0; i < imageData.data.length; i += 4) {
-    r += imageData.data[i];
-    g += imageData.data[i + 1];
-    b += imageData.data[i + 2];
-    count++;
+    // CSS variables update
+    document.documentElement.style.setProperty("--theme-bg", rgb);
+    document.documentElement.style.setProperty("--theme-text", textColor);
+
+    // Mobile PWA header color
+    if (metaTheme) metaTheme.setAttribute("content", rgb);
   }
-
-  r = Math.floor(r / count);
-  g = Math.floor(g / count);
-  b = Math.floor(b / count);
-
-  return `rgb(${r}, ${g}, ${b})`;
 }
 
-const Fimg = document.getElementById("Fimg");
-if (Fimg) {
-  Fimg.addEventListener("load", () => {
-    const avgColor = getAverageColor(Fimg);
-    document.documentElement.style.setProperty("--ui-color", avgColor);
-  });
+// Jab poster load ya change ho
+poster.addEventListener("load", updateThemeFromPoster);
+
+// Agar song change hota hai aur SThumb update hota hai
+function onSongChange() {
+  updateThemeFromPoster();
 }
