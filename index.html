@@ -61,6 +61,7 @@
 <b onclick="alert('This is a stylish alert!')"></b>
 
 <button id="nextbutto"></button>
+<button id="volume20"></button>
 <button id="pichhe"></button>
 <button id="volume50"></button>
 <button id="volume100"></button>
@@ -2443,11 +2444,16 @@ var audio = document.getElementById("SAudio");
 
 var audio = document.getElementById('SAudio');
 var volume10butto = document.getElementById('volume10');
+	var volume10butto = document.getElementById('volume20');
 var volume50butto = document.getElementById('volume50');
 var volume100butto = document.getElementById('volume100');
 
 volume10butto.addEventListener('click', function () {
     audio.volume = 0; // Set volume to 10%
+});
+
+	volume10butto.addEventListener('click', function () {
+    audio.volume = 0.2; // Set volume to 10%
 });
 
 volume50butto.addEventListener('click', function () {
