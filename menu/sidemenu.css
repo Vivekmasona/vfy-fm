@@ -14,7 +14,7 @@ body {
     position: fixed;  
     z-index: 99999;  
     left: 2px;  
-    top: 30%;  
+    top: 35%;  
     transform: translateY(-50%);  
     width: 50px;  
     padding: 5px;  
