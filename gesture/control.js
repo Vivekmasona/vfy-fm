@@ -21,7 +21,7 @@
 
       const nextBtn=document.getElementById("nextsong");
       const prevBtn=document.getElementById("prevsong");
-      const playBtn=document.getElementById("play");
+      const playBtn=document.getElementById("play12");
       const volLowBtn=document.getElementById("volume10");
       const volHighBtn=document.getElementById("volume100");
       if(!nextBtn||!prevBtn||!playBtn||!volLowBtn||!volHighBtn){
