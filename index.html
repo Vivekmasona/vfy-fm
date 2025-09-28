@@ -2987,7 +2987,7 @@ recognition.onresult = function(event) {
 	    lastResult.toLowerCase() === 'song next' ||
             lastResult.toLowerCase() === 'change song') {
             // Handle commands for changing to the next song
-            const butto1 = document.getElementById('nextbutto');
+            const butto1 = document.getElementById('nextbutton');
             butto1.click();
             playAudio('/sound/nextsong.mp3'); // Replace with the appropriate audio URL
             commandMatched = true;
