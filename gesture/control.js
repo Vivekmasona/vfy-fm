@@ -19,9 +19,9 @@
       const bottomArea=0.2;
       const doubleTapDelay=300;
 
-      const nextBtn=document.getElementById("nextsong");
-      const prevBtn=document.getElementById("prevsong");
-      const playBtn=document.getElementById("play12");
+      const nextBtn=document.getElementById("nextbutto");
+      const prevBtn=document.getElementById("pichhe");
+      const playBtn=document.getElementById("play");
       const volLowBtn=document.getElementById("volume10");
       const volHighBtn=document.getElementById("volume100");
       if(!nextBtn||!prevBtn||!playBtn||!volLowBtn||!volHighBtn){
