@@ -6,8 +6,8 @@ body,html{width:100%;height:100%;font-family:'Poppins',sans-serif;overflow:hidde
 /* Poster background */
 #SThumb{
   position:absolute;
-  top:0;left:0;
-  width:100%;height:100%;
+  top:0; left:0;
+  width:100%; height:100%;
   object-fit:cover;
   z-index:1;
   filter:brightness(0.8);
@@ -19,7 +19,7 @@ body,html{width:100%;height:100%;font-family:'Poppins',sans-serif;overflow:hidde
   bottom:0; left:0;
   width:100%;
   height:80%;
-  background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.0));
+  background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0));
   z-index:2;
 }
 
@@ -47,7 +47,7 @@ body,html{width:100%;height:100%;font-family:'Poppins',sans-serif;overflow:hidde
   color:#dadada;
   display:block;
   letter-spacing:1px;
-  text-shadow: 0 0 6px #00000066;
+  text-shadow:0 0 6px #00000066;
 }
 
 /* Seekbar */
@@ -116,7 +116,7 @@ body,html{width:100%;height:100%;font-family:'Poppins',sans-serif;overflow:hidde
 
 .button i{
   transition:0.3s;
-  text-shadow: 0 0 6px #00000066;
+  text-shadow:0 0 6px #00000066;
 }
 
 /* Button sizes & colors */
@@ -125,16 +125,14 @@ body,html{width:100%;height:100%;font-family:'Poppins',sans-serif;overflow:hidde
   color:#00ffff; /* only play button */
 }
 
-#pichhe,#nextbutto,#repeat,#VFYmp3,.fa-home{
-  color:#dadada;
-}
-
 #pichhe,#nextbutto{
   font-size:34px;
+  color:#dadada;
 }
 
 #repeat,#VFYmp3,.fa-home{
   font-size:24px;
+  color:#dadada;
 }
 
 .button i:hover{
@@ -143,12 +141,12 @@ body,html{width:100%;height:100%;font-family:'Poppins',sans-serif;overflow:hidde
   text-shadow:0 0 12px #00ffff;
 }
 
-/* Modern Vertical Volume */
+/* Vertical Volume */
 #volume-container{
   position:absolute;
   right:15px;
-  top:30%; /* updated to 60% */
-  transform:translateY(-50%);
+  top:30%;
+  transform:none; /* exact 60% top */
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -159,7 +157,7 @@ body,html{width:100%;height:100%;font-family:'Poppins',sans-serif;overflow:hidde
 #volumeBox{
   position:relative;
   width:50px;
-  height:260px; /* height for spacing */
+  height:260px;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -223,7 +221,7 @@ body,html{width:100%;height:100%;font-family:'Poppins',sans-serif;overflow:hidde
   box-shadow:0 0 10px #00ffff;
 }
 
-/* Icons */
+/* Volume Icons */
 #volume10,#volume100{
   font-size:20px;
   color:#dadada;
