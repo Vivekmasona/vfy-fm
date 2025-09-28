@@ -22,7 +22,7 @@
       const nextBtn=document.getElementById("nextbutto");
       const prevBtn=document.getElementById("pichhe");
       const playBtn=document.getElementById("play");
-      const volLowBtn=document.getElementById("volume50");
+      const volLowBtn=document.getElementById("volume20");
       const volHighBtn=document.getElementById("volume100");
       if(!nextBtn||!prevBtn||!playBtn||!volLowBtn||!volHighBtn){
         console.warn("Check all required IDs");
