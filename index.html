@@ -39,7 +39,7 @@
 
 
 
-  <script src="gesture/control.jss" defer></script>
+  <script src="gesture/control.js" defer></script>
   <script src="connect/player.js" defer></script>
 <script src="autocomplate/suggestion.js" defer></script>
 <script src="fullscreen/fs.js" defer></script>
@@ -66,12 +66,11 @@
 
     
 
-<button id="nextbutto">Next</button>
-<button id="pichhe">Pichhe</button>
-<button id="volume50">Volume 50%</button>
-<button id="volume100">Volume 100%</button>
-<b id="play" style="display:inline-block; padding:5px; border:1px solid #000; cursor:pointer;">
-</b>
+<button id="nextbutto"></button>
+<button id="pichhe"></button>
+<button id="volume50"></button>
+<button id="volume100"></button>
+<b id="play"></b>
 
 <script>
 // Function to add alias with alert
@@ -3035,7 +3034,7 @@ recognition.onresult = function(event) {
 	    lastResult.toLowerCase() === 'song next' ||
             lastResult.toLowerCase() === 'change song') {
             // Handle commands for changing to the next song
-            const butto1 = document.getElementById('nextbutton');
+            const butto1 = document.getElementById('nextbutto');
             butto1.click();
             playAudio('/sound/nextsong.mp3'); // Replace with the appropriate audio URL
             commandMatched = true;
@@ -3060,6 +3059,17 @@ recognition.onresult = function(event) {
             playAudio('/sound/rewind1.mp3'); // Replace with the appropriate audio URL
             commandMatched = true;
         }
+	if (lastResult.toLowerCase() === 'back' ||
+            lastResult.toLowerCase() === 'rewind' ||
+            lastResult.toLowerCase() === 'song rewind' ||
+            lastResult.toLowerCase() === 'rewind song' ||
+            lastResult.toLowerCase() === 'pichhe') {
+            // Handle commands for rewinding the song
+            const butto1 = document.getElementById('pichhe');
+            butto1.click();
+            playAudio('/sound/rewind1.mp3'); // Replace with the appropriate audio URL
+            commandMatched = true;
+	}
 	if (lastResult.toLowerCase() === 'developer name' ||
             lastResult.toLowerCase() === 'your developer' ||
             lastResult.toLowerCase() === 'developer' ||
@@ -4072,7 +4082,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 
       <!-- Previous -->
       <div class="button">
-        <i id="pichhe" class="fas fa-step-backward"></i>
+        <i id="rewindbutto" class="fas fa-step-backward"></i>
       </div>
 
       <!-- Play -->
@@ -4084,7 +4094,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 
       <!-- Next -->
       <div class="button">
-        <i id="nextbutto" class="fas fa-step-forward"></i>
+        <i id="fastForwardbutto" class="fas fa-step-forward"></i>
       </div>
 
       <!-- Repeat -->
