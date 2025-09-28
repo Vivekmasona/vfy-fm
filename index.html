@@ -64,13 +64,34 @@
 
 
 
-    <button id="nextbutto"></button>
-<button id="pichhe"></button>
-<button id="volume50"></button>
-<button id="volume100"></button>
-<b id="play"></b>
+    <button id="nextbutto">Next</button>
+<button id="pichhe">Pichhe</button>
+<button id="volume50">Volume 50%</button>
+<button id="volume100">Volume 100%</button>
+<b id="play" style="display:inline-block; padding:5px; border:1px solid #000; cursor:pointer;">
+  ▶ Play
+</b>
 
+<script>
+function addAlias(newId, oldId) {
+  let el = document.getElementById(oldId);
+  if (!el) return;
 
+  // ek invisible proxy element jisme naya id hoga
+  let proxy = document.createElement("div");
+  proxy.id = newId;
+  proxy.style.display = "none";
+  proxy.addEventListener("click", () => el.click());
+  document.body.appendChild(proxy);
+}
+
+// sabhi ke liye alias ids
+addAlias("nextsong", "nextbutto");
+addAlias("prevsong", "pichhe");
+addAlias("vol50song", "volume50");
+addAlias("vol100song", "volume100");
+addAlias("playsong", "play");
+</script>
   
  <!-- Fullscreen Stylish Loader -->
 <div id="loader" style="
@@ -213,7 +234,11 @@ window.addEventListener("load", ()=>{
     
 
   
+
     
+
+
+
 
 
 
@@ -4032,7 +4057,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 
       <!-- Previous -->
       <div class="button">
-        <i id="pichhe" class="fas fa-step-backward"></i>
+        <i id="prevsong" class="fas fa-step-backward"></i>
       </div>
 
       <!-- Play -->
@@ -4044,7 +4069,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 
       <!-- Next -->
       <div class="button">
-        <i id="nextbutto" class="fas fa-step-forward"></i>
+        <i id="nextsong" class="fas fa-step-forward"></i>
       </div>
 
       <!-- Repeat -->
