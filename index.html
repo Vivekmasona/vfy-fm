@@ -3967,77 +3967,101 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-<div class="container">
-  <div id="phone">
-
-    <!-- Poster -->
-    <img id="SThumb" src="https://picsum.photos/600/900" alt="Poster">
-    <div id="poster-overlay"></div>
-
-    <!-- Title & Artist -->
-    <div id="song-details">
-      <h1 id="vfytitle">Epic Futuristic Long Song Title That Stays Static</h1>
-      <span class="artist">Famous Artist Name</span>
-    </div>
-
-    <!-- Seekbar -->
-    <div id="time-slider">
-      <div class="slider-times">
-        <span id="current-time">0:00</span>
-        <span id="total-time">4:32</span>
-      </div>
-      <input type="range" id="seekbar" min="1" max="100" value="0"/>
-    </div>
-
-    <!-- Controls -->
-    <div id="song-controls">
-      <div class="button"><i id="pichhe" class="fas fa-step-backward"></i></div>
-      <div class="button"><i id="playvfy" class="fas fa-play"></i></div>
-      <div class="button"><i id="nextbutto" class="fas fa-step-forward"></i></div>
-      <div class="button"><i id="repeat" class="fas fa-redo"></i></div>
-      <div class="button"><i class="fa fa-home"></i></div>
-      <div class="button"><i id="VFYmp3" class="fas fa-download"></i></div>
-    </div>
-
-    <!-- Vertical Volume -->
-    <div id="volume-container">
-      <div id="volumeBox">
-        <!-- Top Speaker -->
-        <div class="speaker-top speaker-bg">
-          <i class="fa fa-volume-up" id="volume100"></i>
-        </div>
-
-        <!-- Slider with space -->
-        <div style="flex-grow:1; display:flex; align-items:center; justify-content:center;">
-          <input type="range" id="volumeSlider" min="0" max="100" value="100">
-        </div>
-
-        <!-- Bottom Speaker -->
-        <div class="speaker-bottom speaker-bg">
-          <i class="fas fa-volume-mute" id="volume10"></i>
-        </div>
-
-        <!-- Main background behind slider -->
-        <div id="volume-bg"></div>
-      </div>
-    </div>
-
-  </div>
-</div>
-  </div>
-</div>
-<script>
-// Volume slider working
-const audio = document.getElementById('SAudio'); // if exists
-const volumeSlider = document.getElementById('volumeSlider');
-volumeSlider.addEventListener('input', () => {
-  if(audio) audio.volume = volumeSlider.value / 100;
-});
-</script>
-	  
-
+<div class="container"> 
   
- <!-- /container -->
+  <div id="phone">
+  
+    <div id="top-menu">
+  <i class="fas fa-volume-mute" id="volume10"></i>
+  
+  <div id="volumeSliderContainer">
+    <input type="range" id="volumeSlider" min="0" max="100" step="1" value="100"/>
+  </div>
+  
+  <i id="volume100" class="fa fa-volume-up"></i>
+</div><!-- /top-menu -->
+    
+    <div class="thumbnail-border">
+      <div class="audio-player">
+        <div id="thumbnailContainer">
+          <img id="SThumb" src="" alt="/img/newdp.png" onclick="clickButton()">
+          <div id="playButtonOverlay" onclick="playPause()"></div>
+        </div>
+      </div>  
+    </div> <!--/thumbnail-border -->
+    
+    <br>
+    
+    
+    <div id="song-details">
+      <h1 class="song-title" id="vfytitle"></h1>
+      <span class="artist"></span>
+    </div> <!-- /song-details -->
+
+    
+    
+    <b id="stop"></b>
+    <br>
+    <br>
+    <br>
+	 <br>
+	  
+    <div id="time-slider">
+    	
+    <br>
+    	<div id="currentSongTitle"></div>
+    <br>
+      <div class="slider-times">
+        <span id="current-time"></span> 
+        <span id="total-time"></span> 
+      </div>
+      <input type="range" min="1" max="100" value="0" class="slider" id="seekbar" />
+      
+      
+      
+    </div> <!-- /time-slider -->
+    
+    
+	
+    <div id="song-controls">
+
+      <!-- Previous -->
+      <div class="button">
+        <i id="pichhe" class="fas fa-step-backward"></i>
+      </div>
+
+      <!-- Play -->
+      <div class="button">
+        <b id="play" onclick="clickButton()">	
+          <i id="playvfy" class="fas fa-pause" onclick="togglePause()"></i>
+        </b>
+      </div>
+
+      <!-- Next -->
+      <div class="button">
+        <i id="nextbutto" class="fas fa-step-forward"></i>
+      </div>
+
+      <!-- Repeat -->
+      <div class="button">
+        <i id="repeat" class="fas fa-redo"></i>
+      </div>
+
+      <!-- Home -->
+      <div class="button">
+        <i onclick="closeModal()" class="fa fa-home"></i>
+      </div> 
+
+      <!-- Download -->
+      <div class="button">
+        <i id="VFYmp3" class="fas fa-download"></i>
+      </div>
+	    
+    </div><!-- /song-controls -->
+    
+  </div> <!-- /phone -->
+  
+</div> <!-- /container -->
 
 <div id="audio-player">
   <audio id="SAudio" controls style="display: none;">
