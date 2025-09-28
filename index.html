@@ -2326,98 +2326,102 @@ document.getElementById("vivekmasona").onclick = ()=>{
     
 var audio = document.getElementById("SAudio");  
 var isRepeat = false; // repeat flag
+var Sid = 0; // Current song index
 
-// Function to play the next song  
-function playNextSong() {  
-    var nextSongIndex = Sid + 1; // Calculate the index of the next song  
-    var playlistItems = document.getElementsByClassName("list");  
+// Playlist items
+var playlistItems = document.getElementsByClassName("list");
 
-    if (nextSongIndex < playlistItems.length) {  
-        playlistItems[nextSongIndex].click(); // Play the next song  
-        audio.play(); // Play the audio  
+// ==================== FUNCTIONS ==================== //
 
-        // Update the profile thumbnail and video ID for the next song  
-        var nextSong = playlistItems[nextSongIndex];  
-        var nextThumbnail = $(nextSong).children('img').attr("src");  
-        var nextVideoId = $(nextSong).attr("vid");  
-        $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');  
-        $("#profileThumbnail").data("videoId", nextVideoId);  
+// Play next song (common)
+function playNextSong() {
+    var nextSongIndex = Sid + 1;
+    if(nextSongIndex < playlistItems.length) {
+        playlistItems[nextSongIndex].click();
+        audio.play();
+        Sid = nextSongIndex;
+        updateProfileThumbnail();
+        console.log("Next song played. Index:", Sid);
+    } else {
+        console.log("End of playlist");
+    }
+}
 
-        Sid = nextSongIndex; // update Sid  
-        console.log('Automatically went to the next song and started playing.');  
-    } else {  
-        console.log('End of playlist');  
-    }  
-}  
+// Play previous song (common)
+function playPreviousSong() {
+    var prevSongIndex = Sid - 1;
+    if(prevSongIndex >= 0) {
+        playlistItems[prevSongIndex].click();
+        audio.play();
+        Sid = prevSongIndex;
+        updateProfileThumbnail();
+        console.log("Previous song played. Index:", Sid);
+    } else {
+        console.log("Start of playlist");
+    }
+}
 
-// Function to play the previous song  
-function playPreviousSong() {  
-    var prevSongIndex = Sid - 1; // Calculate the index of the previous song  
-    var playlistItems = document.getElementsByClassName("list");  
+// Update profile thumbnail & video ID
+function updateProfileThumbnail() {
+    var currentSong = playlistItems[Sid];
+    var thumbnail = $(currentSong).children('img').attr("src");
+    var videoId = $(currentSong).attr("vid");
+    $("#profileThumbnail").html('<img src="' + thumbnail + '" alt="Profile Thumbnail">');
+    $("#profileThumbnail").data("videoId", videoId);
+}
 
-    if (prevSongIndex >= 0) {  
-        playlistItems[prevSongIndex].click(); // Play the previous song  
-        audio.play(); // Play the audio  
+// Profile player functions
+function playNextSongProfile() {
+    playNextSong(); // reuse logic
+    console.log("Profile next clicked");
+}
 
-        // Update the profile thumbnail and video ID for the previous song  
-        var prevSong = playlistItems[prevSongIndex];  
-        var prevThumbnail = $(prevSong).children('img').attr("src");  
-        var prevVideoId = $(prevSong).attr("vid");  
-        $("#profileThumbnail").html('<img src="' + prevThumbnail + '" alt="Profile Thumbnail">');  
-        $("#profileThumbnail").data("videoId", prevVideoId);  
+function playPreviousSongProfile() {
+    playPreviousSong(); // reuse logic
+    console.log("Profile previous clicked");
+}
 
-        Sid = prevSongIndex; // update Sid  
-        console.log('Automatically went to the previous song and started playing.');  
-    } else {  
-        console.log('Start of playlist');  
-    }  
-}  
+// ==================== EVENT LISTENERS ==================== //
 
-function playPause() {  
-   var audio = document.getElementById("SAudio");  
+// MAIN PLAYER
+document.getElementById("nextbutto").addEventListener("click", playNextSong);
+document.getElementById("pichhe").addEventListener("click", playPreviousSong);
 
-   if (audio.paused) {  
-      audio.play();  
-   } else {  
-      audio.pause();  
-   }  
-}  
+// PROFILE PLAYER
+document.getElementById("nextbutton").addEventListener("click", playNextSongProfile);
+document.getElementById("prev").addEventListener("click", playPreviousSongProfile);
 
-// Listen for the 'ended' event  
-audio.addEventListener("ended", function() {  
-    if (isRepeat) {  
-        audio.currentTime = 0;  
-        audio.play();  
-        console.log("Song repeated.");  
-    } else {  
-        playNextSong();  
-    }  
-});  
+// PLAY / PAUSE BUTTON
+function playPause() {
+    if(audio.paused) audio.play();
+    else audio.pause();
+}
 
-// Pichhe button listener  
-document.getElementById("pichhe").addEventListener("click", playPreviousSong);  
-
-// Repeat button listener  
-document.getElementById("repeat").addEventListener("click", function() {  
-    isRepeat = !isRepeat; // toggle repeat  
-    console.log("Repeat mode: " + (isRepeat ? "ON" : "OFF"));  
+// REPEAT BUTTON
+document.getElementById("repeat").addEventListener("click", function() {
+    isRepeat = !isRepeat;
+    console.log("Repeat mode:", isRepeat ? "ON" : "OFF");
 });
 
-// Listen for the 'error' event
+// AUDIO ENDED EVENT
+audio.addEventListener("ended", function() {
+    if(isRepeat) {
+        audio.currentTime = 0;
+        audio.play();
+        console.log("Song repeated.");
+    } else {
+        playNextSong(); // default main player
+    }
+});
+
+// AUDIO ERROR HANDLING (fallback sources)
 var alternativeAudioSources = [
-//"https://vivekfy.vercel.app/tokyo?id=" + id,
-//"https://vivekfy.vercel.app/audio-dl?url=https://youtu.be/" + id,
-"https://vivekfy.vercel.app/inv1?id=" + id,
-"https://vivekfy.vercel.app/inv2?id=" + id,
-"https://vivekfy.vercel.app/stream?url=https://youtu.be/" + id,
-"https://vivekfy.vercel.app/tokyo?id=" + id,   
-//"https://vivekfy.vercel.app/mp3?url=https://vkrdownloader.xyz/download.php?vkr=https://youtu.be/" + id,
-//"https://vivekfy.vercel.app/mp3?url=https://vkrdownloader.xyz/download.php?vkr=https://youtu.be/" + id,
-//"https://distinctive-netta-vivekfy-608ee81c.koyeb.app/play?url=https://youtu.be/" + id,	
-//"https://distinctive-netta-vivekfy-608ee81c.koyeb.app/play?url=https://youtu.be/" + id,
-"https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/" + id,
-"https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + id,
-    
+    "https://vivekfy.vercel.app/inv1?id=" + Sid,
+    "https://vivekfy.vercel.app/inv2?id=" + Sid,
+    "https://vivekfy.vercel.app/stream?url=https://youtu.be/" + Sid,
+    "https://vivekfy.vercel.app/tokyo?id=" + Sid,
+    "https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/" + Sid,
+    "https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + Sid
 ];
 
 var currentAlternativeIndex = 0;
@@ -2428,16 +2432,9 @@ audio.addEventListener("error", function () {
         audio.load();
         audio.play();
         currentAlternativeIndex = (currentAlternativeIndex + 1) % alternativeAudioSources.length;
+        console.log("Audio fallback source loaded:", currentAlternativeIndex);
     }, 1000);
 });
-
-
-// butto click event
-var nextbutto = document.getElementById("nextbutto");
-nextbutto.addEventListener("click", function () {
-    playNextSong();
-});
-
 
 
 
@@ -4076,7 +4073,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 
       <!-- Previous -->
       <div class="button">
-        <i id="pichhe" class="fas fa-step-backward"></i>
+        <i id="prev" class="fas fa-step-backward"></i>
       </div>
 
       <!-- Play -->
@@ -4088,7 +4085,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 
       <!-- Next -->
       <div class="button">
-        <i id="nextbutto" class="fas fa-step-forward"></i>
+        <i id="nextbutton" class="fas fa-step-forward"></i>
       </div>
 
       <!-- Repeat -->
@@ -4847,4 +4844,3 @@ window.addEventListener('beforeunload', () => {
 //function showDetail() { alert('Heart clicked'); }
 </script>	
 	            
-<script src="gesture/control.js" defer></script>
