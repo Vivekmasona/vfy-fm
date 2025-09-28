@@ -1,18 +1,18 @@
 const poster = document.getElementById("SThumb"); // UI poster
+  const audio = document.getElementById("SAudio"); // audio element
   const metaTheme = document.getElementById("themeColorMeta"); // PWA header
   const colorThief = new ColorThief();
-  const audio = document.getElementById("audio"); // aapke audio element
 
-  // CSS variables update function
+  // Function to update CSS variables & meta color
   function updateThemeFromPoster() {
-    if (!poster.complete) return; // wait if image not loaded
+    if (!poster.complete) return;
 
-    let color = colorThief.getColor(poster); // dominant color
-    let rgb = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
+    const color = colorThief.getColor(poster); // dominant color
+    const rgb = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
 
     // contrast text color
-    let brightness = (color[0]*0.299 + color[1]*0.587 + color[2]*0.114);
-    let textColor = brightness > 186 ? "#000" : "#fff";
+    const brightness = (color[0]*0.299 + color[1]*0.587 + color[2]*0.114);
+    const textColor = brightness > 186 ? "#000" : "#fff";
 
     // Update CSS variables
     document.documentElement.style.setProperty("--theme-bg", rgb);
@@ -22,16 +22,16 @@ const poster = document.getElementById("SThumb"); // UI poster
     if (metaTheme) metaTheme.setAttribute("content", rgb);
   }
 
-  // Trigger when poster loads initially
+  // Trigger on poster load
   poster.addEventListener("load", updateThemeFromPoster);
 
-  // Function to change song and poster
+  // Function to change song + poster
   function onSongChange(newThumbnail, newAudio) {
     // Update poster
     poster.src = newThumbnail;
 
     // Update audio
-    if(newAudio){
+    if (newAudio) {
       audio.src = newAudio;
       audio.play();
     }
@@ -40,9 +40,8 @@ const poster = document.getElementById("SThumb"); // UI poster
     poster.addEventListener("load", updateThemeFromPoster, { once: true });
   }
 
-  // Example: Playlist click (assuming song items have data attributes)
+  // Playlist click example
   const songItems = document.querySelectorAll(".song-item");
-
   songItems.forEach(item => {
     item.addEventListener("click", () => {
       const newThumbnail = item.dataset.thumbnail;
@@ -51,21 +50,21 @@ const poster = document.getElementById("SThumb"); // UI poster
     });
   });
 
-  // Example: Next/Prev buttons
+  // Next/Prev buttons
   const nextButton = document.getElementById("next");
   const prevButton = document.getElementById("prev");
 
   nextButton.addEventListener("click", () => {
-    const nextSong = getNextSong(); // aapka function to get next song data
+    const nextSong = getNextSong(); // return {audio, thumbnail}
     onSongChange(nextSong.thumbnail, nextSong.audio);
   });
 
   prevButton.addEventListener("click", () => {
-    const prevSong = getPrevSong(); // aapka function to get previous song data
+    const prevSong = getPrevSong(); // return {audio, thumbnail}
     onSongChange(prevSong.thumbnail, prevSong.audio);
   });
 
-  // Optional: Autoplay next when current song ends
+  // Autoplay next song when current ends
   audio.addEventListener("ended", () => {
     const nextSong = getNextSong();
     onSongChange(nextSong.thumbnail, nextSong.audio);
