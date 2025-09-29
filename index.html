@@ -66,8 +66,6 @@
 <button id="volume50"></button>
 <button id="volume100"></button>
 <b id="play"></b>
-<div id="fastForwardbutto"></div>
-<div id="rewindbutto"></div>
 
 
 
@@ -993,7 +991,7 @@ width: 50%;
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">search</button></sr>
 	    
 	
-	<button id="next">next</button>
+	
 
    <div id="autocomplete-results"></div>
 <!-- Mode Toggle -->
@@ -1302,10 +1300,8 @@ displayFavorites();
 </i></div>
 <div class="song-title">
 <span id="callStatus"></span>
- <span onclick="openModal()" id="vfytitle"
-  style="width: auto; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
- </span>
-</div>
+ <span onclick="openModal()" id="vfytitle" style="width: auto; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
+</div> 
 <div id="mybutton">
 <b class="feedback"><img id="Fimg" src="/img/play.jpg" alt="Thumbnail" onclick="clickButton()">
 </b>
@@ -2367,9 +2363,7 @@ audio.addEventListener("ended", function() {
 
 // Pichhe button listener  
 document.getElementById("pichhe").addEventListener("click", playPreviousSong);  
-// Pichhe button listener  
-document.getElementById("back").addEventListener("click", playPreviousSong);  
-	
+
 // Repeat button listener  
 document.getElementById("repeat").addEventListener("click", function() {  
     isRepeat = !isRepeat; // toggle repeat  
@@ -2411,11 +2405,7 @@ nextbutto.addEventListener("click", function () {
     playNextSong();
 });
 
-// butto click event
-var nextbutto = document.getElementById("next");
-nextbutto.addEventListener("click", function () {
-    playNextSong();
-});
+
 
 
 
@@ -3954,79 +3944,54 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 <butto id="playVideobutto"></butto>
 
 
-
-
 <style>
-    /* Modal by default hidden */
-    #modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8);
-      z-index: 9999;
-      transition: opacity 0.3s ease;
-    }
-    .modal-content1 {
-      position: relative;
-      width: 90%;
-      max-width: 400px;
-      margin: 80px auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-    }
-</style>
- 
-        
-<script>
-  // Open modal
-  function openModal() {
-    document.getElementById("myModal").style.display = "flex";
-    let title = document.getElementById("vfytitle").innerText;
-    document.getElementById("modalSongTitle").innerText = title;
-  }
 
-  // Close modal
-  document.getElementById("closeModal").onclick = function () {
-    document.getElementById("myModal").style.display = "none";
-  };
-
-  // Bahar click se close
-  window.onclick = function (event) {
-    let modal = document.getElementById("myModal");
-    if (event.target === modal) {
-      modal.style.display = "none";
-    }
-  };
-</script>
-
-  <div id="next"></div>
-<div id="back"></div>  	
-<!-- The modal container -->
-
-
-
-
-
+.modal-container1 {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+	z-index: 99999;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 8%, rgba(0, 0, 0, 0.94) 14%, rgba(0, 0, 0, 1) 100%);
 	
-<!-- Modal -->
-<div id="myModal" 
-     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-     background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center;">
 
-  <!-- Content Box -->
-  <div style="background:#fff; padding:20px; border-radius:10px; width:350px; text-align:center; position:relative;">
-    
-    <!-- Close Button -->
-    <span id="closeModal"
-      style="position:absolute; top:10px; right:15px; font-size:20px; font-weight:bold; cursor:pointer;">&times;</span>
-    
-    <!-- 👇 Tum yaha apna content dalna -->
-    <div id="modalContent">
-      <!-- Example content (remove/replace as needed) -->
-      
-	  
+	overflow: hidden; /* scroll remove, full page content visible */
+}
+
+.modal-content1 {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background-color: transparent; /* no border, no extra background */
+    display: flex;
+    justify-content: center;
+    align-items: center; /* center content vertically and horizontally */
+    flex-direction: column; /* stack content vertically */
+    box-sizing: border-box;
+}
+
+.modal-content1 > * {
+    width: 100%; /* any child element takes full width */
+    height: 100%; /* any child element takes full height */
+	}
+	
+</style>
+
+
+
+
+
+    	
+<!-- The modal container -->
+<div id="modal" class="modal-container1">
+  <div class="modal-content1">
+    <span onclick="closeModal()" style="float: right;"></span>
+
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
@@ -4036,7 +4001,7 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
   
     <div id="top-menu">
   <i class="fas fa-volume-mute" id="volume10"></i>
-  <button id="next">next</button>
+  
   <div id="volumeSliderContainer">
     <input type="range" id="volumeSlider" min="0" max="100" step="1" value="100"/>
   </div>
@@ -4089,7 +4054,9 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
     <div id="song-controls">
 
       <!-- Previous -->
-      
+      <div class="button">
+        <i id="rewindbutto" class="fas fa-step-backward"></i>
+      </div>
 
       <!-- Play -->
       <div class="button">
@@ -4099,8 +4066,8 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
       </div>
 
       <!-- Next -->
-      <div class="button2">
-        <i id="next" class="fas fa-step-forward"></i>
+      <div class="button">
+        <i id="fastForwardbutto" class="fas fa-step-forward"></i>
       </div>
 
       <!-- Repeat -->
@@ -4109,10 +4076,9 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
       </div>
 
       <!-- Home -->
-      <!-- Home button -->
-<div class="button">
-  <i onclick="closeModal()" class="fa fa-home"></i>
-</div>
+      <div class="button">
+        <i onclick="closeModal()" class="fa fa-home"></i>
+      </div> 
 
       <!-- Download -->
       <div class="button">
@@ -4141,8 +4107,38 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
   </div>
 </div>
 
-</div>
-</div>
+<script>
+    // Function to open the modal
+    function openModal() {
+        document.getElementById("modal").style.display = "block";
+        // Add event listener to close modal on escape key press
+        document.addEventListener("keydown", closeModalOnEscape);
+        // Slide down animation
+        $("#modal").slideDown();
+    }
+
+    // Function to close the modal
+    function closeModal() {
+        // Remove event listener for escape key press
+        document.removeEventListener("keydown", closeModalOnEscape);
+        // Slide up animation
+        $("#modal").slideUp();
+        setTimeout(function() {
+            document.getElementById("modal").style.display = "none";
+        }, 500); // Adjust delay to match animation duration
+    }
+
+    // Function to close the modal on escape key press
+    function closeModalOnEscape(event) {
+        if (event.key === "Escape") {
+            closeModal();
+        }
+    }
+
+    // Trigger openModal when the page loads (you can adjust this based on your requirements)
+    window.onload = openModal;
+</script>
+
 
 
   
@@ -4161,7 +4157,6 @@ for (let i = 0; i < 5; i++) {
 
 
 }</script>
-	
 
 
 
