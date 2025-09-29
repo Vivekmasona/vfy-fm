@@ -1302,7 +1302,7 @@ displayFavorites();
 </i></div>
 <div class="song-title">
 <span id="callStatus"></span>
- <span onclick="openModal()" id="vfytitle" style="width: auto; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
+ <span id="openPlayer" id="vfytitle" style="width: auto; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
 </div> 
 <div id="mybutton">
 <b class="feedback"><img id="Fimg" src="/img/play.jpg" alt="Thumbnail" onclick="clickButton()">
@@ -4211,9 +4211,10 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
       </div>
 
       <!-- Home -->
-      <div class="button">
-        <i id="openPlayer" class="fa fa-home"></i>
-      </div> 
+      <!-- Home button -->
+<div class="button">
+  <i onclick="closeModal()" class="fa fa-home"></i>
+</div>
 
       <!-- Download -->
       <div class="button">
