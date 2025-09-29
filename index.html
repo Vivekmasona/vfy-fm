@@ -1302,9 +1302,8 @@ displayFavorites();
 </i></div>
 <div class="song-title">
 <span id="callStatus"></span>
- <span id="vfytitle" 
-      style="width: auto; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor:pointer;">
-  Click here to open player
+ <span onclick="openModal()" id="vfytitle"
+  style="width: auto; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
  </span>
 </div>
 <div id="mybutton">
@@ -3981,54 +3980,52 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
  
         
 <script>
-  const modal = document.getElementById("modal");
-  const title = document.getElementById("vfytitle");
-
   // Open modal
   function openModal() {
-    modal.style.display = "block";
-    modal.style.opacity = "0";
-    let op = 0;
-    const timer = setInterval(() => {
-      if(op >= 1){
-        clearInterval(timer);
-      }
-      modal.style.opacity = op;
-      op += 0.05;
-    }, 15);
-
-    document.addEventListener("keydown", closeModalOnEscape);
+    document.getElementById("myModal").style.display = "flex";
+    let title = document.getElementById("vfytitle").innerText;
+    document.getElementById("modalSongTitle").innerText = title;
   }
 
   // Close modal
-  function closeModal() {
-    let op = 1;
-    const timer = setInterval(() => {
-      if(op <= 0){
-        clearInterval(timer);
-        modal.style.display = "none";
-      }
-      modal.style.opacity = op;
-      op -= 0.05;
-    }, 15);
+  document.getElementById("closeModal").onclick = function () {
+    document.getElementById("myModal").style.display = "none";
+  };
 
-    document.removeEventListener("keydown", closeModalOnEscape);
-  }
-
-  // Escape key se close
-  function closeModalOnEscape(e) {
-    if(e.key === "Escape") closeModal();
-  }
-
-  // Title span click -> open modal
-  title.addEventListener("click", openModal);
+  // Bahar click se close
+  window.onclick = function (event) {
+    let modal = document.getElementById("myModal");
+    if (event.target === modal) {
+      modal.style.display = "none";
+    }
+  };
 </script>
+
   <div id="next"></div>
 <div id="back"></div>  	
 <!-- The modal container -->
-<div id="modal" class="modal-container1">
-  <div class="modal-content1">
 
+
+
+
+
+	
+<!-- Modal -->
+<div id="myModal" 
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+     background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center;">
+
+  <!-- Content Box -->
+  <div style="background:#fff; padding:20px; border-radius:10px; width:350px; text-align:center; position:relative;">
+    
+    <!-- Close Button -->
+    <span id="closeModal"
+      style="position:absolute; top:10px; right:15px; font-size:20px; font-weight:bold; cursor:pointer;">&times;</span>
+    
+    <!-- 👇 Tum yaha apna content dalna -->
+    <div id="modalContent">
+      <!-- Example content (remove/replace as needed) -->
+      
 	  
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
