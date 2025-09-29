@@ -3950,19 +3950,28 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 <style>
 #vkpop {
     display: none;
-    position: fixed; top:0; left:0; z-index:99999;
-    width:100vw; height:100vh;
-    background: linear-gradient(180deg, rgba(0,0,0,0.94) 0%, rgba(0,0,0,1) 100%);
-    overflow:hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999; /* sufficient, lekin content ke upar nahi */
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.8); /* semi-transparent, red ya full overlay hata diya */
+    overflow: auto; /* scroll allow, agar content badi ho */
 }
+
 #vkpop .modal-content {
-    width:100%; height:100%;
-    display:flex; flex-direction:column;
-    justify-content:center; align-items:center;
-    text-align:center; background:transparent;
+    position: relative; /* content ke liye */
+    z-index: 10; /* background ke upar rahe */
+    width: auto; height: auto;
+    margin: 50px auto; /* center content vertically */
+    max-width: 400px; /* responsive */
+    background: transparent; /* extra overlay nahi */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
-#vkpop .modal-content > * { width:100%; height:100%; }
-.close-btn { cursor:pointer; float:right; font-size:24px; color:white; }
 </style>
 
 <!-- Trigger button -->
