@@ -3980,12 +3980,53 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 </style>
  
         
+<script>
+  const modal = document.getElementById("modal");
+  const title = document.getElementById("vfytitle");
 
+  // Open modal
+  function openModal() {
+    modal.style.display = "block";
+    modal.style.opacity = "0";
+    let op = 0;
+    const timer = setInterval(() => {
+      if(op >= 1){
+        clearInterval(timer);
+      }
+      modal.style.opacity = op;
+      op += 0.05;
+    }, 15);
+
+    document.addEventListener("keydown", closeModalOnEscape);
+  }
+
+  // Close modal
+  function closeModal() {
+    let op = 1;
+    const timer = setInterval(() => {
+      if(op <= 0){
+        clearInterval(timer);
+        modal.style.display = "none";
+      }
+      modal.style.opacity = op;
+      op -= 0.05;
+    }, 15);
+
+    document.removeEventListener("keydown", closeModalOnEscape);
+  }
+
+  // Escape key se close
+  function closeModalOnEscape(e) {
+    if(e.key === "Escape") closeModal();
+  }
+
+  // Title span click -> open modal
+  title.addEventListener("click", openModal);
+</script>
     	
 <!-- The modal container -->
 <div id="modal" class="modal-container1">
   <div class="modal-content1">
-    <span onclick="closeModal()" style="float: right;"></span>
 <div id="next"></div>
 <div id="back"></div>
 	  
