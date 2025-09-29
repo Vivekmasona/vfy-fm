@@ -991,7 +991,7 @@ width: 50%;
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">search</button></sr>
 	    
 	
-	<button onclick="openPopup()">Open Music Popup</button>
+	<button id="OpenVkBtn" onclick="openPopup()">Open Music Popup</button>
 
    <div id="autocomplete-results"></div>
 <!-- Mode Toggle -->
@@ -3945,18 +3945,18 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 
 
 
-    <!-- jQuery -->
+    <!-- jQuery + FontAwesome -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
 
 <style>
-#musicPopup {
+#OpenVk {
     display: none;
     position: fixed;
     bottom: 20px;
     right: 20px;
     width: 250px;
-    padding: 15px;
+    padding: 10px;
     border-radius: 20px;
     background: rgba(255,255,255,0.1);
     backdrop-filter: blur(12px);
@@ -3965,10 +3965,14 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
     color: #fff;
     font-family: 'Khula', sans-serif;
     text-align: center;
-    z-index: 9999;
+    z-index: 999999; /* Sab content ke upar */
+    pointer-events: none; /* Background click pass */
 }
 
-/* Thumbnail */
+#OpenVk * {
+    pointer-events: auto; /* Buttons & sliders interactable */
+}
+
 #thumbnailContainer{
     width: 200px;
     height: 200px;
@@ -3977,7 +3981,7 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
     margin: 0 auto;
     position: relative;
 }
-#playButtonOverlay{
+#playvfy{
     position: absolute;
     top:50%;
     left:50%;
@@ -3998,7 +4002,11 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 }
 </style>
 
-<div id="musicPopup">
+<!-- Open button -->
+
+
+<!-- Music Popup -->
+<div id="OpenVk">
     <div id="thumbnailContainer">
         <img id="SThumb" src="https://via.placeholder.com/200" alt="Thumbnail">
         <i id="playvfy" class="fas fa-play" onclick="handleControl(this)"></i>
@@ -4019,8 +4027,8 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 <audio id="SAudio" src="your-audio-file.mp3"></audio>
 
 <script>
-function openPopup(){ $("#musicPopup").fadeIn(); }
-function closePopup(){ $("#musicPopup").fadeOut(); }
+function openPopup(){ $("#OpenVk").fadeIn(); }
+function closePopup(){ $("#OpenVk").fadeOut(); }
 
 const audio = document.getElementById('SAudio');
 const seekbar = document.getElementById('seekbar');
@@ -4033,7 +4041,7 @@ function handleControl(el){
             if(audio.paused){ audio.play(); el.className='fas fa-pause'; } 
             else{ audio.pause(); el.className='fas fa-play'; }
             break;
-        case 'rewindbutto': alert('Prev clicked'); break;
+        case 'rewindbutto': alert('Previous clicked'); break;
         case 'fastForwardbutto': alert('Next clicked'); break;
         case 'repeat': alert('Repeat clicked'); break;
         case 'homeBtn': closePopup(); break;
@@ -4051,7 +4059,6 @@ volumeSlider.addEventListener('input', ()=>{
     audio.volume = volumeSlider.value/100;
 });
 </script>
-
 
 
 <script>const videoList = document.getElementById("videos");
