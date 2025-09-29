@@ -992,7 +992,7 @@ width: 50%;
 	    
 	
 	
-<button id="OpenVkBtn">Open Music Modal</button>
+
    <div id="autocomplete-results"></div>
 <!-- Mode Toggle -->
 <div id="videoListContainer">
@@ -3944,151 +3944,205 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 <butto id="playVideobutto"></butto>
 
 
-
-    <!-- jQuery + FontAwesome -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
-
 <style>
-/* Modal background */
-#vkModal {
+
+.modal-container1 {
     display: none;
     position: fixed;
-    top:0; left:0;
-    width:100vw;
-    height:100vh;
-    background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(6px);
-    z-index: 99999;
+    top: 0;
+    left: 0;
+	z-index: 99999;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 8%, rgba(0, 0, 0, 0.94) 14%, rgba(0, 0, 0, 1) 100%);
+	
+
+	overflow: hidden; /* scroll remove, full page content visible */
+}
+
+.modal-content1 {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background-color: transparent; /* no border, no extra background */
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: center; /* center content vertically and horizontally */
+    flex-direction: column; /* stack content vertically */
+    box-sizing: border-box;
 }
 
-/* Modal content */
-#vkModal .modal-content {
-    position: relative;
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(12px);
-    border-radius: 20px;
-    padding: 15px;
-    width: 300px;
-    color: #fff;
-    text-align: center;
-}
-
-/* Close button */
-#vkModal .close-btn{
-    position: absolute;
-    top:10px;
-    right:15px;
-    font-size: 20px;
-    cursor: pointer;
-}
-
-/* Thumbnail */
-#thumbnailContainer{
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    overflow: hidden;
-    margin: 0 auto;
-    position: relative;
-}
-#playvfy{
-    position: absolute;
-    top:50%;
-    left:50%;
-    transform: translate(-50%, -50%);
-    font-size: 40px;
-    color: white;
-    cursor: pointer;
-}
-
-/* Controls */
-#song-controls{
-    display: flex;
-    justify-content: space-around;
-    margin-top: 10px;
-    font-size: 18px;
-}
-#song-controls i, #song-controls b{
-    cursor: pointer;
-}
-
-/* Sliders */
-#seekbar, #volumeSlider{
-    width: 90%;
-    margin: 5px 0;
-}
+.modal-content1 > * {
+    width: 100%; /* any child element takes full width */
+    height: 100%; /* any child element takes full height */
+	}
+	
 </style>
 
-<!-- Open Button -->
 
 
-<!-- Modal -->
-<div id="vkModal">
-    <div class="modal-content">
-        <span class="close-btn" onclick="closeModal()">&times;</span>
+
+
+    	
+<!-- The modal container -->
+<div id="modal" class="modal-container1">
+  <div class="modal-content1">
+    <span onclick="closeModal()" style="float: right;"></span>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<div class="container"> 
+  
+  <div id="phone">
+  
+    <div id="top-menu">
+  <i class="fas fa-volume-mute" id="volume10"></i>
+  
+  <div id="volumeSliderContainer">
+    <input type="range" id="volumeSlider" min="0" max="100" step="1" value="100"/>
+  </div>
+  
+  <i id="volume100" class="fa fa-volume-up"></i>
+</div><!-- /top-menu -->
+    
+    <div class="thumbnail-border">
+      <div class="audio-player">
         <div id="thumbnailContainer">
-            <img id="SThumb" src="https://via.placeholder.com/200" alt="Thumbnail">
-            <i id="playvfy" class="fas fa-play" onclick="handleControl(this)"></i>
+          <img id="SThumb" src="" alt="/img/newdp.png" onclick="clickButton()">
+          <div id="playButtonOverlay" onclick="playPause()"></div>
         </div>
-        <div id="songTitle">Song Name</div>
-        <div id="song-controls">
-            <i id="rewindbutto" class="fas fa-step-backward" onclick="handleControl(this)"></i>
-            <b id="play" onclick="handleControl(this)"><i id="playvfy" class="fas fa-pause" onclick="handleControl(this)"></i></b>
-            <i id="fastForwardbutto" class="fas fa-step-forward" onclick="handleControl(this)"></i>
-            <i id="repeat" class="fas fa-redo" onclick="handleControl(this)"></i>
-            <i id="homeBtn" class="fa fa-home" onclick="closeModal()"></i>
-            <i id="VFYmp3" class="fas fa-download" onclick="handleControl(this)"></i>
-        </div>
-        <input type="range" id="seekbar" min="0" max="100" value="0">
-        <input type="range" id="volumeSlider" min="0" max="100" value="100">
-    </div>
+      </div>  
+    </div> <!--/thumbnail-border -->
+    
+    <br>
+    
+    
+    <div id="song-details">
+      <h1 class="song-title" id="vfytitle"></h1>
+      <span class="artist"></span>
+    </div> <!-- /song-details -->
+
+    
+    
+    <b id="stop"></b>
+    <br>
+    <br>
+    <br>
+	 <br>
+	  
+    <div id="time-slider">
+    	
+    <br>
+    	<div id="currentSongTitle"></div>
+    <br>
+      <div class="slider-times">
+        <span id="current-time"></span> 
+        <span id="total-time"></span> 
+      </div>
+      <input type="range" min="1" max="100" value="0" class="slider" id="seekbar" />
+      
+      
+      
+    </div> <!-- /time-slider -->
+    
+    
+	
+    <div id="song-controls">
+
+      <!-- Previous -->
+      <div class="button">
+        <i id="rewindbutto" class="fas fa-step-backward"></i>
+      </div>
+
+      <!-- Play -->
+      <div class="button">
+        <b id="play" onclick="clickButton()">	
+          <i id="playvfy" class="fas fa-pause" onclick="togglePause()"></i>
+        </b>
+      </div>
+
+      <!-- Next -->
+      <div class="button">
+        <i id="fastForwardbutto" class="fas fa-step-forward"></i>
+      </div>
+
+      <!-- Repeat -->
+      <div class="button">
+        <i id="repeat" class="fas fa-redo"></i>
+      </div>
+
+      <!-- Home -->
+      <div class="button">
+        <i onclick="closeModal()" class="fa fa-home"></i>
+      </div> 
+
+      <!-- Download -->
+      <div class="button">
+        <i id="VFYmp3" class="fas fa-download"></i>
+      </div>
+	    
+    </div><!-- /song-controls -->
+    
+  </div> <!-- /phone -->
+  
+</div> <!-- /container -->
+
+<div id="audio-player">
+  <audio id="SAudio" controls style="display: none;">
+    <source src="your-audio-file.mp3" type="audio/mp3">
+    Your browser does not support the audio element.
+  </audio>
+</div>    
+    
+	  
+	  
+
+
+
+<!-- Popup container -->	   
+  </div>
 </div>
 
-<audio id="SAudio" src="your-audio-file.mp3"></audio>
-
 <script>
-const audio = document.getElementById('SAudio');
-const seekbar = document.getElementById('seekbar');
-const volumeSlider = document.getElementById('volumeSlider');
-
-document.getElementById('OpenVkBtn').addEventListener('click', ()=>{
-    document.getElementById('vkModal').style.display='flex';
-});
-
-function closeModal(){
-    document.getElementById('vkModal').style.display='none';
-}
-
-function handleControl(el){
-    switch(el.id){
-        case 'play':
-        case 'playvfy':
-            if(audio.paused){ audio.play(); el.className='fas fa-pause'; } 
-            else{ audio.pause(); el.className='fas fa-play'; }
-            break;
-        case 'rewindbutto': alert('Previous clicked'); break;
-        case 'fastForwardbutto': alert('Next clicked'); break;
-        case 'repeat': alert('Repeat clicked'); break;
-        case 'VFYmp3': alert('Download clicked'); break;
-        case 'homeBtn': closeModal(); break;
+    // Function to open the modal
+    function openModal() {
+        document.getElementById("modal").style.display = "block";
+        // Add event listener to close modal on escape key press
+        document.addEventListener("keydown", closeModalOnEscape);
+        // Slide down animation
+        $("#modal").slideDown();
     }
-}
 
-audio.addEventListener('timeupdate', ()=>{
-    seekbar.value = (audio.currentTime / audio.duration) * 100 || 0;
-});
-seekbar.addEventListener('input', ()=>{
-    audio.currentTime = (seekbar.value/100) * audio.duration;
-});
-volumeSlider.addEventListener('input', ()=>{
-    audio.volume = volumeSlider.value/100;
-});
+    // Function to close the modal
+    function closeModal() {
+        // Remove event listener for escape key press
+        document.removeEventListener("keydown", closeModalOnEscape);
+        // Slide up animation
+        $("#modal").slideUp();
+        setTimeout(function() {
+            document.getElementById("modal").style.display = "none";
+        }, 500); // Adjust delay to match animation duration
+    }
+
+    // Function to close the modal on escape key press
+    function closeModalOnEscape(event) {
+        if (event.key === "Escape") {
+            closeModal();
+        }
+    }
+
+    // Trigger openModal when the page loads (you can adjust this based on your requirements)
+    window.onload = openModal;
 </script>
 
+
+
+  
+    
 
 <script>const videoList = document.getElementById("videos");
 const li = document.getElementsByTagName("li");
