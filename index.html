@@ -4730,4 +4730,208 @@ window.addEventListener('beforeunload', () => {
 	
   
         
-    
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Full Screen Music UI</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #1f1c2c, #928dab);
+    color: #fff;
+    overflow: hidden;
+  }
+
+  .music-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(10px);
+    background: rgba(0,0,0,0.3);
+  }
+
+  .volume-control {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .volume-control input {
+    width: 200px;
+    -webkit-appearance: none;
+    height: 8px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.2);
+    cursor: pointer;
+  }
+
+  .volume-control input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #1effc7;
+    cursor: pointer;
+    box-shadow: 0 0 8px #1effc7;
+  }
+
+  .thumbnail-container {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(255,255,255,0.3);
+  }
+
+  .thumbnail-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px;
+  }
+
+  .play-overlay {
+    position: absolute;
+    top:0; left:0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  .song-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 600;
+    text-shadow: 0 0 10px #fff;
+  }
+
+  .seek-container {
+    width: 80%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .seek-container input {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 8px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.2);
+    cursor: pointer;
+  }
+
+  .seek-container input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ff6ec7;
+    cursor: pointer;
+    box-shadow: 0 0 10px #ff6ec7;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
+    margin-bottom: 20px;
+  }
+
+  .controls i, .controls b {
+    font-size: 1.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .controls i:hover, .controls b:hover {
+    transform: scale(1.2);
+    color: #ff6ec7;
+  }
+
+  .time-display {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+  }
+
+  .bottom-buttons {
+    display: flex;
+    gap: 20px;
+    font-size: 1.5rem;
+    margin-top: 10px;
+  }
+
+  .bottom-buttons i:hover {
+    color: #1effc7;
+    transform: scale(1.2);
+  }
+</style>
+</head>
+<body>
+
+<div class="music-container">
+
+  <div class="volume-control">
+    <i class="fas fa-volume-mute" id="volume10"></i>
+    <div id="volumeSliderContainer">
+      <input type="range" id="volumeSlider" min="0" max="100" step="1" value="100"/>
+    </div>
+    <i class="fa fa-volume-up" id="volume100"></i>
+  </div>
+
+  <div class="thumbnail-container">
+    <img id="SThumb" src="" alt="/img/newdp.png" onclick="clickButton()">
+    <div id="playButtonOverlay" class="play-overlay" onclick="playPause()"></div>
+  </div>
+
+  <h1 class="song-title" id="vfytitle"></h1>
+
+  <b id="stop"></b>
+  <div id="currentSongTitle"></div>
+
+  <div class="time-display">
+    <span id="current-time"></span>
+    <span id="total-time"></span>
+  </div>
+
+  <div class="seek-container">
+    <input type="range" min="1" max="100" value="0" class="slider" id="seekbar" />
+  </div>
+
+  <div class="controls">
+    <i id="rewindbutto" class="fas fa-step-backward"></i>
+    <b id="play">
+      <i id="playvfy" class="fas fa-pause" onclick="togglePause()"></i>
+    </b>
+    <i id="fastForwardbutto" class="fas fa-step-forward"></i>
+    <i id="repeat" class="fas fa-redo"></i>
+  </div>
+
+  <div class="bottom-buttons">
+    <i onclick="closeModal()" class="fa fa-home"></i>
+    <i id="VFYmp3" class="fas fa-download"></i>
+  </div>
+
+</div>
+
+</body>
+</html>   
