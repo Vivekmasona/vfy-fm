@@ -1,7 +1,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
-<link  href='/img/nf.png' rel='apple-touch-icon' sizes='180x180'/>
-<link  href='/img/nf.png' rel='icon' sizes='32x32' type='image/png'/>
-<link  href='/img/nf.png' rel='icon' sizes='16x16' type='image/png'/>
+<link href='/img/nf.png' rel='apple-touch-icon' sizes='180x180'/>
+<link href='/img/nf.png' rel='icon' sizes='32x32' type='image/png'/>
+<link href='/img/nf.png' rel='icon' sizes='16x16' type='image/png'/>
 <script src="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery-1.11.3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery-mobile.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery.mobile-1.4.5.min.css" />
@@ -24,7 +24,7 @@
 <link rel="stylesheet" href="slideshow/slide.css" />
 <link rel="stylesheet" href="thumbnail/v2.css" />
 <link rel="stylesheet" href="ui/ui.css" />
-<link rel="stylesheet" href="uimodal/modal.css" />
+<link rel="stylesheet" href="uimodal/modal11.css" />
 <link rel="stylesheet" href="footer/footer.css" />
 <link rel="stylesheet" href="mode/ytcontrol.css" />
 <link rel="stylesheet" href="mode/mode.css" />
@@ -60,222 +60,156 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <b onclick="alert('This is a stylish alert!')"></b>
 
-<button id="nextbutto"></button>
-<button id="volume20"></button>
-<button id="pichhe"></button>
-<button id="volume50"></button>
-<button id="volume100"></button>
-<b id="play"></b>
+
 
 
 
     
 
 
-
-
-
-
-
-<!-- ðŸŽµ Clean Round Music Loader with Neon Percentage -->
-<div id="music-loader" style="
+  
+ <!-- Fullscreen Stylish Loader -->
+<div id="loader" style="
   position:fixed;
   top:0; left:0;
   width:100%; height:100%;
   background:#000;
   display:flex;
+  flex-direction:column;
   align-items:center;
   justify-content:center;
-  flex-direction:column;
-  z-index:999999;
+  z-index:9999999;
   font-family:sans-serif;
+  text-align:center;
   transition:opacity .5s;
 ">
 
-  <!-- Disc + Circular Progress -->
-  <div style="position:relative; width:150px; height:150px;">
-    
-    <!-- Circular Progress Gradient -->
-    <svg class="progress-ring" width="150" height="150">
-      <circle class="progress-ring__bg" stroke="#111" stroke-width="6" fill="transparent" r="70" cx="75" cy="75"/>
-      <circle class="progress-ring__circle" stroke="url(#grad)" stroke-width="6" fill="transparent" r="70" cx="75" cy="75"/>
-      <defs>
-        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="hotpink"/>
-          <stop offset="50%" stop-color="#0ff"/>
-          <stop offset="100%" stop-color="hotpink"/>
-        </linearGradient>
-      </defs>
-    </svg>
+  <!-- Logo -->
+  <h1 style="margin:0 0 10px 0; font-weight:bold; display:flex; align-items:center; gap:10px; position:relative;">
+    <span id="vLetter" style="
+      display:inline-block;
+      width:40px; height:40px;
+      position:absolute;
+      left:-10px; top:20px;
+      background:red;
+      border-radius:3px;
+    "></span>
+    <span style="
+      font-size:80px;
+      color:#00ffff;
+      text-shadow:0 0 10px #00ffff,0 0 20px #00ffff;
+      position:relative;
+    ">V</span>
+    <span id="fyLetters" style="
+      font-size:40px;
+      color:#dadada;
+      text-shadow:0 0 5px #dadada,0 0 10px #dadada;
+      opacity:0;
+      transition:opacity 1.5s;
+    ">F Y</span>
+  </h1>
 
-    <!-- Rotating Disc -->
-    <div class="disc">
-      <div class="center-hole">
-        <span class="vfy-text">V F Y</span>
-      </div>
-      <div class="ring ring1"></div>
-      <div class="ring ring2"></div>
-      <div class="ring ring3"></div>
-    </div>
+  <!-- Slogan -->
+  <p style="
+    font-size:20px;
+    font-weight:bold;
+    color:#dadada;
+    text-shadow:0 0 10px #dadada,0 0 20px #dadada;
+    margin-bottom:20px;
+  ">V F Y On- Depression Is Gone</p>
 
+  <!-- Loader Bar -->
+  <div style="
+    width:200px; height:4px;
+    background:#222;
+    border-radius:2px;
+    overflow:hidden;
+    margin-bottom:10px;
+  ">
+    <div id="bar" style="
+      height:100%;
+      width:0%;
+      background:#00ffff;
+      box-shadow:0 0 10px #00ffff,0 0 20px #00ffff, 0 0 30px #00ffff inset;
+      transition:width .3s;
+    "></div>
   </div>
 
-  <!-- Neon Percentage -->
-  <span id="music-percent" style="
-    margin-top:20px;
-    font-size:22px;
-    font-weight:bold;
-    color:#ff69b4;
-    text-shadow:0 0 5px #ff69b4, 0 0 10px #ff69b4, 0 0 20px #ff69b4;
+  <!-- Percentage -->
+  <span id="percent" style="
+    color:#00ffff;
+    text-shadow:0 0 5px #00ffff,0 0 10px #00ffff;
+    margin-bottom:20px;
+    display:block;
   ">0%</span>
 
+  <!-- Footer -->
+  <p style="
+    position:absolute;
+    bottom:10px;
+    font-size:12px;
+    color:#dadada;
+  "> {•v•} Powered By VivekFy</p>
 </div>
 
-<style>
-/* Rotating Disc - fully round, no shadow */
-.disc {
-  width:120px;
-  height:120px;
-  border-radius:50%;
-  background:radial-gradient(circle at 30% 30%, #0ff, #111);
-  position:absolute;
-  top:15px; left:15px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  animation:spin 2s linear infinite;
-}
-
-/* Center Hole - clean round, no shadow */
-.center-hole {
-  width:50px;
-  height:50px;
-  border-radius:50%;
-  border:4px solid hotpink;
-  background:#000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  position:absolute;
-}
-
-/* V F Y Text Flicker */
-.vfy-text {
-  color:#ff69b4;
-  font-weight:bold;
-  font-size:14px;
-  text-shadow:0 0 6px #ff69b4,0 0 12px #ff69b4;
-  animation:flicker 1.2s infinite alternate;
-}
-
-/* Concentric Rings */
-.ring {
-  position:absolute;
-  border:2px solid hotpink;
-  border-radius:50%;
-  top:50%; left:50%;
-  transform:translate(-50%,-50%);
-  opacity:0.4;
-  animation:ringPulse 2s infinite;
-}
-.ring1{width:80px; height:80px; animation-delay:0s;}
-.ring2{width:100px; height:100px; animation-delay:0.4s;}
-.ring3{width:120px; height:120px; animation-delay:0.8s;}
-
-/* Circular Progress */
-.progress-ring {
-  position:absolute;
-  top:0;
-  left:0;
-  transform:rotate(-90deg);
-}
-.progress-ring__bg { stroke-dasharray: 439; stroke-linecap: round; }
-.progress-ring__circle { 
-  stroke-dasharray: 439;
-  stroke-dashoffset: 439;
-  transition: stroke-dashoffset 0.3s linear;
-  stroke-linecap: round;
-}
-
-/* Animations */
-@keyframes spin {
-  0%{transform:rotate(0deg);}
-  100%{transform:rotate(360deg);}
-}
-@keyframes flicker {
-  0%{opacity:0.7;}
-  50%{opacity:1;}
-  100%{opacity:0.8;}
-}
-@keyframes ringPulse {
-  0%{transform:translate(-50%,-50%) scale(1);}
-  50%{transform:translate(-50%,-50%) scale(1.1); opacity:0.6;}
-  100%{transform:translate(-50%,-50%) scale(1); opacity:0.4;}
-}
-</style>
-
 <script>
-const circle = document.querySelector(".progress-ring__circle");
-const radius = circle.r.baseVal.value;
-const circumference = 2 * Math.PI * radius;
-circle.style.strokeDasharray = `${circumference} ${circumference}`;
-circle.style.strokeDashoffset = circumference;
-
-const percentText = document.getElementById("music-percent");
-
-function setProgress(percent){
-  const offset = circumference - (percent/100)*circumference;
-  circle.style.strokeDashoffset = offset;
-  percentText.textContent = percent + "%"; // update neon percentage
-}
-
-// Progress simulation
 let percent = 0;
-const loader = document.getElementById("music-loader");
+const bar = document.getElementById("bar");
+const text = document.getElementById("percent");
+const fyLetters = document.getElementById("fyLetters");
+const loader = document.getElementById("loader");
 
+// Loader progress: 5% every 1 second, stop at 75% until page loads
 let interval = setInterval(()=>{
   if(percent < 75){
     percent +=5;
     if(percent>75) percent=75;
-    setProgress(percent);
+    bar.style.width = percent+"%";
+    text.textContent = percent+"%";
+
+    // Fade in FY at 40%
+    if(percent>=40 && fyLetters.style.opacity==="0"){
+      fyLetters.style.opacity="1";
+    }
   } else {
     clearInterval(interval);
   }
 },600);
 
+// On full page load → fill to 100%
 window.addEventListener("load", ()=>{
   let start = percent;
   let end = 100;
   let steps = 10;
-  let stepValue = (end-start)/steps;
+  let stepValue = (end - start)/steps;
   let i=0;
   let fast = setInterval(()=>{
     percent = Math.min(100, Math.floor(start + stepValue*i));
-    setProgress(percent);
+    bar.style.width = percent+"%";
+    text.textContent = percent+"%";
     i++;
     if(percent >= 100){
       clearInterval(fast);
       setTimeout(()=>{
         loader.style.opacity="0";
         setTimeout(()=>loader.style.display="none",500);
-      },300);
+
+        // --- Play welcome audio ---
+        const audio = new Audio('/sound/fw.mp3');
+        audio.volume=1.0;
+        audio.play().catch(e=>console.log("Autoplay blocked", e));
+      },200);
     }
   },100);
 });
-</script>
-  
- 
-  
+</script>   
+
 
   
     
 
   
-
     
-
-
-
 
 
 
@@ -2062,7 +1996,7 @@ function toggleMute() {
     }
 }
 
-// Speed / Fast cycle 0.5x â†’ 1x â†’ 1.5x â†’ 2x
+// Speed / Fast cycle 0.5x → 1x → 1.5x → 2x
 let speeds = [0.5, 1, 1.5, 2];
 let speedIndex = 1; // default 1x
 
@@ -2265,7 +2199,7 @@ window.addEventListener("load", function () {
 
         if (audio) {
             audio.addEventListener("loadedmetadata", function () {
-                // âœ… Resume only last song
+                // ✅ Resume only last song
                 if (savedTime && lastId === localStorage.getItem("lastPlayedId")) {
                     if (savedTime < audio.duration) {
                         audio.currentTime = savedTime;
@@ -2495,16 +2429,11 @@ var audio = document.getElementById("SAudio");
 
 var audio = document.getElementById('SAudio');
 var volume10butto = document.getElementById('volume10');
-	var volume10butto = document.getElementById('volume20');
 var volume50butto = document.getElementById('volume50');
 var volume100butto = document.getElementById('volume100');
 
 volume10butto.addEventListener('click', function () {
     audio.volume = 0; // Set volume to 10%
-});
-
-	volume10butto.addEventListener('click', function () {
-    audio.volume = 0.2; // Set volume to 10%
 });
 
 volume50butto.addEventListener('click', function () {
@@ -3083,17 +3012,6 @@ recognition.onresult = function(event) {
             playAudio('/sound/rewind1.mp3'); // Replace with the appropriate audio URL
             commandMatched = true;
         }
-	if (lastResult.toLowerCase() === 'back' ||
-            lastResult.toLowerCase() === 'rewind' ||
-            lastResult.toLowerCase() === 'song rewind' ||
-            lastResult.toLowerCase() === 'rewind song' ||
-            lastResult.toLowerCase() === 'pichhe') {
-            // Handle commands for rewinding the song
-            const butto1 = document.getElementById('pichhe');
-            butto1.click();
-            playAudio('/sound/rewind1.mp3'); // Replace with the appropriate audio URL
-            commandMatched = true;
-	}
 	if (lastResult.toLowerCase() === 'developer name' ||
             lastResult.toLowerCase() === 'your developer' ||
             lastResult.toLowerCase() === 'developer' ||
@@ -4035,9 +3953,13 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 
 
 
+<button id="nextbutto"></button>
+<button id="pichhe"></button>
+<button id="volume50"></button>
+<button id="volume100"></button>
+<b id="play"></b>
 
 
-    	
 <!-- The modal container -->
 <div id="modal" class="modal-container1">
   <div class="modal-content1">
@@ -4106,7 +4028,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 
       <!-- Previous -->
       <div class="button">
-        <i id="rewindbutto" class="fas fa-step-backward"></i>
+        <i id="pichhe" class="fas fa-step-backward"></i>
       </div>
 
       <!-- Play -->
@@ -4118,7 +4040,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 
       <!-- Next -->
       <div class="button">
-        <i id="fastForwardbutto" class="fas fa-step-forward"></i>
+        <i id="nextbutto" class="fas fa-step-forward"></i>
       </div>
 
       <!-- Repeat -->
@@ -4147,8 +4069,8 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
     <source src="your-audio-file.mp3" type="audio/mp3">
     Your browser does not support the audio element.
   </audio>
-</div>    
-    
+</div>
+  
 	  
 	  
 
@@ -4770,12 +4692,12 @@ window.addEventListener("scroll", () => {
     let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
     if (scrollTop < lastScrollTop) {
-        // scroll up â†’ show footer/audio
+        // scroll up → show footer/audio
         footer.classList.remove("hide");
         progressBar.classList.remove("hide");
         audioPlayerContainer.classList.remove("hide");
     } else {
-        // scroll down â†’ hide footer/audio
+        // scroll down → hide footer/audio
         footer.classList.add("hide");
         progressBar.classList.add("hide");
         audioPlayerContainer.classList.add("hide");
@@ -4790,7 +4712,7 @@ function setStatusBarColor(color) {
 }
 
 function showOverlay() {
-    if (modeToggle.checked) return; // video mode â†’ overlay na dikhe
+    if (modeToggle.checked) return; // video mode → overlay na dikhe
     lockOverlay.style.display = "flex";
     setStatusBarColor("#000000");
 }
