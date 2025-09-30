@@ -71,7 +71,169 @@
 
     
 
+<!-- Fixed Button to Open Popup Widget -->
+<div id="openWidgetBtn">
+  <i class="fas fa-music"></i>
+</div>
 
+<!-- Popup Music Widget -->
+<div id="musicPopup">
+  <div id="popupHeader">
+    <span>Now Playing</span>
+    <i id="closeWidgetBtn" class="fas fa-times"></i>
+  </div>
+
+  <div class="thumbnail-border">
+    <div class="audio-player">
+      <div id="thumbnailContainer">
+        <img id="SThumb" src="/img/newdp.png" alt="Thumbnail" onclick="clickButton()">
+        <div id="playButtonOverlay" onclick="playPause()"></div>
+      </div>
+    </div>  
+  </div>
+
+  <div id="song-details">
+    <h1 class="song-title" id="vfytitle">Song Title</h1>
+    <span class="artist">Artist</span>
+  </div>
+
+  <div id="time-slider">
+    <div class="slider-times">
+      <span id="current-time">0:00</span> 
+      <span id="total-time">0:00</span>
+    </div>
+    <input type="range" min="0" max="100" value="0" class="slider" id="seekbar" />
+  </div>
+
+  <!-- Controls -->
+  <div id="controls">
+    <i id="rewindbutto" class="fas fa-step-backward"></i>
+    <i id="playvfy" class="fas fa-play" onclick="togglePause()"></i>
+    <i id="fastForwardbutto" class="fas fa-step-forward"></i>
+    <i id="repeat" class="fas fa-redo"></i>
+    <i id="VFYmp3" class="fas fa-download"></i>
+  </div>
+
+  <!-- Volume -->
+  <div id="volumeControls">
+    <i class="fas fa-volume-mute" id="volume10"></i>
+    <input type="range" id="volumeSlider" min="0" max="100" step="1" value="100"/>
+    <i id="volume100" class="fa fa-volume-up"></i>
+  </div>
+</div>
+
+<style>
+/* Fixed Button */
+#openWidgetBtn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #000;
+  color: #fff;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 9999;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* Popup Music Widget */
+#musicPopup {
+  position: fixed;
+  bottom: 90px;
+  right: 30px;
+  width: 280px;
+  background: #111;
+  border-radius: 12px;
+  color: #fff;
+  padding: 15px;
+  display: none;
+  flex-direction: column;
+  z-index: 9999;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+  font-family: sans-serif;
+}
+
+/* Header */
+#popupHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* Thumbnail */
+.thumbnail-border img {
+  width: 100%;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Song Details */
+#song-details {
+  text-align: center;
+  margin: 10px 0;
+}
+
+#song-details .song-title {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+#song-details .artist {
+  font-size: 12px;
+  color: #aaa;
+}
+
+/* Slider */
+.slider {
+  width: 100%;
+  cursor: pointer;
+}
+
+/* Controls */
+#controls {
+  display: flex;
+  justify-content: space-around;
+  margin: 10px 0;
+}
+
+#controls i {
+  cursor: pointer;
+  font-size: 18px;
+}
+
+/* Volume */
+#volumeControls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#volumeControls input[type="range"] {
+  flex: 1;
+  margin: 0 5px;
+}
+</style>
+
+<script>
+// Open & Close Widget
+const openBtn = document.getElementById('openWidgetBtn');
+const closeBtn = document.getElementById('closeWidgetBtn');
+const musicPopup = document.getElementById('musicPopup');
+
+openBtn.addEventListener('click', () => {
+  musicPopup.style.display = 'flex';
+});
+
+closeBtn.addEventListener('click', () => {
+  musicPopup.style.display = 'none';
+});
+</script>
 
 
 
