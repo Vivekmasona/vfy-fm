@@ -3990,18 +3990,10 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 
 	
 	
+
  <butto id="developer"></butto>
 
 <butto id="playVideobutto"></butto>
-
-
-
-
-
-
-    	
-
-	
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
@@ -4015,9 +4007,9 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
   <i id="volume100" class="fa fa-volume-up"></i>
   <img id="SThumb" src="" alt="/img/newdp.png" onclick="clickButton()">
           <div id="playButtonOverlay" onclick="playPause()"></div>
-        </div>
+        
         <h1 class="song-title" id="vfytitle"></h1>
-      <span class="artist"></span>
+      
     <b id="stop"></b>
     <div id="currentSongTitle"></div>
 	  <span id="current-time"></span> 
@@ -4041,47 +4033,13 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
     Your browser does not support the audio element.
   </audio>
 </div>    
-    
+    	  
 	  
-	  
 
 
 
-<!-- Popup container -->	   
-  </div>
-</div>
 
-<script>
-    // Function to open the modal
-    function openModal() {
-        document.getElementById("modal").style.display = "block";
-        // Add event listener to close modal on escape key press
-        document.addEventListener("keydown", closeModalOnEscape);
-        // Slide down animation
-        $("#modal").slideDown();
-    }
 
-    // Function to close the modal
-    function closeModal() {
-        // Remove event listener for escape key press
-        document.removeEventListener("keydown", closeModalOnEscape);
-        // Slide up animation
-        $("#modal").slideUp();
-        setTimeout(function() {
-            document.getElementById("modal").style.display = "none";
-        }, 500); // Adjust delay to match animation duration
-    }
-
-    // Function to close the modal on escape key press
-    function closeModalOnEscape(event) {
-        if (event.key === "Escape") {
-            closeModal();
-        }
-    }
-
-    // Trigger openModal when the page loads (you can adjust this based on your requirements)
-    window.onload = openModal;
-</script>
 
 
 
