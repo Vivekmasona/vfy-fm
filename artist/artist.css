@@ -32,13 +32,18 @@
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
 }
 
-/* Animated conic border from box */
+/* BORDER LAYER */
 .tab::before,
 .tab::after {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: 20px;
+  z-index: -1;
+  animation: animate 4s linear infinite;
+}
+
+.tab::before {
   background: repeating-conic-gradient(
     from var(--a),
     #ff2770 0%,
@@ -47,8 +52,6 @@
     transparent 40%,
     #ff2770 50%
   );
-  animation: animate 4s linear infinite;
-  z-index: -2;
 }
 
 .tab::after {
@@ -63,15 +66,12 @@
   animation-delay: -1s;
 }
 
-/* Mask to create border effect */
-.tab::before,
-.tab::after {
-  padding: 3px; /* border thickness */
-  -webkit-mask: 
-    linear-gradient(#fff 0 0) content-box, 
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
+/* अंदर का बैकग्राउंड fix ताकि blur ना लगे */
+.tab > * {
+  position: relative;
+  z-index: 2;
+  border-radius: 15px;
+  background: rgba(45, 45, 57, 0.95);
 }
 
 /* Profile Image */
@@ -80,13 +80,10 @@
   height: auto;
   object-fit: cover;
   border-radius: 15px;
-  border: none;
   display: block;
-  position: relative;
-  z-index: 2;
 }
 
-/* Overlay */
+/* Overlay effect */
 .overlay {
   position: absolute;
   top: 0;
@@ -100,7 +97,7 @@
   z-index: 3;
 }
 
-/* Watermark */
+/* Watermark / Text */
 .watermark {
   position: absolute;
   top: 50%;
