@@ -4728,3 +4728,169 @@ window.addEventListener('beforeunload', () => {
 //function showDetail() { alert('Heart clicked'); }
 </script>	
 	            
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compact Music Widget</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<style>
+  /* Widget container */
+  #musicWidget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 15px;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
+    font-family: sans-serif;
+    z-index: 99999;
+  }
+
+  /* Thumbnail image */
+  #SThumb {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    object-fit: cover;
+    float: left;
+    margin-right: 15px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+
+  /* Song info */
+  .song-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 200px;
+  }
+
+  #currentSongTitle, #current-time, #total-time {
+    font-size: 12px;
+    color: #eee;
+  }
+
+  /* Slider styling */
+  #seekbar, #volumeSlider {
+    width: 100%;
+    margin: 5px 0;
+    -webkit-appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.3);
+    outline: none;
+  }
+  #seekbar::-webkit-slider-thumb, #volumeSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #dadada;
+    cursor: pointer;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2),
+                -2px -2px 5px rgba(255,255,255,0.7);
+  }
+
+  /* Buttons neumorphic */
+  i, b {
+    display: inline-block;
+    margin: 5px 3px;
+    font-size: 18px;
+    color: #333;
+    background: #dadada;
+    padding: 10px;
+    border-radius: 50%;
+    box-shadow: 4px 4px 8px rgba(0,0,0,0.2),
+                -4px -4px 8px rgba(255,255,255,0.7);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  i:hover, b:hover {
+    transform: translateY(-2px);
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2),
+                -2px -2px 5px rgba(255,255,255,0.7);
+  }
+
+  #volumeSliderContainer {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  /* Clear floats */
+  .clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
+</style>
+</head>
+<body>
+
+<div id="musicWidget">
+  <div class="clearfix">
+    <img id="SThumb" src="/img/newdp.png" alt="Thumbnail" onclick="clickButton()">
+    <div style="float:left; width:200px;">
+      <h1 class="song-title" id="vfytitle">Song Title Here</h1>
+      <div id="currentSongTitle">Artist Name</div>
+      <div>
+        <span id="current-time">0:00</span> / <span id="total-time">3:45</span>
+      </div>
+    </div>
+  </div>
+
+  <input type="range" min="1" max="100" value="0" class="slider" id="seekbar" />
+
+  <div style="display:flex; justify-content:space-between; margin-top:10px; align-items:center;">
+    <i id="rewindbutto" class="fas fa-step-backward"></i>
+    <b id="play">
+      <i id="playvfy" class="fas fa-pause" onclick="togglePause()"></i>
+    </b>
+    <i id="fastForwardbutto" class="fas fa-step-forward"></i>
+    <i id="repeat" class="fas fa-redo"></i>
+    <i onclick="closeModal()" class="fa fa-home"></i>
+    <i id="VFYmp3" class="fas fa-download"></i>
+  </div>
+
+  <div id="volumeSliderContainer">
+    <i class="fas fa-volume-mute" id="volume10"></i>
+    <input type="range" id="volumeSlider" min="0" max="100" step="1" value="100"/>
+    <i id="volume100" class="fa fa-volume-up"></i>
+  </div>
+</div>
+
+<script>
+  // Example functions
+  function clickButton() {
+    alert("Thumbnail clicked!");
+  }
+  function playPause() {
+    alert("Play/Pause toggled!");
+  }
+  function togglePause() {
+    alert("Toggle Pause!");
+  }
+  function closeModal() {
+    alert("Widget closed!");
+  }
+</script>
+
+</body>
+</html>
+	
