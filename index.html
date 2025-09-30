@@ -4703,22 +4703,19 @@ window.addEventListener('beforeunload', () => {
 
 
 
+    <i class="fas fa-volume-mute" id="volume10"></i>  
     
+  <div id="volumeSliderContainer">  
+    <input type="range" id="volumeSlider" min="0" max="100" step="1" value="100"/>  
+  </div>  
+    
+  <i id="volume100" class="fa fa-volume-up"></i>  
+  <img id="SThumb" src="" alt="/img/newdp.png" onclick="clickButton()">  
+          <div id="playButtonOverlay" onclick="playPause()"></div>  
+          
+        <h1 class="song-title" id="vfytitle"></h1>  
     
   
   
         
-    <b id="stop"></b>  
-    <div id="currentSongTitle"></div>  
-	  <span id="current-time"></span>   
-        <span id="total-time"></span>   
-      <input type="range" min="1" max="100" value="0" class="slider" id="seekbar" />  
-      <i id="rewindbutto" class="fas fa-step-backward"></i>  
-		<b id="play" onclick="clickButton()">	  
-          <i id="playvfy" class="fas fa-pause" onclick="togglePause()"></i>  
-        </b>  
-      <i id="fastForwardbutto" class="fas fa-step-forward"></i>  
-       <i id="repeat" class="fas fa-redo"></i>  
-      <i onclick="closeModal()" class="fa fa-home"></i>  
-      <i id="VFYmp3" class="fas fa-download"></i>  
-        
+    
