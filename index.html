@@ -69,9 +69,7 @@
 
 
 
-    <div class="button">
-        <i id="VFYmp3" class="fas fa-download"></i>
-      </div>
+    
 
 
 
@@ -994,9 +992,7 @@ width: 50%;
 	    
 	
 	
-<div class="button">
-        <i id="rewindbutto" class="fas fa-step-backward"></i>
-</div>
+
 		
    <div id="autocomplete-results"></div>
 <!-- Mode Toggle -->
@@ -3949,6 +3945,8 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 <butto id="playVideobutto"></butto>
 
 
+
+    
 <style>
 
 .modal-container1 {
@@ -3991,7 +3989,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 
 
 
-    	
+
 <!-- The modal container -->
 <div id="modal" class="modal-container1">
   <div class="modal-content1">
@@ -4059,7 +4057,10 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
     <div id="song-controls">
 
       <!-- Previous -->
-      
+      <div class="button">
+        <i id="pichhe" class="fas fa-step-backward"></i>
+      </div>
+
       <!-- Play -->
       <div class="button">
         <b id="play" onclick="clickButton()">	
@@ -4069,7 +4070,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 
       <!-- Next -->
       <div class="button">
-        <i id="pichhe" class="fas fa-step-forward"></i>
+        <i id="nextbutto" class="fas fa-step-forward"></i>
       </div>
 
       <!-- Repeat -->
@@ -4083,7 +4084,9 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
       </div> 
 
       <!-- Download -->
-      
+      <div class="button">
+        <i id="VFYmp3" class="fas fa-download"></i>
+      </div>
 	    
     </div><!-- /song-controls -->
     
@@ -4096,8 +4099,8 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
     <source src="your-audio-file.mp3" type="audio/mp3">
     Your browser does not support the audio element.
   </audio>
-</div>    
-    
+</div>
+  
 	  
 	  
 
@@ -4138,6 +4141,11 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
     // Trigger openModal when the page loads (you can adjust this based on your requirements)
     window.onload = openModal;
 </script>
+
+	
+    
+
+
 
 
 
