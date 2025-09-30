@@ -1,7 +1,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
-<link href='/img/nf.png' rel='apple-touch-icon' sizes='180x180'/>
-<link href='/img/nf.png' rel='icon' sizes='32x32' type='image/png'/>
-<link href='/img/nf.png' rel='icon' sizes='16x16' type='image/png'/>
+<link  href='/img/nf.png' rel='apple-touch-icon' sizes='180x180'/>
+<link  href='/img/nf.png' rel='icon' sizes='32x32' type='image/png'/>
+<link  href='/img/nf.png' rel='icon' sizes='16x16' type='image/png'/>
 <script src="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery-1.11.3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery-mobile.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery.mobile-1.4.5.min.css" />
@@ -59,6 +59,19 @@
 <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <b onclick="alert('This is a stylish alert!')"></b>
+
+<button id="nextbutto"></button>
+<button id="volume20"></button>
+<button id="pichhe"></button>
+<button id="volume50"></button>
+<button id="volume100"></button>
+<b id="play"></b>
+
+
+
+    
+
+
 
 
 
@@ -207,7 +220,11 @@ window.addEventListener("load", ()=>{
     
 
   
+
     
+
+
+
 
 
 
@@ -1034,133 +1051,79 @@ width: 50%;
  </div>
 
 	    
+<div class="link-bar">
+    <div class="grid-container">
+      <div class="grid">
+	  <div class="tab" onclick="searchshilpiSongs()">
+          <img  src="/profile/shilpi.jpg" alt="Profile 1" class="profile-image" />
+          <div class="overlay"></div>
+          <div class="watermark"></div>
+        </div>
+	   <div class="tab" onclick="searchshivaniSongs()">
+          <img  src="/profile/shivani.jpg" alt="Profile 1" class="profile-image" />
+          <div class="overlay"></div>
+          <div class="watermark"></div>
+        </div> 
+	  <div class="tab" onclick="searchkalluSongs()">
+          <img  src="/profile/kallu.jpg" alt="Profile 1" class="profile-image" />
+          <div class="overlay"></div>
+          <div class="watermark"></div>
+        </div>    
+        <div class="tab" onclick="searchneelkamalsinghSongs()">
+          <img  src="/profile/neelkamal.jpg" alt="Profile 1" class="profile-image" />
+          <div class="overlay"></div>
+          <div class="watermark"></div>
+        </div>
+  <div class="tab"onclick="searchpawansinghSongs()">
+          <img src="/profile/pawan.jpg" alt="Profile 1" class="profile-image" />
+          <div class="overlay"></div>
+          <div class="watermark"></div>
+        </div>
+  <div class="tab"onclick="searchnehaSongs()">
+          <img src="/profile/neha.jpg" alt="Profile 1" class="profile-image" />
+          <div class="overlay"></div>
+          <div class="watermark"></div>
+        </div>
 
+  <div class="tab"onclick="searchdarshanSongs()">
+          <img src="/profile/darsan.jpg" alt="Profile 1" class="profile-image"  />
+          <div class="overlay"></div>
+          <div class="watermark"></div>
+        </div>
 
+  <div class="tab"onclick="searchkhesariSongs()">
+          <img src="/profile/khesari.jpg" alt="Profile 1" class="profile-image"  />
+          <div class="overlay"></div>
+          <div class="watermark"></div>
+        </div>
+	    <div class="tab"onclick="searchbadshahSongs()">
+          <img src="/profile/badshah.jpg" alt="Profile 1" class="profile-image"  />
+          <div class="overlay"></div>
+          <div class="watermark"></div>
+        </div>  
+<div class="tab"onclick="searchsachetSongs()" >
+          <img src="/profile/sachet.jpg" alt="Profile 1" class="profile-image" />
+          <div class="overlay"></div>
+          <div class="watermark"></div>
+        </div>
+<div class="tab"onclick="searcharjitsinghSongs()">
+          <img src="/profile/arjit.jpg" alt="Profile 1" class="profile-image"  />
+          <div class="overlay"></div>
+          <div class="watermark"></div>
+        </div>
+	  <div class="tab"onclick="searchankushrajaSongs()">
+          <img src="/profile/ankush.jpg" alt="Profile 1" class="profile-image"  />
+          <div class="overlay"></div>
+          <div class="watermark"></div>
+        </div>    
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+        <!-- Repeat the above tab structure for each tab -->
 
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      background-color: #25252b;
-    }
-
-    /* Scroll container */
-    .scroll-container {
-      display: flex;
-      overflow-x: auto;
-      gap: 20px;
-      padding: 2px;
-      scrollbar-width: none;
-    }
-    .scroll-container::-webkit-scrollbar {
-      display: none;
-    }
-
-    /* Box effect */
-    .box {
-      position: relative;
-      flex: 0 0 auto;
-      width: 100px;
-      height: 100px;
-      background: repeating-conic-gradient(
-        from var(--a),
-        #ff2770 0%,
-        #ff2770 5%,
-        transparent 5%,
-        transparent 40%,
-        #ff2770 50%
-      );
-      border-radius: 20px;
-      animation: animate 4s linear infinite;
-      cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .box:hover {
-      transform: translateY(-5px) scale(1.05);
-      box-shadow: 0 15px 30px rgba(255, 0, 150, 0.6);
-    }
-
-    .box::before,
-    .box::after {
-      content: "";
-      position: absolute;
-    }
-    .box::before {
-      width: 100%;
-      height: 100%;
-      background: repeating-conic-gradient(
-        from var(--a),
-        #45f3ff 0%,
-        #45f3ff 5%,
-        transparent 5%,
-        transparent 40%,
-        #45f3ff 50%
-      );
-      border-radius: 20px;
-      animation: animate 4s linear infinite;
-      animation-delay: -1s;
-    }
-    .box::after {
-      inset: 8px;
-      background: #2d2d39;
-      border-radius: 15px;
-    }
-
-    /* Profile image inside box */
-    .box img {
-      position: absolute;
-      inset: 12px;
-      width: calc(100% - 24px);
-      height: calc(100% - 24px);
-      object-fit: cover;
-      border-radius: 12px;
-      z-index: 2;
-    }
-
-    @property --a {
-      syntax: "<angle>";
-      inherits: false;
-      initial-value: 0deg;
-    }
-    @keyframes animate {
-      0% { --a: 0deg; }
-      100% { --a: 360deg; }
-    }
-  </style>
-</head>
-<body>
-  <div class="scroll-container">
-    <div class="box" onclick="searchshilpiSongs()"><img src="/profile/shilpi.jpg" alt="shilpi"></div>
-    <div class="box" onclick="searchshivaniSongs()"><img src="/profile/shivani.jpg" alt="shivani"></div>
-    <div class="box" onclick="searchkalluSongs()"><img src="/profile/kallu.jpg" alt="kallu"></div>
-    <div class="box" onclick="searchneelkamalsinghSongs()"><img src="/profile/neelkamal.jpg" alt="neelkamal"></div>
-    <div class="box" onclick="searchpawansinghSongs()"><img src="/profile/pawan.jpg" alt="pawan"></div>
-    <div class="box" onclick="searchnehaSongs()"><img src="/profile/neha.jpg" alt="neha"></div>
-    <div class="box" onclick="searchdarshanSongs()"><img src="/profile/darsan.jpg" alt="darsan"></div>
-    <div class="box" onclick="searchkhesariSongs()"><img src="/profile/khesari.jpg" alt="khesari"></div>
-    <div class="box" onclick="searchbadshahSongs()"><img src="/profile/badshah.jpg" alt="badshah"></div>
-    <div class="box" onclick="searchsachetSongs()"><img src="/profile/sachet.jpg" alt="sachet"></div>
-    <div class="box" onclick="searcharjitsinghSongs()"><img src="/profile/arjit.jpg" alt="arjit"></div>
-    <div class="box" onclick="searchankushrajaSongs()"><img src="/profile/ankush.jpg" alt="ankush"></div>
+      </div>
+    </div>
   </div>
 
 
-
-
-
-
-
-
-	
 
 	    
     <div class="vivekji" id="home-content">
@@ -2481,11 +2444,16 @@ var audio = document.getElementById("SAudio");
 
 var audio = document.getElementById('SAudio');
 var volume10butto = document.getElementById('volume10');
+	var volume10butto = document.getElementById('volume20');
 var volume50butto = document.getElementById('volume50');
 var volume100butto = document.getElementById('volume100');
 
 volume10butto.addEventListener('click', function () {
     audio.volume = 0; // Set volume to 10%
+});
+
+	volume10butto.addEventListener('click', function () {
+    audio.volume = 0.2; // Set volume to 10%
 });
 
 volume50butto.addEventListener('click', function () {
@@ -3064,6 +3032,17 @@ recognition.onresult = function(event) {
             playAudio('/sound/rewind1.mp3'); // Replace with the appropriate audio URL
             commandMatched = true;
         }
+	if (lastResult.toLowerCase() === 'back' ||
+            lastResult.toLowerCase() === 'rewind' ||
+            lastResult.toLowerCase() === 'song rewind' ||
+            lastResult.toLowerCase() === 'rewind song' ||
+            lastResult.toLowerCase() === 'pichhe') {
+            // Handle commands for rewinding the song
+            const butto1 = document.getElementById('pichhe');
+            butto1.click();
+            playAudio('/sound/rewind1.mp3'); // Replace with the appropriate audio URL
+            commandMatched = true;
+	}
 	if (lastResult.toLowerCase() === 'developer name' ||
             lastResult.toLowerCase() === 'your developer' ||
             lastResult.toLowerCase() === 'developer' ||
@@ -4005,13 +3984,9 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 
 
 
-<button id="nextbutto"></button>
-<button id="pichhe"></button>
-<button id="volume50"></button>
-<button id="volume100"></button>
-<b id="play"></b>
 
 
+    	
 <!-- The modal container -->
 <div id="modal" class="modal-container1">
   <div class="modal-content1">
@@ -4080,7 +4055,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 
       <!-- Previous -->
       <div class="button">
-        <i id="pichhe" class="fas fa-step-backward"></i>
+        <i id="rewindbutto" class="fas fa-step-backward"></i>
       </div>
 
       <!-- Play -->
@@ -4092,7 +4067,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 
       <!-- Next -->
       <div class="button">
-        <i id="nextbutto" class="fas fa-step-forward"></i>
+        <i id="fastForwardbutto" class="fas fa-step-forward"></i>
       </div>
 
       <!-- Repeat -->
@@ -4121,8 +4096,8 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
     <source src="your-audio-file.mp3" type="audio/mp3">
     Your browser does not support the audio element.
   </audio>
-</div>
-  
+</div>    
+    
 	  
 	  
 
