@@ -2333,8 +2333,8 @@ document.getElementById("VFYshare").onclick = () => {
 
     if (navigator.share) {
         navigator.share({
-            title: vfytitle,   // yahan tumhara video ka title jayega
-            text: "Check out: " + vfytitle,
+            title: title,  // yaha video ka title jayega
+            text: `Check out: ${title}`,
             url: shareUrl
         }).then(() => {
             console.log("✅ Shared successfully");
@@ -2342,7 +2342,7 @@ document.getElementById("VFYshare").onclick = () => {
             console.log("❌ Share failed:", err);
         });
     } else {
-        // Agar browser support nahi karta toh sidha open
+        // Agar browser support nahi karta toh sidha link open
         location.href = shareUrl;
     }
 };
