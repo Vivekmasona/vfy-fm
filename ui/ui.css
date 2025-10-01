@@ -204,8 +204,8 @@ body {
 /* Play Button */
 #play {
   width: 90px;
-  height: 90px;
-  border-radius: 16px;
+  height: 50px;
+  border-radius: 6px;
   background: rgba(255, 255, 255, 0.9);
   color: #00ffff; /* cyan */
   font-size: 2rem;
