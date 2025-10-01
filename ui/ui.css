@@ -206,7 +206,7 @@ body {
   width: 90px;
   height: 90px;
   border-radius: 16px;
-  background: rgba(50,50,50,0.9);
+  background: rgba(255, 255, 255, 0.9);
   color: #00ffff; /* cyan */
   font-size: 2rem;
   display: flex;
