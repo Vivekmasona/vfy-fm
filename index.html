@@ -992,9 +992,7 @@ width: 50%;
 	    
 	
 	
-<a id="SShare" target="_blank">
-  <button>Share</button>
-</a>
+<button id="VFYshare">Share</button>
 
    <div id="autocomplete-results"></div>
 <!-- Mode Toggle -->
@@ -2330,10 +2328,9 @@ function play(id,Sid){
         //location.href= "https://vivekdl.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
     };
 
-// Share link banane ka code
-let shareUrl = "https://vidofy.vercel.app?q=" + id;
-document.getElementById("SShare").href = shareUrl;
-	};
+document.getElementById("VFYshare").onclick = () => {
+    location.href = "https://vidofy.vercel.app?q=" + id;
+};
 	
 	document.getElementById("VFYmp3v2").onclick = ()=>{
         location.href= "https://vivekfy.vercel.app/stream?url=https://youtu.be/"+id;
