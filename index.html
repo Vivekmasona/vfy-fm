@@ -4578,178 +4578,300 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 	
-    <style>
-body { margin:0; font-family: "Poppins", sans-serif; background:#111; color:#fff; overflow-x:hidden; }
-
-/* LOCK OVERLAY */
-#lockOverlay {
-  position: fixed; top:0; left:0; width:100%; height:100%;
-  background:#000; display:flex; flex-direction:column;
-  align-items:center; justify-content:center; gap:40px; z-index:99999;
-  display:none; /* initially hidden */
-}
-
-/* CLOCK */
-.big-clock { text-align:center; line-height:1.2; }
-.big-clock #clockTime {
-  font-size:48px; font-weight:700;
-  background: linear-gradient(90deg,#ffff00,#00ffff);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-.big-clock #clockDate { font-size:18px; color:#aaa; }
-
-/* MUSIC WIDGET */
-.music-widget {
-  width: 300px; height: 300px; position: relative; border-radius:50%;
-  background: conic-gradient(#00ffff var(--progress,0%), #111 var(--progress,0%));
-  display:flex; justify-content:center; align-items:center;
-  box-shadow: 0 0 30px rgba(0,255,255,0.6);
-}
-
-.poster {
-  width:240px; height:240px; border-radius:50%; overflow:hidden;
-  position:relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
-}
-.poster img { width:100%; height:100%; object-fit:cover; }
-
-.controls {
-  position:absolute; bottom:20px; display:flex; gap:15px; justify-content:center; width:100%;
-}
-.controls button {
-  background: rgba(255,255,255,0.1); border:none; padding:15px;
-  border-radius:50%; color:#fff; font-size:18px; backdrop-filter:blur(6px);
-  cursor:pointer; box-shadow:0 0 15px rgba(0,255,255,0.5); transition:.3s ease;
-}
-.controls button:hover { transform:scale(1.2); box-shadow:0 0 25px #00ffff; }
-
-.title {
-  font-size:15px; font-weight:600; opacity:0.8; text-align:center;
-  line-height:1.3; overflow:hidden; text-overflow:ellipsis; display:-webkit-box;
-  -webkit-line-clamp:3; -webkit-box-orient:vertical;
-}
-
-.time-tag {
-  position:absolute; top:-30px; background: rgba(0,0,0,0.8); color:#fff;
-  font-size:12px; padding:4px 10px; border-radius:6px;
-}
-
-.arrow-btn {
-  background: radial-gradient(circle, #fa3e67 0%, #1cc74115 40%, #4dbfd6e0 70%, #000 100%);
-  border:2px solid #fff; border-radius:50%; width:70px; height:70px;
-  display:flex; align-items:center; justify-content:center; cursor:pointer;
-  color:#fff; box-shadow:0 0 20px rgba(250,62,103,0.8);
-}
-</style>
-</head>
-<body>
-
-<audio id="SAudio" src="your-music.mp3"></audio>
-
 <div id="lockOverlay">
-
-  <div class="big-clock">
-    <div id="clockTime"></div>
-    <div id="clockDate"></div>
-  </div>
-
-  <div class="music-item">
-    <div class="music-widget" id="musicWidget">
-      <div class="poster">
-        <img id="overlayThumb" src="https://via.placeholder.com/200" alt="Poster">
-      </div>
-      <div class="controls">
-        <button id="pichhe"><i class="fas fa-backward"></i></button>
-        <button id="playBtn"><i class="fas fa-play"></i></button>
-        <button id="nextbutto"><i class="fas fa-forward"></i></button>
-      </div>
-      <div class="time-tag" id="overlayTime">0:00 / 0:00</div>
-    </div>
-    <div id="overlayTitle" class="title">VIVEKFY Ai</div>
-  </div>
-
-  <button id="unlockBtn" class="arrow-btn" aria-label="Unlock">
-    <svg viewBox="0 0 24 24" width="40" height="40">
-      <path d="M17 8V6a5 5 0 0 0-10 0v2H5v14h14V8h-2zm-6 0V6a3 3 0 0 1 6 0v2h-6z"
-        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </button>
+<!-- Big Clock -->
+<div class="big-clock">
+  <div id="clockTime"></div>
+  <div id="clockDate"></div>
 </div>
 
+<!-- Music Item -->
+<div class="music-item">
+  <!-- Left Thumbnail -->
+  <div class="thumb-wrap">
+    <img id="overlayThumb" src="https://via.placeholder.com/100" alt="Thumbnail">
+    <div id="overlayTime" class="time"></div>
+  </div>
+
+  <!-- Middle Title -->
+  <div id="overlayTitle" class="title">
+    VIVEKFY Ai
+  </div>
+
+  <!-- Lock Button -->
+<button id="unlockBtn" class="arrow-btn" aria-label="Unlock">
+  <svg viewBox="0 0 24 24" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17 8V6a5 5 0 0 0-10 0v2H5v14h14V8h-2zm-6 0V6a3 3 0 0 1 6 0v2h-6z" 
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</button>
+</div>
+</div>
+
+ 
+  
+	
+<style>
+/* Big Clock */
+.big-clock {
+  width: 90%;
+  margin: 20px auto;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.big-clock #clockTime {
+  font-size: 48px;
+  font-weight: 700;
+  background: linear-gradient(90deg, #ffff00, #00ffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.big-clock #clockDate {
+  font-size: 18px;
+  font-weight: 500;
+  
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+	}
+
+
+.thumb-wrap::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+   background: #28130D;
+background: linear-gradient(90deg, rgba(40, 19, 13, 0) 10%, rgba(40, 19, 13, 0.48) 65%, rgba(40, 19, 13, 0.86) 85%, rgba(40, 19, 13, 1) 95%);
+  pointer-events: none;
+	}
+
+/* Time bottom of thumbnail */
+.time {
+  position: absolute;
+  bottom: 1px;
+  left: 7px;
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  font-size: 12px;
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+
+/* Title multi-line */
+.title {
+  flex: 1;
+  font-size: 15px;
+	opacity:0.5;
+  latter-spacing:2px;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+/* Arrow button with round gradient */
+.arrow-btn {
+  background: #fa3e67;
+background: radial-gradient(circle, rgba(250, 62, 103, 1) 0%, rgba(28, 199, 65, 0.09) 40%, rgba(40, 224, 27, 0.05) 60%, rgba(77, 191, 214, 0.88) 69%, rgba(0, 0, 0, 1) 100%);
+	border: 2px #fff;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  color: #333;
+}
+
+.arrow-btn svg {
+  display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  .music-item { background: linear-gradient(90deg, rgba(255,120,80,0.25), rgba(255,120,80,0)); color: #fff; }
+  .arrow-btn { color: #fff; }
+}
+
+/* Overlay CSS */  
+#lockOverlay {  
+  position: fixed;  
+  top: 0;  
+  left: 0;  
+  width: 100%;  
+  height: 100%;  
+  background: black;  
+  display: none; /* initially hidden */  
+  align-items: center;  
+  justify-content: center;  
+  flex-direction: column;  
+  z-index: 99999; /* sabse upar */  
+  color: white;  
+  font-family: sans-serif;  
+/* Agar aap chahte ho ki overlay active hote hi body scroll bhi block ho jaye */
+body:has(#lockOverlay:visible) {
+  overflow: hidden;
+}  
+
+	
+	
+</style>
+	
+	
+
 <script>
-// CLOCK
+// Live Clock
 function updateClock(){
-  const now=new Date();
-  document.getElementById('clockTime').textContent=
-    now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-  document.getElementById('clockDate').textContent=
-    now.toLocaleDateString([], {weekday:'short', day:'numeric', month:'short', year:'numeric'});
+  const now = new Date();
+  const time = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+  const date = now.toLocaleDateString([], {weekday:'short', day:'numeric', month:'short', year:'numeric'});
+  document.getElementById('clockTime').textContent = time;
+  document.getElementById('clockDate').textContent = date;
 }
-setInterval(updateClock,1000); updateClock();
-
-// AUDIO & WIDGET
-const audio=document.getElementById("SAudio");
-const widget=document.getElementById("musicWidget");
-const playIcon=document.querySelector("#playBtn i");
-
-document.getElementById("playBtn").onclick=()=>{
-  if(audio.paused){ audio.play(); playIcon.classList.replace("fa-play","fa-pause"); }
-  else{ audio.pause(); playIcon.classList.replace("fa-pause","fa-play"); }
-};
-
-audio.ontimeupdate=()=>{
-  let progress=(audio.currentTime/audio.duration)*100;
-  widget.style.setProperty("--progress", progress+"%");
-  let curr=formatTime(audio.currentTime);
-  let total=formatTime(audio.duration);
-  document.getElementById("overlayTime").textContent=`${curr} / ${total}`;
-};
-
-function formatTime(sec){
-  if(isNaN(sec)) return "0:00";
-  let m=Math.floor(sec/60), s=Math.floor(sec%60);
-  return `${m}:${s.toString().padStart(2,"0")}`;
-}
-
-// UNLOCK BUTTON
-document.getElementById("unlockBtn").addEventListener("click",()=>{
-  document.getElementById("lockOverlay").style.display="none";
-});
-
-// NEXT & PREV
-document.getElementById("nextbutto").addEventListener("click",()=>{ console.log("Next"); });
-document.getElementById("pichhe").addEventListener("click",()=>{ console.log("Prev"); });
-
-// WAKE LOCK
-let wakeLock = null;
-async function keepScreenOn(){
-  try{
-    if('wakeLock' in navigator && !audio.paused){
-      wakeLock = await navigator.wakeLock.request('screen');
-      wakeLock.addEventListener('release', ()=>{ wakeLock=null; });
-    }
-  } catch(e){ console.error(e); }
-}
-setInterval(()=>{
-  if(!audio.paused){ if(!wakeLock) keepScreenOn(); }
-  else if(wakeLock){ wakeLock.release().then(()=>wakeLock=null); }
-},2000);
-
-window.addEventListener('beforeunload', ()=>{ if(wakeLock) wakeLock.release().then(()=>wakeLock=null); });
-
-// ------------------- OVERLAY TIMER -------------------
-const lockOverlay=document.getElementById("lockOverlay");
-let overlayTimer=null;
-function showOverlay(){ lockOverlay.style.display="flex"; }
-function resetOverlayTimer(){
-  if(overlayTimer) clearTimeout(overlayTimer);
-  overlayTimer = setTimeout(showOverlay,12000); // 12 sec inactivity
-}
-
-// USER ACTIVITY
-['mousemove','keydown','touchstart','click'].forEach(evt=>{
-  document.addEventListener(evt, resetOverlayTimer, {passive:true});
-});
-
-// start timer on load
-resetOverlayTimer();
+setInterval(updateClock, 1000);
+updateClock();
 </script>
+
+    
+
+
+
+<script>
+/* ---------------- GLOBAL ELEMENTS ---------------- */
+const footer = document.querySelector('.fixed-footer');
+const progressBar = document.getElementById('progressBarContainer');
+const audioPlayerContainer = document.getElementById('audioPlayerContainer');
+const lockOverlay = document.getElementById("lockOverlay");
+const overlayThumb = document.getElementById("overlayThumb");
+const overlayTitle = document.getElementById("overlayTitle");
+const overlayTime = document.getElementById("overlayTime");
+const audioPlayer = document.getElementById("SAudio");
+const themeMeta = document.getElementById("themeColorMeta");
+const modeToggle = document.getElementById("modeToggleBtn");
+const sideMenu = document.getElementById('sideMenu');
+
+let lastScrollTop = 0;
+let overlayTimer;
+let sideMenuTimer;
+let wakeLock = null;
+
+/* ---------------- SCROLL HANDLER ---------------- */
+window.addEventListener("scroll", () => {
+    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+    if (scrollTop < lastScrollTop) {
+        // scroll up → show footer/audio
+        footer.classList.remove("hide");
+        progressBar.classList.remove("hide");
+        audioPlayerContainer.classList.remove("hide");
+    } else {
+        // scroll down → hide footer/audio
+        footer.classList.add("hide");
+        progressBar.classList.add("hide");
+        audioPlayerContainer.classList.add("hide");
+    }
+
+    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+}, false);
+
+/* ---------------- OVERLAY FUNCTIONS ---------------- */
+function setStatusBarColor(color) {
+    if (themeMeta) themeMeta.setAttribute("content", color);
+}
+
+function showOverlay() {
+    if (modeToggle.checked) return; // video mode → overlay na dikhe
+    lockOverlay.style.display = "flex";
+    setStatusBarColor("#000000");
+}
+
+function hideOverlay() {
+    lockOverlay.style.display = "none";
+    setStatusBarColor("#F70D1A");
+    resetOverlayTimer();
+}
+
+// unlock button
+document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
+
+/* ---------------- SIDE MENU FUNCTIONS ---------------- */
+function hideMenu() { sideMenu.classList.add('hidden'); }
+function showMenu() { sideMenu.classList.remove('hidden'); }
+
+/* ---------------- TIMERS ---------------- */
+function resetOverlayTimer(e) {
+    // ignore scroll events for overlay
+    if (e && e.type === "scroll") return;
+    if (overlayTimer) clearTimeout(overlayTimer);
+    if (!modeToggle.checked) {
+        overlayTimer = setTimeout(showOverlay, 12000); // 10 sec inactivity
+    }
+}
+
+function resetSideMenuTimer() {
+    showMenu();
+    if (sideMenuTimer) clearTimeout(sideMenuTimer);
+    sideMenuTimer = setTimeout(hideMenu, 2000); // 4 sec inactivity
+}
+
+/* ---------------- USER ACTIVITY ---------------- */
+['mousemove', 'keydown', 'touchstart', 'click'].forEach(evt => {
+    document.addEventListener(evt, e => {
+        resetOverlayTimer(e);
+        resetSideMenuTimer();
+    }, {passive: true});
+});
+
+// start timers on load
+resetOverlayTimer();
+resetSideMenuTimer();
+
+/* ---------------- OVERLAY CONTENT UPDATER ---------------- */
+setInterval(() => {
+    const thumbSrc = document.getElementById("Fimg")?.src;
+    if (thumbSrc) overlayThumb.src = thumbSrc;
+
+    const songTitle = document.getElementById("vfytitle")?.textContent;
+    overlayTitle.textContent = songTitle || "";
+
+    const curr = document.getElementById("current-time")?.textContent || "0:00";
+    const total = document.getElementById("total-time")?.textContent || "0:00";
+    overlayTime.textContent = `${curr} / ${total}`;
+}, 500);
+
+/* ---------------- WAKE LOCK ---------------- */
+async function keepScreenOn() {
+    try {
+        if ('wakeLock' in navigator && !audioPlayer.paused) {
+            wakeLock = await navigator.wakeLock.request('screen');
+            wakeLock.addEventListener('release', () => { wakeLock = null; });
+        }
+    } catch (err) { console.error(err); }
+}
+
+setInterval(() => {
+    if (audioPlayer && !audioPlayer.paused) {
+        if (!wakeLock) keepScreenOn();
+    } else {
+        if (wakeLock) wakeLock.release().then(() => wakeLock = null);
+    }
+}, 2000);
+
+window.addEventListener('beforeunload', () => {
+    if (wakeLock) wakeLock.release().then(() => wakeLock = null);
+});
+
+/* ---------------- PLACEHOLDER FUNCTIONS ---------------- */
+//function openPopup() { alert('Settings clicked'); }
+//function startDictation() { alert('Microphone clicked'); }
+//function showDetail() { alert('Heart clicked'); }
+</script>	
+	            
