@@ -2329,7 +2329,18 @@ function play(id,Sid){
     };
 
 document.getElementById("VFYshare").onclick = () => {
-    location.href = "https://vidofy.vercel.app?q=" + id;
+    let shareUrl = "https://vidofy.vercel.app?q=" + id;
+
+    if (navigator.share) {
+        navigator.share({
+            title: "Watch this video",
+            text: "Check out this cool video!",
+            url: shareUrl
+        });
+    } else {
+        // Agar browser support nahi karta toh link open ho jaye
+        location.href = shareUrl;
+    }
 };
 	
 	document.getElementById("VFYmp3v2").onclick = ()=>{
