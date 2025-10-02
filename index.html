@@ -1,7 +1,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
-<link  href='/img/nf.png' rel='apple-touch-icon' sizes='180x180'/>
-<link  href='/img/nf.png' rel='icon' sizes='32x32' type='image/png'/>
-<link  href='/img/nf.png' rel='icon' sizes='16x16' type='image/png'/>
+<link href="Fimg" rel="apple-touch-icon" sizes="180x180"/>
+<link href="Fimg" rel="icon" sizes="32x32" type="image/png"/>
+<link href="Fimg" rel="icon" sizes="16x16" type="image/png"/>
 <script src="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery-1.11.3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery-mobile.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery.mobile-1.4.5.min.css" />
@@ -60,10 +60,10 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <b onclick="alert('This is a stylish alert!')"></b>
 
-<b id="nextbutto"></b>
-<b id="VFYshare"></b>
+<button id="nextbutto"></button>
+<button id="VFYshare"></button>
 <button id="volume20"></button>
-<b id="pichhe"></b>
+<button id="pichhe"></button>
 <button id="volume50"></button>
 <button id="volume100"></button>
 <b id="play"></b>
@@ -498,38 +498,7 @@ background: radial-gradient(circle, rgba(237, 70, 9, 1) 9%, rgba(28, 199, 65, 0.
 }
   
 
-/* Vertical tab with dark transparent glossy blur */
-.vertical-button-tab {
-  position: absolute;
-  top: 5px;
-  right: -5px;
-  display: flex;
-  flex-direction: column;
-  background: rgba(0,0,0,0.2);
-  backdrop-filter: blur(8px);
-  border-radius: 12px;
-  padding: 6px;
-  gap: 6px;
-  z-index: 10;
-}
 
-/* Icon wrapper */
-.vertical-button-tab .btn-icon {
-  width: 26px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 18px;
-  cursor: pointer;
-  transition: transform 0.15s, color 0.15s;
-}
-
-.vertical-button-tab .btn-icon:hover {
-  transform: scale(1.2);
-  color: #ff7b50;
-}
 	
 </style>
 
@@ -1731,106 +1700,29 @@ document.getElementById("modeToggleBtn").addEventListener("click", () => {
     document.getElementById("modeToggleBtn").innerText = `Mode: ${isVideoMode ? 'Video' : 'Audio'}`;
 });
 
-
-
-
-    
-
 // === Generate List Item ===
 function getOutput(item, i){
     var id = item.id?.videoId || item.id;
     var title = item.snippet?.title || "No title";
     var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
-    
     if(item.snippet?.liveBroadcastContent==="live") return '';
-
     return `
-<div style="margin-bottom:12px; position: relative;" class="music-item list" index="${i}" vid="${id}" onclick="handleItemClick(this)">
-    <div class="thumb-wrap">
-        <img src="${thumbUrl}" alt="${title}">
-        <div class="overlay-play">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
-                <path d="M3 22v-20l18 10-18 10z"/>
-            </svg>
-        </div>
-    </div>
-    <div class="title">${title}</div>
-
-    <!-- Save + Share Buttons -->
-    <div class="button-tab" style="position: absolute; top: 8px; right: 8px; display: flex; gap: 6px;">
-        <button type="button" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">
-            <i class="fas fa-heart"></i>
-        </button>
-        <button type="button" onclick="event.stopPropagation(); shareVideo('${id}', '${title}', '${thumbUrl}')">
-            <i class="fas fa-share-alt"></i>
-        </button>
-    </div>
+<div style="margin-bottom:12px;">
+  <b index="${i}" class="music-item list" vid="${id}" onclick="handleItemClick(this)">
+      <div class="thumb-wrap">
+          <img src="${thumbUrl}" alt="${title}">
+          <div class="overlay-play">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
+                  <path d="M3 22v-20l18 10-18 10z"/>
+              </svg>
+          </div>
+      </div>
+      <div class="title">${title}</div>
+      <button class="save-btn" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">
+          <i class="fas fa-heart"></i>
+      </button>
+  </b>
 </div>`;
-}
-
-// === Save Favorite Function ===
-function saveFavorite(index, title, thumbUrl, videoId){
-    console.log("✅ Saved:", title, videoId);
-    // Your favorite logic here
-}
-
-// === Share Video Function ===
-async function shareVideo(videoId, title, thumbUrl){
-    const shareUrl = `https://vidofy.vercel.app?q=${videoId}`;
-    const shareText = `${title}\nWatch here: ${shareUrl}`;
-
-    try {
-        // Fetch thumbnail as file
-        const response = await fetch(thumbUrl);
-        const blob = await response.blob();
-        const file = new File([blob], "thumbnail.jpg", { type: blob.type });
-
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            // Mobile share with thumbnail
-            await navigator.share({
-                title: title,
-                text: shareText,
-                url: shareUrl,
-                files: [file]
-            });
-            console.log("✅ Shared successfully (mobile with thumbnail)");
-        } else if (navigator.share) {
-            // Fallback: text + URL (thumbnail link)
-            await navigator.share({
-                title: title,
-                text: shareText + `\nThumbnail: ${thumbUrl}`,
-                url: shareUrl
-            });
-            console.log("✅ Shared successfully (desktop / no file support)");
-        } else {
-            // Clipboard fallback
-            navigator.clipboard.writeText(shareText + `\nThumbnail: ${thumbUrl}`);
-            alert("Title + URL + thumbnail link copied to clipboard!");
-        }
-    } catch(err) {
-        console.error("Error sharing:", err);
-        navigator.clipboard.writeText(shareText + `\nThumbnail: ${thumbUrl}`);
-        alert("Share failed. Title + URL + thumbnail link copied to clipboard!");
-    }
-}
-
-
-            
-
-
-
-
-// === Handle Item Click (play music) ===
-function handleItemClick(el){
-    const videoId = el.getAttribute('vid');
-    console.log("Play clicked:", videoId);
-    // Add your music play logic here
-}
-   // === Handle Item Click (play music) ===
-function handleItemClick(el){
-    const videoId = el.getAttribute('vid');
-    console.log("Play clicked:", videoId);
-    // Add your music play logic here
 }
 
 // === Handle Item Click ===
@@ -4232,7 +4124,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 
       <!-- Previous -->
       <div class="button">
-        <i id="pichhe" class="fas fa-step-backward"></i>
+        <i id="rewindbutto" class="fas fa-step-backward"></i>
       </div>
 
       <!-- Play -->
@@ -4243,8 +4135,8 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
       </div>
 
       <!-- Next -->
-      <div class="button">
-        <i id="nextbutto" class="fas fa-step-forward"></i>
+      <div class="VFYshare">
+        <i id="fastForwardbutto" class="fas fa-step-forward"></i>
       </div>
 
       <!-- Repeat -->
