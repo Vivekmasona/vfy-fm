@@ -1345,16 +1345,18 @@ displayFavorites();
 
 
   
-<footer class="fixed-footer">
+
   
-  <!-- 🔹 Upar wali line: Buttons -->
-  <div class="footer-topline">
+<footer class="fixed-footer">
+
+  <!-- 🔹 Overlay Buttons (footer ke upar right corner) -->
+  <div class="footer-overlay">
     <button id="pichhe"><i class="fa fa-step-backward"></i></button>
     <button id="Nextbutto"><i class="fa fa-step-forward"></i></button>
     <button id="VFYshare"><i class="fa fa-share-alt"></i></button>
   </div>
 
-  <!-- 🔹 Neeche wali line: Original layout -->
+  <!-- 🔹 Original footer content -->
   <div class="play-button">
     <b id="play"><i class="fa fa-play" aria-hidden="true"></i></b>
   </div>
@@ -1397,19 +1399,23 @@ body {
   border-radius: 10px 10px 10px 10px;
   transition: transform 0.3s ease-in-out;
   z-index: 100000;
-  flex-direction: column; /* 👈 ab 2 line ban jayengi */
 }
 
-/* -------------------- Upar wali line (buttons) -------------------- */
-.footer-topline {
-  width: 100%;
+.fixed-footer.hide {
+  transform: translateY(100%);
+}
+
+/* -------------------- Overlay Buttons -------------------- */
+.footer-overlay {
+  position: absolute;
+  top: -40px;   /* footer ke upar show hoga */
+  right: 10px;  /* right corner me */
   display: flex;
-  justify-content: flex-end; /* right side */
   gap: 8px;
-  margin-bottom: 5px;
+  z-index: 100001;
 }
 
-.footer-topline button {
+.footer-overlay button {
   background: rgba(255, 255, 255, 0.15);
   border: none;
   border-radius: 50%;
@@ -1421,16 +1427,12 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   transition: 0.2s;
 }
-.footer-topline button:hover {
+.footer-overlay button:hover {
   background: rgba(255,255,255,0.3);
   transform: scale(1.1);
 }
 
-/* -------------------- Neeche wali line (original) -------------------- */
-.fixed-footer.hide {
-  transform: translateY(100%);
-}
-
+/* -------------------- Original Footer Items -------------------- */
 .song-title {
   width: 80%;
   text-align: center;
@@ -1470,7 +1472,6 @@ body {
   pointer-events: none;                   
 }
 </style>
-
 
 
 
