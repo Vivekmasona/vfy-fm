@@ -498,36 +498,35 @@ background: radial-gradient(circle, rgba(237, 70, 9, 1) 9%, rgba(28, 199, 65, 0.
 }
   
 
-/* Single glossy vertical button */
-.glossy-button {
+/* Simple vertical container for both icons */
+.vertical-buttons {
   position: absolute;
   top: 10px;
   right: 10px;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(145deg, #ff7b50, #ffb347);
-  border-radius: 30px;
+  background: linear-gradient(180deg, #ff7b50, #ff9e73);
+  border-radius: 12px;
   padding: 6px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-  cursor: pointer;
+  gap: 6px;
   z-index: 10;
 }
 
-/* Icon wrapper inside glossy button */
-.glossy-button .icon-wrapper {
+/* Each icon */
+.vertical-buttons .icon-wrapper {
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  margin: 4px 0;
   color: #fff;
-  transition: transform 0.2s, color 0.2s;
+  cursor: pointer;
+  transition: transform 0.15s, color 0.15s;
 }
 
-.glossy-button .icon-wrapper:hover {
-  transform: scale(1.2);
-  color: #ff0;
+.vertical-buttons .icon-wrapper:hover {
+  transform: scale(1.15);
+  color: #ffff00;
 }
 	
 </style>
