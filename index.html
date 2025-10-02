@@ -2658,7 +2658,7 @@ volumeSlider.addEventListener('input', function () {
 
  
  
-const titleaudio = document.getElementById('SAudio');
+ const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle');
 const thumbnailElement = document.getElementById('SThumb');
 const nextButtonElement = document.getElementById('nextbutto');
@@ -2712,7 +2712,7 @@ function splitTitleForMarquee(fullTitle) {
     marqueeIndex = 0;
 }
 
-// =========== CANVAS GENERATOR ===========
+// =========== CANVAS → FINAL IMAGE ===========
 function generateCanvasImage(thumbnailUrl, text = "VFY by Vivek") {
     return new Promise((resolve, reject) => {
         const img = new Image();
@@ -2724,10 +2724,10 @@ function generateCanvasImage(thumbnailUrl, text = "VFY by Vivek") {
             canvas.width = img.width;
             canvas.height = img.height;
 
-            // Background thumbnail
+            // Thumbnail background
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-            // Gradient text
+            // Gradient Text Overlay
             const fontSize = Math.floor(canvas.height / 8);
             ctx.font = `bold ${fontSize}px Arial`;
             ctx.textAlign = "center";
@@ -2739,18 +2739,10 @@ function generateCanvasImage(thumbnailUrl, text = "VFY by Vivek") {
             gradient.addColorStop(0.75, "#ff00ff");
             gradient.addColorStop(1, "#00ffff");
             ctx.fillStyle = gradient;
-
             ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
+            // Final image release
             const url = canvas.toDataURL("image/png");
-
-            // TEST: show on page also
-            const testImg = document.createElement("img");
-            testImg.src = url;
-            testImg.style.maxWidth = "200px";
-            testImg.style.display = "block";
-            document.body.appendChild(testImg);
-
             resolve(url);
         };
         img.onerror = reject;
@@ -2766,8 +2758,7 @@ async function createNotification(part, thumbnailUrl) {
         const options = {
             body: 'Audio is playing',
             icon: editedImage,   // chhota icon
-            image: editedImage,  // bada image (desktop me visible)
-            badge: editedImage,  // optional
+            image: editedImage,  // bada image
             tag: "song-marquee",
             renotify: true,
             actions: [
@@ -2779,6 +2770,14 @@ async function createNotification(part, thumbnailUrl) {
         };
 
         currentNotification = new Notification(part, options);
+
+        // Action handlers
+        currentNotification.onclick = (event) => {
+            if (event.action === 'next') nextButtonElement.click();
+            else if (event.action === 'prev') prevButtonElement.click();
+            else if (event.action === 'heart') heartButtonElement.click();
+            else if (event.action === 'download') downloadButtonElement.click();
+        };
     } catch (err) {
         console.error("Canvas error:", err);
     }
@@ -2823,8 +2822,9 @@ prevButtonElement.addEventListener('click', () => {
     updateTitle(); updateMediaSessionMetadata(); showNotification();
 });
 heartButtonElement.addEventListener('click', () => console.log("❤️", title));
-downloadButtonElement.addEventListener('click', () => console.log("⬇️", title));        
-                
+downloadButtonElement.addEventListener('click', () => console.log("⬇️", title));
+
+        
 
 
 
