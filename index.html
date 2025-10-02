@@ -1751,8 +1751,9 @@ function getOutput(item, i){
     var title = item.snippet?.title || "No title";
     var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
     if(item.snippet?.liveBroadcastContent==="live") return '';
+
     return `
-<div style="margin-bottom:12px;">
+<div style="margin-bottom:12px; position: relative;">
   <b index="${i}" class="music-item list" vid="${id}" onclick="handleItemClick(this)">
       <div class="thumb-wrap">
           <img src="${thumbUrl}" alt="${title}">
@@ -1763,17 +1764,17 @@ function getOutput(item, i){
           </div>
       </div>
       <div class="title">${title}</div>
-      
-      <!-- Vertical buttons container -->
+
+      <!-- Vertical buttons -->
       <div class="vertical-buttons">
           <button class="save-btn" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">
-              <!-- New save icon -->
+              <!-- Save icon -->
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
               </svg>
           </button>
-          <button class="share-btn" id="VFYshare">
-              <!-- Share SVG icon -->
+          <button class="share-btn" onclick="event.stopPropagation(); shareVideo('${id}', '${title}')">
+              <!-- Share icon -->
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7a2.5 2.5 0 000-1.39l7.05-4.11A2.99 2.99 0 0018 7.91 3 3 0 1015 5a3 3 0 003 3c0 .21-.03.42-.08.62l-7.05 4.11c.05.18.08.37.08.57a3 3 0 103 3z"/>
               </svg>
@@ -1782,6 +1783,23 @@ function getOutput(item, i){
 
   </b>
 </div>`;
+}
+
+// === Share function ===
+function shareVideo(videoId, title){
+    const shareUrl = `https://vidofy.vercel.app?q=${videoId}`;
+    if(navigator.share){
+        navigator.share({
+            title: title,
+            text: title,
+            url: shareUrl
+        }).then(()=> console.log("✅ Shared successfully"))
+          .catch(err=> console.error(err));
+    } else {
+        // fallback: copy link to clipboard
+        navigator.clipboard.writeText(`${title} - ${shareUrl}`);
+        alert("Link copied to clipboard!");
+    }
 }
 
 // === Handle Item Click ===
