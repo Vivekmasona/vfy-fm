@@ -1783,13 +1783,13 @@ async function shareVideo(videoId, title, thumbUrl){
         // Fetch thumbnail image as blob
         const response = await fetch(thumbUrl);
         const blob = await response.blob();
-        const file = new File([blob], "${title}.jpg", { type: blob.type });
+        const file = new File([blob], "vivekmasona.jpg", { type: blob.type });
 
         // Check if browser can share files
         if(navigator.canShare && navigator.canShare({ files: [file] })){
             await navigator.share({
                 title: title,
-                text: `${title}\nWatch here: ${shareUrl}`,
+                text: `${title}`,
                 url: shareUrl,
                 files: [file]
             });
