@@ -1343,153 +1343,173 @@ displayFavorites();
 
 
 
-<footer class="fixed-footer">  
-  <!-- Play Button (original aapka code) -->
-  <div class="play-button">  
-    <b id="play"><i class="fa fa-play" aria-hidden="true"></i></b>  
-  </div>  
-
-  <!-- Title (original) -->
-  <div class="song-title">  
-    <span id="callStatus"></span>  
+<footer class="fixed-footer" >
+  
+  <!-- Play button -->
+  <div class="play-button">
+    <b id="play"><i class="fa fa-play" aria-hidden="true"></i></b>
+  </div>
+  
+  <!-- Title -->
+  <div class="song-title">
+    <span id="callStatus"></span>
     <span onclick="openModal()" id="vfytitle" 
       style="width:auto;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-    </span>  
-  </div>   
+    </span>
+  </div> 
+  
+  <!-- Thumbnail -->
+  <div id="mybutton">
+    <b class="feedback">
+      <img id="Fimg" src="/img/play.jpg" alt="Thumbnail" onclick="clickButton()">
+    </b>
+  </div>	
 
-  <!-- Right side buttons add kiye -->
-  <div class="right-controls">  
-    <b id="pichhe" class="icon-btn"><i class="fa fa-backward"></i></b>  
-    <b id="Nextbutto" class="icon-btn"><i class="fa fa-forward"></i></b>  
-    <b id="VFYshare" class="icon-btn"><i class="fa fa-share-alt"></i></b>  
-  </div>  
-</footer>  
+  <!-- Right controls -->
+  <div class="right-controls">
+    <b id="pichhe" class="icon-btn"><i class="fa fa-backward"></i></b>
+    <b id="Nextbutto" class="icon-btn"><i class="fa fa-forward"></i></b>
+    <b id="VFYshare" class="icon-btn"><i class="fa fa-share-alt"></i></b>
+  </div>
 
-<style>  
-/* -------------------- Body -------------------- */  
-body {  
-  margin: 0;  
-  padding: 0;  
-}  
+</footer>
+       
+<style>     
+/* -------------------- Body -------------------- */
+body {
+  margin: 0;
+  padding: 0;
+}
 
-/* -------------------- Footer -------------------- */  
-.fixed-footer {  
-  position: fixed;  
-  bottom: 0;  
-  width: 100%;  
-  height: 59.5px;  
-  background: transparent;  
-  display: flex;  
-  justify-content: space-between;  
-  align-items: center;  
-  padding: 10px;  
-  box-shadow: 0 0 15px #000;  
-  border-radius: 10px 10px 10px 10px;  
-  transition: transform 0.3s ease-in-out;  
-  z-index: 100000;  
-}  
+/* -------------------- Footer -------------------- */
+.fixed-footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 59.5px;
+  background: transparent;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  box-shadow: 0 0 15px #000;
+  border-radius: 10px 10px 10px 10px;
+  transition: transform 0.3s ease-in-out;
+  z-index: 100000;
+}
 
-.fixed-footer.hide {  
-  transform: translateY(100%);  
-}  
+.fixed-footer.hide {
+  transform: translateY(100%);
+}
 
-.song-title {  
-  width: 60%;  
-  text-align: center;  
-}  
+.song-title {
+  width: 40%;
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 
-/* -------------------- Play Button -------------------- */  
-.play-button {  
-  position: relative;  
-  display: flex;  
-  justify-content: center;  
-  align-items: center;  
-  width: 40px;  
-  height: 40px;  
-  border-radius: 5%;  
-  cursor: pointer;  
-  overflow: hidden;  
-  background: transparent;  
-}  
+/* -------------------- Play Button -------------------- */
+.play-button {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 5%;
+  cursor: pointer;
+  overflow: hidden;
+  background: transparent;
+}
 
-.play-button i {  
-  color: #B9F56C;  
-  font-size: 40px;  
-  z-index: 2;  
-  position: relative;  
-}  
+.play-button i {
+  color: #B9F56C;
+  font-size: 40px;
+  z-index: 2;
+  position: relative;
+}
 
-.play-button::after {  
-  content: '';  
-  position: absolute;  
-  top: 0;  
-  left: 0;  
-  width: 100%;  
-  height: 100%;  
-  background: rgba(255, 255, 255, 0.3);  
-  backdrop-filter: blur(2px);  
-  border-radius: 50%;  
-  z-index: 1;  
-  pointer-events: none;  
-}  
+.play-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(2px);
+  border-radius: 50%;
+  z-index: 1;
+  pointer-events: none;
+}
 
-/* -------------------- Right Controls -------------------- */  
-.right-controls {  
-  display: flex;  
-  gap: 8px;  
-}  
+/* -------------------- Thumbnail -------------------- */
+#mybutton img {
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
 
-.icon-btn {  
-  width: 32px;  
-  height: 32px;  
-  display: flex;  
-  justify-content: center;  
-  align-items: center;  
-  border-radius: 12px;  
-  background: rgba(255, 255, 255, 0.2);  
-  backdrop-filter: blur(6px);  
-  cursor: pointer;  
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);  
-  transition: transform 0.2s;  
-}  
+/* -------------------- Right Controls -------------------- */
+.right-controls {
+  display: flex;
+  gap: 6px;
+}
 
-.icon-btn:hover {  
-  transform: scale(1.1);  
-}  
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+}
 
-.icon-btn i {  
-  font-size: 16px;  
-  color: #dadada;  
-}  
+.icon-btn:hover {
+  transform: scale(1.1);
+}
 
-/* -------------------- Progress Bar -------------------- */  
-#progressBarContainer {  
-  position: fixed;  
-  overflow: hidden;  
-  z-index: 99999;  
-  border-radius: 0px 10px 10px 0px;  
-  bottom: 0;  
-  width: 82%;  
-  height: 59.5px;  
-  background: rgba(255, 255, 255, 0.12);  
-  backdrop-filter: blur(10px) saturate(180%);  
-  -webkit-backdrop-filter: blur(10px) saturate(180%);  
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);  
-  left: 18%;  
-  transition: transform 0.3s ease-in-out;  
-}  
+.icon-btn i {
+  font-size: 16px;
+  color: #dadada;
+}
 
-#progressBarContainer.hide {  
-  transform: translateY(100%);  
-}  
+/* -------------------- Progress Bar Container -------------------- */
+#progressBarContainer {
+  position: fixed;
+  overflow: hidden;
+  z-index: 99999;
+  border-radius: 0px 10px 10px 0px;
+  bottom: 0;
+  width: 82%;
+  height: 59.5px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+  left: 18%;
+  transition: transform 0.3s ease-in-out;
+}
 
-#progress {  
-  overflow: hidden;  
-  border-radius: 0px 4px 4px 0px;  
-  height: 100%;  
-}  
+#progressBarContainer.hide {
+  transform: translateY(100%);
+}
+
+#progress {
+  overflow: hidden;
+  border-radius: 0px 4px 4px 0px;
+  height: 100%;
+}
 </style>
-
 
 
 
