@@ -1709,6 +1709,33 @@ function paginate(direction) {
 
 
 
+
+
+
+
+
+
+
+
+// === Global Variables ===
+let currentVideoListItem = null;
+let ytPlayer = null;
+let isPlaying = false;
+let isVideoMode = false;
+let isMiniPlayerFullscreen = false;
+let isAutoNext = true;
+
+// === Mode Toggle Button ===
+document.getElementById("modeToggleBtn").addEventListener("click", () => {
+    isVideoMode = !isVideoMode;
+    document.getElementById("modeToggleBtn").innerText = `Mode: ${isVideoMode ? 'Video' : 'Audio'}`;
+});
+
+
+
+
+    
+
 // === Generate List Item ===
 function getOutput(item, i){
     var id = item.id?.videoId || item.id;
@@ -1750,69 +1777,54 @@ function saveFavorite(index, title, thumbUrl, videoId){
 }
 
 // === Share Video Function (Thumbnail + Title + Vidofy URL) ===
-
 async function shareVideo(videoId, title, thumbUrl){
     const shareUrl = `https://vidofy.vercel.app?q=${videoId}`;
 
     try {
-        // Base thumbnail
-        const thumbImg = new Image();
-        thumbImg.crossOrigin = "anonymous";
-        thumbImg.src = thumbUrl;
+        // Load image
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.src = thumbUrl;
 
-        // Overlay image
-        const overlayImg = new Image();
-        overlayImg.crossOrigin = "anonymous";
-        overlayImg.src = '/img/newdp.png'; // overlay image
+        img.onload = async () => {
+            // Create canvas same size as image
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height + 60; // extra space for title + url
+            const ctx = canvas.getContext('2d');
 
-        // Wait for both images to load
-        await Promise.all([
-            new Promise(res => thumbImg.onload = res),
-            new Promise(res => overlayImg.onload = res)
-        ]);
+            // Draw thumbnail
+            ctx.drawImage(img, 0, 0);
 
-        // Canvas size
-        const canvas = document.createElement('canvas');
-        canvas.width = thumbImg.width;
-        canvas.height = thumbImg.height + 60; // extra space for URL
-        const ctx = canvas.getContext('2d');
+            // Draw title + URL below image
+            ctx.fillStyle = "white";
+            ctx.font = "bold 20px sans-serif";
+            ctx.fillText(title, 10, img.height + 25);
+            ctx.font = "16px sans-serif";
+            ctx.fillText(shareUrl, 10, img.height + 50);
 
-        // Draw base thumbnail
-        ctx.drawImage(thumbImg, 0, 0);
+            // Convert canvas to blob
+            canvas.toBlob(async (blob) => {
+                const file = new File([blob], "thumbnail.png", { type: "image/png" });
 
-        // Draw overlay image at top-center
-        const overlayWidth = 60; // adjust size
-        const overlayHeight = 60;
-        const overlayX = (thumbImg.width - overlayWidth) / 2;
-        const overlayY = 10; // 10px from top
-        ctx.drawImage(overlayImg, overlayX, overlayY, overlayWidth, overlayHeight);
+                if(navigator.canShare && navigator.canShare({ files: [file] })){
+                    await navigator.share({
+                        title: title,
+                        text: `${title}\nWatch here: ${shareUrl}`,
+                        files: [file]
+                    });
+                    console.log("✅ Shared with canvas image + title + URL");
+                } else {
+                    // fallback: copy link + title
+                    navigator.clipboard.writeText(`${title}\n${shareUrl}`);
+                    alert("Browser does not support image share. Title + URL copied!");
+                }
+            }, 'image/png');
+        };
 
-        // Draw title above overlay image
-        ctx.fillStyle = "white";
-        ctx.font = "bold 22px sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText(title, thumbImg.width / 2, overlayY + overlayHeight + 25);
-
-        // Draw URL below image
-        ctx.font = "16px sans-serif";
-        ctx.fillText(shareUrl, thumbImg.width / 2, thumbImg.height + 40);
-
-        // Convert canvas to blob and share
-        canvas.toBlob(async (blob) => {
-            const file = new File([blob], "share-image.png", { type: "image/png" });
-
-            if(navigator.canShare && navigator.canShare({ files: [file] })){
-                await navigator.share({
-                    title: title,
-                    text: `${title}\nWatch here: ${shareUrl}`,
-                    files: [file]
-                });
-                console.log("✅ Shared with overlay image + title + URL");
-            } else {
-                navigator.clipboard.writeText(`${title}\n${shareUrl}`);
-                alert("Browser does not support image share. Title + URL copied!");
-            }
-        }, 'image/png');
+        img.onerror = () => {
+            alert("Failed to load thumbnail for sharing!");
+        };
 
     } catch(err){
         console.error("Error sharing:", err);
@@ -1820,24 +1832,15 @@ async function shareVideo(videoId, title, thumbUrl){
         alert("Share failed. Title + URL copied instead!");
     }
 }
+// === Handle Item Click (play music) ===
+function handleItemClick(el){
+    const videoId = el.getAttribute('vid');
+    console.log("Play clicked:", videoId);
+    // Add your music play logic here
+}
 
 
-
-
-
-// === Global Variables ===
-let currentVideoListItem = null;
-let ytPlayer = null;
-let isPlaying = false;
-let isVideoMode = false;
-let isMiniPlayerFullscreen = false;
-let isAutoNext = true;
-
-// === Mode Toggle Button ===
-document.getElementById("modeToggleBtn").addEventListener("click", () => {
-    isVideoMode = !isVideoMode;
-    document.getElementById("modeToggleBtn").innerText = `Mode: ${isVideoMode ? 'Video' : 'Audio'}`;
-});
+	
 
 // === Handle Item Click (play music) ===
 function handleItemClick(el){
