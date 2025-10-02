@@ -1342,13 +1342,14 @@ displayFavorites();
 
 
 
+
 <footer class="fixed-footer">  
-  <!-- Play Button -->
+  <!-- Play Button (original aapka code) -->
   <div class="play-button">  
     <b id="play"><i class="fa fa-play" aria-hidden="true"></i></b>  
   </div>  
 
-  <!-- Title -->
+  <!-- Title (original) -->
   <div class="song-title">  
     <span id="callStatus"></span>  
     <span onclick="openModal()" id="vfytitle" 
@@ -1356,14 +1357,13 @@ displayFavorites();
     </span>  
   </div>   
 
-  <!-- Right Side Control Buttons -->
-  <div class="controls-right">
-    <button id="pichhe" class="icon-btn"><i class="fa fa-backward"></i></button>
-    <button id="Nextbutto" class="icon-btn"><i class="fa fa-forward"></i></button>
-    <button id="VFYshare" class="icon-btn"><i class="fa fa-share-alt"></i></button>
-  </div>
+  <!-- Right side buttons add kiye -->
+  <div class="right-controls">  
+    <b id="pichhe" class="icon-btn"><i class="fa fa-backward"></i></b>  
+    <b id="Nextbutto" class="icon-btn"><i class="fa fa-forward"></i></b>  
+    <b id="VFYshare" class="icon-btn"><i class="fa fa-share-alt"></i></b>  
+  </div>  
 </footer>  
-  
 
 <style>  
 /* -------------------- Body -------------------- */  
@@ -1434,7 +1434,7 @@ body {
 }  
 
 /* -------------------- Right Controls -------------------- */  
-.controls-right {  
+.right-controls {  
   display: flex;  
   gap: 8px;  
 }  
@@ -1446,7 +1446,6 @@ body {
   justify-content: center;  
   align-items: center;  
   border-radius: 12px;  
-  border: none;  
   background: rgba(255, 255, 255, 0.2);  
   backdrop-filter: blur(6px);  
   cursor: pointer;  
@@ -1490,7 +1489,6 @@ body {
   height: 100%;  
 }  
 </style>
-
 
 
 
