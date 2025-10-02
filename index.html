@@ -1775,42 +1775,44 @@ function saveFavorite(index, title, thumbUrl, videoId){
     // Add your favorite logic here
 }
 
-// === Share Video Function (Thumbnail + Title + Vidofy URL) ===
+// === Share Video Function ===
 async function shareVideo(videoId, title, thumbUrl){
     const shareUrl = `https://vidofy.vercel.app?q=${videoId}`;
+    const shareText = `${title}\nWatch here: ${shareUrl}`;
 
     try {
-        // Fetch thumbnail image as blob
+        // Check if browser supports Web Share API with files
         const response = await fetch(thumbUrl);
         const blob = await response.blob();
-        const file = new File([blob], "vivekmasona.jpg", { type: blob.type });
+        const file = new File([blob], "thumbnail.jpg", { type: blob.type });
 
-        // Check if browser can share files
-        if(navigator.canShare && navigator.canShare({ files: [file] })){
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            // Mobile friendly share: title + text + URL + thumbnail
+            await navigator.share({
+                title: title,        // metadata
+                text: shareText,     // popup me visible
+                url: shareUrl,       // link
+                files: [file]        // thumbnail image
+            });
+            console.log("✅ Shared successfully (mobile with thumbnail)");
+        } else if (navigator.share) {
+            // Fallback: share text + URL (thumbnail as link)
             await navigator.share({
                 title: title,
-                text: `${title}`,
-                url: shareUrl,
-                files: [file]
+                text: shareText + `\nThumbnail: ${thumbUrl}`,
+                url: shareUrl
             });
-            console.log("✅ Shared thumbnail + title + URL successfully");
+            console.log("✅ Shared successfully (desktop / no file support)");
         } else {
-            // Fallback: copy all to clipboard
-            navigator.clipboard.writeText(`${title}\n${shareUrl}\nThumbnail: ${thumbUrl}`);
-            alert("Browser does not support image share. Title + URL + thumbnail copied to clipboard!");
+            // Clipboard fallback
+            navigator.clipboard.writeText(shareText + `\nThumbnail: ${thumbUrl}`);
+            alert("Title + URL + thumbnail link copied to clipboard!");
         }
-    } catch(err){
+    } catch(err) {
         console.error("Error sharing:", err);
-        navigator.clipboard.writeText(`${title}\n${shareUrl}\nThumbnail: ${thumbUrl}`);
-        alert("Share failed. Title + URL + thumbnail copied instead!");
+        navigator.clipboard.writeText(shareText + `\nThumbnail: ${thumbUrl}`);
+        alert("Share failed. Title + URL + thumbnail link copied to clipboard!");
     }
-}
-
-// === Handle Item Click (play music) ===
-function handleItemClick(el){
-    const videoId = el.getAttribute('vid');
-    console.log("Play clicked:", videoId);
-    // Add your music play logic here
 }
 
     
