@@ -1779,10 +1779,14 @@ async function shareVideo(videoId, title, thumbUrl){
     const shareUrl = `https://vidofy.vercel.app?q=${videoId}`;
 
     try {
+        // Fetch thumbnail as blob
         const response = await fetch(thumbUrl);
         const blob = await response.blob();
+
+        // File object (thumbnail image)
         const file = new File([blob], "thumbnail.jpg", { type: blob.type });
 
+        // Check if browser can share files
         if(navigator.canShare && navigator.canShare({ files: [file] })){
             await navigator.share({
                 title: title,
@@ -1790,18 +1794,20 @@ async function shareVideo(videoId, title, thumbUrl){
                 url: shareUrl,
                 files: [file]
             });
-            console.log("✅ Shared with thumbnail + title + link successfully");
+            console.log("✅ Shared with thumbnail + title + URL");
         } else {
-            // fallback
+            // Fallback: copy all to clipboard
             navigator.clipboard.writeText(`${title}\n${shareUrl}\nThumbnail: ${thumbUrl}`);
-            alert("Browser does not support image share. Link copied to clipboard!");
+            alert("Browser does not support image share. Link copied!");
         }
     } catch(err){
-        console.error("Error sharing thumbnail:", err);
+        console.error("Error sharing:", err);
         navigator.clipboard.writeText(`${title}\n${shareUrl}\nThumbnail: ${thumbUrl}`);
-        alert("Share failed, link copied instead!");
+        alert("Share failed. Link copied instead!");
     }
 }
+
+	
 
 // === Handle Item Click (play music) ===
 function handleItemClick(el){
