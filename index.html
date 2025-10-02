@@ -1343,38 +1343,39 @@ displayFavorites();
 
 
 
-<footer class="fixed-footer" >
+
   
-  <!-- Play button -->
+<footer class="fixed-footer">
+  
+  <!-- 🔹 Upar wali line: Buttons -->
+  <div class="footer-topline">
+    <button id="pichhe"><i class="fa fa-step-backward"></i></button>
+    <button id="Nextbutto"><i class="fa fa-step-forward"></i></button>
+    <button id="VFYshare"><i class="fa fa-share-alt"></i></button>
+  </div>
+
+  <!-- 🔹 Neeche wali line: Original layout -->
   <div class="play-button">
     <b id="play"><i class="fa fa-play" aria-hidden="true"></i></b>
   </div>
-  
-  <!-- Title -->
+
   <div class="song-title">
     <span id="callStatus"></span>
     <span onclick="openModal()" id="vfytitle" 
       style="width:auto;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
     </span>
   </div> 
-  
-  <!-- Thumbnail -->
+
   <div id="mybutton">
     <b class="feedback">
       <img id="Fimg" src="/img/play.jpg" alt="Thumbnail" onclick="clickButton()">
     </b>
   </div>	
 
-  <!-- Right controls -->
-  <div class="right-controls">
-    <b id="pichhe" class="icon-btn"><i class="fa fa-backward"></i></b>
-    <b id="Nextbutto" class="icon-btn"><i class="fa fa-forward"></i></b>
-    <b id="VFYshare" class="icon-btn"><i class="fa fa-share-alt"></i></b>
-  </div>
-
 </footer>
-       
-<style>     
+
+
+<style>
 /* -------------------- Body -------------------- */
 body {
   margin: 0;
@@ -1396,32 +1397,56 @@ body {
   border-radius: 10px 10px 10px 10px;
   transition: transform 0.3s ease-in-out;
   z-index: 100000;
+  flex-direction: column; /* 👈 ab 2 line ban jayengi */
 }
 
+/* -------------------- Upar wali line (buttons) -------------------- */
+.footer-topline {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end; /* right side */
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.footer-topline button {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 50%;
+  padding: 6px;
+  cursor: pointer;
+  color: #fff;
+  font-size: 14px;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  transition: 0.2s;
+}
+.footer-topline button:hover {
+  background: rgba(255,255,255,0.3);
+  transform: scale(1.1);
+}
+
+/* -------------------- Neeche wali line (original) -------------------- */
 .fixed-footer.hide {
   transform: translateY(100%);
 }
 
 .song-title {
-  width: 40%;
+  width: 80%;
   text-align: center;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
 }
 
-/* -------------------- Play Button -------------------- */
 .play-button {
   position: relative;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 5%;
+  justify-content: center; 
+  align-items: center;     
+  width: 40px;             
+  height: 40px;            
+  border-radius: 5%;       
   cursor: pointer;
   overflow: hidden;
-  background: transparent;
+  background: transparent; 
 }
 
 .play-button i {
@@ -1440,74 +1465,9 @@ body {
   height: 100%;
   background: rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(2px);
-  border-radius: 50%;
+  border-radius: 50%;                     
   z-index: 1;
-  pointer-events: none;
-}
-
-/* -------------------- Thumbnail -------------------- */
-#mybutton img {
-  width: 45px;
-  height: 45px;
-  border-radius: 12px;
-  object-fit: cover;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-}
-
-/* -------------------- Right Controls -------------------- */
-.right-controls {
-  display: flex;
-  gap: 6px;
-}
-
-.icon-btn {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.2);
-  backdrop-filter: blur(6px);
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-  transition: transform 0.2s;
-}
-
-.icon-btn:hover {
-  transform: scale(1.1);
-}
-
-.icon-btn i {
-  font-size: 16px;
-  color: #dadada;
-}
-
-/* -------------------- Progress Bar Container -------------------- */
-#progressBarContainer {
-  position: fixed;
-  overflow: hidden;
-  z-index: 99999;
-  border-radius: 0px 10px 10px 0px;
-  bottom: 0;
-  width: 82%;
-  height: 59.5px;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(10px) saturate(180%);
-  -webkit-backdrop-filter: blur(10px) saturate(180%);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-  left: 18%;
-  transition: transform 0.3s ease-in-out;
-}
-
-#progressBarContainer.hide {
-  transform: translateY(100%);
-}
-
-#progress {
-  overflow: hidden;
-  border-radius: 0px 4px 4px 0px;
-  height: 100%;
+  pointer-events: none;                   
 }
 </style>
 
