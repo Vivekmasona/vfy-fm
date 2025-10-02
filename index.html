@@ -498,20 +498,22 @@ background: radial-gradient(circle, rgba(237, 70, 9, 1) 9%, rgba(28, 199, 65, 0.
 }
   
 
-/* Single vertical tab with Save + Share */
+/* Vertical tab with dark transparent glossy blur */
 .vertical-button-tab {
   position: absolute;
   top: 10px;
   right: 10px;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, #ff7b50, #ff9e73);
-  border-radius: 10px;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
   padding: 6px;
   gap: 6px;
   z-index: 10;
 }
 
+/* Icon wrapper */
 .vertical-button-tab .btn-icon {
   width: 36px;
   height: 36px;
@@ -519,13 +521,14 @@ background: radial-gradient(circle, rgba(237, 70, 9, 1) 9%, rgba(28, 199, 65, 0.
   align-items: center;
   justify-content: center;
   color: #fff;
+  font-size: 18px;
   cursor: pointer;
   transition: transform 0.15s, color 0.15s;
 }
 
 .vertical-button-tab .btn-icon:hover {
-  transform: scale(1.15);
-  color: #ffff00;
+  transform: scale(1.2);
+  color: #ff7b50;
 }
 	
 </style>
@@ -1751,17 +1754,13 @@ function getOutput(item, i){
       </div>
       <div class="title">${title}</div>
 
-      <!-- Single container with 2 vertical buttons -->
+      <!-- Single vertical tab with Font Awesome icons -->
       <div class="vertical-button-tab">
           <div class="btn-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-              </svg>
+              <i class="fas fa-heart"></i>
           </div>
           <div class="btn-icon" onclick="event.stopPropagation(); shareVideo('${id}', '${title}')">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M18 16.08c-.76 0-1.44.3-1.96.77l-7.12-4.13a2.5 2.5 0 000-1.44l7.12-4.13A2.99 2.99 0 1015 5a3 3 0 103 3c0 .21-.03.42-.08.62l-7.12 4.13c.05.18.08.37.08.57a3 3 0 103 3z"/>
-              </svg>
+              <i class="fas fa-share-alt"></i>
           </div>
       </div>
 
@@ -1784,6 +1783,7 @@ function shareVideo(videoId, title){
         alert("Link copied to clipboard!");
     }
 }
+
 
 // === Handle Item Click ===
 function handleItemClick(el){
