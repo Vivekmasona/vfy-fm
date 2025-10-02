@@ -1736,11 +1736,13 @@ document.getElementById("modeToggleBtn").addEventListener("click", () => {
 
     
 
+
+    
 // === Generate List Item ===
 function getOutput(item, i){
-    var id = item.id?.videoId || item.id;
-    var title = item.snippet?.title || "No title";
-    var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
+    const id = item.id?.videoId || item.id;
+    const title = item.snippet?.title || "No title";
+    const thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
     if(item.snippet?.liveBroadcastContent==="live") return '';
 
     return `
@@ -1756,7 +1758,7 @@ function getOutput(item, i){
       </div>
       <div class="title">${title}</div>
 
-      <!-- Single vertical tab with Save + Share -->
+      <!-- Vertical tab with Save + Share -->
       <div class="vertical-button-tab">
           <div class="btn-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">
               <i class="fas fa-heart"></i>
@@ -1774,7 +1776,7 @@ function saveFavorite(index, title, thumbUrl, videoId){
     console.log("Saved:", title, videoId);
 }
 
-// === Share Video Function (Thumbnail + Title + Real URL for WhatsApp) ===
+// === Share Video Function (Thumbnail + title canvas + real Vidofy URL) ===
 async function shareVideo(videoId, title, thumbUrl){
     const shareUrl = `https://vidofy.vercel.app?q=${videoId}`;
 
@@ -1790,13 +1792,15 @@ async function shareVideo(videoId, title, thumbUrl){
             canvas.height = img.height + 40;
             const ctx = canvas.getContext('2d');
 
+            // Draw thumbnail
             ctx.drawImage(img, 0, 0);
 
-            // Title box
+            // Draw glossy black rectangle for title
             const titleHeight = 30;
             ctx.fillStyle = 'rgba(0,0,0,0.7)';
             ctx.fillRect(0, img.height, canvas.width, titleHeight);
 
+            // Draw title text
             ctx.fillStyle = 'white';
             ctx.font = 'bold 18px sans-serif';
             ctx.textAlign = 'center';
@@ -1808,14 +1812,15 @@ async function shareVideo(videoId, title, thumbUrl){
                 const file = new File([blob], "thumbnail.png", { type: "image/png" });
 
                 if(navigator.canShare && navigator.canShare({ files: [file] })){
+                    // Share image + real Vidofy URL
                     await navigator.share({
                         title: title,
-                        text: `${title}\n${shareUrl}`, // real clickable URL
+                        text: `${title}\n${shareUrl}`, // ✅ real clickable URL
                         files: [file]
                     });
-                    console.log("✅ Shared with thumbnail + title + real URL");
+                    console.log("✅ Shared with canvas + real Vidofy URL");
                 } else {
-                    // fallback: copy URL + title
+                    // Fallback: copy text only
                     navigator.clipboard.writeText(`${title}\n${shareUrl}`);
                     alert("Browser does not support image share. Title + URL copied!");
                 }
@@ -1837,8 +1842,7 @@ async function shareVideo(videoId, title, thumbUrl){
 function handleItemClick(el){
     const videoId = el.getAttribute('vid');
     console.log("Play video:", videoId);
-} 
-    
+}        
     
 
 
