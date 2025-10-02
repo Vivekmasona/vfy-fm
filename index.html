@@ -1700,30 +1700,37 @@ document.getElementById("modeToggleBtn").addEventListener("click", () => {
     document.getElementById("modeToggleBtn").innerText = `Mode: ${isVideoMode ? 'Video' : 'Audio'}`;
 });
 
-// === Generate List Item ===
-function getOutput(item, i){
-    var id = item.id?.videoId || item.id;
-    var title = item.snippet?.title || "No title";
-    var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
-    if(item.snippet?.liveBroadcastContent==="live") return '';
-    return `
-<div style="margin-bottom:12px;">
-  <b index="${i}" class="music-item list" vid="${id}" onclick="handleItemClick(this)">
-      <div class="thumb-wrap" style="position: relative;">
-          <img src="${thumbUrl}" alt="${title}">
-          <!-- Save Button Overlay -->
-          <button class="save-btn" style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); border:none; border-radius:50%; padding:6px; cursor:pointer;" 
-                  onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">
-              <i class="fas fa-heart" style="color:white;"></i>
-          </button>
-      </div>
-      <div class="title">${title}</div>
-      <!-- Share Button Next to Title -->
-      <button id="VFYshare" style="background:none; border:none; cursor:pointer; margin-left:8px;" onclick="event.stopPropagation(); shareVideo('${id}')">
-          <i class="fas fa-share-alt"></i>
-      </button>
-  </b>
-</div>`;
+function getOutput(item, i){  
+    var id = item.id?.videoId || item.id;  
+    var title = item.snippet?.title || "No title";  
+    var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';  
+    if(item.snippet?.liveBroadcastContent==="live") return '';  
+
+    return `  
+<div style="margin-bottom:12px;">  
+  <b index="${i}" class="music-item list" vid="${id}" onclick="handleItemClick(this)">  
+      <div class="thumb-wrap" style="position: relative;">  
+          <img src="${thumbUrl}" alt="${title}">  
+
+          <!-- Overlay buttons (Save + Share) -->
+          <div style="position:absolute; top:8px; right:8px; display:flex; gap:6px;">
+              <!-- Save Button -->
+              <button class="save-btn" style="background:rgba(0,0,0,0.6); border:none; border-radius:50%; padding:6px; cursor:pointer;" 
+                      onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">
+                  <i class="fas fa-heart" style="color:white;"></i>
+              </button>
+
+              <!-- Share Button -->
+              <button id="VFYshare" style="background:rgba(0,0,0,0.6); border:none; border-radius:50%; padding:6px; cursor:pointer;" 
+                      onclick="event.stopPropagation(); shareVideo('${id}')">
+                  <i class="fas fa-share-alt" style="color:white;"></i>
+              </button>
+          </div>
+      </div>  
+
+      <div class="title">${title}</div>  
+  </b>  
+</div>`;  
 }
 
 // === Handle Item Click ===
