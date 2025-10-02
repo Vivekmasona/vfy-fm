@@ -2733,34 +2733,77 @@ function splitTitleForMarquee(fullTitle) {
     marqueeIndex = 0;
 }
 
-// Function to create or replace notification
-function createNotification(part, thumbnailUrl) {
-    const options = {
-        body: 'Audio is playing',
-        icon: thumbnailUrl,
-        tag: "song-marquee", // same tag => replaces old notification
-        renotify: true,
-        actions: [
-            { action: 'prev', title: 'Previous', icon: 'path/to/prev-icon.png' },
-            { action: 'seekbackward', title: 'Rewind', icon: 'path/to/seek-back-icon.png' },
-            { action: 'seekforward', title: 'Fast Forward', icon: 'path/to/seek-forward-icon.png' },
-            { action: 'heart', title: 'Favorite', icon: 'path/to/heart-icon.png' },
-            { action: 'next', title: 'Next', icon: 'path/to/next-icon.png' },
-            { action: 'download', title: 'Download', icon: 'path/to/download-icon.png' }
-        ]
-    };
+// ====== CANVAS THUMBNAIL FUNCTION ======
+function generateCanvasImage(thumbnailUrl, text = "VFY by Vivek") {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous"; // handle CORS
+        img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
 
-    currentNotification = new Notification(part, options);
+            canvas.width = img.width;
+            canvas.height = img.height;
 
-    // Handle actions
-    currentNotification.addEventListener('click', (event) => {
-        if (event.action === 'next') nextButtonElement.click();
-        else if (event.action === 'prev') prevButtonElement.click();
-        else if (event.action === 'heart') heartButtonElement.click();
-        else if (event.action === 'download') downloadButtonElement.click();
-        else if (event.action === 'seekbackward') titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
-        else if (event.action === 'seekforward') titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
+            // Draw original thumbnail
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            // Gradient text style
+            const fontSize = Math.floor(canvas.height / 8);
+            ctx.font = `bold ${fontSize}px Arial`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            gradient.addColorStop(0, "#ff0000");
+            gradient.addColorStop(0.25, "#00ff00");
+            gradient.addColorStop(0.5, "#0000ff");
+            gradient.addColorStop(0.75, "#ff00ff");
+            gradient.addColorStop(1, "#00ffff");
+            ctx.fillStyle = gradient;
+
+            ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+
+            resolve(canvas.toDataURL("image/png"));
+        };
+        img.onerror = reject;
+        img.src = thumbnailUrl;
     });
+}
+
+// Function to create or replace notification
+async function createNotification(part, thumbnailUrl) {
+    try {
+        const editedImage = await generateCanvasImage(thumbnailUrl);
+
+        const options = {
+            body: 'Audio is playing',
+            icon: editedImage, // canvas edited image
+            tag: "song-marquee",
+            renotify: true,
+            actions: [
+                { action: 'prev', title: 'Previous', icon: 'path/to/prev-icon.png' },
+                { action: 'seekbackward', title: 'Rewind', icon: 'path/to/seek-back-icon.png' },
+                { action: 'seekforward', title: 'Fast Forward', icon: 'path/to/seek-forward-icon.png' },
+                { action: 'heart', title: 'Favorite', icon: 'path/to/heart-icon.png' },
+                { action: 'next', title: 'Next', icon: 'path/to/next-icon.png' },
+                { action: 'download', title: 'Download', icon: 'path/to/download-icon.png' }
+            ]
+        };
+
+        currentNotification = new Notification(part, options);
+
+        currentNotification.addEventListener('click', (event) => {
+            if (event.action === 'next') nextButtonElement.click();
+            else if (event.action === 'prev') prevButtonElement.click();
+            else if (event.action === 'heart') heartButtonElement.click();
+            else if (event.action === 'download') downloadButtonElement.click();
+            else if (event.action === 'seekbackward') titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
+            else if (event.action === 'seekforward') titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
+        });
+    } catch (err) {
+        console.error("Canvas error:", err);
+    }
 }
 
 // Function to show marquee notification
@@ -2772,13 +2815,10 @@ function showNotification() {
     splitTitleForMarquee(title);
 
     if (Notification.permission === 'granted') {
-        // First part
         createNotification(titleParts[marqueeIndex], thumbnailUrl);
 
-        // Clear old interval if any
         if (marqueeInterval) clearInterval(marqueeInterval);
 
-        // Rotate parts every 2 sec
         marqueeInterval = setInterval(() => {
             marqueeIndex = (marqueeIndex + 1) % titleParts.length;
             createNotification(titleParts[marqueeIndex], thumbnailUrl);
