@@ -1708,21 +1708,28 @@ function getOutput(item, i){
     var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
     if(item.snippet?.liveBroadcastContent==="live") return '';
     return `
-<div style="margin-bottom:12px;">
+<div style="margin-bottom:12px; position: relative;">
   <b index="${i}" class="music-item list" vid="${id}" onclick="handleItemClick(this)">
-      <div class="thumb-wrap">
+      <div class="thumb-wrap" style="position: relative;">
           <img src="${thumbUrl}" alt="${title}">
-          <div class="overlay-play">
-              <!-- Share button SVG -->
-              <svg width="20" height="20" id="VFYshare" viewBox="0 0 24 24" fill="transparent">
+          
+          <!-- Overlay share button -->
+          <button id="VFYshare" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.5); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="event.stopPropagation(); shareVideo('${title}', '${id}', '${thumbUrl}')">
+              <!-- Share SVG icon -->
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
                   <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.03-.47-.09-.7l7.05-4.11c.53.5 1.23.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.81 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.81 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3s3-1.34 3-3-1.34-3-3-3z"/>
+              </svg>
+          </button>
+
+          <!-- Overlay play icon -->
+          <div class="overlay-play" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
+                  <path d="M3 22v-20l18 10-18 10z"/>
               </svg>
           </div>
       </div>
-      <div class="title">${title}</div>
-      <button class="save-btn" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">
-          <i class="fas fa-heart"></i>
-      </button>
+      
+      <div class="title" style="margin-top: 8px;">${title}</div>
   </b>
 </div>`;
 }
