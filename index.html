@@ -1781,32 +1781,57 @@ async function shareVideo(videoId, title, thumbUrl){
     const shareUrl = `https://vidofy.vercel.app?q=${videoId}`;
 
     try {
-        // Fetch thumbnail image as blob
-        const response = await fetch(thumbUrl);
-        const blob = await response.blob();
-        const file = new File([blob], "thumbnail.jpg", { type: blob.type });
+        // Load image
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.src = thumbUrl;
 
-        // Check if browser can share files
-        if(navigator.canShare && navigator.canShare({ files: [file] })){
-            await navigator.share({
-                title: title,
-                text: `${title}\nWatch here: ${shareUrl}`,
-                url: shareUrl,
-                files: [file]
-            });
-            console.log("✅ Shared thumbnail + title + URL successfully");
-        } else {
-            // Fallback: copy all to clipboard
-            navigator.clipboard.writeText(`${title}\n${shareUrl}\nThumbnail: ${thumbUrl}`);
-            alert("Browser does not support image share. Title + URL + thumbnail copied to clipboard!");
-        }
+        img.onload = async () => {
+            // Create canvas same size as image
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height + 60; // extra space for title + url
+            const ctx = canvas.getContext('2d');
+
+            // Draw thumbnail
+            ctx.drawImage(img, 0, 0);
+
+            // Draw title + URL below image
+            ctx.fillStyle = "white";
+            ctx.font = "bold 20px sans-serif";
+            ctx.fillText(title, 10, img.height + 25);
+            ctx.font = "16px sans-serif";
+            ctx.fillText(shareUrl, 10, img.height + 50);
+
+            // Convert canvas to blob
+            canvas.toBlob(async (blob) => {
+                const file = new File([blob], "thumbnail.png", { type: "image/png" });
+
+                if(navigator.canShare && navigator.canShare({ files: [file] })){
+                    await navigator.share({
+                        title: title,
+                        text: `${title}\nWatch here: ${shareUrl}`,
+                        files: [file]
+                    });
+                    console.log("✅ Shared with canvas image + title + URL");
+                } else {
+                    // fallback: copy link + title
+                    navigator.clipboard.writeText(`${title}\n${shareUrl}`);
+                    alert("Browser does not support image share. Title + URL copied!");
+                }
+            }, 'image/png');
+        };
+
+        img.onerror = () => {
+            alert("Failed to load thumbnail for sharing!");
+        };
+
     } catch(err){
         console.error("Error sharing:", err);
-        navigator.clipboard.writeText(`${title}\n${shareUrl}\nThumbnail: ${thumbUrl}`);
-        alert("Share failed. Title + URL + thumbnail copied instead!");
+        navigator.clipboard.writeText(`${title}\n${shareUrl}`);
+        alert("Share failed. Title + URL copied instead!");
     }
 }
-
 // === Handle Item Click (play music) ===
 function handleItemClick(el){
     const videoId = el.getAttribute('vid');
