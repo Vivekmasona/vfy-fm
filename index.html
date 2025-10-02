@@ -1745,18 +1745,23 @@ function getOutput(item, i){
     return `
 <div style="margin-bottom:12px; position: relative;">
   <b index="${i}" class="music-item list" vid="${id}" onclick="handleItemClick(this)">
-      <div class="thumb-wrap">
-          <img src="${thumbUrl}" alt="${title}">
-          <div class="overlay-play">
+
+      <!-- Song title above thumbnail -->
+      <a href="https://vidofy.vercel.app?q=${id}" target="_blank" style="display:block; font-weight:bold; font-size:14px; margin-bottom:6px; text-decoration:none; color:#000;">
+          ${title}
+      </a>
+
+      <div class="thumb-wrap" style="position:relative;">
+          <img src="${thumbUrl}" alt="${title}" style="width:100%; display:block;">
+          <div class="overlay-play" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
                   <path d="M3 22v-20l18 10-18 10z"/>
               </svg>
           </div>
       </div>
-      <div class="title">${title}</div>
 
       <!-- Single vertical tab with Save + Share -->
-      <div class="vertical-button-tab">
+      <div class="vertical-button-tab" style="position:absolute; right:6px; top:6px; display:flex; flex-direction:column;">
           <div class="btn-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">
               <i class="fas fa-heart"></i>
           </div>
@@ -1769,12 +1774,6 @@ function getOutput(item, i){
 </div>`;
 }
 
-// === Save Favorite Function ===
-function saveFavorite(index, title, thumbUrl, videoId){
-    console.log("Saved:", title, videoId);
-    // Add your favorite logic here
-}
-
 // === Share Video Function (Thumbnail + Title + Vidofy URL) ===
 async function shareVideo(videoId, title, thumbUrl){
     const shareUrl = `https://vidofy.vercel.app?q=${videoId}`;
@@ -1785,17 +1784,15 @@ async function shareVideo(videoId, title, thumbUrl){
         const blob = await response.blob();
         const file = new File([blob], "thumbnail.jpg", { type: blob.type });
 
-        // Check if browser can share files
         if(navigator.canShare && navigator.canShare({ files: [file] })){
             await navigator.share({
                 title: title,
-                text: `${title}\nWatch here: ${shareUrl}`,
+                text: `${title}\nWatch here: ${shareUrl}`, // <-- title included in share
                 url: shareUrl,
                 files: [file]
             });
             console.log("✅ Shared thumbnail + title + URL successfully");
         } else {
-            // Fallback: copy all to clipboard
             navigator.clipboard.writeText(`${title}\n${shareUrl}\nThumbnail: ${thumbUrl}`);
             alert("Browser does not support image share. Title + URL + thumbnail copied to clipboard!");
         }
@@ -1806,12 +1803,6 @@ async function shareVideo(videoId, title, thumbUrl){
     }
 }
 
-// === Handle Item Click (play music) ===
-function handleItemClick(el){
-    const videoId = el.getAttribute('vid');
-    console.log("Play clicked:", videoId);
-    // Add your music play logic here
-}
 
     
 
