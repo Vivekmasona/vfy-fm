@@ -1735,7 +1735,7 @@ document.getElementById("modeToggleBtn").addEventListener("click", () => {
 
 
     
-// === Generate List Item ===
+
 // === Generate List Item ===
 function getOutput(item, i){
     var id = item.id?.videoId || item.id;
@@ -1745,29 +1745,26 @@ function getOutput(item, i){
     if(item.snippet?.liveBroadcastContent==="live") return '';
 
     return `
-<div style="margin-bottom:12px; position: relative;">
-  <b index="${i}" class="music-item list" vid="${id}" onclick="handleItemClick(this)">
-      <div class="thumb-wrap">
-          <img src="${thumbUrl}" alt="${title}">
-          <div class="overlay-play">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
-                  <path d="M3 22v-20l18 10-18 10z"/>
-              </svg>
-          </div>
-      </div>
-      <div class="title">${title}</div>
+<div style="margin-bottom:12px; position: relative;" class="music-item list" index="${i}" vid="${id}" onclick="handleItemClick(this)">
+    <div class="thumb-wrap">
+        <img src="${thumbUrl}" alt="${title}">
+        <div class="overlay-play">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
+                <path d="M3 22v-20l18 10-18 10z"/>
+            </svg>
+        </div>
+    </div>
+    <div class="title">${title}</div>
 
-      <!-- Save + Share Buttons -->
-      <div class="button-tab" style="position: absolute; top: 8px; right: 8px; display: flex; gap: 6px;">
-          <button type="button" class="save-btn" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">
-              <i class="fas fa-heart"></i>
-          </button>
-          <button type="button" class="share-btn" onclick="event.stopPropagation(); shareVideo('${id}', '${title}', '${thumbUrl}')">
-              <i class="fas fa-share-alt"></i>
-          </button>
-      </div>
-
-  </b>
+    <!-- Save + Share Buttons -->
+    <div class="button-tab" style="position: absolute; top: 8px; right: 8px; display: flex; gap: 6px;">
+        <button type="button" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">
+            <i class="fas fa-heart"></i>
+        </button>
+        <button type="button" onclick="event.stopPropagation(); shareVideo('${id}', '${title}', '${thumbUrl}')">
+            <i class="fas fa-share-alt"></i>
+        </button>
+    </div>
 </div>`;
 }
 
