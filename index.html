@@ -1781,27 +1781,38 @@ async function shareVideo(videoId, title, thumbUrl){
     const shareUrl = `https://vidofy.vercel.app?q=${videoId}`;
 
     try {
-        // Load image
         const img = new Image();
         img.crossOrigin = "anonymous";
         img.src = thumbUrl;
 
         img.onload = async () => {
-            // Create canvas same size as image
+            // Canvas size: image height + extra for title + URL
             const canvas = document.createElement('canvas');
             canvas.width = img.width;
-            canvas.height = img.height + 60; // extra space for title + url
+            canvas.height = img.height + 80; // extra space for title + URL
             const ctx = canvas.getContext('2d');
 
             // Draw thumbnail
             ctx.drawImage(img, 0, 0);
 
-            // Draw title + URL below image
-            ctx.fillStyle = "white";
-            ctx.font = "bold 20px sans-serif";
-            ctx.fillText(title, 10, img.height + 25);
-            ctx.font = "16px sans-serif";
-            ctx.fillText(shareUrl, 10, img.height + 50);
+            // Draw glossy black rectangle for title
+            const titleHeight = 30;
+            ctx.fillStyle = 'rgba(0,0,0,0.7)'; // glossy black background
+            ctx.fillRect(0, img.height, canvas.width, titleHeight);
+
+            // Draw title text (white, centered)
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 18px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(title, canvas.width / 2, img.height + titleHeight / 2);
+
+            // Draw URL below the title rectangle
+            ctx.fillStyle = '#00f'; // blue for clickable URL look
+            ctx.font = '16px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(shareUrl, canvas.width / 2, img.height + titleHeight + 25);
 
             // Convert canvas to blob
             canvas.toBlob(async (blob) => {
@@ -1813,7 +1824,7 @@ async function shareVideo(videoId, title, thumbUrl){
                         text: `${title}\nWatch here: ${shareUrl}`,
                         files: [file]
                     });
-                    console.log("✅ Shared with canvas image + title + URL");
+                    console.log("✅ Shared with thumbnail + styled title + URL");
                 } else {
                     // fallback: copy link + title
                     navigator.clipboard.writeText(`${title}\n${shareUrl}`);
@@ -1832,6 +1843,16 @@ async function shareVideo(videoId, title, thumbUrl){
         alert("Share failed. Title + URL copied instead!");
     }
 }
+
+
+
+
+
+
+
+
+
+	
 // === Handle Item Click (play music) ===
 function handleItemClick(el){
     const videoId = el.getAttribute('vid');
