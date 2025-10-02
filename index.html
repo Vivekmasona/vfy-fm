@@ -1734,7 +1734,9 @@ document.getElementById("modeToggleBtn").addEventListener("click", () => {
 
 
 
-    // === Generate List Item ===
+    
+
+// === Generate List Item ===
 function getOutput(item, i){
     var id = item.id?.videoId || item.id;
     var title = item.snippet?.title || "No title";
@@ -1774,16 +1776,14 @@ function saveFavorite(index, title, thumbUrl, videoId){
     // Add your favorite logic here
 }
 
-// === Share Video Function (with thumbnail image) ===
+// === Share Video Function (Thumbnail + Title + Vidofy URL) ===
 async function shareVideo(videoId, title, thumbUrl){
     const shareUrl = `https://vidofy.vercel.app?q=${videoId}`;
 
     try {
-        // Fetch thumbnail as blob
+        // Fetch thumbnail image as blob
         const response = await fetch(thumbUrl);
         const blob = await response.blob();
-
-        // File object (thumbnail image)
         const file = new File([blob], "thumbnail.jpg", { type: blob.type });
 
         // Check if browser can share files
@@ -1794,18 +1794,26 @@ async function shareVideo(videoId, title, thumbUrl){
                 url: shareUrl,
                 files: [file]
             });
-            console.log("✅ Shared with thumbnail + title + URL");
+            console.log("✅ Shared thumbnail + title + URL successfully");
         } else {
             // Fallback: copy all to clipboard
             navigator.clipboard.writeText(`${title}\n${shareUrl}\nThumbnail: ${thumbUrl}`);
-            alert("Browser does not support image share. Link copied!");
+            alert("Browser does not support image share. Title + URL + thumbnail copied to clipboard!");
         }
     } catch(err){
         console.error("Error sharing:", err);
         navigator.clipboard.writeText(`${title}\n${shareUrl}\nThumbnail: ${thumbUrl}`);
-        alert("Share failed. Link copied instead!");
+        alert("Share failed. Title + URL + thumbnail copied instead!");
     }
 }
+
+// === Handle Item Click (play music) ===
+function handleItemClick(el){
+    const videoId = el.getAttribute('vid');
+    console.log("Play clicked:", videoId);
+    // Add your music play logic here
+}
+
 
 	
 
