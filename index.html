@@ -1347,35 +1347,40 @@ displayFavorites();
   
 
   
-<footer class="fixed-footer">
 
-  <!-- 🔹 Overlay Buttons (footer ke upar right corner) -->
-  <div class="footer-overlay">
-    <button id="pichhe"><i class="fa fa-step-backward"></i></button>
-    <button id="Nextbutto"><i class="fa fa-step-forward"></i></button>
-    <button id="VFYshare"><i class="fa fa-share-alt"></i></button>
-  </div>
+  <footer class="fixed-footer">
 
-  <!-- 🔹 Original footer content -->
-  <div class="play-button">
-    <b id="play"><i class="fa fa-play" aria-hidden="true"></i></b>
-  </div>
+  <!-- 🔹 Main control container with blur/glossy background -->
+  <div class="control-container">
 
-  <div class="song-title">
-    <span id="callStatus"></span>
-    <span onclick="openModal()" id="vfytitle" 
-      style="width:auto;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-    </span>
-  </div> 
+    <!-- Play Button -->
+    <div class="play-button">
+      <b id="play"><i class="fa fa-play" aria-hidden="true"></i></b>
+    </div>
 
-  <div id="mybutton">
-    <b class="feedback">
+    <!-- Thumbnail + overlay buttons -->
+    <div class="thumb-wrapper">
       <img id="Fimg" src="/img/play.jpg" alt="Thumbnail" onclick="clickButton()">
-    </b>
-  </div>	
+
+      <!-- Mini buttons on thumbnail -->
+      <div class="thumb-overlay">
+        <button id="pichhe"><i class="fa fa-step-backward"></i></button>
+        <button id="Nextbutto"><i class="fa fa-step-forward"></i></button>
+        <button id="VFYshare"><i class="fa fa-share-alt"></i></button>
+      </div>
+    </div>
+
+    <!-- Song Title -->
+    <div class="song-title">
+      <span id="callStatus"></span>
+      <span onclick="openModal()" id="vfytitle"
+        style="width:auto;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+      </span>
+    </div>
+
+  </div>
 
 </footer>
-
 
 <style>
 /* -------------------- Body -------------------- */
@@ -1389,75 +1394,43 @@ body {
   position: fixed;
   bottom: 0;
   width: 100%;
-  height: 59.5px;
   background: transparent;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   padding: 10px;
-  box-shadow: 0 0 15px #000;
-  border-radius: 10px 10px 10px 10px;
-  transition: transform 0.3s ease-in-out;
+  display: flex;
+  justify-content: center;
   z-index: 100000;
 }
 
-.fixed-footer.hide {
-  transform: translateY(100%);
-}
-
-/* -------------------- Overlay Buttons -------------------- */
-.footer-overlay {
-  position: absolute;
-  top: -40px;   /* footer ke upar show hoga */
-  right: 10px;  /* right corner me */
+/* -------------------- Control Container -------------------- */
+.control-container {
   display: flex;
-  gap: 8px;
-  z-index: 100001;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  padding: 5px 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
 
-.footer-overlay button {
-  background: rgba(255, 255, 255, 0.15);
-  border: none;
-  border-radius: 50%;
-  padding: 6px;
-  cursor: pointer;
-  color: #fff;
-  font-size: 14px;
-  backdrop-filter: blur(5px);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-  transition: 0.2s;
-}
-.footer-overlay button:hover {
-  background: rgba(255,255,255,0.3);
-  transform: scale(1.1);
-}
-
-/* -------------------- Original Footer Items -------------------- */
-.song-title {
-  width: 80%;
-  text-align: center;
-}
-
+/* Play Button */
 .play-button {
   position: relative;
   display: flex;
-  justify-content: center; 
-  align-items: center;     
-  width: 40px;             
-  height: 40px;            
-  border-radius: 5%;       
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   cursor: pointer;
-  overflow: hidden;
-  background: transparent; 
+  background: transparent;
 }
-
 .play-button i {
   color: #B9F56C;
-  font-size: 40px;
+  font-size: 28px;
   z-index: 2;
   position: relative;
 }
-
 .play-button::after {
   content: '';
   position: absolute;
@@ -1465,14 +1438,64 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255,255,255,0.3);
   backdrop-filter: blur(2px);
-  border-radius: 50%;                     
+  border-radius: 50%;
   z-index: 1;
-  pointer-events: none;                   
+  pointer-events: none;
+}
+
+/* Thumbnail */
+.thumb-wrapper {
+  position: relative;
+}
+.thumb-wrapper img {
+  width: 45px;
+  height: 45px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* Mini overlay buttons on thumbnail */
+.thumb-overlay {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 10;
+}
+.thumb-overlay button {
+  background: rgba(0,0,0,0.5);
+  border: none;
+  border-radius: 50%;
+  padding: 3px;
+  cursor: pointer;
+  color: #fff;
+  font-size: 10px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+.thumb-overlay button:hover {
+  background: rgba(0,0,0,0.7);
+  transform: scale(1.1);
+}
+
+/* Song Title */
+.song-title {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: #fff;
 }
 </style>
-
 
 
 
