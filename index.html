@@ -1342,203 +1342,158 @@ displayFavorites();
 
 
 
+<footer class="fixed-footer">  
+  <!-- Play Button -->
+  <div class="play-button">  
+    <b id="play"><i class="fa fa-play" aria-hidden="true"></i></b>  
+  </div>  
 
+  <!-- Title -->
+  <div class="song-title">  
+    <span id="callStatus"></span>  
+    <span onclick="openModal()" id="vfytitle" 
+      style="width:auto;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+    </span>  
+  </div>   
 
-
-<footer class="fixed-footer">
-  <div class="left-controls">
-    <!-- Prev -->
-    <button class="icon-btn" id="pichhe" title="Previous" onclick="prevTrack()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-        xmlns="http://www.w3.org/2000/svg">
-        <path d="M11 12L20 18V6L11 12Z" fill="#dadada"/>
-        <rect x="4" y="6" width="2" height="12" rx="1" fill="#dadada"/>
-      </svg>
-    </button>
-
-    <!-- Play -->
-    <button class="icon-btn play-icon" id="play" title="Play/Pause" onclick="togglePlay()">
-      <svg id="playSVG" width="20" height="20" viewBox="0 0 24 24" fill="none"
-        xmlns="http://www.w3.org/2000/svg">
-        <path d="M6 4L20 12L6 20V4Z" fill="#dadada"/>
-      </svg>
-    </button>
-
-    <!-- Next -->
-    <button class="icon-btn" id="Nextbutto" title="Next" onclick="nextTrack()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-        xmlns="http://www.w3.org/2000/svg">
-        <path d="M4 6V18L13 12L4 6Z" fill="#dadada"/>
-        <rect x="16" y="6" width="2" height="12" rx="1" fill="#dadada"/>
-      </svg>
-    </button>
-
-    <!-- Share -->
-    <button class="icon-btn" id="VFYshare" title="Share" onclick="shareTrack()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-        xmlns="http://www.w3.org/2000/svg">
-        <path d="M4 12V19C4 20.1046 4.89543 21 6 21H18" stroke="#dadada"
-          stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M16 6L20 10L16 14" stroke="#dadada" stroke-width="1.4"
-          stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M20 10H9" stroke="#dadada" stroke-width="1.4"
-          stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
+  <!-- Right Side Control Buttons -->
+  <div class="controls-right">
+    <button id="pichhe" class="icon-btn"><i class="fa fa-backward"></i></button>
+    <button id="Nextbutto" class="icon-btn"><i class="fa fa-forward"></i></button>
+    <button id="VFYshare" class="icon-btn"><i class="fa fa-share-alt"></i></button>
   </div>
+</footer>  
+  
 
-  <div class="song-title">
-    <span id="callStatus"></span>
-    <span onclick="openModal()" id="vfytitle"
-      style="width:auto;display:inline-block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
-  </div>
+<style>  
+/* -------------------- Body -------------------- */  
+body {  
+  margin: 0;  
+  padding: 0;  
+}  
 
-  <div id="mybutton">
-    <b class="feedback">
-      <img id="Fimg" src="/img/play.jpg" alt="Thumbnail" onclick="clickButton()">
-    </b>
-  </div>
-</footer>
+/* -------------------- Footer -------------------- */  
+.fixed-footer {  
+  position: fixed;  
+  bottom: 0;  
+  width: 100%;  
+  height: 59.5px;  
+  background: transparent;  
+  display: flex;  
+  justify-content: space-between;  
+  align-items: center;  
+  padding: 10px;  
+  box-shadow: 0 0 15px #000;  
+  border-radius: 10px 10px 10px 10px;  
+  transition: transform 0.3s ease-in-out;  
+  z-index: 100000;  
+}  
 
-<style>
-/* -------------------- Body -------------------- */
-body {
-    margin: 0;
-    padding: 0;
-}
+.fixed-footer.hide {  
+  transform: translateY(100%);  
+}  
 
-/* -------------------- Footer -------------------- */
-.fixed-footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    height: 59.5px;
-    background: transparent;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 12px;
-    box-shadow: 0 0 15px #000;
-    border-radius: 10px 10px 0 0;
-    z-index: 100000;
-    gap: 10px;
-}
+.song-title {  
+  width: 60%;  
+  text-align: center;  
+}  
 
-/* Left controls container */
-.left-controls {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    margin-left: 4px;
-}
+/* -------------------- Play Button -------------------- */  
+.play-button {  
+  position: relative;  
+  display: flex;  
+  justify-content: center;  
+  align-items: center;  
+  width: 40px;  
+  height: 40px;  
+  border-radius: 5%;  
+  cursor: pointer;  
+  overflow: hidden;  
+  background: transparent;  
+}  
 
-/* Icon Buttons */
-.icon-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    padding: 6px;
-    border-radius: 12px;
-    border: none;
-    background: rgba(255,255,255,0.9);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.6);
-    backdrop-filter: blur(6px) saturate(140%);
-    -webkit-backdrop-filter: blur(6px) saturate(140%);
-    cursor: pointer;
-    transition: transform .12s ease, box-shadow .12s ease;
-}
-.icon-btn:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.16); }
-.icon-btn:active { transform: translateY(1px); }
+.play-button i {  
+  color: #B9F56C;  
+  font-size: 40px;  
+  z-index: 2;  
+  position: relative;  
+}  
 
-/* Play button highlight */
-.play-icon {
-    width: 44px;
-    height: 44px;
-    padding: 8px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(245,245,245,0.9));
-    box-shadow: 0 10px 24px rgba(0,0,0,0.18);
-}
+.play-button::after {  
+  content: '';  
+  position: absolute;  
+  top: 0;  
+  left: 0;  
+  width: 100%;  
+  height: 100%;  
+  background: rgba(255, 255, 255, 0.3);  
+  backdrop-filter: blur(2px);  
+  border-radius: 50%;  
+  z-index: 1;  
+  pointer-events: none;  
+}  
 
-/* Title */
-.song-title {
-    width: 60%;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 14px;
-    color: #ffffff;
-    pointer-events: auto;
-}
+/* -------------------- Right Controls -------------------- */  
+.controls-right {  
+  display: flex;  
+  gap: 8px;  
+}  
 
-/* Thumbnail */
-#mybutton { margin-right: 8px; display:flex; align-items:center; }
-#mybutton .feedback { display:inline-block; }
-#Fimg {
-    width: 44px;
-    height: 44px;
-    object-fit: cover;
-    border-radius: 8px;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.3);
-    cursor: pointer;
-    border: 2px solid rgba(255,255,255,0.12);
-}
+.icon-btn {  
+  width: 32px;  
+  height: 32px;  
+  display: flex;  
+  justify-content: center;  
+  align-items: center;  
+  border-radius: 12px;  
+  border: none;  
+  background: rgba(255, 255, 255, 0.2);  
+  backdrop-filter: blur(6px);  
+  cursor: pointer;  
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);  
+  transition: transform 0.2s;  
+}  
 
-/* Progress bar container (original) */
-#progressBarContainer {
-    position: fixed;
-    overflow: hidden;
-    z-index: 99999;
-    border-radius: 0px 10px 10px 0px;
-    bottom: 0;
-    width: 82%;
-    height: 59.5px;
-    background: rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(10px) saturate(180%);
-    -webkit-backdrop-filter: blur(10px) saturate(180%);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-    left: 18%;
-    transition: transform 0.3s ease-in-out;
-}
-#progressBarContainer.hide { transform: translateY(100%); }
-#progress {
-    overflow: hidden;
-    border-radius: 0px 4px 4px 0px;
-    height: 100%;
-}
+.icon-btn:hover {  
+  transform: scale(1.1);  
+}  
 
-/* Responsive */
-@media (max-width:480px){
-  .song-title { width: 50%; font-size:13px; }
-  .play-icon { width:40px; height:40px; padding:6px; }
-  #Fimg { width:40px; height:40px; }
-}
+.icon-btn i {  
+  font-size: 16px;  
+  color: #dadada;  
+}  
+
+/* -------------------- Progress Bar -------------------- */  
+#progressBarContainer {  
+  position: fixed;  
+  overflow: hidden;  
+  z-index: 99999;  
+  border-radius: 0px 10px 10px 0px;  
+  bottom: 0;  
+  width: 82%;  
+  height: 59.5px;  
+  background: rgba(255, 255, 255, 0.12);  
+  backdrop-filter: blur(10px) saturate(180%);  
+  -webkit-backdrop-filter: blur(10px) saturate(180%);  
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);  
+  left: 18%;  
+  transition: transform 0.3s ease-in-out;  
+}  
+
+#progressBarContainer.hide {  
+  transform: translateY(100%);  
+}  
+
+#progress {  
+  overflow: hidden;  
+  border-radius: 0px 4px 4px 0px;  
+  height: 100%;  
+}  
 </style>
 
-<script>
-function prevTrack(){ console.log("Prev clicked"); }
-function nextTrack(){ console.log("Next clicked"); }
-function togglePlay(){
-  const svg = document.getElementById('playSVG');
-  if(svg.innerHTML.includes('path')){
-    // change to pause
-    svg.innerHTML = '<rect x="6" y="5" width="4" height="14" fill="#dadada"/><rect x="14" y="5" width="4" height="14" fill="#dadada"/>';
-  } else {
-    // change to play
-    svg.innerHTML = '<path d="M6 4L20 12L6 20V4Z" fill="#dadada"/>';
-  }
-}
-function shareTrack(){
-  const title = document.getElementById('vfytitle').innerText || "Track";
-  if(navigator.share){
-    navigator.share({ title, url: location.href });
-  } else {
-    alert("Share: " + title);
-  }
-}
-</script>
+
+
+
 
 
 
