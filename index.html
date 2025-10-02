@@ -2657,30 +2657,27 @@ volumeSlider.addEventListener('input', function () {
    
 
  
- const titleaudio = document.getElementById('SAudio');
+ 
+const titleaudio = document.getElementById('SAudio');
 const songTitleElement = document.getElementById('vfytitle');
 const thumbnailElement = document.getElementById('SThumb');
 const nextButtonElement = document.getElementById('nextbutto');
-const prevButtonElement = document.getElementById('pichhe'); // Previous button
+const prevButtonElement = document.getElementById('pichhe');
 const heartButtonElement = document.getElementById('VFYmp3v2');
 const downloadButtonElement = document.getElementById('VFYmp3');
 
-// Global title variable
 let title = "Vivekfy Har Dil Ki Dhadkan";
-
-// Notification + marquee variables
 let currentNotification = null;
 let marqueeInterval = null;
 let marqueeIndex = 0;
 let titleParts = [];
 
-// Function to update the song title
+// =========== UPDATE TITLE ===========
 function updateTitle() {
     title = songTitleElement ? songTitleElement.textContent.trim() : "Unknown Title"; 
-    console.log("Updated Title:", title);
 }
 
-// Function to update Media Session metadata
+// =========== MEDIA SESSION ===========
 function updateMediaSessionMetadata() {
     updateTitle();
     const thumbnailUrl = thumbnailElement ? thumbnailElement.src : '';
@@ -2690,31 +2687,17 @@ function updateMediaSessionMetadata() {
             title: title,
             artist: 'www.vivekmasona.com',
             album: 'VivekFy',
-            artwork: [
-                { src: thumbnailUrl, sizes: '96x96', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '128x128', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '192x192', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '256x256', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '384x384', type: 'image/jpg' },
-                { src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' },
-            ]
+            artwork: [{ src: thumbnailUrl, sizes: '512x512', type: 'image/jpg' }]
         });
 
-        // Media session action handlers
         navigator.mediaSession.setActionHandler('play', () => titleaudio.play());
         navigator.mediaSession.setActionHandler('pause', () => titleaudio.pause());
         navigator.mediaSession.setActionHandler('nexttrack', () => nextButtonElement.click());
         navigator.mediaSession.setActionHandler('previoustrack', () => prevButtonElement.click());
-        navigator.mediaSession.setActionHandler('seekbackward', () => {
-            titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
-        });
-        navigator.mediaSession.setActionHandler('seekforward', () => {
-            titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
-        });
     }
 }
 
-// Function to split title into 4 parts
+// =========== TITLE SPLIT ===========
 function splitTitleForMarquee(fullTitle) {
     const length = fullTitle.length;
     const partSize = Math.ceil(length / 4);
@@ -2725,19 +2708,15 @@ function splitTitleForMarquee(fullTitle) {
         const end = start + partSize;
         titleParts.push(fullTitle.substring(start, end));
     }
-
-    if (titleParts.length < 4) {
-        while (titleParts.length < 4) titleParts.push("");
-    }
-
+    if (titleParts.length < 4) while (titleParts.length < 4) titleParts.push("");
     marqueeIndex = 0;
 }
 
-// ====== CANVAS THUMBNAIL FUNCTION ======
+// =========== CANVAS GENERATOR ===========
 function generateCanvasImage(thumbnailUrl, text = "VFY by Vivek") {
     return new Promise((resolve, reject) => {
         const img = new Image();
-        img.crossOrigin = "anonymous"; // handle CORS
+        img.crossOrigin = "anonymous"; 
         img.onload = () => {
             const canvas = document.createElement("canvas");
             const ctx = canvas.getContext("2d");
@@ -2745,15 +2724,14 @@ function generateCanvasImage(thumbnailUrl, text = "VFY by Vivek") {
             canvas.width = img.width;
             canvas.height = img.height;
 
-            // Draw original thumbnail
+            // Background thumbnail
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-            // Gradient text style
+            // Gradient text
             const fontSize = Math.floor(canvas.height / 8);
             ctx.font = `bold ${fontSize}px Arial`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-
             const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
             gradient.addColorStop(0, "#ff0000");
             gradient.addColorStop(0.25, "#00ff00");
@@ -2764,115 +2742,89 @@ function generateCanvasImage(thumbnailUrl, text = "VFY by Vivek") {
 
             ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
-            resolve(canvas.toDataURL("image/png"));
+            const url = canvas.toDataURL("image/png");
+
+            // TEST: show on page also
+            const testImg = document.createElement("img");
+            testImg.src = url;
+            testImg.style.maxWidth = "200px";
+            testImg.style.display = "block";
+            document.body.appendChild(testImg);
+
+            resolve(url);
         };
         img.onerror = reject;
         img.src = thumbnailUrl;
     });
 }
 
-// Function to create or replace notification
+// =========== NOTIFICATION CREATOR ===========
 async function createNotification(part, thumbnailUrl) {
     try {
         const editedImage = await generateCanvasImage(thumbnailUrl);
 
         const options = {
             body: 'Audio is playing',
-            icon: editedImage, // canvas edited image
+            icon: editedImage,   // chhota icon
+            image: editedImage,  // bada image (desktop me visible)
+            badge: editedImage,  // optional
             tag: "song-marquee",
             renotify: true,
             actions: [
-                { action: 'prev', title: 'Previous', icon: 'path/to/prev-icon.png' },
-                { action: 'seekbackward', title: 'Rewind', icon: 'path/to/seek-back-icon.png' },
-                { action: 'seekforward', title: 'Fast Forward', icon: 'path/to/seek-forward-icon.png' },
-                { action: 'heart', title: 'Favorite', icon: 'path/to/heart-icon.png' },
-                { action: 'next', title: 'Next', icon: 'path/to/next-icon.png' },
-                { action: 'download', title: 'Download', icon: 'path/to/download-icon.png' }
+                { action: 'prev', title: 'Previous' },
+                { action: 'next', title: 'Next' },
+                { action: 'heart', title: 'Favorite' },
+                { action: 'download', title: 'Download' }
             ]
         };
 
         currentNotification = new Notification(part, options);
-
-        currentNotification.addEventListener('click', (event) => {
-            if (event.action === 'next') nextButtonElement.click();
-            else if (event.action === 'prev') prevButtonElement.click();
-            else if (event.action === 'heart') heartButtonElement.click();
-            else if (event.action === 'download') downloadButtonElement.click();
-            else if (event.action === 'seekbackward') titleaudio.currentTime = Math.max(titleaudio.currentTime - 10, 0);
-            else if (event.action === 'seekforward') titleaudio.currentTime = Math.min(titleaudio.currentTime + 10, titleaudio.duration);
-        });
     } catch (err) {
         console.error("Canvas error:", err);
     }
 }
 
-// Function to show marquee notification
+// =========== SHOW NOTIFICATION ===========
 function showNotification() {
     updateTitle();
     const thumbnailUrl = thumbnailElement ? thumbnailElement.src : '';
-
-    // Split title
     splitTitleForMarquee(title);
 
     if (Notification.permission === 'granted') {
         createNotification(titleParts[marqueeIndex], thumbnailUrl);
 
         if (marqueeInterval) clearInterval(marqueeInterval);
-
         marqueeInterval = setInterval(() => {
             marqueeIndex = (marqueeIndex + 1) % titleParts.length;
             createNotification(titleParts[marqueeIndex], thumbnailUrl);
-        }, 2000);
+        }, 3000);
     } else if (Notification.permission !== 'denied') {
         Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                showNotification();
-            }
+            if (permission === 'granted') showNotification();
         });
     }
 }
 
-// Update the Media Session metadata initially
+// =========== EVENT LISTENERS ===========
 updateMediaSessionMetadata();
 
-// Event listener when audio plays
 titleaudio.addEventListener('play', () => {
     updateTitle();
-    document.title = `${title} - ${Math.floor(titleaudio.currentTime)} seconds`;
+    document.title = `${title} - ${Math.floor(titleaudio.currentTime)} sec`;
     showNotification();
 });
-
-// Event listener when audio pauses
 titleaudio.addEventListener('pause', () => {
     document.title = 'VIVEKFY-AI';
 });
-
-// Next button
 nextButtonElement.addEventListener('click', () => {
-    updateTitle();
-    updateMediaSessionMetadata();
-    showNotification();
-    console.log('Next song button clicked:', title);
+    updateTitle(); updateMediaSessionMetadata(); showNotification();
 });
-
-// Previous button
 prevButtonElement.addEventListener('click', () => {
-    updateTitle();
-    updateMediaSessionMetadata();
-    showNotification();
-    console.log('Previous song button clicked:', title);
+    updateTitle(); updateMediaSessionMetadata(); showNotification();
 });
-
-// Heart button
-heartButtonElement.addEventListener('click', () => {
-    console.log('Heart button clicked:', title);
-});
-
-// Download button
-downloadButtonElement.addEventListener('click', () => {
-    console.log('Download button clicked:', title);
-});
-
+heartButtonElement.addEventListener('click', () => console.log("❤️", title));
+downloadButtonElement.addEventListener('click', () => console.log("⬇️", title));        
+                
 
 
 
