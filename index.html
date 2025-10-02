@@ -1707,43 +1707,76 @@ function paginate(direction) {
 
     
 
-
-
-// === Generate List Item with Save + Share + Play Overlay ===
+// === Generate List Item with Canvas Title ===
 function getOutput(item, i){
-    const id = item.id?.videoId || item.id; // 11-character video ID
+    const id = item.id?.videoId || item.id;
     const title = item.snippet?.title || "No title";
     const thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
     if(item.snippet?.liveBroadcastContent==="live") return '';
 
     const vidofyUrl = `https://vidofy.vercel.app?q=${id}`;
 
+    // Container
     const container = document.createElement('div');
     container.style = "margin-bottom:12px; position: relative; width: 220px; display: inline-block; vertical-align: top;";
-    
-    container.innerHTML = `
-      <b index="${i}" class="music-item list" vid="${id}" onclick="handleItemClick(this)" style="display:block; cursor:pointer; border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.15);">
-          <div class="thumb-wrap" style="position:relative; width:100%; height:140px; overflow:hidden;">
-              <img src="${thumbUrl}" alt="${title}" style="width:100%; height:100%; object-fit:cover;">
-              <div class="overlay-play" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;background:rgba(0,0,0,0.5);border-radius:50%;display:flex;align-items:center;justify-content:center;">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-                      <path d="M3 22v-20l18 10-18 10z"/>
-                  </svg>
-              </div>
-          </div>
-          <div class="title" style="padding: 10px; font-size:14px; font-weight:600; text-align:center;">${title}</div>
 
-          <!-- Vertical Save + Share Buttons -->
-          <div class="vertical-button-tab" style="position:absolute; top:10px; right:10px; display:flex; flex-direction:column; gap:6px;">
-              <div class="btn-icon" style="width:32px; height:32px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.2);" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">
-                  <i class="fas fa-heart"></i>
-              </div>
-              <div class="btn-icon" style="width:32px; height:32px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.2);" onclick="event.stopPropagation(); shareVideo('${id}', '${title}', '${thumbUrl}')">
-                  <i class="fas fa-share-alt"></i>
-              </div>
-          </div>
-      </b>
-    `;
+    // Thumbnail
+    const thumbWrap = document.createElement('div');
+    thumbWrap.className = "thumb-wrap";
+    thumbWrap.style = "position:relative; width:100%; height:140px; overflow:hidden; cursor:pointer;";
+    thumbWrap.onclick = () => handleItemClick({ vid: id });
+
+    const img = document.createElement('img');
+    img.src = thumbUrl;
+    img.alt = title;
+    img.style = "width:100%; height:100%; object-fit:cover;";
+    thumbWrap.appendChild(img);
+
+    // Overlay play icon
+    const overlay = document.createElement('div');
+    overlay.className = "overlay-play";
+    overlay.style = "position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;background:rgba(0,0,0,0.5);border-radius:50%;display:flex;align-items:center;justify-content:center;";
+    overlay.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M3 22v-20l18 10-18 10z"/></svg>`;
+    thumbWrap.appendChild(overlay);
+
+    container.appendChild(thumbWrap);
+
+    // Canvas for title
+    const canvas = document.createElement('canvas');
+    canvas.width = 220;
+    canvas.height = 40;
+    canvas.style = "display:block; margin-top:2px; cursor:pointer;";
+    canvas.onclick = () => window.open(vidofyUrl, "_blank"); // title clickable
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = "#333";
+    ctx.font = "14px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(title, canvas.width / 2, canvas.height / 2);
+
+    container.appendChild(canvas);
+
+    // Vertical Save + Share Buttons
+    const verticalTab = document.createElement('div');
+    verticalTab.className = "vertical-button-tab";
+    verticalTab.style = "position:absolute; top:10px; right:10px; display:flex; flex-direction:column; gap:6px;";
+
+    const saveBtn = document.createElement('div');
+    saveBtn.className = "btn-icon";
+    saveBtn.style = "width:32px; height:32px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.2);";
+    saveBtn.onclick = (e) => { e.stopPropagation(); saveFavorite(i, title, thumbUrl, id); };
+    saveBtn.innerHTML = '<i class="fas fa-heart"></i>';
+
+    const shareBtn = document.createElement('div');
+    shareBtn.className = "btn-icon";
+    shareBtn.style = "width:32px; height:32px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.2);";
+    shareBtn.onclick = (e) => { e.stopPropagation(); shareVideo(id, title, thumbUrl); };
+    shareBtn.innerHTML = '<i class="fas fa-share-alt"></i>';
+
+    verticalTab.appendChild(saveBtn);
+    verticalTab.appendChild(shareBtn);
+
+    container.appendChild(verticalTab);
 
     document.body.appendChild(container);
 }
@@ -1754,83 +1787,34 @@ function saveFavorite(index, title, thumbUrl, videoId){
     alert(`Saved: ${title}`);
 }
 
-// === Share Video Function (Thumbnail + Title + Vidofy URL) ===
+// === Share Video Function ===
 async function shareVideo(videoId, title, thumbUrl){
     const shareUrl = `https://vidofy.vercel.app?q=${videoId}`;
-
-    try {
+    try{
         const response = await fetch(thumbUrl);
         const blob = await response.blob();
         const file = new File([blob], "thumbnail.jpg", { type: blob.type });
-
-        if(navigator.canShare && navigator.canShare({ files: [file] })){
-            await navigator.share({
-                title: title,
-                text: `${title}\nWatch here: ${shareUrl}`,
-                url: shareUrl,
-                files: [file]
-            });
-            console.log("✅ Shared thumbnail + title + URL successfully");
-        } else {
+        if(navigator.canShare && navigator.canShare({ files:[file] })){
+            await navigator.share({ title, text:`${title}\nWatch here: ${shareUrl}`, url: shareUrl, files:[file] });
+            console.log("Shared successfully");
+        }else{
             navigator.clipboard.writeText(`${title}\n${shareUrl}\nThumbnail: ${thumbUrl}`);
-            alert("Browser does not support image share. Title + URL + thumbnail copied to clipboard!");
+            alert("Browser does not support image share. Copied to clipboard!");
         }
-    } catch(err){
+    }catch(err){
         console.error("Error sharing:", err);
         navigator.clipboard.writeText(`${title}\n${shareUrl}\nThumbnail: ${thumbUrl}`);
-        alert("Share failed. Title + URL + thumbnail copied instead!");
+        alert("Share failed. Copied to clipboard!");
     }
 }
 
-// === Handle Item Click (play music) ===
+// === Handle Click ===
 function handleItemClick(el){
-    const videoId = el.getAttribute('vid'); // automatically fetched 11-char ID
+    const videoId = el.vid || el.getAttribute('vid');
     console.log("Play clicked:", videoId);
     alert(`Play clicked: ${videoId}`);
 }
 
-// === Create Play Now Card Template ===
-function createVideoCard(item) {
-    const id = item.id?.videoId || item.id; // dynamic video ID
-    const title = item.snippet?.title || "No title";
-    const thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
-    const vidofyUrl = `https://vidofy.vercel.app?q=${id}`;
-
-    const container = document.createElement('div');
-    container.className = 'video-card';
-    container.style = `
-        width: 220px;
-        margin: 12px;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        font-family: sans-serif;
-        background: #fff;
-        display: inline-block;
-        vertical-align: top;
-    `;
-    
-    container.innerHTML = `
-        <div class="thumb-wrap" style="position: relative; width: 100%; height: 140px; overflow: hidden;">
-            <img src="${thumbUrl}" alt="${title}" style="width: 100%; height: 100%; object-fit: cover;">
-            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;background:rgba(0,0,0,0.5);border-radius:50%;display:flex;align-items:center;justify-content:center;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-                    <path d="M3 22v-20l18 10-18 10z"/>
-                </svg>
-            </div>
-        </div>
-        <div class="video-info" style="padding: 10px; text-align: center;">
-            <div class="video-title" style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color:#333;">${title}</div>
-            <button class="play-btn" 
-                style="background: #fa3e67; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600;"
-                onclick="window.open('${vidofyUrl}', '_blank')">
-                ▶ Play Now
-            </button>
-        </div>
-    `;
-
-    document.body.appendChild(container);
-}
 
 
 
