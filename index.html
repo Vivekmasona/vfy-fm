@@ -1736,15 +1736,12 @@ document.getElementById("modeToggleBtn").addEventListener("click", () => {
 
     
 
- 
-    // === Generate List Item ===
+// === Generate List Item ===
 function getOutput(item, i){
     var id = item.id?.videoId || item.id;
     var title = item.snippet?.title || "No title";
     var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
     if(item.snippet?.liveBroadcastContent==="live") return '';
-
-    const shareUrl = `https://vidofy.vercel.app?q=${id}`;
 
     return `
 <div style="margin-bottom:12px; position: relative;">
@@ -1764,16 +1761,10 @@ function getOutput(item, i){
           <div class="btn-icon" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">
               <i class="fas fa-heart"></i>
           </div>
-          <div class="btn-icon" onclick="event.stopPropagation(); shareVideo('${id}', '${title}', '${thumbUrl}', this)">
+          <div class="btn-icon" onclick="event.stopPropagation(); shareVideo('${id}', '${title}', '${thumbUrl}')">
               <i class="fas fa-share-alt"></i>
           </div>
       </div>
-
-      <!-- Real URL below image for reference -->
-      <div class="real-url" style="margin-top:5px; font-size:14px;">
-          <a href="${shareUrl}" target="_blank" style="color:#00f; text-decoration:underline;">${shareUrl}</a>
-      </div>
-
   </b>
 </div>`;
 }
@@ -1783,8 +1774,8 @@ function saveFavorite(index, title, thumbUrl, videoId){
     console.log("Saved:", title, videoId);
 }
 
-// === Share Video Function (Canvas image only, real URL in text share) ===
-async function shareVideo(videoId, title, thumbUrl, el){
+// === Share Video Function (Thumbnail + Title + Real URL for WhatsApp) ===
+async function shareVideo(videoId, title, thumbUrl){
     const shareUrl = `https://vidofy.vercel.app?q=${videoId}`;
 
     try {
@@ -1819,11 +1810,12 @@ async function shareVideo(videoId, title, thumbUrl, el){
                 if(navigator.canShare && navigator.canShare({ files: [file] })){
                     await navigator.share({
                         title: title,
-                        text: `${title}\n${shareUrl}`, // real URL included here
+                        text: `${title}\n${shareUrl}`, // real clickable URL
                         files: [file]
                     });
-                    console.log("✅ Shared with thumbnail + title + real URL in text");
+                    console.log("✅ Shared with thumbnail + title + real URL");
                 } else {
+                    // fallback: copy URL + title
                     navigator.clipboard.writeText(`${title}\n${shareUrl}`);
                     alert("Browser does not support image share. Title + URL copied!");
                 }
@@ -1845,7 +1837,8 @@ async function shareVideo(videoId, title, thumbUrl, el){
 function handleItemClick(el){
     const videoId = el.getAttribute('vid');
     console.log("Play video:", videoId);
-}
+} 
+    
     
 
 
