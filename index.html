@@ -1736,7 +1736,7 @@ document.getElementById("modeToggleBtn").addEventListener("click", () => {
 
     
 
-// === Generate List Item ===
+ // === Generate List Item ===
 function getOutput(item, i){
     var id = item.id?.videoId || item.id;
     var title = item.snippet?.title || "No title";
@@ -1776,7 +1776,7 @@ function saveFavorite(index, title, thumbUrl, videoId){
     // Add your favorite logic here
 }
 
-// === Share Video Function (Thumbnail + Title + Real Vidofy URL) ===
+// === Share Video Function (Thumbnail + Title + Real Vidofy URL in text only) ===
 async function shareVideo(videoId, title, thumbUrl){
     const shareUrl = `https://vidofy.vercel.app?q=${videoId}`;
 
@@ -1786,10 +1786,10 @@ async function shareVideo(videoId, title, thumbUrl){
         img.src = thumbUrl;
 
         img.onload = async () => {
-            // Canvas size: image height + extra for title + URL
+            // Canvas size: just image + title
             const canvas = document.createElement('canvas');
             canvas.width = img.width;
-            canvas.height = img.height + 80; // extra space for title + URL
+            canvas.height = img.height + 40; // extra for title
             const ctx = canvas.getContext('2d');
 
             // Draw thumbnail
@@ -1800,19 +1800,12 @@ async function shareVideo(videoId, title, thumbUrl){
             ctx.fillStyle = 'rgba(0,0,0,0.7)';
             ctx.fillRect(0, img.height, canvas.width, titleHeight);
 
-            // Draw title text (white, centered)
+            // Draw title text
             ctx.fillStyle = 'white';
             ctx.font = 'bold 18px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(title, canvas.width / 2, img.height + titleHeight / 2);
-
-            // Draw URL below the title rectangle
-            ctx.fillStyle = '#00f'; // blue for URL look
-            ctx.font = '16px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(shareUrl, canvas.width / 2, img.height + titleHeight + 25);
 
             // Convert canvas to blob
             canvas.toBlob(async (blob) => {
@@ -1821,12 +1814,12 @@ async function shareVideo(videoId, title, thumbUrl){
                 if(navigator.canShare && navigator.canShare({ files: [file] })){
                     await navigator.share({
                         title: title,
-                        text: `${title}\nWatch here: ${shareUrl}`, // real clickable URL
+                        text: `${title}\n${shareUrl}`, // real clickable link, NOT in canvas
                         files: [file]
                     });
-                    console.log("✅ Shared with thumbnail + styled title + real URL");
+                    console.log("✅ Shared with thumbnail + title + real URL in text");
                 } else {
-                    // fallback: copy link + title
+                    // fallback: copy real URL text only
                     navigator.clipboard.writeText(`${title}\n${shareUrl}`);
                     alert("Browser does not support image share. Title + URL copied!");
                 }
@@ -1850,7 +1843,6 @@ function handleItemClick(el){
     console.log("Play video:", videoId);
     // Add your play logic here
 }
-
 
 
 
