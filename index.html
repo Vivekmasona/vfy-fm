@@ -68,9 +68,9 @@
     
 
 
-<!-- HTML -->
-<div class="fixed-right-buttons">
-  <button id="pichhe"class="btn-left">
+
+<div class="fixed-right-buttons" id="scrollButtons">
+  <button id="pichhe" class="btn-left">
     <i class="fas fa-angle-double-left"></i>
   </button>
   <button id="aage" class="btn-right">
@@ -82,11 +82,13 @@
 <style>
 .fixed-right-buttons {
   position: fixed;
-  bottom: 20px; /* distance from bottom */
-  right: 20px;  /* distance from right */
+  bottom: 20px;
+  right: 20px;
   display: flex;
-  gap: 10px;    /* gap between buttons */
-  z-index: 1000;
+  gap: 10px;
+  z-index: 99999; /* high z-index */
+  transition: opacity 0.5s;
+  opacity: 1; /* visible initially */
 }
 
 .fixed-right-buttons button {
@@ -109,6 +111,25 @@
   transform: scale(1.1);
 }
 </style>
+
+<!-- JS -->
+<script>
+let scrollTimer;
+const buttons = document.getElementById('scrollButtons');
+
+window.addEventListener('scroll', () => {
+  // User is scrolling -> fade out
+  buttons.style.opacity = '0';
+
+  // Clear previous timer
+  clearTimeout(scrollTimer);
+
+  // When scrolling stops for 500ms -> fade in
+  scrollTimer = setTimeout(() => {
+    buttons.style.opacity = '1';
+  }, 500);
+});
+</script>
 
 
 
