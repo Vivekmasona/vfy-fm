@@ -71,7 +71,7 @@
 
 
 <div class="fixed-right-buttons" id="scrollButtons">
-  <button id="pichhe"class="btn-left">
+  <button id="back"class="btn-left">
     <i class="fas fa-angle-double-left"></i>
   </button>
   <button id="aage"class="btn-right">
@@ -83,13 +83,13 @@
 <style>
 .fixed-right-buttons {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 10px;
+  right: 5px;
   display: flex;
   gap: 5px; /* buttons ke beech gap */
   padding: 5px 10px;
   border-radius: 12px;
-  background: rgba(0, 0, 0, 0.8); /* container background */
+  background: rgba(0, 0, 0, 0.9); /* container background */
   backdrop-filter: blur(10px); /* blur effect */
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   z-index: 99999; /* top layer */
@@ -102,7 +102,7 @@
   height: 32px;
   border: none;
   border-radius: 8px;
-  background-color: rgba(0, 0, 0, 0.4); /* button background */
+  background-color: rgba(0, 0, 0, 0.6); /* button background */
   color: #dadada; /* icon color */
   font-size: 16px;
   cursor: pointer;
@@ -1049,7 +1049,7 @@ width: 50%;
      <input type="search"  name="search"   id="search-basic" class="search-bar"placeholder="VIVEKFY: Type songs name artists...."/>
  <button onclick="search(),speakSearchText()" data-role="button" data-icon="search" data-mini="true" data-inline="true" data-theme="b" id="search-btn">search</button></sr>
 	    
-	<button id="aage">next</button>
+	
 	
 
    <div id="autocomplete-results"></div>
@@ -2490,7 +2490,8 @@ audio.addEventListener("ended", function() {
 
 // Pichhe button listener  
 document.getElementById("pichhe").addEventListener("click", playPreviousSong);  
-
+// Pichhe button listener  
+document.getElementById("back").addEventListener("click", playPreviousSong);  
 // Repeat button listener  
 document.getElementById("repeat").addEventListener("click", function() {  
     isRepeat = !isRepeat; // toggle repeat  
