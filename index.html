@@ -106,7 +106,63 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+<style>/* Toggle Button Container */
+#toggleContainerButton {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5), 0 0 20px rgba(0, 255, 255, 0.3);
+}
 
+/* Glow effect on hover */
+#toggleContainerButton:hover {
+    background: rgba(0, 0, 0, 0.85);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.8), 0 0 30px rgba(0, 255, 255, 0.5);
+    transform: scale(1.05);
+}
+
+/* Status Dot */
+#statusDot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: red;
+    display: inline-block;
+    box-shadow: 0 0 6px red, 0 0 12px rgba(255, 0, 0, 0.5);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Status Dot when system is ON (add class 'on' dynamically with JS) */
+#statusDot.on {
+    background: limegreen;
+    box-shadow: 0 0 6px limegreen, 0 0 14px rgba(0, 255, 0, 0.6);
+}
+
+/* Status Text */
+#statusText {
+    color: #00ffff;
+    font-weight: bold;
+    text-shadow: 0 0 4px #00ffff, 0 0 8px rgba(0, 255, 255, 0.5);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* Status Text when system is ON */
+#statusText.on {
+    color: #00ff00;
+    text-shadow: 0 0 6px #00ff00, 0 0 12px rgba(0, 255, 0, 0.6);
+}
+	</style>
 
 
 
@@ -4662,10 +4718,10 @@ document.getElementById('search-btn').addEventListener('click', function() {
   <div class="toggle-circle"></div>
 </div>
 </center>
-
+</br>
 <!-- Toggle Button -->
-<button id="toggleContainerButton" style="position:fixed; top:10px; left:10px; z-index:1000; display:flex; align-items:center; gap:6px;">
-  <span id="statusDot" style="width:12px; height:12px; border-radius:50%; background:red; display:inline-block;"></span>
+<button id="toggleContainerButton">
+  <span id="statusDot"></span>
   <span id="statusText">call-Off</span>
 </button>
 </br>
