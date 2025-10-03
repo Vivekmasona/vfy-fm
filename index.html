@@ -60,26 +60,39 @@
 
 
 
+<!-- Toggle Button -->
+
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const container = document.getElementById('audioPlayerContainer');
     const toggleButton = document.getElementById('toggleContainerButton');
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
 
     // Page load par localStorage se state read karo
     const savedState = localStorage.getItem('audioPlayerContainerOpacity');
-    if (savedState === 'hidden') {
-        container.style.opacity = 0;
-    } else {
+    if (savedState === 'visible') {
         container.style.opacity = 1;
+        statusDot.style.background = 'green';
+        statusText.textContent = 'System On';
+    } else {
+        container.style.opacity = 0;
+        statusDot.style.background = 'red';
+        statusText.textContent = 'System Off';
     }
 
-    // Button click par toggle karo aur localStorage update karo
+    // Button click par toggle karo
     toggleButton.addEventListener('click', () => {
         if (container.style.opacity == 0 || container.style.opacity === '') {
             container.style.opacity = 1;
+            statusDot.style.background = 'green';
+            statusText.textContent = 'System On';
             localStorage.setItem('audioPlayerContainerOpacity', 'visible');
         } else {
             container.style.opacity = 0;
+            statusDot.style.background = 'red';
+            statusText.textContent = 'System Off';
             localStorage.setItem('audioPlayerContainerOpacity', 'hidden');
         }
     });
@@ -1080,9 +1093,10 @@ width: 50%;
 <b id="volume50"></b>
 <b id="volume100"></b>
 
-<!-- Toggle Button -->
-<button id="toggleContainerButton" style="position:fixed; top:10px; left:10px; z-index:1000;">Show/Hide Container</button>
-
+<button id="toggleContainerButton" style="position:fixed; top:10px; left:10px; z-index:1000; display:flex; align-items:center; gap:6px;">
+  <span id="statusDot" style="width:12px; height:12px; border-radius:50%; background:red; display:inline-block;"></span>
+  <span id="statusText">System Off</span>
+</button>
 
 		
    <div id="autocomplete-results"></div>
