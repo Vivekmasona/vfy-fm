@@ -89,7 +89,8 @@
   gap: 5px; /* buttons ke beech gap */
   padding: 5px 10px;
   border-radius: 12px;
-  background: linear-gradient(145deg, #ffffff, #e0e0e0); /* glossy effect */
+  background: rgba(255,255,255,0.3); /* transparent white */
+  backdrop-filter: blur(10px); /* blur effect */
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   z-index: 99999; /* top layer */
   transition: opacity 0.5s;
@@ -101,8 +102,8 @@
   height: 32px;
   border: none;
   border-radius: 8px;
-  background-color: #dadada;
-  color: #333;
+  background-color: #fff; /* buttons white inside container */
+  color: #dadada; /* icon color */
   font-size: 16px;
   cursor: pointer;
   display: flex;
@@ -112,9 +113,10 @@
 }
 
 .fixed-right-buttons button:hover {
-  background-color: #c0c0c0;
+  background-color: rgba(255,255,255,0.7);
   transform: scale(1.1);
 }
+
 </style>
 
 <!-- JS -->
