@@ -66,25 +66,27 @@
 
 
 
+<!-- Toggle Button -->
+
 <script>
-  const toggleBtn = document.getElementById('toggleButtonvk');
+  const toggleBtn = document.getElementById('toggleButton');
   const container = document.getElementById('audioPlayerContainer');
 
-  // Page load par localStorage se state check karo
+  // Page load par localStorage se state read karo
   const savedState = localStorage.getItem('containerVisible');
   if (savedState === 'hidden') {
-    container.style.display = 'none';
+    container.style.opacity = 0;
   } else {
-    container.style.display = 'block';
+    container.style.opacity = 1;
   }
 
-  // Button click par toggle karo aur localStorage update karo
+  // Button click par toggle karo
   toggleBtn.addEventListener('click', () => {
-    if (container.style.display === 'none') {
-      container.style.display = 'block';
+    if (container.style.opacity == 0 || container.style.opacity === '') {
+      container.style.opacity = 1;
       localStorage.setItem('containerVisible', 'visible');
     } else {
-      container.style.display = 'none';
+      container.style.opacity = 0;
       localStorage.setItem('containerVisible', 'hidden');
     }
   });
@@ -1079,8 +1081,8 @@ width: 50%;
 <b id="volume50"></b>
 <b id="volume100"></b>
 
-<button id="toggleButtonvk">Show/Hide Container</button>
-		
+<button id="toggleButton">Show/Hide Container</button>
+
 
 		
    <div id="autocomplete-results"></div>
