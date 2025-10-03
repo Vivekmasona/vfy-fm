@@ -62,7 +62,33 @@
     
 <b id="play"></b>
 
+<!-- Toggle Button -->
 
+
+
+<script>
+  const toggleBtn = document.getElementById('toggleButtonvk');
+  const container = document.getElementById('audioPlayerContainer');
+
+  // Page load par localStorage se state check karo
+  const savedState = localStorage.getItem('containerVisible');
+  if (savedState === 'hidden') {
+    container.style.display = 'none';
+  } else {
+    container.style.display = 'block';
+  }
+
+  // Button click par toggle karo aur localStorage update karo
+  toggleBtn.addEventListener('click', () => {
+    if (container.style.display === 'none') {
+      container.style.display = 'block';
+      localStorage.setItem('containerVisible', 'visible');
+    } else {
+      container.style.display = 'none';
+      localStorage.setItem('containerVisible', 'hidden');
+    }
+  });
+</script>
 
 
 <div class="fixed-right-buttons" id="scrollButtons">
@@ -1053,7 +1079,8 @@ width: 50%;
 <b id="volume50"></b>
 <b id="volume100"></b>
 
-
+<button id="toggleButtonvk">Show/Hide Container</button>
+		
 
 		
    <div id="autocomplete-results"></div>
