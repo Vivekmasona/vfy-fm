@@ -59,40 +59,39 @@
 
 
 
-    
-<b id="play"></b>
-
-<!-- Toggle Button -->
-
-
-
-<!-- Toggle Button -->
 
 <script>
-  const toggleBtn = document.getElementById('toggleButton');
-  const container = document.getElementById('audioPlayerContainer');
+document.addEventListener('DOMContentLoaded', function () {
+    const container = document.getElementById('audioPlayerContainer');
+    const toggleButton = document.getElementById('toggleContainerButton');
 
-  // Page load par localStorage se state read karo
-  const savedState = localStorage.getItem('containerVisible');
-  if (savedState === 'hidden') {
-    container.style.opacity = 0;
-  } else {
-    container.style.opacity = 1;
-  }
-
-  // Button click par toggle karo
-  toggleBtn.addEventListener('click', () => {
-    if (container.style.opacity == 0 || container.style.opacity === '') {
-      container.style.opacity = 1;
-      localStorage.setItem('containerVisible', 'visible');
+    // Page load par localStorage se state read karo
+    const savedState = localStorage.getItem('audioPlayerContainerOpacity');
+    if (savedState === 'hidden') {
+        container.style.opacity = 0;
     } else {
-      container.style.opacity = 0;
-      localStorage.setItem('containerVisible', 'hidden');
+        container.style.opacity = 1;
     }
-  });
+
+    // Button click par toggle karo aur localStorage update karo
+    toggleButton.addEventListener('click', () => {
+        if (container.style.opacity == 0 || container.style.opacity === '') {
+            container.style.opacity = 1;
+            localStorage.setItem('audioPlayerContainerOpacity', 'visible');
+        } else {
+            container.style.opacity = 0;
+            localStorage.setItem('audioPlayerContainerOpacity', 'hidden');
+        }
+    });
+});
 </script>
 
 
+
+
+
+    
+<b id="play"></b>
 <div class="fixed-right-buttons" id="scrollButtons">
   <button id="pichhe"class="btn-left">
     <i class="fas fa-angle-double-left"></i>
@@ -1081,7 +1080,8 @@ width: 50%;
 <b id="volume50"></b>
 <b id="volume100"></b>
 
-<button id="toggleButton">Show/Hide Container</button>
+<!-- Toggle Button -->
+<button id="toggleContainerButton" style="position:fixed; top:10px; left:10px; z-index:1000;">Show/Hide Container</button>
 
 
 		
