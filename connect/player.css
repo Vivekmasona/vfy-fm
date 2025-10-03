@@ -41,8 +41,8 @@
 
     padding: 0 10px;
     position: fixed;
-    bottom: 60px;
-    right: 20px;
+    bottom: 65px;
+    right: 5px;
 
     opacity: 1;                   /* default fully visible */
     transition: opacity 0.5s ease; /* smooth fade */
