@@ -173,13 +173,20 @@ document.addEventListener('DOMContentLoaded', function () {
     
 <b id="play"></b>
 <div class="fixed-right-buttons" id="scrollButtons">
-  <button id="pichhe"class="btn-left">
+  <button id="pichhe" class="btn-left">
     <i class="fas fa-angle-double-left"></i>
   </button>
-  <button id="aage"class="btn-right">
+
+  <!-- Share Button -->
+  <button id="VFYshare" class="btn-share">
+    <i class="fas fa-share-alt"></i>
+  </button>
+
+  <button id="aage" class="btn-right">
     <i class="fas fa-angle-double-right"></i>
   </button>
 </div>
+
 <!-- CSS -->
 <style>
 .fixed-right-buttons {
@@ -217,10 +224,9 @@ document.addEventListener('DOMContentLoaded', function () {
   background-color: rgba(0, 0, 0, 0.6);
   transform: scale(1.1);
 }
-
 </style>
 
-<!-- JS -->
+<!-- JS (scroll hide/show same rahega) -->
 <script>
 let scrollTimer;
 const buttons = document.getElementById('scrollButtons');
