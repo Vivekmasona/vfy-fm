@@ -4158,17 +4158,87 @@ var offlineMsg = document.getElementById("offline-message");
 
 
 <script>
-const names = ["Arijit Singh Songs","Jubin nariyal songs","Jass Manak songs","Nehal kakkar songs","Sonu nigam songs","Kailash khair songs"," B praak songs","Kumar sanu songs","Alka Yagnik songs","Lata Mangeshkar songs","Yo Yo honey Singh songs","Aatif Aslam Songs","Neelkamal singh songs", "Ranjeet Singh songs", "Pawan singh songs","Ankush Raja songs","khesari lal songs","Ritesh Pandey songs", "Rakesh Mishra songs","Arvind akela Kallu songs"]; // Add your list of names here
+const names = [
+  "Arijit Singh Songs","Jubin nariyal songs","Jass Manak songs","Nehal kakkar songs",
+  "Sonu nigam songs","Kailash khair songs","B praak songs","Kumar sanu songs",
+  "Alka Yagnik songs","Lata Mangeshkar songs","Yo Yo honey Singh songs",
+  "Aatif Aslam Songs","Neelkamal singh songs", "Ranjeet Singh songs", "Pawan singh songs",
+  "Ankush Raja songs","khesari lal songs","Ritesh Pandey songs", "Rakesh Mishra songs",
+  "Arvind akela Kallu songs"
+];
+
 let currentIndex = 0;
 function changePlaceholder() {
     const searchBox = document.getElementById("search-basic");
-    searchBox.placeholder = "Search for " + names[currentIndex];
-    currentIndex = (currentIndex + 1) % names.length;
+    if (searchBox) {
+        searchBox.placeholder = "Search for " + names[currentIndex];
+        currentIndex = (currentIndex + 1) % names.length;
+    }
+}
+setInterval(changePlaceholder, 1000);
+
+// =============================
+// 🔒 BLOCK "tuntun" SEARCH QUERY
+// =============================
+
+function handleSearch() {
+  const input = document.getElementById("search-basic");
+  const query = input.value.trim().toLowerCase();
+
+  // ब्लॉक करने वाले शब्द
+  const blockedWords = ["tuntun", "tun tun", "टुनटुन", "टुन टुन"];
+
+  // अगर query में कोई ब्लॉक शब्द है
+  if (blockedWords.some(word => query.includes(word))) {
+    showBlockedPopup();
+    return; // search और speakSearchText() को मत चलाओ
+  }
+
+  // ✅ बाकी सब के लिए normal search function call करो
+  if (typeof search === "function") search();
+  if (typeof speakSearchText === "function") speakSearchText();
 }
 
-setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
-</script>
+function showBlockedPopup() {
+  // पहले से popup खुला है तो ignore
+  if (document.getElementById("block-popup")) return;
 
+  const overlay = document.createElement("div");
+  overlay.id = "block-popup";
+  overlay.style.position = "fixed";
+  overlay.style.top = 0;
+  overlay.style.left = 0;
+  overlay.style.width = "100%";
+  overlay.style.height = "100%";
+  overlay.style.background = "rgba(0,0,0,0.8)";
+  overlay.style.display = "flex";
+  overlay.style.alignItems = "center";
+  overlay.style.justifyContent = "center";
+  overlay.style.zIndex = "9999";
+  overlay.style.transition = "opacity 0.3s ease";
+  overlay.style.opacity = "0";
+
+  const popup = document.createElement("div");
+  popup.style.background = "#fff";
+  popup.style.padding = "20px 30px";
+  popup.style.borderRadius = "12px";
+  popup.style.textAlign = "center";
+  popup.style.fontSize = "18px";
+  popup.style.fontWeight = "bold";
+  popup.textContent = "❌ यह खोज अनुमत नहीं है।";
+
+  overlay.appendChild(popup);
+  document.body.appendChild(overlay);
+
+  // fade-in
+  setTimeout(() => (overlay.style.opacity = "1"), 50);
+  // fade-out + remove
+  setTimeout(() => {
+    overlay.style.opacity = "0";
+    setTimeout(() => overlay.remove(), 300);
+  }, 2000);
+}
+</script>
 
 
   
