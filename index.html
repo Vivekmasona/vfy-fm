@@ -58,7 +58,38 @@
 
 
 
+<script>
 
+	const blockedWords = [
+  "tuntun", "tun tun", "tuntun yadav", "tun tun yadav",
+  "टुनटुन", "टुन टुन"
+];
+
+// जब user search button दबाए
+function handleSearch(e) {
+  e.preventDefault(); // search को रोक दो
+
+  const input = document.getElementById("search-basic");
+  const val = input.value.toLowerCase().trim();
+  const normalized = val.replace(/\s+/g, " ");
+
+  // अगर input में कोई banned शब्द है → block
+  for (const word of blockedWords) {
+    if (normalized.includes(word)) {
+      input.value = ""; // clear input
+      alert("❌ This search is blocked.");
+      return; // search को block कर दो
+    }
+  }
+
+  // ✅ अगर सब ठीक है तो allowed search functions चलाओ
+  if (typeof search === "function") search();
+  if (typeof speakSearchText === "function") speakSearchText();
+}
+
+// search button पर click listener लगाओ
+document.getElementById("search-btn").addEventListener("click", handleSearch);
+</script>
 
 
 
