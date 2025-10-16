@@ -1802,11 +1802,22 @@ $(document).on('swiperight', '.ui-page', function(event){
     return false;            
 });
 
+
 var firstSearch = true;
 var currentQuery = "";
 var nextPageToken = "";
 var prevPageToken = "";
 var youtubeApiKey = "AIzaSyCucRPiYESnpi1fTrr3XOqAjIWr7J3Jcb8"; // Your YouTube API Key
+
+// 🚫 Block list
+const blockedWords = [
+  "tuntun",
+  "tun tun",
+  "tuntun yadav",
+  "tun tun yadav",
+  "टुनटुन",
+  "टुन टुन"
+];
 
 function search() {
     $("#homepage-content").html("");
@@ -1817,6 +1828,17 @@ function search() {
         return;
     }
 
+    // 🔍 Normalize and check for blocked words before proceeding
+    const text = q.toLowerCase().trim().replace(/\s+/g, " ");
+    const isBlocked = blockedWords.some(word => text.includes(word));
+
+    if (isBlocked) {
+        console.warn("❌ Blocked search detected:", q);
+        $(".search-bar").val(""); // clear input
+        alert("❌ This search query is blocked.");
+        return; // 🚫 stop the search here — no API call
+    }
+
     currentQuery = q;
     let selectedAPI = $("input[name='apiSelection']:checked").val();
     let apiUrl;
@@ -1825,7 +1847,7 @@ function search() {
         apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(q)}`;
     } else if (selectedAPI === "self1") {
         apiUrl = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(q)}`;
-    } else if (selectedAPI === "deno") { // New API added
+    } else if (selectedAPI === "deno") {
         apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(q)}`;
     } else {
         apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=40&key=${youtubeApiKey}`;
@@ -1845,7 +1867,7 @@ function fetchResults(apiUrl) {
         nextPageToken = data.nextPageToken || "";
         prevPageToken = data.prevPageToken || "";
 
-        $("#homepage-content").html(""); 
+        $("#homepage-content").html("");
         $.each(data.items, function (i, item) {
             var output = getOutput(item, i);
             if (output) {
@@ -1876,14 +1898,15 @@ function paginate(direction) {
         apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
     } else if (selectedAPI === "self1") {
         apiUrl = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
-    } else if (selectedAPI === "deno") { // New API pagination
+    } else if (selectedAPI === "deno") {
         apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
     } else {
         apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(currentQuery)}&type=video&maxResults=40&pageToken=${pageToken}&key=${youtubeApiKey}`;
     }
 
     fetchResults(apiUrl);
-}
+		}
+        
 
 // === Global Variables ===
 let currentVideoListItem = null;
