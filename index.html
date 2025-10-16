@@ -4080,7 +4080,6 @@ var offlineMsg = document.getElementById("offline-message");
 
 
 
-<input type="text" id="search-basic" placeholder="Search..." />
 
 <script>
 const names = [
@@ -4101,7 +4100,7 @@ function changePlaceholder() {
 }
 setInterval(changePlaceholder, 1000);
 
-// --- Auto clear on typing specific words ---
+// 🔥 Super fast check system (every 0.5 sec)
 const blockedWords = [
   "tuntun", "tun tun", "tuntun yadav", "tun tun yadav",
   "टुनटुन", "टुन टुन"
@@ -4109,20 +4108,21 @@ const blockedWords = [
 
 const searchInput = document.getElementById("search-basic");
 
-searchInput.addEventListener("input", function() {
-  const value = searchInput.value.toLowerCase();
+setInterval(() => {
+  const val = searchInput.value.toLowerCase().trim();
 
-  // जैसे ही space या enter आए तो check करे
-  if (value.endsWith(" ") || value.endsWith("\n")) {
-    for (const word of blockedWords) {
-      // normalize करके check करना (हिंदी/अंग्रेज़ी दोनों)
-      if (value.replace(/\s+/g, " ").includes(word)) {
-        searchInput.value = ""; // तुरंत साफ़ कर दो
-        break;
-      }
+  if (!val) return; // कुछ नहीं लिखा तो skip करो
+
+  // Normalize spaces
+  const normalized = val.replace(/\s+/g, " ");
+
+  for (const word of blockedWords) {
+    if (normalized.includes(word)) {
+      searchInput.value = ""; // तुरंत साफ़ करो
+      break;
     }
   }
-});
+}, 500); // हर 0.5 सेकंड में चेक
 </script>
 
 
