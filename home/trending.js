@@ -1,24 +1,25 @@
-// 🔊 Error sound function
-function playErrorSound() {
-    const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
-    audio.play();
-}
-
-// ❌ Block pattern – English + Hindi all variations
-const blockedPattern = /(tuntun|tutun|tun|टुन|टुनटुन)/i;
-
 async function fetchTrendingSongs(query) {
-    // ✅ पहले query check करो
-    if (blockedPattern.test(query.toLowerCase())) {
-        console.warn("❌ Blocked query detected:", query);
-        playErrorSound(); // beep बजाओ
-        alert("❌ This search query is not allowed!");
-        localStorage.removeItem("songQuery"); // अगर saved है तो हटा दो
-        document.getElementById("songs").innerHTML =
-            "<p style='color:red;'>⚠️ This query is blocked.</p>";
-        return []; // कोई API call मत करो
+
+    // 🔊 Error sound function
+    function playErrorSound() {
+        const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+        audio.play();
     }
 
+    // ❌ Block pattern – tun / tutun / tuntun / टुन / टुनटुन सब पकड़ेगा
+    const blockedPattern = /(tuntun|tutun|tun|टुन|टुनटुन)/i;
+
+    // ✅ पहले query check करो (search API call से पहले)
+    if (blockedPattern.test(query.toLowerCase())) {
+        console.warn("❌ Blocked query detected:", query);
+        playErrorSound(); // error beep बजाओ
+        alert("❌ This search query is not allowed!");
+        document.getElementById("songs").innerHTML =
+            "<p style='color:red;'>⚠️ This search query is blocked.</p>";
+        return []; // ❌ कोई API call मत करो
+    }
+
+    // ✅ अगर safe है तभी API चलाओ
     const apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(query)}`;
     try {
         const response = await fetch(apiUrl);
@@ -36,6 +37,7 @@ function createPlaylistSongElement(videoId, title, channelTitle, videoDate, inde
     return `
 <div style="margin-bottom:12px;">
   <b index="${index}" class="music-item list" vid="${videoId}" onclick="handleItemClick(this)">
+      
       <!-- Thumbnail -->
       <div class="thumb-wrap">
           <img src="${thumbUrl}" alt="${title}">
@@ -53,6 +55,7 @@ function createPlaylistSongElement(videoId, title, channelTitle, videoDate, inde
       <button class="save-btn" onclick="event.stopPropagation(); saveFavorite(${index}, '${title}', '${thumbUrl}', '${videoId}')">
           <i class="fas fa-heart"></i>
       </button>
+
   </b>
 </div>
 `;
@@ -78,21 +81,23 @@ function displaySongs(songs) {
 async function loadTrendingSongs() {
     const userQuery = localStorage.getItem("songQuery") || "SR lofi 2.0";
 
-    // ✅ Block check यहाँ भी safe है अगर localStorage में गलत query है
-    if (blockedPattern.test(userQuery.toLowerCase())) {
-        playErrorSound();
-        alert("❌ Blocked query found in saved search!");
-        localStorage.removeItem("songQuery");
-        document.getElementById("songs").innerHTML =
-            "<p style='color:red;'>⚠️ Blocked search detected. Please try a different keyword.</p>";
-        return;
-    }
-
     document.getElementById("songs").innerHTML = `
       <div class="loading-dots">
           <span></span><span></span><span></span>
       </div>
     `;
+
+    // ✅ यहाँ भी double-check ताकि saved query block हो तो भी API call न जाए
+    const blockedPattern = /(tuntun|tutun|tun|टुन|टुनटुन)/i;
+    if (blockedPattern.test(userQuery.toLowerCase())) {
+        const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+        audio.play();
+        alert("❌ Blocked search detected in saved query!");
+        localStorage.removeItem("songQuery");
+        document.getElementById("songs").innerHTML =
+            "<p style='color:red;'>⚠️ Blocked search term detected. Please try another keyword.</p>";
+        return;
+    }
 
     const trendingSongs = await fetchTrendingSongs(userQuery);
     displaySongs(trendingSongs);
