@@ -58,71 +58,7 @@
 
 
 
-<script>
-function handleSearch() {
-  const input = document.getElementById("search-basic");
-  const query = input.value.trim().toLowerCase();
 
-  // ✅ ब्लॉक करने वाले शब्द
-  const blockedWords = ["tuntun", "tun tun", "टुनटुन", "टुन टुन"];
-
-  // 🔍 कोई blocked शब्द मौजूद है?
-  const isBlocked = blockedWords.some(word => query.includes(word));
-
-  if (isBlocked) {
-    showBlockedPopup();
-    return; // search() और speakSearchText() नहीं चलेगा
-  }
-
-  // ✅ बाकी सब queries के लिए normal search चले
-  if (typeof search === "function") search();
-  if (typeof speakSearchText === "function") speakSearchText();
-}
-
-function showBlockedPopup() {
-  // अगर popup पहले से है तो दोबारा मत बनाओ
-  if (document.getElementById("block-popup")) return;
-
-  // Overlay बनाओ
-  const overlay = document.createElement("div");
-  overlay.id = "block-popup";
-  overlay.style.position = "fixed";
-  overlay.style.top = 0;
-  overlay.style.left = 0;
-  overlay.style.width = "100%";
-  overlay.style.height = "100%";
-  overlay.style.background = "rgba(0,0,0,0.8)";
-  overlay.style.display = "flex";
-  overlay.style.alignItems = "center";
-  overlay.style.justifyContent = "center";
-  overlay.style.zIndex = "9999";
-  overlay.style.transition = "opacity 0.3s ease";
-  overlay.style.opacity = "0";
-
-  // Popup box
-  const popup = document.createElement("div");
-  popup.style.background = "#fff";
-  popup.style.padding = "20px 30px";
-  popup.style.borderRadius = "12px";
-  popup.style.textAlign = "center";
-  popup.style.fontSize = "18px";
-  popup.style.fontWeight = "bold";
-  popup.textContent = "❌ यह खोज अनुमत नहीं है।";
-
-  overlay.appendChild(popup);
-  document.body.appendChild(overlay);
-
-  // fade-in effect
-  setTimeout(() => (overlay.style.opacity = "1"), 50);
-
-  // 2 सेकंड बाद fade-out और remove
-  setTimeout(() => {
-    overlay.style.opacity = "0";
-    setTimeout(() => overlay.remove(), 300);
-  }, 2000);
-}
-	
-</script>
 
 
 
@@ -1953,19 +1889,6 @@ function getOutput(item, i){
       </button>
   </b>
 </div>`;
-}
-
-// === Render Filtered List ===
-function renderList(items) {
-    // "tuntun" या "टुनटुन" वाले गाने exclude करो
-    var filtered = items.filter(item => {
-        var title = item.snippet?.title?.toLowerCase() || "";
-        return !title.includes("tuntun") && !title.includes("टुनटुन");
-    });
-
-    // Output बनाओ
-    var html = filtered.map((item, i) => getOutput(item, i)).join('');
-    document.getElementById('result').innerHTML = html || "<p>कोई गाना नहीं मिला।</p>";
 }
 
 // === Handle Item Click ===
@@ -4158,54 +4081,17 @@ var offlineMsg = document.getElementById("offline-message");
 
 
 <script>
-
-  // === Placeholder change logic ===
-const names = [
-  "Arijit Singh Songs","Jubin nariyal songs","Jass Manak songs","Nehal kakkar songs",
-  "Sonu nigam songs","Kailash khair songs","B praak songs","Kumar sanu songs",
-  "Alka Yagnik songs","Lata Mangeshkar songs","Yo Yo honey Singh songs",
-  "Aatif Aslam Songs","Neelkamal singh songs","Ranjeet Singh songs","Pawan singh songs",
-  "Ankush Raja songs","Khesari lal songs","Ritesh Pandey songs","Rakesh Mishra songs",
-  "Arvind akela Kallu songs"
-];
-
+const names = ["Arijit Singh Songs","Jubin nariyal songs","Jass Manak songs","Nehal kakkar songs","Sonu nigam songs","Kailash khair songs"," B praak songs","Kumar sanu songs","Alka Yagnik songs","Lata Mangeshkar songs","Yo Yo honey Singh songs","Aatif Aslam Songs","Neelkamal singh songs", "Ranjeet Singh songs", "Pawan singh songs","Ankush Raja songs","khesari lal songs","Ritesh Pandey songs", "Rakesh Mishra songs","Arvind akela Kallu songs"]; // Add your list of names here
 let currentIndex = 0;
 function changePlaceholder() {
-  const searchBox = document.getElementById("search-basic");
-  if (searchBox) {
+    const searchBox = document.getElementById("search-basic");
     searchBox.placeholder = "Search for " + names[currentIndex];
     currentIndex = (currentIndex + 1) % names.length;
-  }
 }
-setInterval(changePlaceholder, 1000);
 
-// === Tuntun Filter Logic ===
-function handleSearch() {
-  const input = document.getElementById("search-basic");
-  let query = input.value.trim();
-
-  // regex से “tuntun”, “tun tun”, “टुनटुन”, “टुन टुन” हटा दो
-  query = query
-    .replace(/tuntun/gi, "")
-    .replace(/tun\s*tun/gi, "")
-    .replace(/टुनटुन/g, "")
-    .replace(/टुन\s*टुन/g, "")
-    .trim();
-
-  // अगर पूरा query खाली हो गया तो साफ मेसेज दिखाओ
-  if (!query) {
-    input.value = "कृपया मान्य गाना खोजें"; // search box में replace होगा
-    return;
-  }
-
-  // साफ किया हुआ query दोबारा box में दिखाओ
-  input.value = query;
-
-  // बाकी search चलाओ
-  if (typeof search === "function") search();
-  if (typeof speakSearchText === "function") speakSearchText();
-}
+setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 </script>
+
 
 
   
@@ -4448,7 +4334,7 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 <div id="audio-player">
   <audio id="SAudio" controls style="display: none;">
     <source src="your-audio-file.mp3" type="audio/mp3">
-    
+    Your browser does not support the audio element.
   </audio>
 </div>    
     
@@ -4805,16 +4691,16 @@ document.getElementById('search-btn').addEventListener('click', function() {
 <div class="small-popup">
     <div class="custom-radio">
         <input type="radio" id="self" name="apiSelection" value="self">
-        <label for="self">1</label>
+        <label for="self">VFY</label>
 
         <input type="radio" id="self1" name="apiSelection" value="self1">
-        <label for="self1">2</label>
+        <label for="self1">VFY2</label>
 
         <input type="radio" id="youtube" name="apiSelection" value="youtube">
-        <label for="youtube">3</label>
+        <label for="youtube">YT</label>
 
         <input type="radio" id="deno" name="apiSelection" value="deno">
-        <label for="deno">4</label> <!-- New API option -->
+        <label for="deno">Deno</label> <!-- New API option -->
     </div>
 </div>
 
@@ -5186,5 +5072,3 @@ window.addEventListener('beforeunload', () => {
 //function showDetail() { alert('Heart clicked'); }
 </script>	
 	            
-
-
