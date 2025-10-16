@@ -58,40 +58,7 @@
 
 
 
-<script>
 
-const blockedWords = [
-  "tuntun",
-  "tun tun",
-  "tuntun yadav",
-  "tun tun yadav",
-  "टुनटुन",
-  "टुन टुन"
-];
-
-// जब search बटन दबे
-document.getElementById("search-btn").addEventListener("click", function (e) {
-  e.preventDefault(); // default रोक दो ताकि पहले check हो सके
-
-  const input = document.getElementById("search-basic");
-  const text = input.value.toLowerCase().trim().replace(/\s+/g, " ");
-
-  console.log("🔍 User typed:", text); // debug
-
-  // पहले check करो कि text में कोई blocked शब्द है या नहीं
-  const isBlocked = blockedWords.some(word => text.includes(word));
-
-  if (isBlocked) {
-    console.warn("❌ Blocked query detected:", text);
-    input.value = ""; // clear input
-    return; // search() को चलने मत दो
-  }
-
-  // ✅ अगर blocked नहीं है तभी search चलाओ
-  if (typeof search === "function") search();
-  if (typeof speakSearchText === "function") speakSearchText();
-});
-</script>
 
 
 
@@ -1802,14 +1769,13 @@ $(document).on('swiperight', '.ui-page', function(event){
     return false;            
 });
 
-
 var firstSearch = true;
 var currentQuery = "";
 var nextPageToken = "";
 var prevPageToken = "";
 var youtubeApiKey = "AIzaSyCucRPiYESnpi1fTrr3XOqAjIWr7J3Jcb8"; // Your YouTube API Key
 
-// 🚫 Block list
+// ❌ Block list
 const blockedWords = [
   "tuntun",
   "tun tun",
@@ -1820,93 +1786,91 @@ const blockedWords = [
 ];
 
 function search() {
-    $("#homepage-content").html("");
+  $("#homepage-content").html("");
 
-    var q = $(".search-bar").val();
-    if (!q) {
-        console.warn("Search query is empty!");
-        return;
-    }
+  var q = $(".search-bar").val();
+  if (!q) {
+    console.warn("Search query is empty!");
+    return;
+  }
 
-    // 🔍 Normalize and check for blocked words before proceeding
-    const text = q.toLowerCase().trim().replace(/\s+/g, " ");
-    const isBlocked = blockedWords.some(word => text.includes(word));
+  // ✅ BLOCK CHECK (यहाँ जोड़ा गया है)
+  const text = q.toLowerCase().trim().replace(/\s+/g, " ");
+  const isBlocked = blockedWords.some(word => text.includes(word));
+  if (isBlocked) {
+    console.warn("❌ Blocked search detected:", q);
+    $(".search-bar").val(""); // input साफ़
+    return; // यहीं रोक दो, आगे कुछ मत चलाओ
+  }
 
-    if (isBlocked) {
-        console.warn("❌ Blocked search detected:", q);
-        $(".search-bar").val(""); // clear input
-        alert("❌ This search query is blocked.");
-        return; // 🚫 stop the search here — no API call
-    }
+  // ⬇️ बाकी सब तुम्हारा original code जस का तस
+  currentQuery = q;
+  let selectedAPI = $("input[name='apiSelection']:checked").val();
+  let apiUrl;
 
-    currentQuery = q;
-    let selectedAPI = $("input[name='apiSelection']:checked").val();
-    let apiUrl;
+  if (selectedAPI === "self") {
+    apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(q)}`;
+  } else if (selectedAPI === "self1") {
+    apiUrl = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(q)}`;
+  } else if (selectedAPI === "deno") {
+    apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(q)}`;
+  } else {
+    apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=40&key=${youtubeApiKey}`;
+  }
 
-    if (selectedAPI === "self") {
-        apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(q)}`;
-    } else if (selectedAPI === "self1") {
-        apiUrl = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(q)}`;
-    } else if (selectedAPI === "deno") {
-        apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(q)}`;
-    } else {
-        apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=40&key=${youtubeApiKey}`;
-    }
-
-    fetchResults(apiUrl);
+  fetchResults(apiUrl);
 }
 
 function fetchResults(apiUrl) {
-    $.get(apiUrl, function (data) {
-        if (!data || !data.items) {
-            console.error("Invalid API response:", data);
-            $("#homepage-content").html("<p>No results found.</p>");
-            return;
-        }
+  $.get(apiUrl, function (data) {
+    if (!data || !data.items) {
+      console.error("Invalid API response:", data);
+      $("#homepage-content").html("<p>No results found.</p>");
+      return;
+    }
 
-        nextPageToken = data.nextPageToken || "";
-        prevPageToken = data.prevPageToken || "";
+    nextPageToken = data.nextPageToken || "";
+    prevPageToken = data.prevPageToken || "";
 
-        $("#homepage-content").html("");
-        $.each(data.items, function (i, item) {
-            var output = getOutput(item, i);
-            if (output) {
-                $("#homepage-content").append(output);
-            }
-        });
-
-        if (firstSearch && data.items.length > 0) {
-            loadSong($(".list")[0], 0);
-            firstSearch = false;
-        }
-
-        $("#prev-btn").toggle(!!prevPageToken);
-        $("#next-btn").toggle(!!nextPageToken);
-    }).fail(function (error) {
-        console.error("Error fetching data:", error);
-        alert("Failed to load search results.");
+    $("#homepage-content").html("");
+    $.each(data.items, function (i, item) {
+      var output = getOutput(item, i);
+      if (output) {
+        $("#homepage-content").append(output);
+      }
     });
+
+    if (firstSearch && data.items.length > 0) {
+      loadSong($(".list")[0], 0);
+      firstSearch = false;
+    }
+
+    $("#prev-btn").toggle(!!prevPageToken);
+    $("#next-btn").toggle(!!nextPageToken);
+  }).fail(function (error) {
+    console.error("Error fetching data:", error);
+    alert("Failed to load search results.");
+  });
 }
 
 function paginate(direction) {
-    let selectedAPI = $("input[name='apiSelection']:checked").val();
-    let pageToken = direction === "next" ? nextPageToken : prevPageToken;
-    if (!pageToken) return;
+  let selectedAPI = $("input[name='apiSelection']:checked").val();
+  let pageToken = direction === "next" ? nextPageToken : prevPageToken;
+  if (!pageToken) return;
 
-    let apiUrl;
-    if (selectedAPI === "self") {
-        apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
-    } else if (selectedAPI === "self1") {
-        apiUrl = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
-    } else if (selectedAPI === "deno") {
-        apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
-    } else {
-        apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(currentQuery)}&type=video&maxResults=40&pageToken=${pageToken}&key=${youtubeApiKey}`;
-    }
+  let apiUrl;
+  if (selectedAPI === "self") {
+    apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
+  } else if (selectedAPI === "self1") {
+    apiUrl = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
+  } else if (selectedAPI === "deno") {
+    apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
+  } else {
+    apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(currentQuery)}&type=video&maxResults=40&pageToken=${pageToken}&key=${youtubeApiKey}`;
+  }
 
-    fetchResults(apiUrl);
-		}
-        
+  fetchResults(apiUrl);
+}
 
 // === Global Variables ===
 let currentVideoListItem = null;
@@ -4136,7 +4100,17 @@ var offlineMsg = document.getElementById("offline-message");
 
 
 
+<script>
+const names = ["Arijit Singh Songs","Jubin nariyal songs","Jass Manak songs","Nehal kakkar songs","Sonu nigam songs","Kailash khair songs"," B praak songs","Kumar sanu songs","Alka Yagnik songs","Lata Mangeshkar songs","Yo Yo honey Singh songs","Aatif Aslam Songs","Neelkamal singh songs", "Ranjeet Singh songs", "Pawan singh songs","Ankush Raja songs","khesari lal songs","Ritesh Pandey songs", "Rakesh Mishra songs","Arvind akela Kallu songs"]; // Add your list of names here
+let currentIndex = 0;
+function changePlaceholder() {
+    const searchBox = document.getElementById("search-basic");
+    searchBox.placeholder = "Search for " + names[currentIndex];
+    currentIndex = (currentIndex + 1) % names.length;
+}
 
+setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
+</script>
 
 
 
