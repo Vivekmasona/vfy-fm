@@ -1775,8 +1775,8 @@ var nextPageToken = "";
 var prevPageToken = "";
 var youtubeApiKey = "AIzaSyCucRPiYESnpi1fTrr3XOqAjIWr7J3Jcb8"; // Your YouTube API Key
 
-// ❌ Block check regex — English + Hindi दोनों detect करेगा
-const blockedPattern = /(tuntun|टुनटुन)/i;
+// ❌ Block pattern — ये tun / tuntun / tutun / टुन / टुनटुन सब पकड़ लेगा
+const blockedPattern = /(tuntun|tutun|tun|टुन|टुनटुन)/i;
 
 // 🔊 Error sound function
 function playErrorSound() {
@@ -1800,7 +1800,7 @@ function search() {
     console.warn("❌ Blocked query detected:", q);
     $(".search-bar").val(""); // input clear
     playErrorSound(); // error beep बजाओ
-    alert("❌ This search query is not allowed!");
+    alert("😡 Mera Land ka Gana Sun Le");
     return; // search रोक दो
   }
 
