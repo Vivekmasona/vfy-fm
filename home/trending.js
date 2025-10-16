@@ -2,7 +2,7 @@ async function fetchTrendingSongs(query) {
 
     // 🔊 Error sound function
     function playErrorSound() {
-        const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+        const audio = new Audio("https://us-tuna-sounds-files.voicemod.net/5e4ffa1a-9ccb-4d00-804a-a45b010b6d76-1671532580020.mp3");
         audio.play();
     }
 
