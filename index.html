@@ -390,19 +390,6 @@ window.addEventListener("load", ()=>{
     
 
 
-<script>
-  const audio = document.getElementById('SAudio');
-
-  document.getElementById('nextBtn').addEventListener('click', () => {
-    if (typeof audio.next === 'function') audio.next();
-  });
-
-  document.getElementById('prevBtn').addEventListener('click', () => {
-    if (typeof audio.previous === 'function') audio.previous();
-  });
-</script>
-
-
 
 
 
@@ -4328,11 +4315,6 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
         <i id="repeat" class="fas fa-redo"></i>
       </div>
 
-
-<button id="prevBtn">⏮️ Previous</button>
-<button id="nextBtn">⏭️ Next</button>
-
-		
       <!-- Home -->
       <div class="button">
         <i onclick="closeModal()" class="fa fa-home"></i>
