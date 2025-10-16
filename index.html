@@ -59,44 +59,6 @@
 
 
 
-<script>
-const names = [
-  "Arijit Singh Songs","Jubin nariyal songs","Jass Manak songs",
-  "Nehal kakkar songs","Sonu nigam songs","Kailash khair songs",
-  "B praak songs","Kumar sanu songs","Alka Yagnik songs",
-  "Lata Mangeshkar songs","Yo Yo honey Singh songs","Aatif Aslam Songs",
-  "Neelkamal singh songs","Ranjeet Singh songs","Pawan singh songs",
-  "Ankush Raja songs","khesari lal songs","Ritesh Pandey songs",
-  "Rakesh Mishra songs","Arvind akela Kallu songs"
-]; 
-
-let currentIndex = 0;
-
-// Change placeholder every 1 second
-function changePlaceholder() {
-  const searchBox = document.getElementById("search-basic");
-  searchBox.placeholder = "Search for " + names[currentIndex];
-  currentIndex = (currentIndex + 1) % names.length;
-}
-setInterval(changePlaceholder, 1000);
-
-// Auto clear unwanted text (Tuntun variations)
-const blockedWords = [
-  "tuntun", "tun tun", "tuntun yadav", "tun tun yadav",
-  "टुनटुन", "टुन टुन"
-];
-
-const searchInput = document.getElementById("search-basic");
-
-searchInput.addEventListener("input", function() {
-  const value = searchInput.value.toLowerCase().trim();
-
-  // Check if input includes any blocked word
-  if (blockedWords.some(word => value.includes(word))) {
-    searchInput.value = "";
-  }
-});
-</script>
 
 
 
@@ -4118,16 +4080,49 @@ var offlineMsg = document.getElementById("offline-message");
 
 
 
+<input type="text" id="search-basic" placeholder="Search..." />
+
 <script>
-const names = ["Arijit Singh Songs","Jubin nariyal songs","Jass Manak songs","Nehal kakkar songs","Sonu nigam songs","Kailash khair songs"," B praak songs","Kumar sanu songs","Alka Yagnik songs","Lata Mangeshkar songs","Yo Yo honey Singh songs","Aatif Aslam Songs","Neelkamal singh songs", "Ranjeet Singh songs", "Pawan singh songs","Ankush Raja songs","khesari lal songs","Ritesh Pandey songs", "Rakesh Mishra songs","Arvind akela Kallu songs"]; // Add your list of names here
+const names = [
+  "Arijit Singh Songs","Jubin nariyal songs","Jass Manak songs",
+  "Nehal kakkar songs","Sonu nigam songs","Kailash khair songs",
+  "B praak songs","Kumar sanu songs","Alka Yagnik songs",
+  "Lata Mangeshkar songs","Yo Yo honey Singh songs","Aatif Aslam Songs",
+  "Neelkamal singh songs","Ranjeet Singh songs","Pawan singh songs",
+  "Ankush Raja songs","khesari lal songs","Ritesh Pandey songs",
+  "Rakesh Mishra songs","Arvind akela Kallu songs"
+];
+
 let currentIndex = 0;
 function changePlaceholder() {
-    const searchBox = document.getElementById("search-basic");
-    searchBox.placeholder = "Search for " + names[currentIndex];
-    currentIndex = (currentIndex + 1) % names.length;
+  const searchBox = document.getElementById("search-basic");
+  searchBox.placeholder = "Search for " + names[currentIndex];
+  currentIndex = (currentIndex + 1) % names.length;
 }
+setInterval(changePlaceholder, 1000);
 
-setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
+// --- Auto clear on typing specific words ---
+const blockedWords = [
+  "tuntun", "tun tun", "tuntun yadav", "tun tun yadav",
+  "टुनटुन", "टुन टुन"
+];
+
+const searchInput = document.getElementById("search-basic");
+
+searchInput.addEventListener("input", function() {
+  const value = searchInput.value.toLowerCase();
+
+  // जैसे ही space या enter आए तो check करे
+  if (value.endsWith(" ") || value.endsWith("\n")) {
+    for (const word of blockedWords) {
+      // normalize करके check करना (हिंदी/अंग्रेज़ी दोनों)
+      if (value.replace(/\s+/g, " ").includes(word)) {
+        searchInput.value = ""; // तुरंत साफ़ कर दो
+        break;
+      }
+    }
+  }
+});
 </script>
 
 
