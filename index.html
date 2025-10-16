@@ -60,35 +60,42 @@
 
 <script>
 
-	const blockedWords = [
+const blockedWords = [
   "tuntun", "tun tun", "tuntun yadav", "tun tun yadav",
   "टुनटुन", "टुन टुन"
 ];
 
-// जब user search button दबाए
-function handleSearch(e) {
-  e.preventDefault(); // search को रोक दो
+document.getElementById("search-btn").addEventListener("click", function (e) {
+  e.preventDefault(); // पहले default action रोक दो
 
   const input = document.getElementById("search-basic");
-  const val = input.value.toLowerCase().trim();
-  const normalized = val.replace(/\s+/g, " ");
+  let checkCount = 0;
 
-  // अगर input में कोई banned शब्द है → block
-  for (const word of blockedWords) {
-    if (normalized.includes(word)) {
-      input.value = ""; // clear input
-      alert("❌ This search is blocked.");
-      return; // search को block कर दो
+  // हर 0.5 सेकंड में 2 सेकंड तक चेक करो (4 बार)
+  const checker = setInterval(() => {
+    const val = input.value.toLowerCase().trim();
+    const normalized = val.replace(/\s+/g, " ");
+
+    // अगर input में "tuntun" या उसकी variation है तो block कर दो
+    for (const word of blockedWords) {
+      if (normalized.includes(word)) {
+        clearInterval(checker); // checking बंद
+        input.value = ""; // input clear
+        console.warn("❌ Blocked search query detected!");
+        return; // search() मत चलाओ
+      }
     }
-  }
 
-  // ✅ अगर सब ठीक है तो allowed search functions चलाओ
-  if (typeof search === "function") search();
-  if (typeof speakSearchText === "function") speakSearchText();
-}
+    checkCount++;
+    if (checkCount >= 4) {
+      clearInterval(checker);
+      // ✅ अगर कोई blocked word नहीं मिला, तब search() चलाओ
+      if (typeof search === "function") search();
+      if (typeof speakSearchText === "function") speakSearchText();
+    }
+  }, 500);
+});	
 
-// search button पर click listener लगाओ
-document.getElementById("search-btn").addEventListener("click", handleSearch);
 </script>
 
 
@@ -4112,49 +4119,6 @@ var offlineMsg = document.getElementById("offline-message");
 
 
 
-<script>
-const names = [
-  "Arijit Singh Songs","Jubin nariyal songs","Jass Manak songs",
-  "Nehal kakkar songs","Sonu nigam songs","Kailash khair songs",
-  "B praak songs","Kumar sanu songs","Alka Yagnik songs",
-  "Lata Mangeshkar songs","Yo Yo honey Singh songs","Aatif Aslam Songs",
-  "Neelkamal singh songs","Ranjeet Singh songs","Pawan singh songs",
-  "Ankush Raja songs","khesari lal songs","Ritesh Pandey songs",
-  "Rakesh Mishra songs","Arvind akela Kallu songs"
-];
-
-let currentIndex = 0;
-function changePlaceholder() {
-  const searchBox = document.getElementById("search-basic");
-  searchBox.placeholder = "Search for " + names[currentIndex];
-  currentIndex = (currentIndex + 1) % names.length;
-}
-setInterval(changePlaceholder, 1000);
-
-// 🔥 Super fast check system (every 0.5 sec)
-const blockedWords = [
-  "tuntun", "tun tun", "tuntun yadav", "tun tun yadav",
-  "टुनटुन", "टुन टुन"
-];
-
-const searchInput = document.getElementById("search-basic");
-
-setInterval(() => {
-  const val = searchInput.value.toLowerCase().trim();
-
-  if (!val) return; // कुछ नहीं लिखा तो skip करो
-
-  // Normalize spaces
-  const normalized = val.replace(/\s+/g, " ");
-
-  for (const word of blockedWords) {
-    if (normalized.includes(word)) {
-      searchInput.value = ""; // तुरंत साफ़ करो
-      break;
-    }
-  }
-}, 500); // हर 0.5 सेकंड में चेक
-</script>
 
 
 
