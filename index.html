@@ -61,41 +61,36 @@
 <script>
 
 const blockedWords = [
-  "tuntun", "tun tun", "tuntun yadav", "tun tun yadav",
-  "टुनटुन", "टुन टुन"
+  "tuntun",
+  "tun tun",
+  "tuntun yadav",
+  "tun tun yadav",
+  "टुनटुन",
+  "टुन टुन"
 ];
 
+// जब search बटन दबे
 document.getElementById("search-btn").addEventListener("click", function (e) {
-  e.preventDefault(); // पहले default action रोक दो
+  e.preventDefault(); // default रोक दो ताकि पहले check हो सके
 
   const input = document.getElementById("search-basic");
-  let checkCount = 0;
+  const text = input.value.toLowerCase().trim().replace(/\s+/g, " ");
 
-  // हर 0.5 सेकंड में 2 सेकंड तक चेक करो (4 बार)
-  const checker = setInterval(() => {
-    const val = input.value.toLowerCase().trim();
-    const normalized = val.replace(/\s+/g, " ");
+  console.log("🔍 User typed:", text); // debug
 
-    // अगर input में "tuntun" या उसकी variation है तो block कर दो
-    for (const word of blockedWords) {
-      if (normalized.includes(word)) {
-        clearInterval(checker); // checking बंद
-        input.value = ""; // input clear
-        console.warn("❌ Blocked search query detected!");
-        return; // search() मत चलाओ
-      }
-    }
+  // पहले check करो कि text में कोई blocked शब्द है या नहीं
+  const isBlocked = blockedWords.some(word => text.includes(word));
 
-    checkCount++;
-    if (checkCount >= 4) {
-      clearInterval(checker);
-      // ✅ अगर कोई blocked word नहीं मिला, तब search() चलाओ
-      if (typeof search === "function") search();
-      if (typeof speakSearchText === "function") speakSearchText();
-    }
-  }, 500);
-});	
+  if (isBlocked) {
+    console.warn("❌ Blocked query detected:", text);
+    input.value = ""; // clear input
+    return; // search() को चलने मत दो
+  }
 
+  // ✅ अगर blocked नहीं है तभी search चलाओ
+  if (typeof search === "function") search();
+  if (typeof speakSearchText === "function") speakSearchText();
+});
 </script>
 
 
