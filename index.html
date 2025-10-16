@@ -5085,3 +5085,55 @@ window.addEventListener('beforeunload', () => {
 //function showDetail() { alert('Heart clicked'); }
 </script>	
 	            
+
+
+<script>
+	function handleSearch() {
+  const query = document.getElementById("search-basic").value.trim().toLowerCase();
+
+  // ब्लॉक किए जाने वाले शब्द
+  const blockedWords = ["tuntun", "tun tun", "टुनटुन", "टुन टुन"];
+
+  // अगर query में कोई ब्लॉक शब्द है
+  if (blockedWords.some(word => query.includes(word))) {
+    showBlockedPopup();
+    return; // search और speakSearchText() नहीं चलेगा
+  }
+
+  // सामान्य सर्च चलाओ
+  search();
+  speakSearchText();
+}
+
+function showBlockedPopup() {
+  // Overlay बनाना
+  const overlay = document.createElement("div");
+  overlay.style.position = "fixed";
+  overlay.style.top = 0;
+  overlay.style.left = 0;
+  overlay.style.width = "100%";
+  overlay.style.height = "100%";
+  overlay.style.background = "rgba(0,0,0,0.8)";
+  overlay.style.display = "flex";
+  overlay.style.alignItems = "center";
+  overlay.style.justifyContent = "center";
+  overlay.style.zIndex = 9999;
+
+  // Popup box
+  const popup = document.createElement("div");
+  popup.style.background = "#fff";
+  popup.style.padding = "20px 30px";
+  popup.style.borderRadius = "12px";
+  popup.style.textAlign = "center";
+  popup.style.fontSize = "18px";
+  popup.style.fontWeight = "bold";
+  popup.innerText = "❌ यह खोज अनुमत नहीं है।";
+
+  overlay.appendChild(popup);
+  document.body.appendChild(overlay);
+
+  // 2 सेकंड बाद popup हटाओ
+  setTimeout(() => overlay.remove(), 2000);
+}
+
+	</script>
