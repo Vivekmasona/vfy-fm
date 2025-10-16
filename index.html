@@ -1775,15 +1775,14 @@ var nextPageToken = "";
 var prevPageToken = "";
 var youtubeApiKey = "AIzaSyCucRPiYESnpi1fTrr3XOqAjIWr7J3Jcb8"; // Your YouTube API Key
 
-// ❌ Block list
-const blockedWords = [
-  "tuntun",
-  "tun tun",
-  "tuntun yadav",
-  "tun tun yadav",
-  "टुनटुन",
-  "टुन टुन"
-];
+// ❌ Block check regex — English + Hindi दोनों detect करेगा
+const blockedPattern = /(tuntun|टुनटुन)/i;
+
+// 🔊 Error sound function
+function playErrorSound() {
+  const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+  audio.play();
+}
 
 function search() {
   $("#homepage-content").html("");
@@ -1794,16 +1793,18 @@ function search() {
     return;
   }
 
-  // ✅ BLOCK CHECK (यहाँ जोड़ा गया है)
-  const text = q.toLowerCase().trim().replace(/\s+/g, " ");
-  const isBlocked = blockedWords.some(word => text.includes(word));
-  if (isBlocked) {
-    console.warn("❌ Blocked search detected:", q);
-    $(".search-bar").val(""); // input साफ़
-    return; // यहीं रोक दो, आगे कुछ मत चलाओ
+  // ✅ पहले input text check करो
+  const text = q.toLowerCase().trim();
+
+  if (blockedPattern.test(text)) {
+    console.warn("❌ Blocked query detected:", q);
+    $(".search-bar").val(""); // input clear
+    playErrorSound(); // error beep बजाओ
+    alert("❌ This search query is not allowed!");
+    return; // search रोक दो
   }
 
-  // ⬇️ बाकी सब तुम्हारा original code जस का तस
+  // ⬇️ तुम्हारा original code जस का तस
   currentQuery = q;
   let selectedAPI = $("input[name='apiSelection']:checked").val();
   let apiUrl;
