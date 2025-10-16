@@ -1891,6 +1891,19 @@ function getOutput(item, i){
 </div>`;
 }
 
+// === Render Filtered List ===
+function renderList(items) {
+    // "tuntun" या "टुनटुन" वाले गाने exclude करो
+    var filtered = items.filter(item => {
+        var title = item.snippet?.title?.toLowerCase() || "";
+        return !title.includes("tuntun") && !title.includes("टुनटुन");
+    });
+
+    // Output बनाओ
+    var html = filtered.map((item, i) => getOutput(item, i)).join('');
+    document.getElementById('result').innerHTML = html || "<p>कोई गाना नहीं मिला।</p>";
+}
+
 // === Handle Item Click ===
 function handleItemClick(el){
     if(isVideoMode){
