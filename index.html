@@ -5166,31 +5166,30 @@ window.addEventListener('beforeunload', () => {
 
 	
 
-<!-- 🔹 Hidden YouTube ID div -->
-<div id="Ytid" style="display:none;">dQw4w9WgXcQ</div>
 
-<!-- 🔹 Example search input -->
-<input type="text" id="search-basic" placeholder="Type song name..." />
-<button id="search-btn" onclick="alert('Search triggered')">Search</button>
-
+  
 <script>
 (() => {
-  const WS_URL = "wss://vfy-call.deno.dev/ws";
+  // ===== CONFIG =====
+  const WS_URL = "wss://vfy-call.deno.dev/ws"; // replace with your server wss endpoint
   const DEVICE_ID = localStorage.getItem("vfy_device_id") || crypto.randomUUID();
   localStorage.setItem("vfy_device_id", DEVICE_ID);
+  const POSITION_SEND_INTERVAL = 5000; // ms
+  // ==================
 
-  let mode = "receive";       // default mode
-  let ws;
-  let currentPos = null;
-  let hasShared = false;
+  let ws = null;
+  let mode = "receive"; // receive by default
+  let hasSharedOnce = false; // one-shot until user toggles share again
+  let lastPos = null;
 
   const toggleBtn = document.getElementById("sharetoggle");
 
-  // ✅ Toggle UI logic
+  // Toggle UI
   function updateToggleUI() {
     if (mode === "share") {
       toggleBtn.style.background = "green";
       toggleBtn.textContent = "🟢 Share Mode (Active)";
+      hasSharedOnce = false; // allow new share each time user turns on
     } else {
       toggleBtn.style.background = "#444";
       toggleBtn.textContent = "⚫ Receive Mode (Waiting)";
@@ -5200,113 +5199,141 @@ window.addEventListener('beforeunload', () => {
   toggleBtn.addEventListener("click", () => {
     mode = (mode === "receive") ? "share" : "receive";
     updateToggleUI();
-    if (ws?.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ type: "mode", id: DEVICE_ID, mode }));
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: "update", id: DEVICE_ID, mode }));
     }
   });
 
-  // 🌐 Connect WebSocket
+  // Connect WS
   function connectWS() {
     ws = new WebSocket(WS_URL);
 
     ws.onopen = () => {
-      console.log("✅ Connected to Deno server");
+      console.log("WS open");
+      // register
       ws.send(JSON.stringify({ type: "register", id: DEVICE_ID, mode }));
+      // immediately send initial position if available
+      sendPositionOnce();
     };
 
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log("📩 WS Message:", data);
-
-      if (data.type === "play" && mode === "receive") {
-        alert("🎵 Nearby shared song: " + data.Ytid);
-        autoSearch(data.Ytid);
-      }
+    ws.onmessage = (ev) => {
+      try {
+        const msg = JSON.parse(ev.data);
+        console.log("WS recv:", msg);
+        if (msg.type === "play") {
+          // receiver: auto-search
+          if (mode === "receive" && msg.Ytid) {
+            alert("Nearby device shared song: " + msg.Ytid);
+            autoSearch(msg.Ytid);
+          }
+        }
+        if (msg.type === "forwarded") {
+          // optional notification for sharer
+          console.log("Forwarded to", msg.to);
+        }
+      } catch (e) { console.error("WS parse err", e); }
     };
 
     ws.onclose = () => {
-      console.warn("❌ WS disconnected — reconnecting...");
-      setTimeout(connectWS, 3000);
+      console.warn("WS closed, reconnect in 2s");
+      setTimeout(connectWS, 2000);
+    };
+
+    ws.onerror = (e) => {
+      console.error("WS error", e);
+      try { ws.close(); } catch {}
     };
   }
 
-  // 🔍 Auto Search function
+  // Auto-fill + trigger search
   function autoSearch(Ytid) {
     const input = document.getElementById("search-basic");
     const btn = document.getElementById("search-btn");
-    if (!input || !btn) return;
+    if (!input || !btn) { console.warn("Search elements missing"); return; }
     input.value = Ytid;
-    console.log("🔎 Auto-search triggered:", Ytid);
-    setTimeout(() => btn.click(), 500);
+    setTimeout(() => btn.click(), 300);
   }
 
-  // 📍 Watch geolocation
-  async function getDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371000;
-    const φ1 = lat1 * Math.PI / 180, φ2 = lat2 * Math.PI / 180;
-    const Δφ = (lat2 - lat1) * Math.PI / 180;
-    const Δλ = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(Δφ / 2) ** 2 +
-              Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  // Get position once (promise)
+  function getCurrentPosition() {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) return reject("No geolocation");
+      navigator.geolocation.getCurrentPosition(pos => {
+        resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude });
+      }, err => reject(err), { enableHighAccuracy: true, maximumAge: 2000, timeout: 8000 });
+    });
   }
 
-  async function sendPosition() {
-    if (!navigator.geolocation || !ws || ws.readyState !== WebSocket.OPEN) return;
-
-    navigator.geolocation.getCurrentPosition(pos => {
-      const coords = {
-        lat: pos.coords.latitude,
-        lon: pos.coords.longitude,
+  // send position + mode + Ytid to server (update)
+  async function sendPositionOnce() {
+    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+    // try to get pos
+    try {
+      const p = await getCurrentPosition();
+      lastPos = p;
+      const Ytid = (document.getElementById("Ytid")?.textContent || "").trim();
+      ws.send(JSON.stringify({
+        type: "update",
         id: DEVICE_ID,
-        mode
-      };
-      ws.send(JSON.stringify({ type: "position", ...coords }));
-      currentPos = coords;
-    });
-  }
-
-  // 🔁 Position update interval
-  setInterval(sendPosition, 5000);
-
-  // 📤 Share when near another receiver
-  function checkNearbyDevices(devices) {
-    if (mode !== "share" || hasShared) return;
-
-    devices.forEach(d => {
-      if (d.id !== DEVICE_ID && d.lat && d.lon && d.mode === "receive") {
-        getDistance(currentPos.lat, currentPos.lon, d.lat, d.lon).then(dist => {
-          if (dist <= 100) {
-            const div = document.getElementById("Ytid");
-            const Ytid = (div?.textContent || "").trim();
-            if (Ytid && ws.readyState === WebSocket.OPEN) {
-              ws.send(JSON.stringify({ type: "play", from: DEVICE_ID, to: d.id, Ytid }));
-              hasShared = true;
-              alert("✅ Shared successfully with nearby device!");
-            }
-          }
-        });
-      }
-    });
-  }
-
-  // 📡 Receive live list of connected devices (handled by server)
-  function handleDeviceList(data) {
-    if (data.type === "devices" && Array.isArray(data.devices)) {
-      checkNearbyDevices(data.devices);
+        mode,
+        lat: p.lat,
+        lon: p.lon,
+        Ytid: (Ytid && Ytid.length === 11) ? Ytid : undefined
+      }));
+    } catch (err) {
+      console.warn("Could not get position:", err);
+      // still send mode update without position (optional)
+      ws.send(JSON.stringify({ type: "update", id: DEVICE_ID, mode }));
     }
   }
 
-  // 🔗 WebSocket handlers
-  function initHandlers() {
-    ws.onmessage = (e) => {
-      const data = JSON.parse(e.data);
-      if (data.type === "devices") handleDeviceList(data);
-      if (data.type === "play" && mode === "receive") autoSearch(data.Ytid);
-    };
+  // Periodic position sender
+  setInterval(() => {
+    if (mode === "share" && hasSharedOnce) {
+      // don't keep re-sharing; still send position updates to help others detect if needed
+      sendPositionOnce();
+      return;
+    }
+    sendPositionOnce();
+  }, POSITION_SEND_INTERVAL);
+
+  // Also watchPosition to react faster (announce when moved), but avoid frequent announce
+  if (navigator.geolocation) {
+    navigator.geolocation.watchPosition((pos) => {
+      lastPos = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+      // if sharing and not yet shared, trigger an immediate server update/announce
+      if (mode === "share" && !hasSharedOnce) {
+        // send update (server will forward if receiver nearby)
+        sendPositionOnce();
+      }
+    }, (err) => console.warn("watchPos error", err), { enableHighAccuracy: true, maximumAge: 3000, timeout: 8000 });
   }
 
-  connectWS();
+  // Manual publish function (hook to your share button if you want)
+  async function publishNow() {
+    if (!ws || ws.readyState !== WebSocket.OPEN) { alert("Not connected"); return; }
+    if (mode !== "share") { alert("Switch to Share mode first"); return; }
+    if (hasSharedOnce) { alert("Already shared once (toggle off/on to share again)"); return; }
+
+    try {
+      const p = await getCurrentPosition();
+      const Ytid = (document.getElementById("Ytid")?.textContent || "").trim();
+      if (!Ytid || Ytid.length !== 11) { alert("No valid Ytid to share"); return; }
+      ws.send(JSON.stringify({ type: "update", id: DEVICE_ID, mode, lat: p.lat, lon: p.lon, Ytid }));
+      // optionally, also request server to forward immediately (announce)
+      ws.send(JSON.stringify({ type: "announce", id: DEVICE_ID, Ytid, lat: p.lat, lon: p.lon }));
+      hasSharedOnce = true;
+      alert("Shared now (attempted forwarding to nearby receivers)");
+    } catch (e) {
+      alert("Could not get location: " + e);
+    }
+  }
+
+  // expose publish for manual share button
+  window.vfyPublishNow = publishNow;
+
+  // start
   updateToggleUI();
+  connectWS();
 })();
 </script>
