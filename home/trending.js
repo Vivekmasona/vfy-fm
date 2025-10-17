@@ -1,128 +1,107 @@
-// Inject CSS for loading effect
-(function() {
-  const style = document.createElement("style");
-  style.textContent = `
-    .loading-dots {
-      display: inline-block;
-      font-size: 24px;
-    }
-    .loading-dots span {
-      animation: blink 1.4s infinite both;
-      margin: 0 3px;
-      color: #555;
-    }
-    .loading-dots span:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-    .loading-dots span:nth-child(3) {
-      animation-delay: 0.4s;
-    }
-    @keyframes blink {
-      0%, 80%, 100% { opacity: 0; }
-      40% { opacity: 1; }
-    }
-  `;
-  document.head.appendChild(style);
-})();
+async function fetchTrendingSongs(query) {
 
-// Error sound play
-function playErrorSound() {
-  try {
-    const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
-    audio.play();
-  } catch (e) {
-    console.warn("Cannot play sound:", e);
-  }
+    
+    function playErrorSound() {
+        const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+        audio.play();
+    }
+
+  
+    const blockedPattern = /(tuntun|tutun|tun|टुन|टुनटुन)/i;
+
+    
+    if (blockedPattern.test(query.toLowerCase())) {
+        console.warn("❌ Blocked query detected:", query);
+        playErrorSound(); 
+        alert("❌ This search query is not allowed!");
+        document.getElementById("songs").innerHTML =
+            "<p style='color:red;'>⚠️ This search query is blocked.</p>";
+        return []; 
+    }
+
+    
+    const apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(query)}`;
+    try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error("Network response was not ok");
+        const data = await response.json();
+        return data.items;
+    } catch (error) {
+        console.error("Error fetching trending songs:", error);
+        return [];
+    }
 }
 
-// Block pattern
-const blockedPattern = /(tuntun|tutun|tun|टुन|टुनटुन)/i;
+function createPlaylistSongElement(videoId, title, channelTitle, videoDate, index) {
+    const thumbUrl = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+    return `
+<div style="margin-bottom:12px;">
+  <b index="${index}" class="music-item list" vid="${videoId}" onclick="handleItemClick(this)">
+      
+      <!-- Thumbnail -->
+      <div class="thumb-wrap">
+          <img src="${thumbUrl}" alt="${title}">
+          <div class="overlay-play">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
+                  <path d="M3 22v-20l18 10-18 10z"/>
+              </svg>
+          </div>
+      </div>
 
-// Fallback fetch logic
-async function fetchResultsWithFallback(q) {
-  // First API
-  const url1 = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(q)}`;
-  try {
-    const resp1 = await fetch(url1);
-    if (resp1.ok) {
-      const d1 = await resp1.json();
-      if (d1.items && d1.items.length > 0) return d1.items;
-    }
-  } catch (_) {
-    // ignore
-  }
-  // Fallback
-  const url2 = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(q)}`;
-  try {
-    const resp2 = await fetch(url2);
-    if (resp2.ok) {
-      const d2 = await resp2.json();
-      if (d2.items && d2.items.length > 0) return d2.items;
-    }
-  } catch (_) {
-    // ignore
-  }
-  return [];
+      <!-- Title -->
+      <div class="title">${title}</div>
+
+      <!-- Save button -->
+      <button class="save-btn" onclick="event.stopPropagation(); saveFavorite(${index}, '${title}', '${thumbUrl}', '${videoId}')">
+          <i class="fas fa-heart"></i>
+      </button>
+
+  </b>
+</div>
+`;
 }
 
-// Automatic search as user types
-let typingTimer = null;
-const TYPING_DELAY = 500; // half second delay after typing stops
-
-function handleAutoSearch() {
-  const input = document.getElementById("search-basic");
-  if (!input) return;
-  const q = input.value;
-  if (!q) {
-    // maybe clear songs
-    const hc = document.getElementById("homepage-content");
-    if (hc) hc.innerHTML = "";
-    return;
-  }
-
-  // Block check
-  if (blockedPattern.test(q.toLowerCase())) {
-    playErrorSound();
-    input.value = "";
-    const hc = document.getElementById("homepage-content");
-    if (hc) hc.innerHTML = "<p style='color:red;'>⚠️ This query is blocked.</p>";
-    return;
-  }
-
-  // Show loading
-  const hc = document.getElementById("homepage-content");
-  if (hc) {
-    hc.innerHTML = `<div class="loading-dots"><span>.</span><span>.</span><span>.</span></div>`;
-  }
-
-  fetchResultsWithFallback(q).then(items => {
-    if (!items || items.length === 0) {
-      if (hc) hc.innerHTML = "<p>No results found.</p>";
-      return;
+function displaySongs(songs) {
+    const songsContainer = document.getElementById("songs");
+    songsContainer.innerHTML = "";
+    if (songs.length === 0) {
+        songsContainer.innerHTML = "<p>No trending songs found.</p>";
+        return;
     }
-    // Use your existing rendering logic
-    // assuming you have fetchResults-style code or getOutput(), etc.
-    if (hc) hc.innerHTML = "";
-    items.forEach((item, i) => {
-      const out = getOutput(item, i);
-      if (out) hc.innerHTML += out;
+    songs.forEach((song, index) => {
+        const videoId = song.id.videoId;
+        const title = song.snippet.title;
+        const channelTitle = song.snippet.channelTitle;
+        const videoDate = song.snippet.publishedAt;
+        const songElement = createPlaylistSongElement(videoId, title, channelTitle, videoDate, index);
+        songsContainer.innerHTML += songElement;
     });
-  });
 }
 
-// Listen to input events
-const searchInput = document.getElementById("search-basic");
-if (searchInput) {
-  searchInput.addEventListener("input", () => {
-    clearTimeout(typingTimer);
-    typingTimer = setTimeout(handleAutoSearch, TYPING_DELAY);
-  });
-  // Optional: immediate on Enter too
-  searchInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      clearTimeout(typingTimer);
-      handleAutoSearch();
+async function loadTrendingSongs() {
+    const userQuery = localStorage.getItem("songQuery") || "SR lofi 2.0";
+
+    document.getElementById("songs").innerHTML = `
+      <div class="loading-dots">
+          <span></span><span></span><span></span>
+      </div>
+    `;
+
+    
+    const blockedPattern = /(tuntun|tutun|tun|टुन|टुनटुन)/i;
+    if (blockedPattern.test(userQuery.toLowerCase())) {
+        const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+        audio.play();
+        alert("❌ Blocked search detected in saved query!");
+        localStorage.removeItem("songQuery");
+        document.getElementById("songs").innerHTML =
+            "<p style='color:red;'>⚠️ Blocked search term detected. Please try another keyword.</p>";
+        return;
     }
-  });
-                             }
+
+    const trendingSongs = await fetchTrendingSongs(userQuery);
+    displaySongs(trendingSongs);
+}
+
+
+window.onload = loadTrendingSongs;
