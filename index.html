@@ -1367,7 +1367,26 @@ width: 50%;
     <div class="box" onclick="searchankushrajaSongs()"><img src="/profile/ankush.jpg" alt="ankush"></div>
   </div>
 
-	
+	<script>
+  // Function to randomize the order of boxes
+  function randomizeBoxes() {
+    const container = document.querySelector(".scroll-container");
+    const boxes = Array.from(container.children);
+
+    // Fisher-Yates shuffle algorithm for random order
+    for (let i = boxes.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [boxes[i], boxes[j]] = [boxes[j], boxes[i]];
+    }
+
+    // Remove all boxes and re-append in random order
+    container.innerHTML = "";
+    boxes.forEach(box => container.appendChild(box));
+  }
+
+  // Run when page loads
+  document.addEventListener("DOMContentLoaded", randomizeBoxes);
+	</script>
 
 	
 
