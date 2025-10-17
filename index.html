@@ -1210,15 +1210,11 @@ width: 50%;
    <div id="autocomplete-results"></div>
 
 
-<button id="modeToggle" style="
-  background:yellow;
-  color:black;
-  padding:10px 20px;
-  border:none;
-  border-radius:8px;
-  font-weight:bold;
-  margin-bottom:10px;
-">Receiver Mode 🟡</button>
+
+		<button id="modeToggle"
+  style="background:yellow;color:black;padding:10px 20px;border:none;border-radius:8px;font-weight:bold;">
+  Receiver Mode 🟡
+</button>
 
 		
 <!-- Mode Toggle -->
@@ -5167,81 +5163,76 @@ window.addEventListener('beforeunload', () => {
 
         
 
+      
+
 <div id="Ytid">dQw4w9WgXcQ</div>
 
 <input type="search" id="search-basic" placeholder="Type song..." />
-<button id="search-btn" onclick="search()">Search</button>
+<button id="search-btn">Search</button>
 
 <script>
 const WS_URL = "wss://vfy-call.deno.dev/ws";
-let ws;
 let DEVICE_ID = localStorage.getItem("vfy_device_id") || crypto.randomUUID();
 localStorage.setItem("vfy_device_id", DEVICE_ID);
 
-let mode = "receiver"; // default
-const toggleBtn = document.getElementById("modeToggle");
+let mode = "receiver";
+let ws;
 
+const toggleBtn = document.getElementById("modeToggle");
 toggleBtn.onclick = () => {
-  mode = mode === "receiver" ? "sender" : "receiver";
+  mode = mode === "sender" ? "receiver" : "sender";
   toggleBtn.style.background = mode === "sender" ? "lightgreen" : "yellow";
   toggleBtn.textContent = mode === "sender" ? "Sender Mode 🟢" : "Receiver Mode 🟡";
 };
 
-// connect WebSocket
 function connect() {
   ws = new WebSocket(WS_URL);
-  ws.onopen = () => console.log("Connected ✅");
-
-  ws.onmessage = (ev) => {
-    try {
-      const msg = JSON.parse(ev.data);
-      if (msg.type === "play" && msg.Ytid) {
-        alert("🎶 Received from nearby: " + msg.Ytid);
-        autoSearch(msg.Ytid);
-      }
-    } catch (err) {
-      console.warn("WS msg parse error:", err);
+  ws.onopen = () => console.log("✅ Connected to WebSocket");
+  ws.onmessage = (event) => {
+    const msg = JSON.parse(event.data);
+    if (msg.type === "play" && msg.Ytid) {
+      console.log("🎶 Received:", msg.Ytid);
+      autoSearch(msg.Ytid);
     }
   };
-
-  ws.onclose = () => setTimeout(connect, 3000);
+  ws.onclose = () => setTimeout(connect, 2000);
 }
+connect();
 
 function autoSearch(Ytid) {
   const input = document.getElementById("search-basic");
   const btn = document.getElementById("search-btn");
   if (input && btn) {
     input.value = Ytid;
-    setTimeout(() => btn.click(), 800);
-    console.log("Auto-searched:", Ytid);
+    btn.click();
+    console.log("🎵 Auto-searched:", Ytid);
   }
 }
 
 async function getLocation() {
   return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) return reject("No geolocation");
+    if (!navigator.geolocation) return reject("No geolocation support");
     navigator.geolocation.getCurrentPosition(
-      pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
-      err => reject(err.message),
-      { enableHighAccuracy: true, timeout: 10000 }
+      (pos) => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+      (err) => reject(err.message),
+      { enableHighAccuracy: true, timeout: 10000 },
     );
   });
 }
 
-// periodically send update
 async function sendUpdate() {
   try {
     const { lat, lon } = await getLocation();
-    const Ytid = document.getElementById("Ytid")?.textContent.trim() || null;
+    const Ytid = document.getElementById("Ytid")?.textContent.trim();
     if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ type: "update", device: DEVICE_ID, lat, lon, Ytid, mode }));
-      console.log("Sent update:", { lat, lon, Ytid, mode });
+      ws.send(JSON.stringify({ type: "update", lat, lon, Ytid, mode }));
+      console.log("📡 Sent:", { lat, lon, Ytid, mode });
     }
-  } catch (err) {
-    console.warn("Location err:", err);
+  } catch (e) {
+    console.warn("Location err:", e);
   }
 }
 
-connect();
-setInterval(sendUpdate, 5000);
+// Send updates every 2s (very fast & smooth)
+setInterval(sendUpdate, 2000);
 </script>
