@@ -5157,53 +5157,15 @@ window.addEventListener('beforeunload', () => {
 
 
 
-
-
-        <!-- 🎛️ Toggle Share Button -->
-<style>
-  #shareToggle {
-    width: 90px;
-    height: 40px;
-    border-radius: 20px;
-    border: none;
-    background: gray;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 5px #00000050;
-  }
-  #shareToggle.active {
-    background: #00e676;
-    box-shadow: 0 0 20px 5px #00ff88aa;
-  }
-</style>
-
-
 <script>
 const SERVER_URL = "https://vfy-call.deno.dev";
 let DEVICE_ID = localStorage.getItem("vfy_device_id") || crypto.randomUUID();
 localStorage.setItem("vfy_device_id", DEVICE_ID);
 
-let shareMode = false; // default grey (receive only)
 let lastUploaded = "";
 let lastReceived = "";
 
-const toggleBtn = document.getElementById("shareToggle");
-toggleBtn.onclick = () => {
-  shareMode = !shareMode;
-  if (shareMode) {
-    toggleBtn.textContent = "SHARE";
-    toggleBtn.classList.add("active");
-    alert("🟢 Share mode ON — Only sending song ID (no receive).");
-  } else {
-    toggleBtn.textContent = "RECEIVE";
-    toggleBtn.classList.remove("active");
-    alert("⚪ Receive mode — This device will receive nearby songs automatically.");
-  }
-};
-
-// 📍 Get user location
+// 📍 get user location
 async function getLocation() {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation)
@@ -5216,7 +5178,7 @@ async function getLocation() {
   });
 }
 
-// 📤 Upload Ytid + location
+// 📤 upload Ytid + location
 async function upload() {
   const div = document.getElementById("Ytid");
   if (!div) return;
@@ -5225,38 +5187,27 @@ async function upload() {
 
   try {
     const loc = await getLocation();
-
-    const body = {
-      device: DEVICE_ID,
-      Ytid: shareMode ? Ytid : "", // if shareMode=ON then send else ""
-      lat: loc.lat,
-      lon: loc.lon,
-    };
-
     const res = await fetch(`${SERVER_URL}/upload`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify({
+        device: DEVICE_ID,
+        Ytid,
+        lat: loc.lat,
+        lon: loc.lon,
+      }),
     });
-
     const data = await res.json();
     if (data.success) {
-      // ✅ When sharing ON (green)
-      if (shareMode && Ytid !== lastUploaded) {
+      if (Ytid !== lastUploaded) {
+        console.log("✅ Sent:", Ytid);
         lastUploaded = Ytid;
-        console.log("✅ Shared:", Ytid);
       }
 
-      // ✅ When in receive mode (grey)
-      if (!shareMode && data.nearby && data.nearby !== lastReceived) {
+      if (data.nearby && data.nearby !== lastReceived) {
         lastReceived = data.nearby;
-        console.log("🎵 Received nearby:", data.nearby);
-
-        // 2 second delay for realism
-        setTimeout(() => {
-          alert("🎧 Nearby shared song: " + data.nearby);
-          autoSearch(data.nearby);
-        }, 2000);
+        alert("🎵 Nearby device shared song: " + data.nearby);
+        autoSearch(data.nearby);
       }
     }
   } catch (err) {
@@ -5274,8 +5225,10 @@ function autoSearch(Ytid) {
   console.log("🔎 Auto-searched:", Ytid);
 }
 
-// ⏱️ Repeat every 10 seconds
+// ⏱️ repeat every 10 seconds
 setInterval(upload, 10000);
 
-alert("📡 Geo music sync active — default mode: RECEIVE");
+alert("📡 Geo music sync active");
 </script>
+
+        
