@@ -5159,7 +5159,7 @@ window.addEventListener('beforeunload', () => {
 
 
 
-          <!-- 🎛️ Toggle Button -->
+        <!-- 🎛️ Toggle Share Button -->
 <style>
   #shareToggle {
     width: 90px;
@@ -5180,7 +5180,6 @@ window.addEventListener('beforeunload', () => {
 </style>
 
 
-
 <script>
 const SERVER_URL = "https://vfy-call.deno.dev";
 let DEVICE_ID = localStorage.getItem("vfy_device_id") || crypto.randomUUID();
@@ -5196,7 +5195,7 @@ toggleBtn.onclick = () => {
   if (shareMode) {
     toggleBtn.textContent = "SHARE";
     toggleBtn.classList.add("active");
-    alert("🟢 Share mode ON — This device will only send songs (not receive).");
+    alert("🟢 Share mode ON — Only sending song ID (no receive).");
   } else {
     toggleBtn.textContent = "RECEIVE";
     toggleBtn.classList.remove("active");
@@ -5217,7 +5216,7 @@ async function getLocation() {
   });
 }
 
-// 📤 Upload (send or receive based on mode)
+// 📤 Upload Ytid + location
 async function upload() {
   const div = document.getElementById("Ytid");
   if (!div) return;
@@ -5227,11 +5226,9 @@ async function upload() {
   try {
     const loc = await getLocation();
 
-    // agar share mode hai to apna Ytid bheje
-    // agar receive mode hai to empty bheje (sirf receive kare)
     const body = {
       device: DEVICE_ID,
-      Ytid: shareMode ? Ytid : "",
+      Ytid: shareMode ? Ytid : "", // if shareMode=ON then send else ""
       lat: loc.lat,
       lon: loc.lon,
     };
@@ -5243,23 +5240,24 @@ async function upload() {
     });
 
     const data = await res.json();
+    if (data.success) {
+      // ✅ When sharing ON (green)
+      if (shareMode && Ytid !== lastUploaded) {
+        lastUploaded = Ytid;
+        console.log("✅ Shared:", Ytid);
+      }
 
-    // ✅ SHARING MODE
-    if (shareMode && data.success && Ytid !== lastUploaded) {
-      lastUploaded = Ytid;
-      console.log("✅ Shared:", Ytid);
-    }
+      // ✅ When in receive mode (grey)
+      if (!shareMode && data.nearby && data.nearby !== lastReceived) {
+        lastReceived = data.nearby;
+        console.log("🎵 Received nearby:", data.nearby);
 
-    // ✅ RECEIVING MODE
-    if (!shareMode && data.nearby && data.nearby !== lastReceived) {
-      lastReceived = data.nearby;
-      console.log("🎵 Received nearby ID:", data.nearby);
-
-      // 2-second delay before auto search
-      setTimeout(() => {
-        alert("🎧 Nearby device shared song: " + data.nearby);
-        autoSearch(data.nearby);
-      }, 2000);
+        // 2 second delay for realism
+        setTimeout(() => {
+          alert("🎧 Nearby shared song: " + data.nearby);
+          autoSearch(data.nearby);
+        }, 2000);
+      }
     }
   } catch (err) {
     console.warn("Upload error:", err);
@@ -5272,11 +5270,11 @@ function autoSearch(Ytid) {
   const btn = document.getElementById("search-btn");
   if (!input || !btn) return;
   input.value = Ytid;
-  setTimeout(() => btn.click(), 500);
+  setTimeout(() => btn.click(), 800);
   console.log("🔎 Auto-searched:", Ytid);
 }
 
-// 🔁 Run every 10 seconds continuously
+// ⏱️ Repeat every 10 seconds
 setInterval(upload, 10000);
 
 alert("📡 Geo music sync active — default mode: RECEIVE");
