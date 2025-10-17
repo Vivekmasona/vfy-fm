@@ -5159,12 +5159,12 @@ window.addEventListener('beforeunload', () => {
 
 
 
-    <!-- 🔘 Toggle Share Button -->
+          <!-- 🎛️ Toggle Button -->
 <style>
   #shareToggle {
     width: 90px;
-    height: 42px;
-    border-radius: 25px;
+    height: 40px;
+    border-radius: 20px;
     border: none;
     background: gray;
     color: white;
@@ -5179,35 +5179,36 @@ window.addEventListener('beforeunload', () => {
   }
 </style>
 
-<button id="shareToggle">RECEIVE</button>
+
 
 <script>
 const SERVER_URL = "https://vfy-call.deno.dev";
 let DEVICE_ID = localStorage.getItem("vfy_device_id") || crypto.randomUUID();
 localStorage.setItem("vfy_device_id", DEVICE_ID);
 
-let shareMode = false; // false = receive mode
+let shareMode = false; // default grey (receive only)
+let lastUploaded = "";
 let lastReceived = "";
 
-// ✅ Toggle button logic
 const toggleBtn = document.getElementById("shareToggle");
 toggleBtn.onclick = () => {
   shareMode = !shareMode;
   if (shareMode) {
     toggleBtn.textContent = "SHARE";
     toggleBtn.classList.add("active");
-    alert("🟢 Now in SHARE mode — this device will send its YouTube ID.");
+    alert("🟢 Share mode ON — This device will only send songs (not receive).");
   } else {
     toggleBtn.textContent = "RECEIVE";
     toggleBtn.classList.remove("active");
-    alert("⚪ Now in RECEIVE mode — this device will only listen nearby songs.");
+    alert("⚪ Receive mode — This device will receive nearby songs automatically.");
   }
 };
 
 // 📍 Get user location
 async function getLocation() {
   return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) return reject("Geolocation not supported");
+    if (!navigator.geolocation)
+      return reject("Geolocation not supported");
     navigator.geolocation.getCurrentPosition(
       pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
       err => reject(err.message),
@@ -5216,17 +5217,18 @@ async function getLocation() {
   });
 }
 
-// 📤 Upload OR only check
-async function pingServer() {
+// 📤 Upload (send or receive based on mode)
+async function upload() {
   const div = document.getElementById("Ytid");
   if (!div) return;
   const Ytid = div.textContent.trim();
-  if (shareMode && (!Ytid || Ytid.length !== 11)) return; // only share when valid id
+  if (!Ytid || Ytid.length !== 11) return;
 
   try {
     const loc = await getLocation();
 
-    // 🧠 If in share mode, send Ytid; otherwise send empty to just "check nearby"
+    // agar share mode hai to apna Ytid bheje
+    // agar receive mode hai to empty bheje (sirf receive kare)
     const body = {
       device: DEVICE_ID,
       Ytid: shareMode ? Ytid : "",
@@ -5241,16 +5243,26 @@ async function pingServer() {
     });
 
     const data = await res.json();
-    if (data.success && !shareMode && data.nearby && data.nearby !== lastReceived) {
-      lastReceived = data.nearby;
-      alert("🎶 Nearby shared song detected: " + data.nearby);
-      autoSearch(data.nearby);
+
+    // ✅ SHARING MODE
+    if (shareMode && data.success && Ytid !== lastUploaded) {
+      lastUploaded = Ytid;
+      console.log("✅ Shared:", Ytid);
     }
 
-    // Debug log
-    console.log(`Ping (${shareMode ? "Share" : "Receive"}):`, data);
+    // ✅ RECEIVING MODE
+    if (!shareMode && data.nearby && data.nearby !== lastReceived) {
+      lastReceived = data.nearby;
+      console.log("🎵 Received nearby ID:", data.nearby);
+
+      // 2-second delay before auto search
+      setTimeout(() => {
+        alert("🎧 Nearby device shared song: " + data.nearby);
+        autoSearch(data.nearby);
+      }, 2000);
+    }
   } catch (err) {
-    console.warn("Error:", err);
+    console.warn("Upload error:", err);
   }
 }
 
@@ -5260,12 +5272,12 @@ function autoSearch(Ytid) {
   const btn = document.getElementById("search-btn");
   if (!input || !btn) return;
   input.value = Ytid;
-  setTimeout(() => btn.click(), 800);
+  setTimeout(() => btn.click(), 500);
   console.log("🔎 Auto-searched:", Ytid);
 }
 
-// ⏱️ Repeat every 10 seconds
-setInterval(pingServer, 2000);
+// 🔁 Run every 10 seconds continuously
+setInterval(upload, 10000);
 
-alert("📡 Geo Music Sync Ready");
+alert("📡 Geo music sync active — default mode: RECEIVE");
 </script>
