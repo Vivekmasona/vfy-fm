@@ -1,87 +1,90 @@
-// —— Inject CSS for loading dots via JS — so कोई external CSS नहीं चाहिए —
+// Inject CSS via JS for loading
 (function injectLoadingCSS() {
   const style = document.createElement("style");
   style.textContent = `
-    .loading-dots {
-      display: inline-block;
-      font-size: 20px;
-    }
+    .loading-dots { display: inline-block; font-size: 20px; }
     .loading-dots span {
       animation: blink 1.4s infinite both;
       margin: 0 2px;
       color: #555;
     }
-    .loading-dots span:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-    .loading-dots span:nth-child(3) {
-      animation-delay: 0.4s;
-    }
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
     @keyframes blink {
-      0%, 80%, 100% {
-        opacity: 0;
-      }
-      40% {
-        opacity: 1;
-      }
+      0%, 80%, 100% { opacity: 0; }
+      40% { opacity: 1; }
     }
   `;
   document.head.appendChild(style);
 })();
 
-// 🔊 Error sound play function
 function playErrorSound() {
-  const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
-  audio.play();
+  try {
+    const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+    audio.play();
+  } catch (e) {
+    console.warn("Error playing sound:", e);
+  }
 }
 
-// Block pattern: tun / tutun / tuntun / टुन / टुनटुन
 const blockedPattern = /(tuntun|tutun|tun|टुन|टुनटुन)/i;
 
 async function fetchFromApi1(query) {
   const url = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(query)}`;
+  console.log("Trying API1 with URL:", url);
   const resp = await fetch(url);
-  if (!resp.ok) throw new Error("API1 failed");
+  if (!resp.ok) throw new Error("API1 returned not ok: " + resp.status);
   const data = await resp.json();
+  console.log("API1 data:", data);
   return data.items;
 }
 
 async function fetchFromApi2(query) {
   const url = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(query)}`;
+  console.log("Trying API2 with URL:", url);
   const resp = await fetch(url);
-  if (!resp.ok) throw new Error("API2 failed");
+  if (!resp.ok) throw new Error("API2 returned not ok: " + resp.status);
   const data = await resp.json();
+  console.log("API2 data:", data);
   return data.items;
 }
 
 async function fetchTrendingSongs(query) {
-  // Block check
+  console.log("fetchTrendingSongs called with:", query);
+
   if (blockedPattern.test(query.toLowerCase())) {
-    console.warn("❌ Blocked query detected:", query);
+    console.warn("Blocked query:", query);
     playErrorSound();
-    document.getElementById("songs").innerHTML =
-      "<p style='color:red;'>⚠️ This search query is blocked.</p>";
-    return []; // API को call नहीं करना
+    const songsEl = document.getElementById("songs");
+    if (songsEl) {
+      songsEl.innerHTML = "<p style='color:red;'>⚠️ This search query is blocked.</p>";
+    }
+    return [];
   }
 
-  // Show loading dots
-  document.getElementById("songs").innerHTML = `
-    <div class="loading-dots">
-      <span>.</span><span>.</span><span>.</span>
-    </div>
-  `;
+  const songsEl = document.getElementById("songs");
+  if (songsEl) {
+    songsEl.innerHTML = `<div class="loading-dots"><span>.</span><span>.</span><span>.</span></div>`;
+  } else {
+    console.warn("'songs' element not found in HTML");
+  }
 
-  // Try API1, fallback to API2
   try {
-    const items = await fetchFromApi1(query);
-    return items;
-  } catch (err1) {
-    console.warn("API1 failed, falling back to API2:", err1);
+    const items1 = await fetchFromApi1(query);
+    if (items1 && items1.length > 0) {
+      return items1;
+    } else {
+      console.log("API1 returned empty or no items, trying API2");
+      const items2 = await fetchFromApi2(query);
+      return items2 || [];
+    }
+  } catch (e1) {
+    console.warn("API1 failed with error:", e1);
     try {
       const items2 = await fetchFromApi2(query);
-      return items2;
-    } catch (err2) {
-      console.error("Both APIs failed:", err2);
+      return items2 || [];
+    } catch (e2) {
+      console.error("Both APIs failed:", e2);
       return [];
     }
   }
@@ -110,27 +113,33 @@ function createPlaylistSongElement(videoId, title, channelTitle, videoDate, inde
 }
 
 function displaySongs(songs) {
+  console.log("displaySongs called, items:", songs);
   const songsContainer = document.getElementById("songs");
+  if (!songsContainer) {
+    console.error("'songs' container not found in HTML");
+    return;
+  }
   songsContainer.innerHTML = "";
   if (!songs || songs.length === 0) {
     songsContainer.innerHTML = "<p>No trending songs found.</p>";
     return;
   }
-  songs.forEach((song, index) => {
-    const videoId = song.id?.videoId || song.videoId;
-    const title = song.snippet?.title || song.title;
-    const channelTitle = song.snippet?.channelTitle || song.channelTitle;
-    const videoDate = song.snippet?.publishedAt || song.publishedAt;
-    const songElement = createPlaylistSongElement(videoId, title, channelTitle, videoDate, index);
-    songsContainer.innerHTML += songElement;
+  songs.forEach((song, idx) => {
+    // depending on API, videoId might be in different structure
+    let videoId = song.id?.videoId || song.videoId || song.id;
+    let title = song.snippet?.title || song.title || "";
+    let channelTitle = song.snippet?.channelTitle || song.channelTitle || "";
+    let videoDate = song.snippet?.publishedAt || song.publishedAt || "";
+    const el = createPlaylistSongElement(videoId, title, channelTitle, videoDate, idx);
+    songsContainer.innerHTML += el;
   });
 }
 
 async function loadTrendingSongs() {
   const userQuery = localStorage.getItem("songQuery") || "SR lofi 2.0";
+  console.log("loadTrendingSongs with query:", userQuery);
   const songs = await fetchTrendingSongs(userQuery);
   displaySongs(songs);
 }
 
-// On load
 window.onload = loadTrendingSongs;
