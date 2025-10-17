@@ -20,7 +20,7 @@ async function fetchTrendingSongs(query) {
     }
 
     
-    const apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(query)}`;
+    const apiUrl = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(query)}`;
     try {
         const response = await fetch(apiUrl);
         if (!response.ok) throw new Error("Network response was not ok");
