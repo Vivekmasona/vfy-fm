@@ -60,59 +60,79 @@
 
 
 <script>
-const SERVER_URL = "https://vfy-call.deno.dev"; // your Deno API
-let DEVICE_ID = localStorage.getItem("vfy_device_id");
+const SERVER_URL = "https://vfy-call.deno.dev";
+let DEVICE_ID = localStorage.getItem("vfy_device_id") || crypto.randomUUID();
+localStorage.setItem("vfy_device_id", DEVICE_ID);
 
-// 🧩 generate unique id if not exist
-if (!DEVICE_ID) {
-  DEVICE_ID = crypto.randomUUID();
-  localStorage.setItem("vfy_device_id", DEVICE_ID);
-  console.log("🆕 Device ID:", DEVICE_ID);
-} else {
-  console.log("✅ Existing Device ID:", DEVICE_ID);
+let lastUploaded = "";
+let lastReceived = "";
+
+// 📍 get user location
+async function getLocation() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation)
+      return reject("Geolocation not supported");
+    navigator.geolocation.getCurrentPosition(
+      pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+      err => reject(err.message),
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  });
 }
 
-// 📤 function to send Ytid to server
-async function sendYtid() {
+// 📤 upload Ytid + location
+async function upload() {
   const div = document.getElementById("Ytid");
-  if (!div) {
-    console.warn("⚠️ <div id='Ytid'> not found");
-    return;
-  }
-
+  if (!div) return;
   const Ytid = div.textContent.trim();
-  if (!Ytid || Ytid.length !== 11) {
-    console.warn("⚠️ Invalid or missing YouTube ID:", Ytid);
-    return;
-  }
+  if (!Ytid || Ytid.length !== 11) return;
 
   try {
+    const loc = await getLocation();
     const res = await fetch(`${SERVER_URL}/upload`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ device: DEVICE_ID, Ytid }),
+      body: JSON.stringify({
+        device: DEVICE_ID,
+        Ytid,
+        lat: loc.lat,
+        lon: loc.lon,
+      }),
     });
     const data = await res.json();
     if (data.success) {
-      alert(`✅ Uploaded Ytid: ${Ytid}\nDevice ID: ${DEVICE_ID}`);
-    } else {
-      alert(`❌ Upload failed: ${data.error}`);
+      if (Ytid !== lastUploaded) {
+        console.log("✅ Sent:", Ytid);
+        lastUploaded = Ytid;
+      }
+
+      if (data.nearby && data.nearby !== lastReceived) {
+        lastReceived = data.nearby;
+        alert("🎵 Nearby device shared song: " + data.nearby);
+        autoSearch(data.nearby);
+      }
     }
   } catch (err) {
-    alert("⚠️ Network error: " + err.message);
+    console.warn("Upload error:", err);
   }
 }
 
-// 🔁 run every 10 seconds
-setInterval(sendYtid, 10000);
-
-// manual check function
-async function checkServer() {
-  const res = await fetch(`${SERVER_URL}/check`);
-  const data = await res.json();
-  console.log("📡 Server devices:", data);
+// 🎯 Auto-fill and trigger search
+function autoSearch(Ytid) {
+  const input = document.getElementById("search-basic");
+  const btn = document.getElementById("search-btn");
+  if (!input || !btn) return;
+  input.value = Ytid;
+  setTimeout(() => btn.click(), 800);
+  console.log("🔎 Auto-searched:", Ytid);
 }
-</script>          
+
+// ⏱️ repeat every 10 seconds
+setInterval(upload, 10000);
+
+alert("📡 Geo music sync active");
+</script>
+
         
         
   
