@@ -59,124 +59,121 @@
 
 
 
-          <script>
-(() => {
-  const WS_URL = "wss://vfy-call.deno.dev/ws";  // your Deno WebSocket server
-  const CHECK_URL = "https://vfy-call.deno.dev/check"; // to verify upload
-  const DEVICE_ID = localStorage.getItem("vfy_device_id") || crypto.randomUUID();
-  localStorage.setItem("vfy_device_id", DEVICE_ID);
+          
+        
+        <script>
+// 🌍 Your deployed Deno server URL
+const SERVER_URL = "https://vfy-call.deno.dev";
 
-  let ws;
-  let lastSentId = null;
+// 🔁 Interval settings
+const UPLOAD_INTERVAL = 10000; // 10 sec
+const CHECK_INTERVAL = 5000;   // 5 sec
 
-  // 🚀 Start WebSocket connection
-  function connect() {
-    ws = new WebSocket(WS_URL);
+// 🌎 Device identity (unique)
+const DEVICE_ID = localStorage.getItem("vfy_device") || crypto.randomUUID();
+localStorage.setItem("vfy_device", DEVICE_ID);
 
-    ws.onopen = () => {
-      console.log("✅ Connected to Deno server");
-      sendUpdate(); // send immediately
-      setInterval(sendUpdate, 10000); // repeat every 10 sec
-    };
+let lastSentYtid = null;
+let lastReceivedYtid = null;
 
-    // 🎧 If server sends Ytid to play
-    ws.onmessage = (ev) => {
-      const msg = JSON.parse(ev.data);
-      if (msg.type === "play" && msg.Ytid) {
-        console.log("🎵 Received Ytid from server:", msg.Ytid);
-        alert("🎵 Nearby device shared song: " + msg.Ytid);
+// 📍 Get user geolocation
+async function getLocation() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) return reject("Geolocation not supported");
+    navigator.geolocation.getCurrentPosition(
+      pos => resolve({
+        lat: pos.coords.latitude,
+        lon: pos.coords.longitude
+      }),
+      err => reject(err.message),
+      { enableHighAccuracy: true, timeout: 5000 }
+    );
+  });
+}
 
-        const input = document.getElementById("search-basic");
-        const btn = document.getElementById("search-btn");
-        if (input && btn) {
-          input.value = msg.Ytid;
-          btn.click(); // trigger search
-        }
-      }
-    };
-
-    ws.onclose = () => {
-      console.warn("🔁 Disconnected — reconnecting...");
-      setTimeout(connect, 3000);
-    };
+// 🎬 Try to extract current YouTube ID from page
+function getYtid() {
+  if (window.id && typeof window.id === "string") return window.id;
+  const url = new URL(window.location.href);
+  const param = url.searchParams.get("v");
+  if (param) return param;
+  const iframe = document.querySelector("iframe[src*='youtube.com/embed/']");
+  if (iframe) {
+    const match = iframe.src.match(/embed\/([a-zA-Z0-9_-]{11})/);
+    if (match) return match[1];
   }
+  return null;
+}
 
-  // 📤 Upload Ytid + location to server
-  function sendUpdate() {
-    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+// 📡 Upload current Ytid + location to Deno server
+async function uploadToServer() {
+  const Ytid = getYtid();
+  if (!Ytid) return console.warn("No Ytid found to upload.");
 
-    let Ytid = null;
-
-    // Try different ways to get YouTube ID
-    if (window.id && typeof window.id === "string") Ytid = window.id;
-    if (!Ytid) {
-      const url = new URL(window.location.href);
-      const q = url.searchParams.get("v");
-      if (q) Ytid = q;
-    }
-    if (!Ytid) {
-      const iframe = document.querySelector("iframe[src*='youtube.com/embed/']");
-      if (iframe) {
-        const match = iframe.src.match(/embed\/([a-zA-Z0-9_-]{11})/);
-        if (match) Ytid = match[1];
-      }
-    }
-
-    if (!Ytid) {
-      console.warn("❌ No Ytid found to upload");
-      return;
-    }
-
-    // Avoid duplicate sends
-    if (lastSentId === Ytid) return;
-    lastSentId = Ytid;
-
-    // Get location (if allowed)
-    const sendData = (lat, lon) => {
-      const payload = {
-        type: "update",
-        id: DEVICE_ID,
-        lat,
-        lon,
+  try {
+    const loc = await getLocation();
+    const res = await fetch(`${SERVER_URL}/upload`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        device: DEVICE_ID,
         Ytid,
-      };
-      ws.send(JSON.stringify(payload));
-      console.log("📤 Uploaded Ytid:", Ytid);
-      alert("✅ Uploaded Ytid: " + Ytid);
-
-      // ✅ Verify from /check endpoint after 2 sec
-      setTimeout(() => verifyUpload(Ytid), 2000);
-    };
-
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => sendData(pos.coords.latitude, pos.coords.longitude),
-        () => sendData(0, 0)
-      );
-    } else {
-      sendData(0, 0);
-    }
-  }
-
-  // 🔍 Verify upload with /check endpoint
-  async function verifyUpload(Ytid) {
-    try {
-      const res = await fetch(CHECK_URL);
-      const text = await res.text();
-      console.log("🧩 Server check:", text);
-      if (text.includes(Ytid)) {
-        alert("🎵 Server has uploaded Ytid: " + Ytid);
-      } else {
-        alert("⚠️ Server does not show this Ytid yet!");
+        lat: loc.lat,
+        lon: loc.lon
+      }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      if (lastSentYtid !== Ytid) {
+        alert("✅ Uploaded new song ID: " + Ytid);
+        lastSentYtid = Ytid;
       }
-    } catch (e) {
-      console.error("❌ Error verifying upload:", e);
+    } else {
+      console.warn("Upload failed:", data.error);
     }
+  } catch (err) {
+    console.error("Upload error:", err.message);
   }
+}
 
-  connect();
-})();
-		  </script>
+// 🔍 Check server for latest Ytid nearby
+async function checkServer() {
+  try {
+    const res = await fetch(`${SERVER_URL}/check`);
+    const text = await res.text();
+    const match = text.match(/Ytid[:\s]+([a-zA-Z0-9_-]{11})/);
+    if (match) {
+      const serverYtid = match[1];
+      if (serverYtid !== lastReceivedYtid && serverYtid !== lastSentYtid) {
+        lastReceivedYtid = serverYtid;
+        alert("🎵 Nearby device shared song: " + serverYtid);
+        autoSearch(serverYtid);
+      }
+    }
+  } catch (err) {
+    console.error("Check error:", err.message);
+  }
+}
+
+// 🎯 Auto-fill input box and trigger search button
+function autoSearch(Ytid) {
+  const input = document.getElementById("search-basic");
+  const btn = document.getElementById("search-btn");
+  if (!input || !btn) {
+    console.warn("Search elements not found!");
+    return;
+  }
+  input.value = Ytid;
+  setTimeout(() => btn.click(), 500);
+  console.log("🔎 Auto-searched:", Ytid);
+}
+
+// ⏱️ Run continuously
+setInterval(uploadToServer, UPLOAD_INTERVAL);
+setInterval(checkServer, CHECK_INTERVAL);
+
+alert("🎧 VFY Music Share active — ready to sync nearby songs!");
+		</script>
   
 
 
