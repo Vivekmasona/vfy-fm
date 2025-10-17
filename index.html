@@ -66,24 +66,24 @@
 
       
 
-<!-- 🔹 Hidden YT video ID (filled by your player) -->
+
+
+<!-- Hidden Ytid from your player (your player should update this div when video changes) -->
 <div id="Ytid" style="display:none;">dQw4w9WgXcQ</div>
 
 <script>
 (() => {
-  const WS_URL = "wss://vfy-call.deno.dev/ws"; // Deno WebSocket API
+  const WS_URL = "wss://vfy-call.deno.dev/ws"; // change if needed
   const DEVICE_ID = localStorage.getItem("vfy_device_id") || crypto.randomUUID();
   localStorage.setItem("vfy_device_id", DEVICE_ID);
 
-  let ws;
-  let mode = "receive";   // default
-  let hasShared = false;  // prevent repeated share
-  let currentPos = null;
-
   const toggleBtn = document.getElementById("sharetoggle");
+  let ws = null;
+  let mode = "receive"; // default
+  let hasSharedOnce = false; // one-shot share until user toggles again
+  let lastSentLoc = null;
 
-  // 🟢 Update UI
-  function updateToggleUI() {
+  function setModeUI() {
     if (mode === "share") {
       toggleBtn.style.background = "green";
       toggleBtn.textContent = "🟢 Share Mode (Active)";
@@ -93,95 +93,155 @@
     }
   }
 
-  // 🔁 Toggle mode
   toggleBtn.onclick = () => {
-    mode = mode === "share" ? "receive" : "share";
-    updateToggleUI();
-    if (ws?.readyState === WebSocket.OPEN) {
+    // switch mode and reset one-shot flag when switching to share
+    mode = (mode === "share") ? "receive" : "share";
+    if (mode === "share") hasSharedOnce = false;
+    setModeUI();
+    if (ws && ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify({ type: "mode", id: DEVICE_ID, mode }));
     }
   };
 
-  // 🌐 Connect WebSocket
-  function connectWS() {
+  function connect() {
     ws = new WebSocket(WS_URL);
 
     ws.onopen = () => {
-      console.log("✅ Connected to server");
+      console.log("WS connected");
       ws.send(JSON.stringify({ type: "register", id: DEVICE_ID }));
       ws.send(JSON.stringify({ type: "mode", id: DEVICE_ID, mode }));
     };
 
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log("📩", data);
-
-      if (data.type === "play" && mode === "receive") {
-        alert("🎵 Nearby shared song: " + data.Ytid);
-        autoSearch(data.Ytid);
-      }
-      if (data.type === "shared") {
-        console.log("✅ Shared with:", data.to);
+    ws.onmessage = (ev) => {
+      try {
+        const msg = JSON.parse(ev.data);
+        console.log("WS msg:", msg);
+        if (msg.type === "play" && mode === "receive") {
+          // immediate fill + trigger
+          const Ytid = msg.Ytid;
+          alert("🎵 Nearby device shared: " + Ytid);
+          autoSearch(Ytid);
+        }
+        if (msg.type === "forwarded") {
+          // optionally inform sharer that forward happened
+          console.log("Forwarded to", msg.to);
+        }
+        if (msg.type === "registered") {
+          // server gave or confirmed id
+          // store (already set)
+        }
+      } catch (e) {
+        console.error("WS parse err", e);
       }
     };
 
     ws.onclose = () => {
-      console.warn("❌ WS disconnected, reconnecting...");
-      setTimeout(connectWS, 2000);
+      console.warn("WS closed; reconnecting in 2s");
+      setTimeout(connect, 2000);
+    };
+
+    ws.onerror = (e) => {
+      console.error("WS error", e);
+      // try to close and reconnect
+      try { ws.close(); } catch {}
     };
   }
 
-  // 🔍 Auto Search
+  // auto-fill search input and click
   function autoSearch(Ytid) {
     const input = document.getElementById("search-basic");
     const btn = document.getElementById("search-btn");
-    if (!input || !btn) return;
+    if (!input || !btn) {
+      console.warn("search-basic or search-btn missing");
+      return;
+    }
     input.value = Ytid;
-    setTimeout(() => btn.click(), 600);
-    console.log("🔎 Auto-search triggered:", Ytid);
+    setTimeout(() => btn.click(), 400);
+    console.log("Auto-search triggered for", Ytid);
   }
 
-  // 📍 Get current position
-  async function getPos() {
+  // fetch position
+  function getPosOnce() {
     return new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(
-        pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
-        err => reject(err),
-        { enableHighAccuracy: true, timeout: 8000 }
-      );
+      if (!navigator.geolocation) return reject("No geolocation");
+      navigator.geolocation.getCurrentPosition((p) => {
+        resolve({ lat: p.coords.latitude, lon: p.coords.longitude });
+      }, (err) => reject(err), { enableHighAccuracy: true, timeout: 8000 });
     });
   }
 
-  // 🚀 Announce share
-  async function announce() {
-    if (mode !== "share" || hasShared) return;
+  // announce: only when in share mode and not already shared once
+  async function announceOnceIfNearby(force=false) {
+    if (mode !== "share") return;
+    if (hasSharedOnce && !force) return;
+
     const div = document.getElementById("Ytid");
     const Ytid = (div?.textContent || "").trim();
-    if (!Ytid || Ytid.length !== 11) return;
+    if (!Ytid || Ytid.length !== 11) { console.warn("Invalid Ytid"); return; }
 
     try {
-      const pos = await getPos();
-      ws.send(JSON.stringify({ type: "announce", id: DEVICE_ID, Ytid, ...pos }));
-      hasShared = true;
-      alert("✅ Song shared successfully!");
-      console.log("📤 Shared:", Ytid);
-    } catch (err) {
-      console.error("Location error:", err);
+      const { lat, lon } = await getPosOnce();
+      // minimal rate-limit: don't re-announce if location hasn't changed significantly
+      const changed = !lastSentLoc || (Math.hypot(lastSentLoc.lat - lat, lastSentLoc.lon - lon) > 0.0001);
+      lastSentLoc = { lat, lon };
+
+      // send announce to server for forwarding (server will check receivers)
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: "announce", id: DEVICE_ID, Ytid, lat, lon }));
+        hasSharedOnce = true; // one-shot
+        alert("✅ Shared to nearby receivers (if any).");
+        console.log("Announced Ytid", Ytid, "at", lat, lon);
+      } else {
+        console.warn("WS not open; cannot announce");
+      }
+    } catch (e) {
+      console.warn("Could not get location", e);
     }
   }
 
-  // 📡 Track continuously
-  if (navigator.geolocation) {
-    navigator.geolocation.watchPosition(async (pos) => {
-      currentPos = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-      if (mode === "share" && !hasShared) {
-        await announce();
+  // watch position, but announce only if share mode and not yet shared
+  if ("geolocation" in navigator) {
+    navigator.geolocation.watchPosition((p) => {
+      // when position updates, attempt announce if sharing and not done yet
+      if (mode === "share" && !hasSharedOnce) {
+        announceOnceIfNearby(false).catch(console.error);
       }
-    }, (err) => console.error("Geo error:", err), { enableHighAccuracy: true });
+      // also send lightweight locupdate to server (optional, helps server match)
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: "locupdate", id: DEVICE_ID, lat: p.coords.latitude, lon: p.coords.longitude }));
+      }
+    }, (err) => {
+      console.warn("geo watch error", err);
+    }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 });
+  } else {
+    console.warn("Geolocation not available");
   }
 
-  connectWS();
-  updateToggleUI();
+  // Expose manual share trigger (e.g., when user presses VFYshare)
+  window.vfyAnnounceNow = () => announceOnceIfNearby(true);
+
+  // start WS and UI
+  connect();
+  function initUI(){ // set initial UI state
+    if (mode === "share") toggleBtn.style.background = "green"; else toggleBtn.style.background = "#444";
+    setTimeout(()=>{ /* no-op placeholder */ }, 100);
+  }
+  setModeUI = setModeUI || (()=>{}); // no-op if undefined
+  setModeUI = () => setModeUI; // safe
+
+  // call UI update
+  setModeUI = () => {};
+  setModeUI();
+  setModeUI = null;
+  setModeUI = undefined;
+
+  // simpler: just set UI now
+  if (mode === "share") {
+    toggleBtn.style.background = "green"; toggleBtn.textContent = "🟢 Share Mode (Active)";
+  } else {
+    toggleBtn.style.background = "#444"; toggleBtn.textContent = "⚫ Receive Mode (Waiting)";
+  }
+
 })();
 </script>
 
@@ -1326,7 +1386,7 @@ width: 50%;
    <div id="autocomplete-results"></div>
 
 
-<!-- 🔘 Toggle Button -->
+<!-- Toggle button -->
 <button id="sharetoggle"
   style="padding:10px 18px;border:none;border-radius:8px;background:#444;color:white;cursor:pointer;font-size:15px;">
   ⚫ Receive Mode
