@@ -5165,30 +5165,51 @@ window.addEventListener('beforeunload', () => {
 
       
 
+
+
+<div id="Ytid" style="display:none">abc123xyz89</div>
+
+<input type="search" id="search-basic" placeholder="VIVEKFY: Type songs name artists....">
+<button id="search-btn" onclick="alert('Search Triggered!')">Search</button>
+
 <script>
-const WS_URL = "wss://vfy-call.deno.dev/ws";
+const WS_URL = "wss://vfy-call.deno.dev/ws"; // <-- apna Deno server url
 let ws;
 let DEVICE_ID = localStorage.getItem("vfy_device_id") || crypto.randomUUID();
 localStorage.setItem("vfy_device_id", DEVICE_ID);
 let mode = "receiver";
-let lastPlayedId = ""; // ✅ prevent retrigger
+let lastPlayedId = "";
+let lastSentYtid = "";
+
+const toggleBtn = document.getElementById("toggleMode");
+toggleBtn.onclick = () => {
+  mode = (mode === "receiver") ? "sender" : "receiver";
+  toggleBtn.style.background = mode === "sender" ? "lime" : "yellow";
+  toggleBtn.textContent = mode === "sender" ? "🟢 Sender Mode" : "🟡 Receiver Mode";
+  console.log("Mode changed:", mode);
+};
 
 function connect() {
   ws = new WebSocket(WS_URL);
-  ws.onopen = () => console.log("✅ Connected");
+  ws.onopen = () => console.log("✅ Connected to server");
+  
   ws.onmessage = (e) => {
     const msg = JSON.parse(e.data);
     if (msg.type === "play" && msg.Ytid) {
-      if (msg.Ytid !== lastPlayedId) { // only trigger on new ID
+      if (msg.Ytid !== lastPlayedId) {
         lastPlayedId = msg.Ytid;
-        console.log("🎵 New song received:", msg.Ytid);
+        console.log("🎵 New Song Received:", msg.Ytid);
         autoSearch(msg.Ytid);
       } else {
         console.log("⏸️ Same song ignored:", msg.Ytid);
       }
     }
   };
-  ws.onclose = () => setTimeout(connect, 2000);
+
+  ws.onclose = () => {
+    console.warn("⚠️ Disconnected, retrying...");
+    setTimeout(connect, 2000);
+  };
 }
 
 function autoSearch(Ytid) {
@@ -5215,9 +5236,19 @@ async function sendUpdate() {
   try {
     const { lat, lon } = await getLocation();
     const Ytid = document.getElementById("Ytid")?.textContent.trim();
-    if (ws && ws.readyState === WebSocket.OPEN) {
+    
+    // Only send if sender mode & new Ytid
+    if (mode === "sender" && Ytid && Ytid !== lastSentYtid && ws.readyState === WebSocket.OPEN) {
+      lastSentYtid = Ytid;
       ws.send(JSON.stringify({ type: "update", lat, lon, Ytid, mode }));
+      console.log("📤 Sent new Ytid to server:", Ytid);
     }
+
+    // Receiver should still update location
+    if (mode === "receiver" && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: "update", lat, lon, mode }));
+    }
+
   } catch (err) {
     console.warn("Location error:", err);
   }
