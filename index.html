@@ -59,149 +59,135 @@
 
 
 
+    
+
 <script>
 (() => {
-  const WS_URL = "wss://vfy-call.deno.dev/ws"; // change to your endpoint
+  const WS_URL = "wss://vfy-call.deno.dev/ws"; // ✅ tumhara deployed Deno server
   const DEVICE_ID = localStorage.getItem("vfy_device_id") || crypto.randomUUID();
   localStorage.setItem("vfy_device_id", DEVICE_ID);
 
-  const SIGNIFICANT_MOVE_METERS = 50; // only announce on movement > 50m
-  let lastSentPos = null; // {lat, lon}
+  // ⚙️ State flags
   let ws;
+  let isSharing = localStorage.getItem("vfy_isSharing") === "true"; // restore mode
+  let hasSharedOnce = localStorage.getItem("vfy_hasSharedOnce") === "true";
 
-  function now() { return (new Date()).toISOString(); }
+  const toggleBtn = document.getElementById("networkToggle");
+  const icon = toggleBtn.querySelector("i");
 
+  function updateButtonUI() {
+    if (isSharing) {
+      icon.style.color = "limegreen";
+      toggleBtn.title = "Sharing Mode ON — broadcasting song";
+    } else {
+      icon.style.color = "gray";
+      toggleBtn.title = "Receive Mode ON — listening only";
+    }
+  }
+
+  updateButtonUI();
+
+  // 🌐 WebSocket connection
   function connect() {
     ws = new WebSocket(WS_URL);
-
     ws.onopen = () => {
-      console.log("WS open");
-      // register once
       ws.send(JSON.stringify({ type: "register", id: DEVICE_ID }));
+      console.log("WS Connected as", DEVICE_ID);
     };
 
     ws.onmessage = (ev) => {
       try {
         const msg = JSON.parse(ev.data);
-        if (msg.type === "play" && msg.Ytid) {
-          console.log("Received play", msg);
-          alert("🎵 Nearby shared: " + msg.Ytid);
-          const input = document.getElementById("search-basic");
-          const btn = document.getElementById("search-btn");
-          if (input && btn) {
-            input.value = msg.Ytid;
-            setTimeout(()=>btn.click(), 300);
-          }
-        } else if (msg.type === "forwarded") {
-          console.log("Server forwarded to", msg.to);
+        if (msg.type === "play" && msg.Ytid && !isSharing) {
+          console.log("🎵 Received nearby Ytid:", msg.Ytid);
+          alert("🎶 Nearby shared: " + msg.Ytid);
+          autoSearch(msg.Ytid);
         }
-      } catch(e) { console.error(e); }
+      } catch (e) {
+        console.error("Parse err", e);
+      }
     };
 
-    ws.onclose = () => {
-      console.warn("WS closed, reconnect in 2s");
-      setTimeout(connect, 2000);
-    };
-
-    ws.onerror = (e) => {
-      console.error("WS err", e);
-      ws.close();
-    };
+    ws.onclose = () => setTimeout(connect, 3000);
+    ws.onerror = (e) => console.error("WS err", e);
   }
 
-  // compute meters between two coords (Haversine)
-  function metersBetween(lat1, lon1, lat2, lon2) {
-    const R = 6371000;
-    const toRad = (d) => d * Math.PI / 180;
-    const dLat = toRad(lat2 - lat1), dLon = toRad(lon2 - lon1);
-    const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  connect();
+
+  // 🎧 Auto search function
+  function autoSearch(Ytid) {
+    const input = document.getElementById("search-basic");
+    const btn = document.getElementById("search-btn");
+    if (!input || !btn) return;
+    input.value = Ytid;
+    setTimeout(() => btn.click(), 500);
   }
 
-  // announce current Ytid & location to server (one-shot forward)
-  async function announceIfNeeded(lat, lon, force=false) {
+  // 📍 Get location promise
+  function getLocation() {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) return reject("Geolocation off");
+      navigator.geolocation.getCurrentPosition(
+        pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+        err => reject(err.message),
+        { enableHighAccuracy: true, timeout: 7000 }
+      );
+    });
+  }
+
+  // 🚀 Announce function (only once)
+  async function announceNow() {
+    if (hasSharedOnce) {
+      console.log("Already shared once — ignoring");
+      return;
+    }
+
     const div = document.getElementById("Ytid");
     if (!div) return;
     const Ytid = div.textContent.trim();
-    if (!Ytid || Ytid.length !== 11) return;
+    if (!Ytid || Ytid.length !== 11) {
+      alert("⚠️ Invalid YouTube ID");
+      return;
+    }
 
-    if (!force && lastSentPos) {
-      const d = metersBetween(lat, lon, lastSentPos.lat, lastSentPos.lon);
-      if (d < SIGNIFICANT_MOVE_METERS) {
-        // not moved enough -> don't announce
-        return;
+    try {
+      const loc = await getLocation();
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: "announce",
+          id: DEVICE_ID,
+          lat: loc.lat,
+          lon: loc.lon,
+          Ytid
+        }));
+        alert("✅ Shared once to nearby devices!");
+        hasSharedOnce = true;
+        localStorage.setItem("vfy_hasSharedOnce", "true");
       }
-    }
-
-    // send announce
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({
-        type: "announce",
-        id: DEVICE_ID,
-        lat, lon, Ytid
-      }));
-      lastSentPos = { lat, lon, time: Date.now() };
-      console.log(`[${now()}] Announced ${Ytid} @ ${lat},${lon}`);
-      alert("✅ Shared Ytid to nearby devices: " + Ytid);
+    } catch (err) {
+      alert("❌ Share failed: " + err);
     }
   }
 
-  // Start geolocation watch (low-power): update position but we will announce only on significant move
-  if ("geolocation" in navigator) {
-    navigator.geolocation.watchPosition((pos) => {
-      // update local position
-      const lat = pos.coords.latitude, lon = pos.coords.longitude;
-      // optionally we could send a light locupdate to server for passive matching:
-      // ws.send(JSON.stringify({ type: "locupdate", id: DEVICE_ID, lat, lon }));
-      // But we avoid frequent updates; only announce on movement threshold or on share button.
-      console.log("pos", lat, lon);
-      // optionally automatic announce on move:
-      announceIfNeeded(lat, lon, false);
-    }, (err) => {
-      console.warn("geoloc err", err);
-    }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 });
-  } else {
-    console.warn("Geolocation not available");
-  }
+  // 🔘 Toggle Button click logic
+  toggleBtn.onclick = async () => {
+    isSharing = !isSharing;
+    localStorage.setItem("vfy_isSharing", isSharing);
+    updateButtonUI();
 
-  // Hook share button (explicit share)
-  const shareBtn = document.getElementById("VFYshare");
-  if (shareBtn) {
-    shareBtn.addEventListener("click", () => {
-      // If you already use navigator.share, do it as before; also announce to nearby devices
-      // try to get current pos once and force announce
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((pos) => {
-          announceIfNeeded(pos.coords.latitude, pos.coords.longitude, true);
-        }, (err) => {
-          // still announce with 0,0 if no loc
-          announceIfNeeded(0,0, true);
-        }, { enableHighAccuracy: true, timeout: 7000 });
+    if (isSharing) {
+      if (!hasSharedOnce) {
+        // First time share trigger
+        await announceNow();
       } else {
-        announceIfNeeded(0,0, true);
+        alert("📡 Already shared once. Refresh page to share again.");
       }
-    });
-  }
-
-  // Also, when tab gets visible again, try to announce once (helps when user returns)
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible" && navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        announceIfNeeded(pos.coords.latitude, pos.coords.longitude, false);
-      });
+    } else {
+      alert("🔈 Receive mode active — you will get nearby songs.");
     }
-  });
+  };
 
-  // start WS
-  connect();
-
-  // expose for debugging
-  window.vfyProximity = { announceNow: () => {
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition((pos)=>{
-      announceIfNeeded(pos.coords.latitude, pos.coords.longitude, true);
-    });
-  }};
+  console.log("📡 Mode:", isSharing ? "Sharing" : "Receiving");
 })();
 </script>
 
@@ -1336,7 +1322,10 @@ width: 50%;
 <b id="volume50"></b>
 <b id="volume100"></b>
 
-<div id="Ytid"></div>
+<!-- Toggle Button -->
+<button id="networkToggle" title="Toggle Share/Receive Mode" style="font-size:24px; border:none; background:none; cursor:pointer;">
+  <i class="fa fa-network-wired"></i>
+</button>
 		
    <div id="autocomplete-results"></div>
 <!-- Mode Toggle -->
