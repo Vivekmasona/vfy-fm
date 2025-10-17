@@ -1210,11 +1210,7 @@ width: 50%;
    <div id="autocomplete-results"></div>
 
 
-<!-- 🔘 Toggle Button -->
-<button id="sharetoggle"
-  style="padding:10px 18px;border:none;border-radius:8px;background:#444;color:white;cursor:pointer;font-size:15px;">
-  ⚫ Receive Mode
-</button>
+<button id="shareToggle">OFF</button>
 
 		
 <!-- Mode Toggle -->
@@ -5163,177 +5159,117 @@ window.addEventListener('beforeunload', () => {
 
 
 
+<!-- 🔘 Toggle Share Button -->
+<style>
+  #shareToggle {
+    width: 80px;
+    height: 40px;
+    border-radius: 20px;
+    border: none;
+    background: gray;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 5px #00000050;
+  }
+  #shareToggle.active {
+    background: #00e676;
+    box-shadow: 0 0 20px 5px #00ff88aa;
+  }
+</style>
 
-	
 
 
-  
 <script>
-(() => {
-  // ===== CONFIG =====
-  const WS_URL = "wss://vfy-call.deno.dev/ws"; // replace with your server wss endpoint
-  const DEVICE_ID = localStorage.getItem("vfy_device_id") || crypto.randomUUID();
-  localStorage.setItem("vfy_device_id", DEVICE_ID);
-  const POSITION_SEND_INTERVAL = 5000; // ms
-  // ==================
+const SERVER_URL = "https://vfy-call.deno.dev";
+let DEVICE_ID = localStorage.getItem("vfy_device_id") || crypto.randomUUID();
+localStorage.setItem("vfy_device_id", DEVICE_ID);
 
-  let ws = null;
-  let mode = "receive"; // receive by default
-  let hasSharedOnce = false; // one-shot until user toggles share again
-  let lastPos = null;
+let shareEnabled = false;   // default OFF
+let lastUploaded = "";
+let lastReceived = "";
 
-  const toggleBtn = document.getElementById("sharetoggle");
-
-  // Toggle UI
-  function updateToggleUI() {
-    if (mode === "share") {
-      toggleBtn.style.background = "green";
-      toggleBtn.textContent = "🟢 Share Mode (Active)";
-      hasSharedOnce = false; // allow new share each time user turns on
-    } else {
-      toggleBtn.style.background = "#444";
-      toggleBtn.textContent = "⚫ Receive Mode (Waiting)";
-    }
+const toggleBtn = document.getElementById("shareToggle");
+toggleBtn.onclick = () => {
+  shareEnabled = !shareEnabled;
+  if (shareEnabled) {
+    toggleBtn.textContent = "ON";
+    toggleBtn.classList.add("active");
+    alert("✅ Sharing enabled — this device will share YouTube ID");
+  } else {
+    toggleBtn.textContent = "OFF";
+    toggleBtn.classList.remove("active");
+    alert("🚫 Sharing disabled — this device won't share");
   }
+};
 
-  toggleBtn.addEventListener("click", () => {
-    mode = (mode === "receive") ? "share" : "receive";
-    updateToggleUI();
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ type: "update", id: DEVICE_ID, mode }));
-    }
+// 📍 get user location
+async function getLocation() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation)
+      return reject("Geolocation not supported");
+    navigator.geolocation.getCurrentPosition(
+      pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+      err => reject(err.message),
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
   });
+}
 
-  // Connect WS
-  function connectWS() {
-    ws = new WebSocket(WS_URL);
+// 📤 upload Ytid + location
+async function upload() {
+  const div = document.getElementById("Ytid");
+  if (!div) return;
+  const Ytid = div.textContent.trim();
+  if (!Ytid || Ytid.length !== 11) return;
 
-    ws.onopen = () => {
-      console.log("WS open");
-      // register
-      ws.send(JSON.stringify({ type: "register", id: DEVICE_ID, mode }));
-      // immediately send initial position if available
-      sendPositionOnce();
+  try {
+    const loc = await getLocation();
+
+    // agar share mode ON hai tabhi bheje
+    const body = {
+      device: DEVICE_ID,
+      Ytid: shareEnabled ? Ytid : "", // agar off hai to khali bheje
+      lat: loc.lat,
+      lon: loc.lon,
     };
 
-    ws.onmessage = (ev) => {
-      try {
-        const msg = JSON.parse(ev.data);
-        console.log("WS recv:", msg);
-        if (msg.type === "play") {
-          // receiver: auto-search
-          if (mode === "receive" && msg.Ytid) {
-            alert("Nearby device shared song: " + msg.Ytid);
-            autoSearch(msg.Ytid);
-          }
-        }
-        if (msg.type === "forwarded") {
-          // optional notification for sharer
-          console.log("Forwarded to", msg.to);
-        }
-      } catch (e) { console.error("WS parse err", e); }
-    };
-
-    ws.onclose = () => {
-      console.warn("WS closed, reconnect in 2s");
-      setTimeout(connectWS, 2000);
-    };
-
-    ws.onerror = (e) => {
-      console.error("WS error", e);
-      try { ws.close(); } catch {}
-    };
-  }
-
-  // Auto-fill + trigger search
-  function autoSearch(Ytid) {
-    const input = document.getElementById("search-basic");
-    const btn = document.getElementById("search-btn");
-    if (!input || !btn) { console.warn("Search elements missing"); return; }
-    input.value = Ytid;
-    setTimeout(() => btn.click(), 300);
-  }
-
-  // Get position once (promise)
-  function getCurrentPosition() {
-    return new Promise((resolve, reject) => {
-      if (!navigator.geolocation) return reject("No geolocation");
-      navigator.geolocation.getCurrentPosition(pos => {
-        resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude });
-      }, err => reject(err), { enableHighAccuracy: true, maximumAge: 2000, timeout: 8000 });
+    const res = await fetch(`${SERVER_URL}/upload`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
     });
-  }
-
-  // send position + mode + Ytid to server (update)
-  async function sendPositionOnce() {
-    if (!ws || ws.readyState !== WebSocket.OPEN) return;
-    // try to get pos
-    try {
-      const p = await getCurrentPosition();
-      lastPos = p;
-      const Ytid = (document.getElementById("Ytid")?.textContent || "").trim();
-      ws.send(JSON.stringify({
-        type: "update",
-        id: DEVICE_ID,
-        mode,
-        lat: p.lat,
-        lon: p.lon,
-        Ytid: (Ytid && Ytid.length === 11) ? Ytid : undefined
-      }));
-    } catch (err) {
-      console.warn("Could not get position:", err);
-      // still send mode update without position (optional)
-      ws.send(JSON.stringify({ type: "update", id: DEVICE_ID, mode }));
-    }
-  }
-
-  // Periodic position sender
-  setInterval(() => {
-    if (mode === "share" && hasSharedOnce) {
-      // don't keep re-sharing; still send position updates to help others detect if needed
-      sendPositionOnce();
-      return;
-    }
-    sendPositionOnce();
-  }, POSITION_SEND_INTERVAL);
-
-  // Also watchPosition to react faster (announce when moved), but avoid frequent announce
-  if (navigator.geolocation) {
-    navigator.geolocation.watchPosition((pos) => {
-      lastPos = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-      // if sharing and not yet shared, trigger an immediate server update/announce
-      if (mode === "share" && !hasSharedOnce) {
-        // send update (server will forward if receiver nearby)
-        sendPositionOnce();
+    const data = await res.json();
+    if (data.success) {
+      if (shareEnabled && Ytid !== lastUploaded) {
+        console.log("✅ Shared:", Ytid);
+        lastUploaded = Ytid;
       }
-    }, (err) => console.warn("watchPos error", err), { enableHighAccuracy: true, maximumAge: 3000, timeout: 8000 });
-  }
 
-  // Manual publish function (hook to your share button if you want)
-  async function publishNow() {
-    if (!ws || ws.readyState !== WebSocket.OPEN) { alert("Not connected"); return; }
-    if (mode !== "share") { alert("Switch to Share mode first"); return; }
-    if (hasSharedOnce) { alert("Already shared once (toggle off/on to share again)"); return; }
-
-    try {
-      const p = await getCurrentPosition();
-      const Ytid = (document.getElementById("Ytid")?.textContent || "").trim();
-      if (!Ytid || Ytid.length !== 11) { alert("No valid Ytid to share"); return; }
-      ws.send(JSON.stringify({ type: "update", id: DEVICE_ID, mode, lat: p.lat, lon: p.lon, Ytid }));
-      // optionally, also request server to forward immediately (announce)
-      ws.send(JSON.stringify({ type: "announce", id: DEVICE_ID, Ytid, lat: p.lat, lon: p.lon }));
-      hasSharedOnce = true;
-      alert("Shared now (attempted forwarding to nearby receivers)");
-    } catch (e) {
-      alert("Could not get location: " + e);
+      if (data.nearby && data.nearby !== lastReceived) {
+        lastReceived = data.nearby;
+        alert("🎵 Nearby device shared: " + data.nearby);
+        autoSearch(data.nearby);
+      }
     }
+  } catch (err) {
+    console.warn("Upload error:", err);
   }
+}
 
-  // expose publish for manual share button
-  window.vfyPublishNow = publishNow;
+// 🎯 Auto-fill and trigger search
+function autoSearch(Ytid) {
+  const input = document.getElementById("search-basic");
+  const btn = document.getElementById("search-btn");
+  if (!input || !btn) return;
+  input.value = Ytid;
+  setTimeout(() => btn.click(), 800);
+  console.log("🔎 Auto-searched:", Ytid);
+}
 
-  // start
-  updateToggleUI();
-  connectWS();
-})();
+// ⏱️ repeat every 10 seconds
+setInterval(upload, 10000);
+
+alert("📡 Geo music sync active");
 </script>
