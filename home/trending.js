@@ -1,11 +1,11 @@
-// Inject CSS via JS for loading
-(function injectLoadingCSS() {
+// 🎨 Inject CSS (loading dots) via JS
+(function() {
   const style = document.createElement("style");
   style.textContent = `
-    .loading-dots { display: inline-block; font-size: 20px; }
+    .loading-dots { display: inline-block; font-size: 24px; }
     .loading-dots span {
       animation: blink 1.4s infinite both;
-      margin: 0 2px;
+      margin: 0 3px;
       color: #555;
     }
     .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
@@ -18,128 +18,127 @@
   document.head.appendChild(style);
 })();
 
+// Error sound
 function playErrorSound() {
   try {
     const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
     audio.play();
-  } catch (e) {
-    console.warn("Error playing sound:", e);
+  } catch (err) {
+    console.warn("Cannot play sound:", err);
   }
 }
 
+// Block pattern (tun, tuntun, tutun etc, Hindi + English)
 const blockedPattern = /(tuntun|tutun|tun|टुन|टुनटुन)/i;
 
-async function fetchFromApi1(query) {
-  const url = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(query)}`;
-  console.log("Trying API1 with URL:", url);
-  const resp = await fetch(url);
-  if (!resp.ok) throw new Error("API1 returned not ok: " + resp.status);
-  const data = await resp.json();
-  console.log("API1 data:", data);
-  return data.items;
-}
-
-async function fetchFromApi2(query) {
-  const url = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(query)}`;
-  console.log("Trying API2 with URL:", url);
-  const resp = await fetch(url);
-  if (!resp.ok) throw new Error("API2 returned not ok: " + resp.status);
-  const data = await resp.json();
-  console.log("API2 data:", data);
-  return data.items;
-}
-
-async function fetchTrendingSongs(query) {
-  console.log("fetchTrendingSongs called with:", query);
-
-  if (blockedPattern.test(query.toLowerCase())) {
-    console.warn("Blocked query:", query);
-    playErrorSound();
-    const songsEl = document.getElementById("songs");
-    if (songsEl) {
-      songsEl.innerHTML = "<p style='color:red;'>⚠️ This search query is blocked.</p>";
-    }
-    return [];
-  }
-
-  const songsEl = document.getElementById("songs");
-  if (songsEl) {
-    songsEl.innerHTML = `<div class="loading-dots"><span>.</span><span>.</span><span>.</span></div>`;
-  } else {
-    console.warn("'songs' element not found in HTML");
-  }
-
+async function fetchResultsWithFallback(q) {
+  // First API
+  const url1 = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(q)}`;
   try {
-    const items1 = await fetchFromApi1(query);
-    if (items1 && items1.length > 0) {
-      return items1;
+    const resp1 = await fetch(url1);
+    if (resp1.ok) {
+      const data1 = await resp1.json();
+      if (data1.items && data1.items.length > 0) {
+        return data1.items;
+      }
+      // If items empty, fallback
     } else {
-      console.log("API1 returned empty or no items, trying API2");
-      const items2 = await fetchFromApi2(query);
-      return items2 || [];
+      throw new Error("API1 not ok");
     }
-  } catch (e1) {
-    console.warn("API1 failed with error:", e1);
-    try {
-      const items2 = await fetchFromApi2(query);
-      return items2 || [];
-    } catch (e2) {
-      console.error("Both APIs failed:", e2);
-      return [];
-    }
+  } catch (err1) {
+    console.warn("API1 failed:", err1);
   }
+
+  // Fallback API2
+  const url2 = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(q)}`;
+  try {
+    const resp2 = await fetch(url2);
+    if (resp2.ok) {
+      const data2 = await resp2.json();
+      if (data2.items && data2.items.length > 0) {
+        return data2.items;
+      }
+    } else {
+      throw new Error("API2 not ok");
+    }
+  } catch (err2) {
+    console.error("API2 failed:", err2);
+  }
+
+  // Both failed or no results
+  return [];
 }
 
-function createPlaylistSongElement(videoId, title, channelTitle, videoDate, index) {
-  const thumbUrl = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
-  return `
-<div style="margin-bottom:12px;">
-  <b index="${index}" class="music-item list" vid="${videoId}" onclick="handleItemClick(this)">
-    <div class="thumb-wrap">
-      <img src="${thumbUrl}" alt="${title}">
-      <div class="overlay-play">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
-          <path d="M3 22v-20l18 10-18 10z"/>
-        </svg>
-      </div>
-    </div>
-    <div class="title">${title}</div>
-    <button class="save-btn" onclick="event.stopPropagation(); saveFavorite(${index}, '${title}', '${thumbUrl}', '${videoId}')">
-      <i class="fas fa-heart"></i>
-    </button>
-  </b>
-</div>
-`;
-}
+// **यहाँ main search function (तुम्हारी structure जैसा)**
+async function search() {
+  $("#homepage-content").html("");
 
-function displaySongs(songs) {
-  console.log("displaySongs called, items:", songs);
-  const songsContainer = document.getElementById("songs");
-  if (!songsContainer) {
-    console.error("'songs' container not found in HTML");
+  var q = $(".search-bar").val();
+  if (!q) {
+    console.warn("Search query is empty!");
     return;
   }
-  songsContainer.innerHTML = "";
-  if (!songs || songs.length === 0) {
-    songsContainer.innerHTML = "<p>No trending songs found.</p>";
+
+  // Block check before making API calls
+  const low = q.toLowerCase().trim();
+  if (blockedPattern.test(low)) {
+    console.warn("Blocked query detected:", q);
+    $(".search-bar").val("");
+    playErrorSound();
+    alert("❌ This search query is not allowed!");
     return;
   }
-  songs.forEach((song, idx) => {
-    // depending on API, videoId might be in different structure
-    let videoId = song.id?.videoId || song.videoId || song.id;
-    let title = song.snippet?.title || song.title || "";
-    let channelTitle = song.snippet?.channelTitle || song.channelTitle || "";
-    let videoDate = song.snippet?.publishedAt || song.publishedAt || "";
-    const el = createPlaylistSongElement(videoId, title, channelTitle, videoDate, idx);
-    songsContainer.innerHTML += el;
+
+  // loading effect
+  $("#homepage-content").html(`
+    <div class="loading-dots"><span>.</span><span>.</span><span>.</span></div>
+  `);
+
+  // fetch via fallback function
+  const items = await fetchResultsWithFallback(q);
+
+  if (!items || items.length === 0) {
+    $("#homepage-content").html("<p>No results found.</p>");
+    return;
+  }
+
+  // Now same as your fetchResults logic to render items
+  nextPageToken = items.nextPageToken || "";
+  prevPageToken = items.prevPageToken || "";
+
+  $("#homepage-content").html(""); 
+  $.each(items, function (i, item) {
+    var output = getOutput(item, i);
+    if (output) {
+      $("#homepage-content").append(output);
+    }
   });
+
+  if (firstSearch && items.length > 0) {
+    loadSong($(".list")[0], 0);
+    firstSearch = false;
+  }
+
+  $("#prev-btn").toggle(!!prevPageToken);
+  $("#next-btn").toggle(!!nextPageToken);
 }
 
-async function loadTrendingSongs() {
-  const userQuery = localStorage.getItem("songQuery") || "SR lofi 2.0";
-  console.log("loadTrendingSongs with query:", userQuery);
-  const songs = await fetchTrendingSongs(userQuery);
-  displaySongs(songs);
-}
+// pagination function remains same (no change)
+function paginate(direction) {
+  let selectedAPI = $("input[name='apiSelection']:checked").val();
+  let pageToken = direction === "next" ? nextPageToken : prevPageToken;
+  if (!pageToken) return;
 
-window.onload = loadTrendingSongs;
+  let apiUrl;
+  if (selectedAPI === "self") {
+    apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
+  } else if (selectedAPI === "self1") {
+    apiUrl = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
+  } else if (selectedAPI === "deno") {
+    apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
+  } else {
+    apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(currentQuery)}&type=video&maxResults=40&pageToken=${pageToken}&key=${youtubeApiKey}`;
+  }
+
+  fetchResults(apiUrl);
+}
