@@ -58,67 +58,62 @@
 
 
 
-<script>
+
+          <script>
 (() => {
-  const WS_URL = "wss://vfy-call.deno.dev/ws"; // 🔹 apna Deno server URL
+  const WS_URL = "wss://vfy-call.deno.dev/ws";  // your Deno WebSocket server
+  const CHECK_URL = "https://vfy-call.deno.dev/check"; // to verify upload
   const DEVICE_ID = localStorage.getItem("vfy_device_id") || crypto.randomUUID();
   localStorage.setItem("vfy_device_id", DEVICE_ID);
 
   let ws;
   let lastSentId = null;
 
-  // 🔹 Connect to WebSocket server
+  // 🚀 Start WebSocket connection
   function connect() {
     ws = new WebSocket(WS_URL);
 
     ws.onopen = () => {
       console.log("✅ Connected to Deno server");
-      sendUpdate(); // first update immediately
-      setInterval(sendUpdate, 10000); // every 10 sec
+      sendUpdate(); // send immediately
+      setInterval(sendUpdate, 10000); // repeat every 10 sec
     };
 
-    // 🔹 Receive Ytid from server when another device nearby
+    // 🎧 If server sends Ytid to play
     ws.onmessage = (ev) => {
       const msg = JSON.parse(ev.data);
       if (msg.type === "play" && msg.Ytid) {
-        console.log("🎶 Received Ytid from server:", msg.Ytid);
+        console.log("🎵 Received Ytid from server:", msg.Ytid);
+        alert("🎵 Nearby device shared song: " + msg.Ytid);
+
         const input = document.getElementById("search-basic");
         const btn = document.getElementById("search-btn");
         if (input && btn) {
           input.value = msg.Ytid;
           btn.click(); // trigger search
-        } else {
-          console.warn("⚠️ search-basic or search-btn not found in DOM");
         }
       }
     };
 
     ws.onclose = () => {
-      console.warn("🔄 WS disconnected. Reconnecting...");
+      console.warn("🔁 Disconnected — reconnecting...");
       setTimeout(connect, 3000);
     };
   }
 
-  // 🔹 Send current Ytid + location to server
+  // 📤 Upload Ytid + location to server
   function sendUpdate() {
     if (!ws || ws.readyState !== WebSocket.OPEN) return;
 
-    // Try to get YouTube video ID from window / URL
     let Ytid = null;
 
-    // Case 1: if player script sets global `id`
-    if (window.id && typeof window.id === "string") {
-      Ytid = window.id;
-    }
-
-    // Case 2: extract from URL (if playing YouTube link)
+    // Try different ways to get YouTube ID
+    if (window.id && typeof window.id === "string") Ytid = window.id;
     if (!Ytid) {
       const url = new URL(window.location.href);
       const q = url.searchParams.get("v");
       if (q) Ytid = q;
     }
-
-    // Case 3: look for <iframe> src like youtube.com/embed/VIDEOID
     if (!Ytid) {
       const iframe = document.querySelector("iframe[src*='youtube.com/embed/']");
       if (iframe) {
@@ -128,43 +123,60 @@
     }
 
     if (!Ytid) {
-      console.warn("❌ No Ytid found yet");
+      console.warn("❌ No Ytid found to upload");
       return;
     }
 
-    if (lastSentId === Ytid) return; // avoid resending same id
+    // Avoid duplicate sends
+    if (lastSentId === Ytid) return;
     lastSentId = Ytid;
 
-    // Get location
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        const payload = {
-          type: "update",
-          id: DEVICE_ID,
-          lat: pos.coords.latitude,
-          lon: pos.coords.longitude,
-          Ytid: Ytid,
-        };
-        ws.send(JSON.stringify(payload));
-        console.log("📤 Sent to server:", payload);
-      });
-    } else {
-      // if no location permission, send dummy
+    // Get location (if allowed)
+    const sendData = (lat, lon) => {
       const payload = {
         type: "update",
         id: DEVICE_ID,
-        lat: 0,
-        lon: 0,
-        Ytid: Ytid,
+        lat,
+        lon,
+        Ytid,
       };
       ws.send(JSON.stringify(payload));
-      console.log("📤 Sent (no GPS):", payload);
+      console.log("📤 Uploaded Ytid:", Ytid);
+      alert("✅ Uploaded Ytid: " + Ytid);
+
+      // ✅ Verify from /check endpoint after 2 sec
+      setTimeout(() => verifyUpload(Ytid), 2000);
+    };
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => sendData(pos.coords.latitude, pos.coords.longitude),
+        () => sendData(0, 0)
+      );
+    } else {
+      sendData(0, 0);
+    }
+  }
+
+  // 🔍 Verify upload with /check endpoint
+  async function verifyUpload(Ytid) {
+    try {
+      const res = await fetch(CHECK_URL);
+      const text = await res.text();
+      console.log("🧩 Server check:", text);
+      if (text.includes(Ytid)) {
+        alert("🎵 Server has uploaded Ytid: " + Ytid);
+      } else {
+        alert("⚠️ Server does not show this Ytid yet!");
+      }
+    } catch (e) {
+      console.error("❌ Error verifying upload:", e);
     }
   }
 
   connect();
 })();
-</script>
+		  </script>
   
 
 
