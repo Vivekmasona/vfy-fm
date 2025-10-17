@@ -245,7 +245,11 @@ window.addEventListener('scroll', () => {
 
 
   
- <!-- Fullscreen Stylish Loader -->
+ 
+    
+
+
+<!-- Fullscreen Stylish Loader -->
 <div id="loader" style="
   position:fixed;
   top:0; left:0;
@@ -320,6 +324,16 @@ window.addEventListener('scroll', () => {
     display:block;
   ">0%</span>
 
+  <!-- Error message (hidden initially) -->
+  <p id="errorMsg" style="
+    display:none;
+    color:red;
+    font-size:16px;
+    font-weight:bold;
+    margin-top:10px;
+    text-shadow:0 0 5px red,0 0 10px red;
+  "></p>
+
   <!-- Footer -->
   <p style="
     position:absolute;
@@ -330,59 +344,68 @@ window.addEventListener('scroll', () => {
 </div>
 
 <script>
-let percent = 0;
 const bar = document.getElementById("bar");
 const text = document.getElementById("percent");
 const fyLetters = document.getElementById("fyLetters");
 const loader = document.getElementById("loader");
+const errorMsg = document.getElementById("errorMsg");
 
-// Loader progress: 5% every 1 second, stop at 75% until page loads
-let interval = setInterval(()=>{
-  if(percent < 75){
-    percent +=5;
-    if(percent>75) percent=75;
-    bar.style.width = percent+"%";
-    text.textContent = percent+"%";
+// Get device memory (in GB, approx)
+let deviceRAM = navigator.deviceMemory || 0;
 
-    // Fade in FY at 40%
-    if(percent>=40 && fyLetters.style.opacity==="0"){
-      fyLetters.style.opacity="1";
+// If RAM < 6 GB, show error message
+if (deviceRAM < 6 && deviceRAM !== 0) {
+  loader.innerHTML = `
+    <h1 style="color:#ff3333; font-size:40px;">⚠️ Device Not Supported</h1>
+    <p style="color:#dadada; font-size:18px;">Your device has only ${deviceRAM} GB RAM.<br>
+    This app requires at least <b>6 GB RAM</b> to run properly.</p>
+    <p style="margin-top:20px; color:#999;">Please use a higher performance device.</p>
+  `;
+} else {
+  // Normal loader animation
+  let percent = 0;
+  let interval = setInterval(() => {
+    if (percent < 75) {
+      percent += 5;
+      if (percent > 75) percent = 75;
+      bar.style.width = percent + "%";
+      text.textContent = percent + "%";
+      if (percent >= 40 && fyLetters.style.opacity === "0") {
+        fyLetters.style.opacity = "1";
+      }
+    } else {
+      clearInterval(interval);
     }
-  } else {
-    clearInterval(interval);
-  }
-},600);
+  }, 600);
 
-// On full page load → fill to 100%
-window.addEventListener("load", ()=>{
-  let start = percent;
-  let end = 100;
-  let steps = 10;
-  let stepValue = (end - start)/steps;
-  let i=0;
-  let fast = setInterval(()=>{
-    percent = Math.min(100, Math.floor(start + stepValue*i));
-    bar.style.width = percent+"%";
-    text.textContent = percent+"%";
-    i++;
-    if(percent >= 100){
-      clearInterval(fast);
-      setTimeout(()=>{
-        loader.style.opacity="0";
-        setTimeout(()=>loader.style.display="none",500);
+  // When page fully loads
+  window.addEventListener("load", () => {
+    let start = percent;
+    let end = 100;
+    let steps = 10;
+    let stepValue = (end - start) / steps;
+    let i = 0;
+    let fast = setInterval(() => {
+      percent = Math.min(100, Math.floor(start + stepValue * i));
+      bar.style.width = percent + "%";
+      text.textContent = percent + "%";
+      i++;
+      if (percent >= 100) {
+        clearInterval(fast);
+        setTimeout(() => {
+          loader.style.opacity = "0";
+          setTimeout(() => loader.style.display = "none", 500);
 
-        // --- Play welcome audio ---
-        const audio = new Audio('/sound/fw.mp3');
-        audio.volume=1.0;
-        audio.play().catch(e=>console.log("Autoplay blocked", e));
-      },200);
-    }
-  },100);
-});
-</script>   
-
-
-  
+          // Play welcome sound
+          const audio = new Audio('/sound/fw.mp3');
+          audio.volume = 1.0;
+          audio.play().catch(e => console.log("Autoplay blocked", e));
+        }, 200);
+      }
+    }, 100);
+  });
+}
+</script>  
     
 
   
