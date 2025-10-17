@@ -63,104 +63,139 @@
 
 
 
+<div id="Ytid" style="display:none;">YOUTUBE_VIDEO_ID_HERE</div>
+
 <script>
 (() => {
-  const WS_URL = "wss://vfy-call.deno.dev/ws";
+  const WS_URL = "wss://vfy-call.deno.dev/ws"; // Deno server ka endpoint
   const DEVICE_ID = localStorage.getItem("vfy_device_id") || crypto.randomUUID();
   localStorage.setItem("vfy_device_id", DEVICE_ID);
 
-  let ws, mode = "receive"; // default mode
-  let position = null;
+  let ws;
+  let mode = "receive"; // default mode
   let hasShared = false;
+  let currentPos = null;
 
   const toggleBtn = document.getElementById("fafaToggle");
 
+  // --- UI Mode Update ---
   function updateToggleUI() {
-    toggleBtn.textContent = mode === "share" ? "🟢 Share Mode" : "⚫ Receive Mode";
-    toggleBtn.style.background = mode === "share" ? "green" : "#444";
+    if (mode === "share") {
+      toggleBtn.style.background = "green";
+      toggleBtn.textContent = "🟢 Share Mode (Active)";
+    } else {
+      toggleBtn.style.background = "#444";
+      toggleBtn.textContent = "⚫ Receive Mode (Waiting)";
+    }
   }
 
+  // --- Mode Toggle ---
   toggleBtn.onclick = () => {
     mode = mode === "share" ? "receive" : "share";
     updateToggleUI();
-    if (ws && ws.readyState === WebSocket.OPEN)
+    if (ws && ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify({ type: "mode", id: DEVICE_ID, mode }));
+    }
   };
 
-  function connect() {
+  // --- Connect WebSocket ---
+  function connectWS() {
     ws = new WebSocket(WS_URL);
+
     ws.onopen = () => {
+      console.log("✅ Connected to FAFA server");
       ws.send(JSON.stringify({ type: "register", id: DEVICE_ID }));
       ws.send(JSON.stringify({ type: "mode", id: DEVICE_ID, mode }));
-      console.log("Connected as", DEVICE_ID);
     };
 
-    ws.onmessage = (ev) => {
-      const msg = JSON.parse(ev.data);
-      if (msg.type === "play" && mode === "receive") {
-        alert("🎵 Nearby shared: " + msg.Ytid);
-        autoSearch(msg.Ytid);
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log("📩 Message:", data);
+
+      if (data.type === "play" && mode === "receive") {
+        alert("🎵 Received nearby song: " + data.Ytid);
+        autoSearch(data.Ytid);
       }
-      if (msg.type === "shared") {
-        console.log("Shared successfully to", msg.to);
+      if (data.type === "shared") {
+        console.log("✅ Shared successfully with", data.to);
       }
     };
 
-    ws.onclose = () => setTimeout(connect, 2000);
+    ws.onclose = () => {
+      console.log("❌ Disconnected. Reconnecting...");
+      setTimeout(connectWS, 2000);
+    };
+
+    ws.onerror = (err) => {
+      console.error("WebSocket error:", err);
+    };
   }
 
+  // --- Auto Search Function ---
   function autoSearch(Ytid) {
     const input = document.getElementById("search-basic");
     const btn = document.getElementById("search-btn");
-    if (!input || !btn) return;
+    if (!input || !btn) {
+      console.warn("❌ Input or button not found!");
+      return;
+    }
     input.value = Ytid;
     setTimeout(() => btn.click(), 500);
-    console.log("🔎 Auto search:", Ytid);
+    console.log("🔎 Auto searched:", Ytid);
   }
 
+  // --- Get Current Position ---
   async function getPos() {
     return new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(
-        p => resolve({ lat: p.coords.latitude, lon: p.coords.longitude }),
+        pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
         err => reject(err),
-        { enableHighAccuracy: true, timeout: 10000 }
+        { enableHighAccuracy: true, timeout: 8000 }
       );
     });
   }
 
+  // --- Announce (Send Share) ---
   async function announce() {
     if (mode !== "share" || hasShared) return;
     const div = document.getElementById("Ytid");
-    if (!div) return;
-    const Ytid = div.textContent.trim();
-    if (!Ytid || Ytid.length !== 11) return;
+    const Ytid = (div?.textContent || "").trim();
+    if (!Ytid || Ytid.length !== 11) {
+      console.warn("❌ Invalid YouTube ID:", Ytid);
+      return;
+    }
 
     try {
-      position = await getPos();
-      ws.send(JSON.stringify({ type: "announce", id: DEVICE_ID, Ytid, ...position }));
+      const pos = await getPos();
+      ws.send(JSON.stringify({ type: "announce", id: DEVICE_ID, Ytid, ...pos }));
       hasShared = true;
+      alert("✅ Song shared successfully to nearby device!");
       console.log("📤 Shared:", Ytid);
-      alert("✅ Shared once to nearby device");
-    } catch (e) {
-      console.error("Location error", e);
+    } catch (err) {
+      console.error("Location Error:", err);
     }
   }
 
-  // Watch position & announce automatically when near
+  // --- Track Location Continuously ---
   if (navigator.geolocation) {
     navigator.geolocation.watchPosition(async (pos) => {
-      position = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+      currentPos = { lat: pos.coords.latitude, lon: pos.coords.longitude };
       if (mode === "share" && !hasShared) {
         await announce();
       }
-    });
+    }, (err) => console.error("Geo error:", err), { enableHighAccuracy: true });
+  } else {
+    alert("❌ Geolocation not supported in this browser!");
   }
 
-  connect();
+  // --- Start WebSocket Connection ---
+  connectWS();
   updateToggleUI();
-
 })();
-</script>
+		  </script>
+
+
+    
 
 
         
@@ -1295,11 +1330,16 @@ width: 50%;
 <b id="volume100"></b>
 		<b id="Ytid"></b>
 
-<button id="fafaToggle" style="padding:8px 16px;border-radius:8px;border:none;background:#555;color:white;">
-  ⚫ Receive Mode
-</button>
+
 		
    <div id="autocomplete-results"></div>
+
+
+<button id="fafaToggle" style="padding:10px 18px;border:none;border-radius:8px;background:#444;color:white;cursor:pointer;font-size:15px;">
+  ⚫ Receive Mode
+</button>
+
+		
 <!-- Mode Toggle -->
 <div id="videoListContainer">
     <!-- Your generated list items go here -->
