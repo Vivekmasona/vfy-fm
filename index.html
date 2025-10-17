@@ -1261,7 +1261,7 @@ width: 50%;
 <b id="volume50"></b>
 <b id="volume100"></b>
 
-
+<div id="Ytid"></div>
 		
    <div id="autocomplete-results"></div>
 <!-- Mode Toggle -->
@@ -2616,7 +2616,8 @@ function play(id,Sid){
      //data = "https://inv-ca1-c.nadeko.net/latest_version?id="+id+"&itag=250&local=true";
      //data = "https://myserver-dev-atmq.2.ie-1.fl0.io/audio?url=https://youtu.be/"+id;
      //data = "https://audioserver-dev-cgen.2.sg-1.fl0.io/"+id;
-    document.getElementById("SThumb").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
+	document.getElementById("Ytid").textContent = id;
+	document.getElementById("SThumb").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
     document.getElementById("Fimg").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
      document.getElementById("pahilagana").onclick = ()=>{
        location.href= "https://vivekfy.vercel.app/dl?url=https://youtu.be/"+id;
@@ -2629,6 +2630,8 @@ function play(id,Sid){
         //location.href= "https://vivekdl.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
     };
 
+
+	
 document.getElementById("VFYshare").onclick = () => {
     let shareUrl = "https://vidofy.vercel.app?q=" + id;
 
