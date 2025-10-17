@@ -61,135 +61,107 @@
 
     
 
+
+
 <script>
 (() => {
-  const WS_URL = "wss://vfy-call.deno.dev/ws"; // ✅ tumhara deployed Deno server
+  const WS_URL = "wss://vfy-call.deno.dev/ws";
   const DEVICE_ID = localStorage.getItem("vfy_device_id") || crypto.randomUUID();
   localStorage.setItem("vfy_device_id", DEVICE_ID);
 
-  // ⚙️ State flags
-  let ws;
-  let isSharing = localStorage.getItem("vfy_isSharing") === "true"; // restore mode
-  let hasSharedOnce = localStorage.getItem("vfy_hasSharedOnce") === "true";
+  let ws, mode = "receive"; // default mode
+  let position = null;
+  let hasShared = false;
 
-  const toggleBtn = document.getElementById("networkToggle");
-  const icon = toggleBtn.querySelector("i");
+  const toggleBtn = document.getElementById("fafaToggle");
 
-  function updateButtonUI() {
-    if (isSharing) {
-      icon.style.color = "limegreen";
-      toggleBtn.title = "Sharing Mode ON — broadcasting song";
-    } else {
-      icon.style.color = "gray";
-      toggleBtn.title = "Receive Mode ON — listening only";
-    }
+  function updateToggleUI() {
+    toggleBtn.textContent = mode === "share" ? "🟢 Share Mode" : "⚫ Receive Mode";
+    toggleBtn.style.background = mode === "share" ? "green" : "#444";
   }
 
-  updateButtonUI();
+  toggleBtn.onclick = () => {
+    mode = mode === "share" ? "receive" : "share";
+    updateToggleUI();
+    if (ws && ws.readyState === WebSocket.OPEN)
+      ws.send(JSON.stringify({ type: "mode", id: DEVICE_ID, mode }));
+  };
 
-  // 🌐 WebSocket connection
   function connect() {
     ws = new WebSocket(WS_URL);
     ws.onopen = () => {
       ws.send(JSON.stringify({ type: "register", id: DEVICE_ID }));
-      console.log("WS Connected as", DEVICE_ID);
+      ws.send(JSON.stringify({ type: "mode", id: DEVICE_ID, mode }));
+      console.log("Connected as", DEVICE_ID);
     };
 
     ws.onmessage = (ev) => {
-      try {
-        const msg = JSON.parse(ev.data);
-        if (msg.type === "play" && msg.Ytid && !isSharing) {
-          console.log("🎵 Received nearby Ytid:", msg.Ytid);
-          alert("🎶 Nearby shared: " + msg.Ytid);
-          autoSearch(msg.Ytid);
-        }
-      } catch (e) {
-        console.error("Parse err", e);
+      const msg = JSON.parse(ev.data);
+      if (msg.type === "play" && mode === "receive") {
+        alert("🎵 Nearby shared: " + msg.Ytid);
+        autoSearch(msg.Ytid);
+      }
+      if (msg.type === "shared") {
+        console.log("Shared successfully to", msg.to);
       }
     };
 
-    ws.onclose = () => setTimeout(connect, 3000);
-    ws.onerror = (e) => console.error("WS err", e);
+    ws.onclose = () => setTimeout(connect, 2000);
   }
 
-  connect();
-
-  // 🎧 Auto search function
   function autoSearch(Ytid) {
     const input = document.getElementById("search-basic");
     const btn = document.getElementById("search-btn");
     if (!input || !btn) return;
     input.value = Ytid;
     setTimeout(() => btn.click(), 500);
+    console.log("🔎 Auto search:", Ytid);
   }
 
-  // 📍 Get location promise
-  function getLocation() {
+  async function getPos() {
     return new Promise((resolve, reject) => {
-      if (!navigator.geolocation) return reject("Geolocation off");
       navigator.geolocation.getCurrentPosition(
-        pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
-        err => reject(err.message),
-        { enableHighAccuracy: true, timeout: 7000 }
+        p => resolve({ lat: p.coords.latitude, lon: p.coords.longitude }),
+        err => reject(err),
+        { enableHighAccuracy: true, timeout: 10000 }
       );
     });
   }
 
-  // 🚀 Announce function (only once)
-  async function announceNow() {
-    if (hasSharedOnce) {
-      console.log("Already shared once — ignoring");
-      return;
-    }
-
+  async function announce() {
+    if (mode !== "share" || hasShared) return;
     const div = document.getElementById("Ytid");
     if (!div) return;
     const Ytid = div.textContent.trim();
-    if (!Ytid || Ytid.length !== 11) {
-      alert("⚠️ Invalid YouTube ID");
-      return;
-    }
+    if (!Ytid || Ytid.length !== 11) return;
 
     try {
-      const loc = await getLocation();
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({
-          type: "announce",
-          id: DEVICE_ID,
-          lat: loc.lat,
-          lon: loc.lon,
-          Ytid
-        }));
-        alert("✅ Shared once to nearby devices!");
-        hasSharedOnce = true;
-        localStorage.setItem("vfy_hasSharedOnce", "true");
-      }
-    } catch (err) {
-      alert("❌ Share failed: " + err);
+      position = await getPos();
+      ws.send(JSON.stringify({ type: "announce", id: DEVICE_ID, Ytid, ...position }));
+      hasShared = true;
+      console.log("📤 Shared:", Ytid);
+      alert("✅ Shared once to nearby device");
+    } catch (e) {
+      console.error("Location error", e);
     }
   }
 
-  // 🔘 Toggle Button click logic
-  toggleBtn.onclick = async () => {
-    isSharing = !isSharing;
-    localStorage.setItem("vfy_isSharing", isSharing);
-    updateButtonUI();
-
-    if (isSharing) {
-      if (!hasSharedOnce) {
-        // First time share trigger
-        await announceNow();
-      } else {
-        alert("📡 Already shared once. Refresh page to share again.");
+  // Watch position & announce automatically when near
+  if (navigator.geolocation) {
+    navigator.geolocation.watchPosition(async (pos) => {
+      position = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+      if (mode === "share" && !hasShared) {
+        await announce();
       }
-    } else {
-      alert("🔈 Receive mode active — you will get nearby songs.");
-    }
-  };
+    });
+  }
 
-  console.log("📡 Mode:", isSharing ? "Sharing" : "Receiving");
+  connect();
+  updateToggleUI();
+
 })();
 </script>
+
 
         
   
@@ -1323,9 +1295,8 @@ width: 50%;
 <b id="volume100"></b>
 		<b id="Ytid"></b>
 
-<!-- Toggle Button -->
-<button id="networkToggle" title="Toggle Share/Receive Mode" style="font-size:24px; border:none; background:none; cursor:pointer;">
-  <i class="fa fa-network-wired"></i>
+<button id="fafaToggle" style="padding:8px 16px;border-radius:8px;border:none;background:#555;color:white;">
+  ⚫ Receive Mode
 </button>
 		
    <div id="autocomplete-results"></div>
