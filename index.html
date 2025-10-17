@@ -1210,7 +1210,15 @@ width: 50%;
    <div id="autocomplete-results"></div>
 
 
-<button id="shareToggle">OFF</button>
+<button id="modeToggle" style="
+  background:yellow;
+  color:black;
+  padding:10px 20px;
+  border:none;
+  border-radius:8px;
+  font-weight:bold;
+  margin-bottom:10px;
+">Receiver Mode 🟡</button>
 
 		
 <!-- Mode Toggle -->
@@ -5157,19 +5165,61 @@ window.addEventListener('beforeunload', () => {
 
 
 
+        
+
+<div id="Ytid">dQw4w9WgXcQ</div>
+
+<input type="search" id="search-basic" placeholder="Type song..." />
+<button id="search-btn" onclick="search()">Search</button>
+
 <script>
-const SERVER_URL = "https://vfy-call.deno.dev";
+const WS_URL = "wss://vfy-call.deno.dev/ws";
+let ws;
 let DEVICE_ID = localStorage.getItem("vfy_device_id") || crypto.randomUUID();
 localStorage.setItem("vfy_device_id", DEVICE_ID);
 
-let lastUploaded = "";
-let lastReceived = "";
+let mode = "receiver"; // default
+const toggleBtn = document.getElementById("modeToggle");
 
-// 📍 get user location
+toggleBtn.onclick = () => {
+  mode = mode === "receiver" ? "sender" : "receiver";
+  toggleBtn.style.background = mode === "sender" ? "lightgreen" : "yellow";
+  toggleBtn.textContent = mode === "sender" ? "Sender Mode 🟢" : "Receiver Mode 🟡";
+};
+
+// connect WebSocket
+function connect() {
+  ws = new WebSocket(WS_URL);
+  ws.onopen = () => console.log("Connected ✅");
+
+  ws.onmessage = (ev) => {
+    try {
+      const msg = JSON.parse(ev.data);
+      if (msg.type === "play" && msg.Ytid) {
+        alert("🎶 Received from nearby: " + msg.Ytid);
+        autoSearch(msg.Ytid);
+      }
+    } catch (err) {
+      console.warn("WS msg parse error:", err);
+    }
+  };
+
+  ws.onclose = () => setTimeout(connect, 3000);
+}
+
+function autoSearch(Ytid) {
+  const input = document.getElementById("search-basic");
+  const btn = document.getElementById("search-btn");
+  if (input && btn) {
+    input.value = Ytid;
+    setTimeout(() => btn.click(), 800);
+    console.log("Auto-searched:", Ytid);
+  }
+}
+
 async function getLocation() {
   return new Promise((resolve, reject) => {
-    if (!navigator.geolocation)
-      return reject("Geolocation not supported");
+    if (!navigator.geolocation) return reject("No geolocation");
     navigator.geolocation.getCurrentPosition(
       pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
       err => reject(err.message),
@@ -5178,57 +5228,20 @@ async function getLocation() {
   });
 }
 
-// 📤 upload Ytid + location
-async function upload() {
-  const div = document.getElementById("Ytid");
-  if (!div) return;
-  const Ytid = div.textContent.trim();
-  if (!Ytid || Ytid.length !== 11) return;
-
+// periodically send update
+async function sendUpdate() {
   try {
-    const loc = await getLocation();
-    const res = await fetch(`${SERVER_URL}/upload`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        device: DEVICE_ID,
-        Ytid,
-        lat: loc.lat,
-        lon: loc.lon,
-      }),
-    });
-    const data = await res.json();
-    if (data.success) {
-      if (Ytid !== lastUploaded) {
-        console.log("✅ Sent:", Ytid);
-        lastUploaded = Ytid;
-      }
-
-      if (data.nearby && data.nearby !== lastReceived) {
-        lastReceived = data.nearby;
-        alert("🎵 Nearby device shared song: " + data.nearby);
-        autoSearch(data.nearby);
-      }
+    const { lat, lon } = await getLocation();
+    const Ytid = document.getElementById("Ytid")?.textContent.trim() || null;
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: "update", device: DEVICE_ID, lat, lon, Ytid, mode }));
+      console.log("Sent update:", { lat, lon, Ytid, mode });
     }
   } catch (err) {
-    console.warn("Upload error:", err);
+    console.warn("Location err:", err);
   }
 }
 
-// 🎯 Auto-fill and trigger search
-function autoSearch(Ytid) {
-  const input = document.getElementById("search-basic");
-  const btn = document.getElementById("search-btn");
-  if (!input || !btn) return;
-  input.value = Ytid;
-  setTimeout(() => btn.click(), 800);
-  console.log("🔎 Auto-searched:", Ytid);
-}
-
-// ⏱️ repeat every 10 seconds
-setInterval(upload, 10000);
-
-alert("📡 Geo music sync active");
+connect();
+setInterval(sendUpdate, 5000);
 </script>
-
-        
