@@ -5159,12 +5159,12 @@ window.addEventListener('beforeunload', () => {
 
 
 
-<!-- 🔘 Toggle Share Button -->
+    <!-- 🔘 Toggle Share Button -->
 <style>
   #shareToggle {
-    width: 80px;
-    height: 40px;
-    border-radius: 20px;
+    width: 90px;
+    height: 42px;
+    border-radius: 25px;
     border: none;
     background: gray;
     color: white;
@@ -5179,36 +5179,35 @@ window.addEventListener('beforeunload', () => {
   }
 </style>
 
-
+<button id="shareToggle">RECEIVE</button>
 
 <script>
 const SERVER_URL = "https://vfy-call.deno.dev";
 let DEVICE_ID = localStorage.getItem("vfy_device_id") || crypto.randomUUID();
 localStorage.setItem("vfy_device_id", DEVICE_ID);
 
-let shareEnabled = false;   // default OFF
-let lastUploaded = "";
+let shareMode = false; // false = receive mode
 let lastReceived = "";
 
+// ✅ Toggle button logic
 const toggleBtn = document.getElementById("shareToggle");
 toggleBtn.onclick = () => {
-  shareEnabled = !shareEnabled;
-  if (shareEnabled) {
-    toggleBtn.textContent = "ON";
+  shareMode = !shareMode;
+  if (shareMode) {
+    toggleBtn.textContent = "SHARE";
     toggleBtn.classList.add("active");
-    alert("✅ Sharing enabled — this device will share YouTube ID");
+    alert("🟢 Now in SHARE mode — this device will send its YouTube ID.");
   } else {
-    toggleBtn.textContent = "OFF";
+    toggleBtn.textContent = "RECEIVE";
     toggleBtn.classList.remove("active");
-    alert("🚫 Sharing disabled — this device won't share");
+    alert("⚪ Now in RECEIVE mode — this device will only listen nearby songs.");
   }
 };
 
-// 📍 get user location
+// 📍 Get user location
 async function getLocation() {
   return new Promise((resolve, reject) => {
-    if (!navigator.geolocation)
-      return reject("Geolocation not supported");
+    if (!navigator.geolocation) return reject("Geolocation not supported");
     navigator.geolocation.getCurrentPosition(
       pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
       err => reject(err.message),
@@ -5217,20 +5216,20 @@ async function getLocation() {
   });
 }
 
-// 📤 upload Ytid + location
-async function upload() {
+// 📤 Upload OR only check
+async function pingServer() {
   const div = document.getElementById("Ytid");
   if (!div) return;
   const Ytid = div.textContent.trim();
-  if (!Ytid || Ytid.length !== 11) return;
+  if (shareMode && (!Ytid || Ytid.length !== 11)) return; // only share when valid id
 
   try {
     const loc = await getLocation();
 
-    // agar share mode ON hai tabhi bheje
+    // 🧠 If in share mode, send Ytid; otherwise send empty to just "check nearby"
     const body = {
       device: DEVICE_ID,
-      Ytid: shareEnabled ? Ytid : "", // agar off hai to khali bheje
+      Ytid: shareMode ? Ytid : "",
       lat: loc.lat,
       lon: loc.lon,
     };
@@ -5240,21 +5239,18 @@ async function upload() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-    const data = await res.json();
-    if (data.success) {
-      if (shareEnabled && Ytid !== lastUploaded) {
-        console.log("✅ Shared:", Ytid);
-        lastUploaded = Ytid;
-      }
 
-      if (data.nearby && data.nearby !== lastReceived) {
-        lastReceived = data.nearby;
-        alert("🎵 Nearby device shared: " + data.nearby);
-        autoSearch(data.nearby);
-      }
+    const data = await res.json();
+    if (data.success && !shareMode && data.nearby && data.nearby !== lastReceived) {
+      lastReceived = data.nearby;
+      alert("🎶 Nearby shared song detected: " + data.nearby);
+      autoSearch(data.nearby);
     }
+
+    // Debug log
+    console.log(`Ping (${shareMode ? "Share" : "Receive"}):`, data);
   } catch (err) {
-    console.warn("Upload error:", err);
+    console.warn("Error:", err);
   }
 }
 
@@ -5268,8 +5264,8 @@ function autoSearch(Ytid) {
   console.log("🔎 Auto-searched:", Ytid);
 }
 
-// ⏱️ repeat every 10 seconds
-setInterval(upload, 10000);
+// ⏱️ Repeat every 10 seconds
+setInterval(pingServer, 2000);
 
-alert("📡 Geo music sync active");
+alert("📡 Geo Music Sync Ready");
 </script>
