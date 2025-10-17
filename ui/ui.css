@@ -175,6 +175,30 @@ body {
   border-radius: 0; /* flush edges */
 }
 
+
+/* Play Button */
+#play {
+  width: 90px;
+  height: 50px;
+  border-radius: 6px;
+  
+  color: #00ffff; /* cyan */
+  font-size: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+ /* box-shadow: 0 6px 18px rgba(0,255,255,0.6);*/
+  transition: all 2s ease;
+}
+
+/*#play:hover {
+  transform: scale(1.08);
+  background: rgba(0,255,255,0.1);
+}*/
+
+
+
 /* Buttons */
 .button {
   width: 60px;
