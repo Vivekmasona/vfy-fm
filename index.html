@@ -5165,39 +5165,31 @@ window.addEventListener('beforeunload', () => {
 
       
 
-<div id="Ytid">dQw4w9WgXcQ</div>
-
-<input type="search" id="search-basic" placeholder="Type song..." />
-<button id="search-btn">Search</button>
-
 <script>
 const WS_URL = "wss://vfy-call.deno.dev/ws";
+let ws;
 let DEVICE_ID = localStorage.getItem("vfy_device_id") || crypto.randomUUID();
 localStorage.setItem("vfy_device_id", DEVICE_ID);
-
 let mode = "receiver";
-let ws;
-
-const toggleBtn = document.getElementById("modeToggle");
-toggleBtn.onclick = () => {
-  mode = mode === "sender" ? "receiver" : "sender";
-  toggleBtn.style.background = mode === "sender" ? "lightgreen" : "yellow";
-  toggleBtn.textContent = mode === "sender" ? "Sender Mode 🟢" : "Receiver Mode 🟡";
-};
+let lastPlayedId = ""; // ✅ prevent retrigger
 
 function connect() {
   ws = new WebSocket(WS_URL);
-  ws.onopen = () => console.log("✅ Connected to WebSocket");
-  ws.onmessage = (event) => {
-    const msg = JSON.parse(event.data);
+  ws.onopen = () => console.log("✅ Connected");
+  ws.onmessage = (e) => {
+    const msg = JSON.parse(e.data);
     if (msg.type === "play" && msg.Ytid) {
-      console.log("🎶 Received:", msg.Ytid);
-      autoSearch(msg.Ytid);
+      if (msg.Ytid !== lastPlayedId) { // only trigger on new ID
+        lastPlayedId = msg.Ytid;
+        console.log("🎵 New song received:", msg.Ytid);
+        autoSearch(msg.Ytid);
+      } else {
+        console.log("⏸️ Same song ignored:", msg.Ytid);
+      }
     }
   };
   ws.onclose = () => setTimeout(connect, 2000);
 }
-connect();
 
 function autoSearch(Ytid) {
   const input = document.getElementById("search-basic");
@@ -5205,17 +5197,16 @@ function autoSearch(Ytid) {
   if (input && btn) {
     input.value = Ytid;
     btn.click();
-    console.log("🎵 Auto-searched:", Ytid);
+    console.log("🔎 Triggered search for:", Ytid);
   }
 }
 
 async function getLocation() {
   return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) return reject("No geolocation support");
     navigator.geolocation.getCurrentPosition(
-      (pos) => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
-      (err) => reject(err.message),
-      { enableHighAccuracy: true, timeout: 10000 },
+      pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+      err => reject(err.message),
+      { enableHighAccuracy: true, timeout: 10000 }
     );
   });
 }
@@ -5226,13 +5217,12 @@ async function sendUpdate() {
     const Ytid = document.getElementById("Ytid")?.textContent.trim();
     if (ws && ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify({ type: "update", lat, lon, Ytid, mode }));
-      console.log("📡 Sent:", { lat, lon, Ytid, mode });
     }
-  } catch (e) {
-    console.warn("Location err:", e);
+  } catch (err) {
+    console.warn("Location error:", err);
   }
 }
 
-// Send updates every 2s (very fast & smooth)
 setInterval(sendUpdate, 2000);
+connect();
 </script>
