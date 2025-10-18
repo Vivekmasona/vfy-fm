@@ -59,22 +59,7 @@
 
 
 
-    
 
-
-
-
-      
-
-
-
-
-
-    
-
-
-        
-  
 
 
 <script>
@@ -1203,24 +1188,10 @@ width: 50%;
 
 <b id="volume50"></b>
 <b id="volume100"></b>
-		<b id="Ytid"></b>
 
 
 		
    <div id="autocomplete-results"></div>
-
-
-
-	<button id="toggleMode"
-  onclick="toggleMode()"
-  style="padding:8px 16px;margin:10px;border-radius:8px;background:#ffd700;font-weight:bold;border:none;">
-  ⚪ Receiver Mode
-</button>
-
-<div id="listContainer"></div>
-
-
-		
 <!-- Mode Toggle -->
 <div id="videoListContainer">
     <!-- Your generated list items go here -->
@@ -1430,7 +1401,7 @@ width: 50%;
 
 
 <div id="songs"></div>
-<div id="listContainer"></div>	
+
 <div id="song-container"></div>
 
 <!-- Favorite List ke liye Alag Div -->
@@ -1958,80 +1929,13 @@ document.getElementById("modeToggleBtn").addEventListener("click", () => {
     document.getElementById("modeToggleBtn").innerText = `Mode: ${isVideoMode ? 'Video' : 'Audio'}`;
 });
 
-// === Global ===
-let isSender = false;
-let ws;
-let userId = null;
-let connected = false;
-
-// === Connect to Deno WebSocket Server ===
-function connectWS() {
-  ws = new WebSocket("wss://vfy-call.deno.dev");
-
-  ws.onopen = () => {
-    connected = true;
-    console.log("✅ Connected to sync server");
-
-    // Send location (optional)
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        ws.send(JSON.stringify({
-          type: "updateLocation",
-          lat: pos.coords.latitude,
-          lon: pos.coords.longitude
-        }));
-      });
-    }
-  };
-
-  ws.onmessage = (e) => {
-    const msg = JSON.parse(e.data);
-
-    // 🆔 Server welcome
-    if (msg.type === "welcome") {
-      userId = msg.id;
-      console.log("🪪 My ID:", userId);
-    }
-
-    // 🔗 Pair Found (2 devices near)
-    if (msg.type === "paired") {
-      alert("🔔 Device nearby connected!");
-      console.log(`🔗 Paired: ${msg.from} ↔ ${msg.to} (${msg.dist}m)`);
-    }
-
-    // 📩 Received synced song
-    if (msg.type === "addSong" && msg.data) {
-      alert("🎶 New song synced from sender!");
-      addSyncedSong(msg.data);
-    }
-  };
-
-  ws.onclose = () => {
-    connected = false;
-    console.log("❌ Disconnected, retrying...");
-    setTimeout(connectWS, 3000);
-  };
-}
-
-// === Toggle Sender / Receiver ===
-function toggleMode() {
-  isSender = !isSender;
-  if (ws && connected) {
-    ws.send(JSON.stringify({ type: "mode", mode: isSender ? "sender" : "receiver" }));
-  }
-  const btn = document.getElementById("toggleMode");
-  if (btn) btn.innerText = isSender ? "🟢 Sender Mode" : "⚪ Receiver Mode";
-}
-
-// === Generate List Item (Same As Yours) ===
-function getOutput(item, i) {
-  var id = item.id?.videoId || item.id;
-  var title = item.snippet?.title || "No title";
-  var thumbUrl =
-    item.snippet?.thumbnails?.medium?.url ||
-    "https://example.com/default-thumbnail.jpg";
-  if (item.snippet?.liveBroadcastContent === "live") return "";
-  return `
+// === Generate List Item ===
+function getOutput(item, i){
+    var id = item.id?.videoId || item.id;
+    var title = item.snippet?.title || "No title";
+    var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
+    if(item.snippet?.liveBroadcastContent==="live") return '';
+    return `
 <div style="margin-bottom:12px;">
   <b index="${i}" class="music-item list" vid="${id}" onclick="handleItemClick(this)">
       <div class="thumb-wrap">
@@ -2049,58 +1953,6 @@ function getOutput(item, i) {
   </b>
 </div>`;
 }
-
-// === When Song Clicked (Sender Only) ===
-function handleItemClick(el) {
-  const id = el.getAttribute("vid");
-  const title = el.querySelector(".title")?.innerText || "Unknown";
-  const thumbUrl = el.querySelector("img")?.src || "";
-
-  console.log("🎧 Clicked:", title);
-
-  if (isSender && ws && connected) {
-    ws.send(
-      JSON.stringify({
-        type: "songClick",
-        data: {
-          id,
-          snippet: {
-            title,
-            thumbnails: { medium: { url: thumbUrl } },
-            liveBroadcastContent: "none",
-          },
-        },
-      })
-    );
-    console.log("📤 Sent song to receivers:", title);
-  }
-
-  // Local play (tumhara player logic yahan)
-}
-
-// === Receiver: Add Synced Song ===
-function addSyncedSong(songData) {
-  const container = document.querySelector("#listContainer");
-  if (!container) return;
-
-  const html = getOutput(songData, 0);
-  container.insertAdjacentHTML("afterbegin", html);
-
-  const newItem = container.querySelector(".music-item");
-  if (newItem) {
-    newItem.style.border = "2px solid gold";
-    newItem.style.borderRadius = "8px";
-
-    setTimeout(() => {
-      newItem.click();
-      newItem.style.border = "";
-    }, 500);
-  }
-}
-
-// === Start Connection on Load ===
-window.addEventListener("load", connectWS);
-
 
 // === Handle Item Click ===
 function handleItemClick(el){
@@ -2692,8 +2544,7 @@ function play(id,Sid){
      //data = "https://inv-ca1-c.nadeko.net/latest_version?id="+id+"&itag=250&local=true";
      //data = "https://myserver-dev-atmq.2.ie-1.fl0.io/audio?url=https://youtu.be/"+id;
      //data = "https://audioserver-dev-cgen.2.sg-1.fl0.io/"+id;
-	document.getElementById("Ytid").textContent = id;
-	document.getElementById("SThumb").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
+    document.getElementById("SThumb").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
     document.getElementById("Fimg").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
      document.getElementById("pahilagana").onclick = ()=>{
        location.href= "https://vivekfy.vercel.app/dl?url=https://youtu.be/"+id;
@@ -2706,8 +2557,6 @@ function play(id,Sid){
         //location.href= "https://vivekdl.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
     };
 
-
-	
 document.getElementById("VFYshare").onclick = () => {
     let shareUrl = "https://vidofy.vercel.app?q=" + id;
 
@@ -5280,11 +5129,4 @@ window.addEventListener('beforeunload', () => {
 //function startDictation() { alert('Microphone clicked'); }
 //function showDetail() { alert('Heart clicked'); }
 </script>	
-
-
-
-
-        
-
-      
-
+	            
