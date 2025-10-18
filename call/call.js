@@ -1,4 +1,4 @@
-const socket = io("https://vfycalll.onrender.com/");
+const socket = io("https://vfycall.onrender.com/");
 //const socket = io("https://vfy-call.deno.dev/");
 
         let localStream;
