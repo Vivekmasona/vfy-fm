@@ -1,171 +1,87 @@
-// === Pure Frontend 2-Device Audio Call ===
-// using BroadcastChannel for signaling (no server)
 
-const channel = new BroadcastChannel("vfy_call_channel");
-const config = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
+let localStream, remoteStream, pc, timerInterval;
+const ringtone = new Audio("https://actions.google.com/sounds/v1/alarms/phone_alerts_and_rings.ogg");
 
-let peerConnection;
-let localStream;
-let remoteAudio;
-let callTimer;
-let callStartTime;
-let isCaller = false;
-
-// Elements
-const callBtn = document.getElementById("callUser");
-const acceptBtn = document.getElementById("acceptCall");
-const rejectBtn = document.getElementById("rejectCall");
-const endBtn = document.getElementById("endCall");
-const statusEl = document.getElementById("callStatus");
-const timerEl = document.getElementById("callTimer");
-const incomingBox = document.getElementById("incomingCall");
-
-// Ringtone setup
-const ringtone = new Audio("https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/ringtone.mp3");
-ringtone.loop = true;
-function vibrateOnce() {
-  if ("vibrate" in navigator) navigator.vibrate(300);
-}
-
-// === Initialize Local Stream ===
-async function startLocalStream() {
+async function startCall() {
+  pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
   localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  return localStream;
+  remoteStream = new MediaStream();
+  document.getElementById("localAudio").srcObject = localStream;
+  document.getElementById("remoteAudio").srcObject = remoteStream;
+
+  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+  pc.ontrack = e => e.streams[0].getTracks().forEach(t => remoteStream.addTrack(t));
+  pc.onicecandidate = e => {
+    if (e.candidate) return;
+    document.getElementById("offer").value = JSON.stringify(pc.localDescription);
+  };
+
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+  document.getElementById("status").innerText = "Offer created! Copy and send to receiver.";
 }
 
-// === Start Call (send offer) ===
-callBtn.onclick = async () => {
-  vibrateOnce();
-  isCaller = true;
-  peerConnection = new RTCPeerConnection(config);
-  localStream = await startLocalStream();
-  peerConnection.addTrack(localStream.getTracks()[0], localStream);
+async function receiveOffer() {
+  pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+  localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  remoteStream = new MediaStream();
+  document.getElementById("localAudio").srcObject = localStream;
+  document.getElementById("remoteAudio").srcObject = remoteStream;
 
-  peerConnection.ontrack = (event) => {
-    remoteAudio = new Audio();
-    remoteAudio.srcObject = event.streams[0];
-    remoteAudio.play();
+  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+  pc.ontrack = e => e.streams[0].getTracks().forEach(t => remoteStream.addTrack(t));
+  pc.onicecandidate = e => {
+    if (e.candidate) return;
+    document.getElementById("answer").value = JSON.stringify(pc.localDescription);
   };
 
-  peerConnection.onicecandidate = (event) => {
-    if (event.candidate) {
-      channel.postMessage({ type: "candidate", candidate: event.candidate });
-    }
-  };
+  const offer = JSON.parse(document.getElementById("offer").value);
+  await pc.setRemoteDescription(offer);
 
-  const offer = await peerConnection.createOffer();
-  await peerConnection.setLocalDescription(offer);
-  channel.postMessage({ type: "offer", offer });
-  statusEl.innerText = "📞 Calling...";
-};
+  ringtone.loop = true;
+  ringtone.play();
 
-// === Handle Broadcast Messages ===
-channel.onmessage = async (event) => {
-  const { type, offer, answer, candidate } = event.data;
+  document.getElementById("acceptBtn").style.display = "block";
+}
 
-  if (type === "offer" && !isCaller) {
-    // Incoming call
-    ringtone.play();
-    incomingBox.style.display = "block";
-    statusEl.innerText = "Incoming Call...";
-    window.pendingOffer = offer;
-  }
-
-  if (type === "answer" && isCaller) {
-    await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-    statusEl.innerText = "✅ Connected!";
-    startCallTimer();
-  }
-
-  if (type === "candidate" && peerConnection) {
-    try {
-      await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-    } catch (err) {
-      console.error("ICE add error:", err);
-    }
-  }
-};
-
-// === Accept Call ===
-acceptBtn.onclick = async () => {
+async function acceptCall() {
   ringtone.pause();
-  ringtone.currentTime = 0;
-  vibrateOnce();
-  incomingBox.style.display = "none";
-  statusEl.innerText = "Connecting...";
+  document.getElementById("acceptBtn").style.display = "none";
 
-  peerConnection = new RTCPeerConnection(config);
-  localStream = await startLocalStream();
-  peerConnection.addTrack(localStream.getTracks()[0], localStream);
+  const answer = await pc.createAnswer();
+  await pc.setLocalDescription(answer);
+  document.getElementById("answer").value = JSON.stringify(pc.localDescription);
+  document.getElementById("status").innerText = "Answer created! Send to caller.";
 
-  peerConnection.ontrack = (event) => {
-    remoteAudio = new Audio();
-    remoteAudio.srcObject = event.streams[0];
-    remoteAudio.play();
-  };
+  startTimer();
+}
 
-  peerConnection.onicecandidate = (event) => {
-    if (event.candidate) {
-      channel.postMessage({ type: "candidate", candidate: event.candidate });
-    }
-  };
+async function connectAnswer() {
+  const answer = JSON.parse(document.getElementById("answer").value);
+  await pc.setRemoteDescription(answer);
+  document.getElementById("status").innerText = "Connected ✅";
+  startTimer();
+}
 
-  await peerConnection.setRemoteDescription(new RTCSessionDescription(window.pendingOffer));
-  const answer = await peerConnection.createAnswer();
-  await peerConnection.setLocalDescription(answer);
-  channel.postMessage({ type: "answer", answer });
-
-  statusEl.innerText = "✅ Connected!";
-  endBtn.style.display = "inline";
-  timerEl.style.display = "inline";
-  startCallTimer();
-};
-
-// === Reject Call ===
-rejectBtn.onclick = () => {
-  ringtone.pause();
-  ringtone.currentTime = 0;
-  vibrateOnce();
-  incomingBox.style.display = "none";
-  statusEl.innerText = "❌ Call Rejected";
-};
-
-// === End Call ===
-endBtn.onclick = () => {
-  if (peerConnection) peerConnection.close();
-  if (localStream) localStream.getTracks().forEach((t) => t.stop());
-  peerConnection = null;
-  stopCallTimer();
-  statusEl.innerText = "Call Ended";
-  endBtn.style.display = "none";
-  vibrateOnce();
-  channel.postMessage({ type: "end" });
-};
-
-// === End from other side ===
-channel.onmessage = (event) => {
-  if (event.data.type === "end") {
-    if (peerConnection) peerConnection.close();
-    if (localStream) localStream.getTracks().forEach((t) => t.stop());
-    stopCallTimer();
-    statusEl.innerText = "Call Ended by Other Side";
-    endBtn.style.display = "none";
-    ringtone.pause();
-  }
-};
-
-// === Call Timer ===
-function startCallTimer() {
-  callStartTime = new Date();
-  callTimer = setInterval(() => {
-    const now = new Date();
-    const elapsed = Math.floor((now - callStartTime) / 1000);
-    const minutes = String(Math.floor(elapsed / 60)).padStart(2, "0");
-    const seconds = String(elapsed % 60).padStart(2, "0");
-    timerEl.innerText = `${minutes}:${seconds}`;
+function startTimer() {
+  const timer = document.getElementById("timer");
+  let sec = 0;
+  timer.innerText = "00:00";
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    sec++;
+    let m = String(Math.floor(sec / 60)).padStart(2, "0");
+    let s = String(sec % 60).padStart(2, "0");
+    timer.innerText = `${m}:${s}`;
   }, 1000);
 }
-function stopCallTimer() {
-  clearInterval(callTimer);
-  timerEl.innerText = "";
-                                                              }
+
+function endCall() {
+  ringtone.pause();
+  if (pc) pc.close();
+  if (localStream) localStream.getTracks().forEach(t => t.stop());
+  if (remoteStream) remoteStream.getTracks().forEach(t => t.stop());
+  clearInterval(timerInterval);
+  document.getElementById("status").innerText = "Call ended ❌";
+  document.getElementById("timer").innerText = "00:00";
+}
