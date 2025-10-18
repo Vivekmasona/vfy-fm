@@ -1,87 +1,158 @@
+// === FRONTEND-ONLY WEBRTC CALL (NO BACKEND) ===
 
-let localStream, remoteStream, pc, timerInterval;
-const ringtone = new Audio("https://actions.google.com/sounds/v1/alarms/phone_alerts_and_rings.ogg");
+// Global variables
+let localStream;
+let peerConnection;
+let dataChannel;
+let roomID;
+let callTimer;
+let callStartTime;
+const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
-async function startCall() {
-  pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
-  localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  remoteStream = new MediaStream();
-  document.getElementById("localAudio").srcObject = localStream;
-  document.getElementById("remoteAudio").srcObject = remoteStream;
+// Simple ringtone for incoming call
+const ringtone = new Audio("https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/ringtone.mp3");
+ringtone.loop = true;
 
-  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
-  pc.ontrack = e => e.streams[0].getTracks().forEach(t => remoteStream.addTrack(t));
-  pc.onicecandidate = e => {
-    if (e.candidate) return;
-    document.getElementById("offer").value = JSON.stringify(pc.localDescription);
-  };
-
-  const offer = await pc.createOffer();
-  await pc.setLocalDescription(offer);
-  document.getElementById("status").innerText = "Offer created! Copy and send to receiver.";
+// === Utility ===
+function vibrateOnce() {
+  if ("vibrate" in navigator) navigator.vibrate(300);
 }
 
-async function receiveOffer() {
-  pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
-  localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  remoteStream = new MediaStream();
-  document.getElementById("localAudio").srcObject = localStream;
-  document.getElementById("remoteAudio").srcObject = remoteStream;
+// === Auto Load Session ===
+window.addEventListener('load', () => {
+  roomID = localStorage.getItem('sessionId');
+  if (roomID) {
+    alert(`Your VFY ID loaded: ${roomID}`);
+    document.getElementById('callUser').disabled = false;
+  } else {
+    roomID = prompt("Enter a new VFY ID:");
+    if (roomID) {
+      localStorage.setItem('sessionId', roomID);
+      alert(`VFY ID created: ${roomID}`);
+      document.getElementById('callUser').disabled = false;
+    }
+  }
+});
 
-  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
-  pc.ontrack = e => e.streams[0].getTracks().forEach(t => remoteStream.addTrack(t));
-  pc.onicecandidate = e => {
-    if (e.candidate) return;
-    document.getElementById("answer").value = JSON.stringify(pc.localDescription);
+// === Create Offer ===
+document.getElementById('callUser').addEventListener('click', async () => {
+  document.getElementById('callStatus').innerText = 'Creating Offer...';
+  vibrateOnce();
+
+  localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  peerConnection = new RTCPeerConnection(config);
+  peerConnection.addTrack(localStream.getTracks()[0], localStream);
+
+  // Data channel for signaling manually (copy-paste mode)
+  dataChannel = peerConnection.createDataChannel("vfychat");
+  dataChannel.onmessage = (e) => console.log("Remote:", e.data);
+
+  peerConnection.onicecandidate = (event) => {
+    if (event.candidate) return;
+    // When ICE gathering is done
+    const offer = peerConnection.localDescription;
+    document.getElementById('callStatus').innerText = 'Offer Created ✅';
+    navigator.clipboard.writeText(JSON.stringify(offer));
+    alert("Offer copied to clipboard! Send this text to your friend to connect.");
   };
 
-  const offer = JSON.parse(document.getElementById("offer").value);
-  await pc.setRemoteDescription(offer);
+  const offer = await peerConnection.createOffer();
+  await peerConnection.setLocalDescription(offer);
+});
 
-  ringtone.loop = true;
+// === Accept Incoming Offer ===
+async function acceptOffer(offerText) {
   ringtone.play();
+  document.getElementById('callStatus').innerText = 'Incoming Call...';
+  vibrateOnce();
 
-  document.getElementById("acceptBtn").style.display = "block";
+  localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  peerConnection = new RTCPeerConnection(config);
+  peerConnection.addTrack(localStream.getTracks()[0], localStream);
+
+  peerConnection.ondatachannel = (event) => {
+    dataChannel = event.channel;
+    dataChannel.onmessage = (e) => console.log("Remote:", e.data);
+  };
+
+  peerConnection.ontrack = (event) => {
+    const remoteAudio = new Audio();
+    remoteAudio.srcObject = event.streams[0];
+    remoteAudio.play();
+  };
+
+  peerConnection.onicecandidate = (event) => {
+    if (event.candidate) return;
+    const answer = peerConnection.localDescription;
+    navigator.clipboard.writeText(JSON.stringify(answer));
+    ringtone.pause();
+    ringtone.currentTime = 0;
+    document.getElementById('callStatus').innerText = 'Answer Created ✅';
+    alert("Answer copied! Send this back to your friend.");
+  };
+
+  await peerConnection.setRemoteDescription(JSON.parse(offerText));
+  const answer = await peerConnection.createAnswer();
+  await peerConnection.setLocalDescription(answer);
 }
 
-async function acceptCall() {
-  ringtone.pause();
-  document.getElementById("acceptBtn").style.display = "none";
+// === Handle Answer ===
+async function handleAnswer(answerText) {
+  await peerConnection.setRemoteDescription(JSON.parse(answerText));
+  document.getElementById('callStatus').innerText = 'Connected 🎧';
+  startCallTimer();
 
-  const answer = await pc.createAnswer();
-  await pc.setLocalDescription(answer);
-  document.getElementById("answer").value = JSON.stringify(pc.localDescription);
-  document.getElementById("status").innerText = "Answer created! Send to caller.";
-
-  startTimer();
+  peerConnection.ontrack = (event) => {
+    const remoteAudio = new Audio();
+    remoteAudio.srcObject = event.streams[0];
+    remoteAudio.play();
+  };
 }
 
-async function connectAnswer() {
-  const answer = JSON.parse(document.getElementById("answer").value);
-  await pc.setRemoteDescription(answer);
-  document.getElementById("status").innerText = "Connected ✅";
-  startTimer();
-}
-
-function startTimer() {
-  const timer = document.getElementById("timer");
-  let sec = 0;
-  timer.innerText = "00:00";
-  clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    sec++;
-    let m = String(Math.floor(sec / 60)).padStart(2, "0");
-    let s = String(sec % 60).padStart(2, "0");
-    timer.innerText = `${m}:${s}`;
-  }, 1000);
-}
+// === End Call ===
+document.getElementById('endCall').addEventListener('click', () => {
+  endCall();
+  vibrateOnce();
+});
 
 function endCall() {
-  ringtone.pause();
-  if (pc) pc.close();
-  if (localStream) localStream.getTracks().forEach(t => t.stop());
-  if (remoteStream) remoteStream.getTracks().forEach(t => t.stop());
-  clearInterval(timerInterval);
-  document.getElementById("status").innerText = "Call ended ❌";
-  document.getElementById("timer").innerText = "00:00";
+  if (peerConnection) peerConnection.close();
+  peerConnection = null;
+  stopCallTimer();
+  document.getElementById('callStatus').innerText = 'Call Ended';
 }
+
+// === Call Timer ===
+function startCallTimer() {
+  callStartTime = new Date();
+  callTimer = setInterval(() => {
+    const now = new Date();
+    const elapsed = Math.floor((now - callStartTime) / 1000);
+    const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
+    const seconds = String(elapsed % 60).padStart(2, '0');
+    document.getElementById('callTimer').innerText = `${minutes}:${seconds}`;
+  }, 1000);
+}
+function stopCallTimer() {
+  clearInterval(callTimer);
+  document.getElementById('callTimer').innerText = '';
+}
+
+// === Manual buttons for offer/answer exchange ===
+document.addEventListener("DOMContentLoaded", () => {
+  const acceptBtn = document.createElement("button");
+  acceptBtn.innerText = "Paste Offer to Accept";
+  acceptBtn.onclick = () => {
+    const txt = prompt("Paste Offer JSON:");
+    if (txt) acceptOffer(txt);
+  };
+  document.body.appendChild(acceptBtn);
+
+  const answerBtn = document.createElement("button");
+  answerBtn.innerText = "Paste Answer to Connect";
+  answerBtn.onclick = () => {
+    const txt = prompt("Paste Answer JSON:");
+    if (txt) handleAnswer(txt);
+  };
+  document.body.appendChild(answerBtn);
+});
