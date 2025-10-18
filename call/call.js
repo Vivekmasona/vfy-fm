@@ -1,112 +1,129 @@
-import "https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js";
+// === Frontend-only WebRTC Audio Call ===
+// No server, only STUN relay (Google public)
 
-let peer, call, localStream;
-let callTimer, callStartTime;
-const config = { host: "0.peerjs.com", port: 443, secure: true };
+let localStream;
+let peerConnection;
+let dataChannel;
+let remoteAudio;
+let callTimer;
+let callStartTime;
+
+// Public Google STUN server
+const config = {
+  iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+};
+
+// Generate local ID (share manually or via QR)
+let roomID = localStorage.getItem("sessionId");
+if (!roomID) {
+  roomID = "VFY_" + Math.random().toString(36).substring(2, 8);
+  localStorage.setItem("sessionId", roomID);
+}
+alert("Your VFY ID: " + roomID);
+
+// Simple signaling exchange manually via textarea or QR (no server)
+const signalBox = document.getElementById("signalBox");
+const signalInput = document.getElementById("signalInput");
+const callBtn = document.getElementById("callUser");
+const answerBtn = document.getElementById("answerUser");
+const endBtn = document.getElementById("endCall");
+const status = document.getElementById("callStatus");
+const timerDisplay = document.getElementById("callTimer");
+
+// Ringtone & vibration
 const ringtone = new Audio("https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/ringtone.mp3");
 ringtone.loop = true;
-
 function vibrateOnce() {
   if ("vibrate" in navigator) navigator.vibrate(300);
 }
 
-function startCallTimer() {
-  callStartTime = new Date();
-  callTimer = setInterval(() => {
-    const elapsed = Math.floor((new Date() - callStartTime) / 1000);
-    const m = String(Math.floor(elapsed / 60)).padStart(2, "0");
-    const s = String(elapsed % 60).padStart(2, "0");
-    document.getElementById("callTimer").innerText = `${m}:${s}`;
-  }, 1000);
+// === Start Local Mic ===
+async function startLocalStream() {
+  localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  return localStream;
 }
 
-function stopCallTimer() {
-  clearInterval(callTimer);
-  document.getElementById("callTimer").innerText = "";
-}
+// === Caller Creates Offer ===
+callBtn.onclick = async () => {
+  vibrateOnce();
+  peerConnection = new RTCPeerConnection(config);
+  localStream = await startLocalStream();
+  peerConnection.addTrack(localStream.getTracks()[0], localStream);
 
-// === Auto load ===
-window.addEventListener("load", () => {
-  let roomID = localStorage.getItem("sessionId");
-  if (!roomID) {
-    roomID = "vfy-" + Math.random().toString(36).substring(2, 8);
-    localStorage.setItem("sessionId", roomID);
-  }
-  document.getElementById("roomId").value = roomID;
-  document.getElementById("callStatus").innerText = `Your VFY ID: ${roomID}`;
-});
+  // Remote audio playback
+  peerConnection.ontrack = (event) => {
+    remoteAudio = new Audio();
+    remoteAudio.srcObject = event.streams[0];
+    remoteAudio.play();
+  };
 
-// === Create Room ===
-document.getElementById("createBtn").onclick = () => {
-  const roomID = document.getElementById("roomId").value;
-  peer = new Peer(roomID, config);
+  dataChannel = peerConnection.createDataChannel("chat");
 
-  peer.on("open", id => {
-    document.getElementById("callStatus").innerText = `Room Active ✅ (${id})`;
-  });
+  const offer = await peerConnection.createOffer();
+  await peerConnection.setLocalDescription(offer);
 
-  peer.on("call", async incomingCall => {
-    document.getElementById("callStatus").innerText = "📞 Incoming Call...";
-    document.getElementById("incomingCall").style.display = "block";
-    ringtone.play();
-    vibrateOnce();
-
-    document.getElementById("acceptCall").onclick = async () => {
-      ringtone.pause();
-      ringtone.currentTime = 0;
-      vibrateOnce();
-
-      localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      incomingCall.answer(localStream);
-      call = incomingCall;
-
-      call.on("stream", stream => {
-        document.getElementById("remoteAudio").srcObject = stream;
-      });
-
-      document.getElementById("incomingCall").style.display = "none";
-      document.getElementById("callStatus").innerText = "Connected ✅";
-      document.getElementById("endCall").style.display = "inline";
-      startCallTimer();
-    };
-
-    document.getElementById("rejectCall").onclick = () => {
-      ringtone.pause();
-      ringtone.currentTime = 0;
-      vibrateOnce();
-      document.getElementById("incomingCall").style.display = "none";
-      document.getElementById("callStatus").innerText = "Call Rejected ❌";
-    };
-  });
+  status.innerText = "Offer created. Send this to your friend:";
+  signalBox.value = JSON.stringify(offer);
 };
 
-// === Join Room ===
-document.getElementById("joinBtn").onclick = async () => {
-  const roomID = document.getElementById("roomId").value;
-  peer = new Peer(null, config);
-  localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-  const callConn = peer.call(roomID, localStream);
-  call = callConn;
-
-  document.getElementById("callStatus").innerText = "Calling...";
+// === Receiver Answers Offer ===
+answerBtn.onclick = async () => {
   vibrateOnce();
+  const offer = JSON.parse(signalInput.value.trim());
+  peerConnection = new RTCPeerConnection(config);
+  localStream = await startLocalStream();
+  peerConnection.addTrack(localStream.getTracks()[0], localStream);
 
-  callConn.on("stream", stream => {
-    document.getElementById("remoteAudio").srcObject = stream;
-    document.getElementById("callStatus").innerText = "Connected ✅";
-    document.getElementById("endCall").style.display = "inline";
-    startCallTimer();
-  });
+  peerConnection.ondatachannel = (event) => {
+    dataChannel = event.channel;
+  };
+
+  peerConnection.ontrack = (event) => {
+    remoteAudio = new Audio();
+    remoteAudio.srcObject = event.streams[0];
+    remoteAudio.play();
+  };
+
+  await peerConnection.setRemoteDescription(offer);
+  const answer = await peerConnection.createAnswer();
+  await peerConnection.setLocalDescription(answer);
+
+  status.innerText = "Answer created. Send this back to caller:";
+  signalBox.value = JSON.stringify(answer);
+};
+
+// === Caller Pastes Answer ===
+document.getElementById("applyAnswer").onclick = async () => {
+  const answer = JSON.parse(signalInput.value.trim());
+  await peerConnection.setRemoteDescription(answer);
+  status.innerText = "✅ Call Connected!";
+  startCallTimer();
 };
 
 // === End Call ===
-document.getElementById("endCall").onclick = () => {
-  if (call) call.close();
-  if (localStream) localStream.getTracks().forEach(t => t.stop());
-  call = null;
-  document.getElementById("callStatus").innerText = "Call Ended ☎️";
-  document.getElementById("endCall").style.display = "none";
+endBtn.onclick = () => {
+  if (peerConnection) peerConnection.close();
+  if (localStream) localStream.getTracks().forEach((t) => t.stop());
+  peerConnection = null;
   stopCallTimer();
+  ringtone.pause();
+  ringtone.currentTime = 0;
   vibrateOnce();
+  status.innerText = "Call Ended";
 };
+
+// === Timer ===
+function startCallTimer() {
+  callStartTime = new Date();
+  callTimer = setInterval(() => {
+    const now = new Date();
+    const elapsed = Math.floor((now - callStartTime) / 1000);
+    const minutes = String(Math.floor(elapsed / 60)).padStart(2, "0");
+    const seconds = String(elapsed % 60).padStart(2, "0");
+    timerDisplay.innerText = `${minutes}:${seconds}`;
+  }, 1000);
+}
+function stopCallTimer() {
+  clearInterval(callTimer);
+  timerDisplay.innerText = "";
+}
