@@ -1,14 +1,11 @@
-// === FRONTEND-ONLY VOICE CALL (no server) ===
 import "https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js";
 
 let peer, call, localStream;
 let callTimer, callStartTime;
-
-// === Config ===
+const config = { host: "0.peerjs.com", port: 443, secure: true };
 const ringtone = new Audio("https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/ringtone.mp3");
 ringtone.loop = true;
 
-// === Helper Functions ===
 function vibrateOnce() {
   if ("vibrate" in navigator) navigator.vibrate(300);
 }
@@ -16,8 +13,7 @@ function vibrateOnce() {
 function startCallTimer() {
   callStartTime = new Date();
   callTimer = setInterval(() => {
-    const now = new Date();
-    const elapsed = Math.floor((now - callStartTime) / 1000);
+    const elapsed = Math.floor((new Date() - callStartTime) / 1000);
     const m = String(Math.floor(elapsed / 60)).padStart(2, "0");
     const s = String(elapsed % 60).padStart(2, "0");
     document.getElementById("callTimer").innerText = `${m}:${s}`;
@@ -29,18 +25,28 @@ function stopCallTimer() {
   document.getElementById("callTimer").innerText = "";
 }
 
+// === Auto load ===
+window.addEventListener("load", () => {
+  let roomID = localStorage.getItem("sessionId");
+  if (!roomID) {
+    roomID = "vfy-" + Math.random().toString(36).substring(2, 8);
+    localStorage.setItem("sessionId", roomID);
+  }
+  document.getElementById("roomId").value = roomID;
+  document.getElementById("callStatus").innerText = `Your VFY ID: ${roomID}`;
+});
+
 // === Create Room ===
 document.getElementById("createBtn").onclick = () => {
   const roomID = document.getElementById("roomId").value;
-  peer = new Peer(roomID, { host: "0.peerjs.com", port: 443, secure: true });
+  peer = new Peer(roomID, config);
 
   peer.on("open", id => {
-    document.getElementById("callStatus").innerText = `Room Created ✅ (${id})`;
+    document.getElementById("callStatus").innerText = `Room Active ✅ (${id})`;
   });
 
-  // Incoming Call
   peer.on("call", async incomingCall => {
-    document.getElementById("callStatus").innerText = "Incoming Call...";
+    document.getElementById("callStatus").innerText = "📞 Incoming Call...";
     document.getElementById("incomingCall").style.display = "block";
     ringtone.play();
     vibrateOnce();
@@ -77,9 +83,9 @@ document.getElementById("createBtn").onclick = () => {
 // === Join Room ===
 document.getElementById("joinBtn").onclick = async () => {
   const roomID = document.getElementById("roomId").value;
-  peer = new Peer(null, { host: "0.peerjs.com", port: 443, secure: true });
-
+  peer = new Peer(null, config);
   localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
   const callConn = peer.call(roomID, localStream);
   call = callConn;
 
