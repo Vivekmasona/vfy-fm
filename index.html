@@ -343,23 +343,27 @@ window.addEventListener('scroll', () => {
   "> {•v•} Powered By VivekFy</p>
 </div>
 
-<script>
+      <script>
 const bar = document.getElementById("bar");
 const text = document.getElementById("percent");
 const fyLetters = document.getElementById("fyLetters");
 const loader = document.getElementById("loader");
 const errorMsg = document.getElementById("errorMsg");
 
-// Get device memory (in GB, approx)
+// Try detecting device RAM
 let deviceRAM = navigator.deviceMemory || 0;
+console.log("Detected Device RAM:", deviceRAM, "GB");
 
-// If RAM < 6 GB, show error message
-if (deviceRAM < 6 && deviceRAM !== 0) {
+// === Minimum required RAM ===
+const MIN_RAM = 4;
+
+// If RAM < 4 GB and value is valid
+if (deviceRAM && deviceRAM < MIN_RAM) {
   loader.innerHTML = `
     <h1 style="color:#ff3333; font-size:40px;">⚠️ Device Not Supported</h1>
-    <p style="color:#dadada; font-size:18px;">Your device has only ${deviceRAM} GB RAM.<br>
-    This app requires at least <b>6 GB RAM</b> to run properly.</p>
-    <p style="margin-top:20px; color:#999;">Please use a higher performance device.</p>
+    <p style="color:#dadada; font-size:18px;">Your device has only <b>${deviceRAM} GB RAM</b>.<br>
+    This app requires at least <b>${MIN_RAM} GB RAM</b> to run smoothly.</p>
+    <p style="margin-top:20px; color:#999;">Please use a higher-performance device.</p>
   `;
 } else {
   // Normal loader animation
@@ -378,7 +382,7 @@ if (deviceRAM < 6 && deviceRAM !== 0) {
     }
   }, 600);
 
-  // When page fully loads
+  // Continue to 100% after page loads
   window.addEventListener("load", () => {
     let start = percent;
     let end = 100;
@@ -405,7 +409,12 @@ if (deviceRAM < 6 && deviceRAM !== 0) {
     }, 100);
   });
 }
-</script>  
+
+// Fallback: If RAM detection unsupported (0)
+if (deviceRAM === 0) {
+  console.log("Device RAM not detectable, skipping restriction.");
+}
+</script>
     
 
   
