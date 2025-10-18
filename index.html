@@ -1217,6 +1217,8 @@ width: 50%;
   ⚪ Receiver Mode
 </button>
 
+<div id="listContainer"></div>
+
 
 		
 <!-- Mode Toggle -->
@@ -1970,7 +1972,7 @@ function connectWS() {
     connected = true;
     console.log("✅ Connected to sync server");
 
-    // send initial location (if available)
+    // Send location (optional)
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((pos) => {
         ws.send(JSON.stringify({
@@ -1984,18 +1986,23 @@ function connectWS() {
 
   ws.onmessage = (e) => {
     const msg = JSON.parse(e.data);
+
+    // 🆔 Server welcome
     if (msg.type === "welcome") {
       userId = msg.id;
+      console.log("🪪 My ID:", userId);
     }
 
-    // 📥 Received synced song from sender
-    if (msg.type === "addSong" && msg.data) {
-      console.log("📩 Received synced song:", msg.data.snippet.title);
-      addSyncedSong(msg.data);
-    }
-
+    // 🔗 Pair Found (2 devices near)
     if (msg.type === "paired") {
+      alert("🔔 Device nearby connected!");
       console.log(`🔗 Paired: ${msg.from} ↔ ${msg.to} (${msg.dist}m)`);
+    }
+
+    // 📩 Received synced song
+    if (msg.type === "addSong" && msg.data) {
+      alert("🎶 New song synced from sender!");
+      addSyncedSong(msg.data);
     }
   };
 
@@ -2043,7 +2050,7 @@ function getOutput(item, i) {
 </div>`;
 }
 
-// === When Song Clicked (on Sender) ===
+// === When Song Clicked (Sender Only) ===
 function handleItemClick(el) {
   const id = el.getAttribute("vid");
   const title = el.querySelector(".title")?.innerText || "Unknown";
@@ -2051,7 +2058,6 @@ function handleItemClick(el) {
 
   console.log("🎧 Clicked:", title);
 
-  // Only send to receivers if sender mode is ON
   if (isSender && ws && connected) {
     ws.send(
       JSON.stringify({
@@ -2066,14 +2072,13 @@ function handleItemClick(el) {
         },
       })
     );
-    console.log("📤 Sent song to nearby receivers:", title);
+    console.log("📤 Sent song to receivers:", title);
   }
 
-  // local play / open
-  // (tumhara player code yahan chalega)
+  // Local play (tumhara player logic yahan)
 }
 
-// === Receiver: Add Synced Song to List ===
+// === Receiver: Add Synced Song ===
 function addSyncedSong(songData) {
   const container = document.querySelector("#listContainer");
   if (!container) return;
@@ -2081,17 +2086,19 @@ function addSyncedSong(songData) {
   const html = getOutput(songData, 0);
   container.insertAdjacentHTML("afterbegin", html);
 
-  // auto-click new song
   const newItem = container.querySelector(".music-item");
   if (newItem) {
+    newItem.style.border = "2px solid gold";
+    newItem.style.borderRadius = "8px";
+
     setTimeout(() => {
-      console.log("🎶 Auto click synced song:", songData.snippet.title);
       newItem.click();
-    }, 400);
+      newItem.style.border = "";
+    }, 500);
   }
 }
 
-// === Start connection on load ===
+// === Start Connection on Load ===
 window.addEventListener("load", connectWS);
 
 
