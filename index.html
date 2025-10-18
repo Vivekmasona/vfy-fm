@@ -1211,16 +1211,9 @@ width: 50%;
 
 
 
-		<button id="toggleMode" style="
-  background: yellow; 
-  border:none; 
-  padding:10px 20px; 
-  border-radius:10px;
-  font-weight:bold;
-  margin-bottom:10px;
-">
-🟡 Receiver Mode
-		</button>
+		<button id="toggleMode" style="padding:10px;border-radius:8px;background:yellow;font-weight:bold;">
+  🟡 Receiver Mode
+</button>
 
 		
 <!-- Mode Toggle -->
@@ -5173,93 +5166,176 @@ window.addEventListener('beforeunload', () => {
 
 
 
-<div id="Ytid" style="display:none">abc123xyz89</div>
+<!-- Client UI -->
 
-<input type="search" id="search-basic" placeholder="VIVEKFY: Type songs name artists....">
-<button id="search-btn" onclick="alert('Search Triggered!')">Search</button>
+<div id="status" style="margin-top:8px">Status: disconnected</div>
+
+<!-- The element where your app keeps the current YouTube ID (11-chars) -->
+<div id="Ytid" style="display:none">dQw4w9WgXcQ</div>
+
+<!-- Your search box + button that will be auto-filled/triggered -->
+<input id="search-basic" placeholder="VIVEKFY: Type songs..." />
+<button id="search-btn" onclick="(function(){console.log('User search clicked')})()">Search</button>
 
 <script>
-const WS_URL = "wss://vfy-call.deno.dev/ws"; // <-- apna Deno server url
-let ws;
-let DEVICE_ID = localStorage.getItem("vfy_device_id") || crypto.randomUUID();
-localStorage.setItem("vfy_device_id", DEVICE_ID);
-let mode = "receiver";
-let lastPlayedId = "";
-let lastSentYtid = "";
+(() => {
+  // CONFIG: change to your deployed server (wss)
+  const WS_URL = "wss://vfy-call.deno.dev/ws"; // <-- use your wss url
+  const DEVICE_ID = localStorage.getItem("vfy_device_id") || crypto.randomUUID();
+  localStorage.setItem("vfy_device_id", DEVICE_ID);
 
-const toggleBtn = document.getElementById("toggleMode");
-toggleBtn.onclick = () => {
-  mode = (mode === "receiver") ? "sender" : "receiver";
-  toggleBtn.style.background = mode === "sender" ? "lime" : "yellow";
-  toggleBtn.textContent = mode === "sender" ? "🟢 Sender Mode" : "🟡 Receiver Mode";
-  console.log("Mode changed:", mode);
-};
+  const toggleBtn = document.getElementById("toggleMode");
+  const statusEl = document.getElementById("status");
+  let mode = "receiver"; // default
+  let ws = null;
+  let lastSentYtid = null;
+  let lastPlayedFromSender = new Map(); // senderId -> lastPlayedYtid
 
-function connect() {
-  ws = new WebSocket(WS_URL);
-  ws.onopen = () => console.log("✅ Connected to server");
-  
-  ws.onmessage = (e) => {
-    const msg = JSON.parse(e.data);
-    if (msg.type === "play" && msg.Ytid) {
-      if (msg.Ytid !== lastPlayedId) {
-        lastPlayedId = msg.Ytid;
-        console.log("🎵 New Song Received:", msg.Ytid);
-        autoSearch(msg.Ytid);
-      } else {
-        console.log("⏸️ Same song ignored:", msg.Ytid);
+  // Toggle UI
+  toggleBtn.addEventListener("click", () => {
+    mode = mode === "receiver" ? "sender" : "receiver";
+    toggleBtn.style.background = mode === "sender" ? "lightgreen" : "yellow";
+    toggleBtn.textContent = mode === "sender" ? "🟢 Sender Mode" : "🟡 Receiver Mode";
+  });
+
+  function setStatus(text, color="black") {
+    statusEl.textContent = "Status: " + text;
+    statusEl.style.color = color;
+  }
+
+  // Auto-extract a Ytid from your app: first check window.id or window.currentVideoId,
+  // otherwise read from #Ytid element. You can customize to match your player.
+  function getYtidFromPage() {
+    if (window.id && typeof window.id === "string") return window.id;
+    if (window.currentVideoId && typeof window.currentVideoId === "string") return window.currentVideoId;
+    const el = document.getElementById("Ytid");
+    if (el && el.textContent.trim().length === 11) return el.textContent.trim();
+    return null;
+  }
+
+  function autoSearch(Ytid) {
+    const input = document.getElementById("search-basic");
+    const btn = document.getElementById("search-btn");
+    if (!input || !btn) return console.warn("search elements missing");
+    input.value = Ytid;
+    // Use a tiny timeout so UI updates before triggering the search
+    setTimeout(() => {
+      try { btn.click(); } catch(e) { console.warn("click error", e); }
+    }, 50);
+    console.log("Auto search triggered:", Ytid);
+  }
+
+  // Get location with highAccuracy; fallback to reject
+  function getLocation(timeout = 8000) {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) return reject("no-geo");
+      navigator.geolocation.getCurrentPosition(pos => {
+        resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude });
+      }, err => reject(err.message || "geo-error"), { enableHighAccuracy: true, maximumAge: 2000, timeout });
+    });
+  }
+
+  // Connect & register
+  function connect() {
+    ws = new WebSocket(WS_URL);
+    ws.onopen = () => {
+      setStatus("connected", "green");
+      alert("🔌 Connected to server");
+      // register if needed
+      try { ws.send(JSON.stringify({ type: "register", deviceId: DEVICE_ID, mode })); } catch {}
+    };
+    ws.onmessage = (ev) => {
+      let msg = null;
+      try { msg = JSON.parse(ev.data); } catch (e) { console.warn("invalid ws msg", e); return; }
+      if (msg.type === "connected") {
+        setStatus("connected (id " + (msg.id || DEVICE_ID) + ")", "green");
+      } else if (msg.type === "ping") {
+        // respond with pong to keep alive
+        try { ws.send(JSON.stringify({ type: "pong", ts: msg.ts })); } catch {}
+      } else if (msg.type === "play" && msg.Ytid) {
+        // ensure this is a new Ytid from this sender
+        const senderId = msg.from || "unknown";
+        const prev = lastPlayedFromSender.get(senderId);
+        if (prev !== msg.Ytid) {
+          lastPlayedFromSender.set(senderId, msg.Ytid);
+          alert("🎵 Nearby sender changed song → " + msg.Ytid);
+          autoSearch(msg.Ytid);
+        } else {
+          console.log("duplicate play ignored for sender", senderId, msg.Ytid);
+        }
+      } else if (msg.type === "registered") {
+        // optional
+      }
+    };
+    ws.onclose = () => {
+      setStatus("disconnected", "red");
+      console.warn("Socket closed, reconnecting in 2s...");
+      setTimeout(connect, 2000);
+    };
+    ws.onerror = (e) => {
+      console.warn("WS error", e);
+      try { ws.close(); } catch {}
+    };
+  }
+
+  // Send updates frequently. If sender role and Ytid changed → server will push to receivers.
+  async function sendLoop() {
+    while (true) {
+      try {
+        if (!ws || ws.readyState !== WebSocket.OPEN) {
+          await new Promise(r => setTimeout(r, 500)); // wait before next loop
+          continue;
+        }
+
+        const loc = await getLocation().catch(err => {
+          console.warn("geo fail", err);
+          return null;
+        });
+
+        const payload = {
+          type: "update",
+          device: DEVICE_ID,
+          mode,
+          lat: loc ? loc.lat : 0,
+          lon: loc ? loc.lon : 0,
+        };
+
+        // For sender, include Ytid
+        if (mode === "sender") {
+          const y = getYtidFromPage();
+          if (y && y.length === 11) {
+            payload["Ytid"] = y;
+            // only send if new Ytid or every cycle? We always send location+mode; server only pushes on new Ytid
+            // but to be safe, always include Ytid
+          } else {
+            // no valid ytid — we still send location so receivers can be matched later
+          }
+        }
+
+        // send
+        try {
+          ws.send(JSON.stringify(payload));
+        } catch (e) { console.warn("send failed", e); }
+
+        // immediate loop interval (fast updates)
+        await new Promise(r => setTimeout(r, 1500)); // 1.5s updates for near-instant matching
+      } catch (err) {
+        console.warn("sendLoop error", err);
+        await new Promise(r => setTimeout(r, 2000));
       }
     }
+  }
+
+  // start
+  connect();
+  sendLoop();
+
+  // expose small helpers for debugging
+  window.vfy = {
+    DEVICE_ID,
+    setMode: (m) => { mode = m; toggleBtn.style.background = m === "sender" ? "lightgreen" : "yellow"; toggleBtn.textContent = m === "sender" ? "🟢 Sender Mode" : "🟡 Receiver Mode"; },
+    getStatus: () => statusEl.textContent
   };
 
-  ws.onclose = () => {
-    console.warn("⚠️ Disconnected, retrying...");
-    setTimeout(connect, 2000);
-  };
-}
-
-function autoSearch(Ytid) {
-  const input = document.getElementById("search-basic");
-  const btn = document.getElementById("search-btn");
-  if (input && btn) {
-    input.value = Ytid;
-    btn.click();
-    console.log("🔎 Triggered search for:", Ytid);
-  }
-}
-
-async function getLocation() {
-  return new Promise((resolve, reject) => {
-    navigator.geolocation.getCurrentPosition(
-      pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
-      err => reject(err.message),
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
-  });
-}
-
-async function sendUpdate() {
-  try {
-    const { lat, lon } = await getLocation();
-    const Ytid = document.getElementById("Ytid")?.textContent.trim();
-    
-    // Only send if sender mode & new Ytid
-    if (mode === "sender" && Ytid && Ytid !== lastSentYtid && ws.readyState === WebSocket.OPEN) {
-      lastSentYtid = Ytid;
-      ws.send(JSON.stringify({ type: "update", lat, lon, Ytid, mode }));
-      console.log("📤 Sent new Ytid to server:", Ytid);
-    }
-
-    // Receiver should still update location
-    if (mode === "receiver" && ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ type: "update", lat, lon, mode }));
-    }
-
-  } catch (err) {
-    console.warn("Location error:", err);
-  }
-}
-
-setInterval(sendUpdate, 2000);
-connect();
+})();
 </script>
