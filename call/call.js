@@ -1,103 +1,104 @@
-// === Frontend-only WebRTC Audio Call ===
-// No server, only STUN relay (Google public)
+// === Pure Frontend WebRTC Audio Call ===
+// No backend, no socket.io — same function names
 
 let localStream;
 let peerConnection;
-let dataChannel;
 let remoteAudio;
 let callTimer;
 let callStartTime;
+let localOffer;
+let localAnswer;
+let dataChannel;
 
-// Public Google STUN server
-const config = {
-  iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-};
+// Google public STUN server
+const config = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
 
-// Generate local ID (share manually or via QR)
-let roomID = localStorage.getItem("sessionId");
-if (!roomID) {
-  roomID = "VFY_" + Math.random().toString(36).substring(2, 8);
-  localStorage.setItem("sessionId", roomID);
-}
-alert("Your VFY ID: " + roomID);
-
-// Simple signaling exchange manually via textarea or QR (no server)
-const signalBox = document.getElementById("signalBox");
-const signalInput = document.getElementById("signalInput");
+// Elements from your HTML
 const callBtn = document.getElementById("callUser");
-const answerBtn = document.getElementById("answerUser");
+const acceptBtn = document.getElementById("acceptCall");
+const rejectBtn = document.getElementById("rejectCall");
 const endBtn = document.getElementById("endCall");
-const status = document.getElementById("callStatus");
-const timerDisplay = document.getElementById("callTimer");
+const statusEl = document.getElementById("callStatus");
+const timerEl = document.getElementById("callTimer");
+const incomingBox = document.getElementById("incomingCall");
 
-// Ringtone & vibration
+// Ringtone sound
 const ringtone = new Audio("https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/ringtone.mp3");
 ringtone.loop = true;
+
+// Vibrate function
 function vibrateOnce() {
   if ("vibrate" in navigator) navigator.vibrate(300);
 }
 
-// === Start Local Mic ===
-async function startLocalStream() {
-  localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  return localStream;
-}
-
-// === Caller Creates Offer ===
+// === Caller creates offer ===
 callBtn.onclick = async () => {
   vibrateOnce();
+  statusEl.innerText = "Ringing...";
+  ringtone.play();
+
+  localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
   peerConnection = new RTCPeerConnection(config);
-  localStream = await startLocalStream();
   peerConnection.addTrack(localStream.getTracks()[0], localStream);
 
-  // Remote audio playback
   peerConnection.ontrack = (event) => {
     remoteAudio = new Audio();
     remoteAudio.srcObject = event.streams[0];
     remoteAudio.play();
   };
-
-  dataChannel = peerConnection.createDataChannel("chat");
 
   const offer = await peerConnection.createOffer();
   await peerConnection.setLocalDescription(offer);
+  localOffer = offer;
 
-  status.innerText = "Offer created. Send this to your friend:";
-  signalBox.value = JSON.stringify(offer);
+  // Show incoming call popup on same device (for demo)
+  setTimeout(() => {
+    ringtone.pause();
+    ringtone.currentTime = 0;
+    incomingBox.style.display = "block";
+    statusEl.innerText = "Incoming Call...";
+  }, 2000);
 };
 
-// === Receiver Answers Offer ===
-answerBtn.onclick = async () => {
+// === Accept Call ===
+acceptBtn.onclick = async () => {
+  ringtone.pause();
+  ringtone.currentTime = 0;
   vibrateOnce();
-  const offer = JSON.parse(signalInput.value.trim());
-  peerConnection = new RTCPeerConnection(config);
-  localStream = await startLocalStream();
-  peerConnection.addTrack(localStream.getTracks()[0], localStream);
 
-  peerConnection.ondatachannel = (event) => {
-    dataChannel = event.channel;
-  };
+  incomingBox.style.display = "none";
+  statusEl.innerText = "Connecting...";
 
-  peerConnection.ontrack = (event) => {
+  localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const receiverPC = new RTCPeerConnection(config);
+  receiverPC.addTrack(localStream.getTracks()[0], localStream);
+
+  receiverPC.ontrack = (event) => {
     remoteAudio = new Audio();
     remoteAudio.srcObject = event.streams[0];
     remoteAudio.play();
   };
 
-  await peerConnection.setRemoteDescription(offer);
-  const answer = await peerConnection.createAnswer();
-  await peerConnection.setLocalDescription(answer);
+  await receiverPC.setRemoteDescription(localOffer);
+  const answer = await receiverPC.createAnswer();
+  await receiverPC.setLocalDescription(answer);
 
-  status.innerText = "Answer created. Send this back to caller:";
-  signalBox.value = JSON.stringify(answer);
+  // Apply answer to caller side
+  await peerConnection.setRemoteDescription(answer);
+
+  statusEl.innerText = "Connected ✅";
+  endBtn.style.display = "inline";
+  timerEl.style.display = "inline";
+  startCallTimer();
 };
 
-// === Caller Pastes Answer ===
-document.getElementById("applyAnswer").onclick = async () => {
-  const answer = JSON.parse(signalInput.value.trim());
-  await peerConnection.setRemoteDescription(answer);
-  status.innerText = "✅ Call Connected!";
-  startCallTimer();
+// === Reject Call ===
+rejectBtn.onclick = () => {
+  ringtone.pause();
+  ringtone.currentTime = 0;
+  vibrateOnce();
+  incomingBox.style.display = "none";
+  statusEl.innerText = "Call Rejected ❌";
 };
 
 // === End Call ===
@@ -105,11 +106,10 @@ endBtn.onclick = () => {
   if (peerConnection) peerConnection.close();
   if (localStream) localStream.getTracks().forEach((t) => t.stop());
   peerConnection = null;
+  statusEl.innerText = "Call Ended";
+  endBtn.style.display = "none";
   stopCallTimer();
-  ringtone.pause();
-  ringtone.currentTime = 0;
   vibrateOnce();
-  status.innerText = "Call Ended";
 };
 
 // === Timer ===
@@ -120,10 +120,10 @@ function startCallTimer() {
     const elapsed = Math.floor((now - callStartTime) / 1000);
     const minutes = String(Math.floor(elapsed / 60)).padStart(2, "0");
     const seconds = String(elapsed % 60).padStart(2, "0");
-    timerDisplay.innerText = `${minutes}:${seconds}`;
+    timerEl.innerText = `${minutes}:${seconds}`;
   }, 1000);
 }
 function stopCallTimer() {
   clearInterval(callTimer);
-  timerDisplay.innerText = "";
+  timerEl.innerText = "";
 }
