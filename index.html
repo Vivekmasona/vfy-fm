@@ -1055,12 +1055,16 @@ width: 50%;
    <div id="autocomplete-results"></div>
 
 
+<button id="toggleMode" onclick="toggleMode()" 
+style="padding:8px 14px;margin:8px;border-radius:10px;background:#ffc107;
+border:none;font-weight:bold;font-family:sans-serif;">
+⚪ Receiver Mode
+</button>
 
-		<button id="toggleMode" style="background:yellow;">🟡 Receiver Mode</button>
-  
-  <div id="Ytid" style="display:none"></div>
-  <div id="status">Status: disconnected</div>
+<div id="listContainer"></div>
 
+
+		
 		
 <!-- Mode Toggle -->
 <div id="videoListContainer">
@@ -5092,97 +5096,3 @@ window.addEventListener('beforeunload', () => {
 
     
     
-<style>
-  body { font-family:sans-serif; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; background:#101010; color:#fff; }
-  #toggleMode { padding:10px 20px; border:none; border-radius:8px; cursor:pointer; font-size:16px; font-weight:bold; }
-  #search-basic { padding:10px; border-radius:8px; width:260px; margin-top:20px; border:none; }
-  #search-btn { padding:10px 20px; border-radius:8px; background:#1db954; color:#fff; border:none; margin-top:10px; cursor:pointer; font-weight:bold; }
-  #status { margin-top:15px; font-size:14px; }
-</style>
-</head>
-<body>
-  
-<script>
-(() => {
-  const WS_URL = "wss://vfy-call.deno.dev";
-  const DEVICE_ID = localStorage.getItem("vfy_device_id") || crypto.randomUUID();
-  localStorage.setItem("vfy_device_id", DEVICE_ID);
-
-  const toggle = document.getElementById("toggleMode");
-  const statusEl = document.getElementById("status");
-  const input = document.getElementById("search-basic");
-  const btn = document.getElementById("search-btn");
-  const YtidEl = document.getElementById("Ytid");
-
-  let ws, mode = "receiver";
-  const lastFrom = new Map();
-
-  const setStatus = (t, c="white") => { statusEl.textContent = "Status: "+t; statusEl.style.color=c; };
-
-  toggle.onclick = () => {
-    mode = mode === "sender" ? "receiver" : "sender";
-    toggle.style.background = mode === "sender" ? "lightgreen" : "yellow";
-    toggle.textContent = mode === "sender" ? "🟢 Sender Mode" : "🟡 Receiver Mode";
-    if(ws?.readyState===WebSocket.OPEN)
-      ws.send(JSON.stringify({ type:"register", deviceId:DEVICE_ID, mode }));
-  };
-
-  const getLoc = () => new Promise((res,rej)=>{
-    if(!navigator.geolocation) return res({lat:0,lon:0});
-    navigator.geolocation.getCurrentPosition(
-      p=>res({lat:p.coords.latitude,lon:p.coords.longitude}),
-      ()=>res({lat:0,lon:0}),
-      {enableHighAccuracy:true,timeout:4000}
-    );
-  });
-
-  const getYtid = v => (v.match(/(?:v=|youtu\.be\/)([A-Za-z0-9_-]{11})/)||[])[1] || (v.length===11?v:null);
-  const autoSearch = id => { if(!id)return; YtidEl.textContent=id; input.value=id; setTimeout(()=>btn.click(),100); };
-
-  const connect = () => {
-    ws = new WebSocket(WS_URL);
-    ws.onopen = () => {
-      setStatus("connected","lime");
-      alert("🔗 Connected to server!");
-      ws.send(JSON.stringify({ type:"register", deviceId:DEVICE_ID, mode }));
-    };
-    ws.onmessage = ev => {
-      let msg; try{msg=JSON.parse(ev.data);}catch{return;}
-      if(msg.type==="play" && msg.Ytid){
-        const prev=lastFrom.get(msg.from);
-        if(prev!==msg.Ytid){
-          lastFrom.set(msg.from,msg.Ytid);
-          alert("🎵 Nearby sender changed song → "+msg.Ytid);
-          autoSearch(msg.Ytid);
-        }
-      }
-    };
-    ws.onclose = () => { setStatus("disconnected","red"); setTimeout(connect,2000); };
-  };
-
-  const loop = async () => {
-    while(true){
-      if(ws?.readyState===WebSocket.OPEN){
-        const {lat,lon} = await getLoc();
-        const data = { type:"update", device:DEVICE_ID, mode, lat, lon };
-        const y = YtidEl.textContent.trim();
-        if(mode==="sender" && y.length===11) data.Ytid=y;
-        ws.send(JSON.stringify(data));
-      }
-      await new Promise(r=>setTimeout(r,1500));
-    }
-  };
-
-  btn.onclick = () => {
-    const val = input.value.trim();
-    const id = getYtid(val);
-    if(!id){ alert("Invalid YouTube link or ID!"); return; }
-    YtidEl.textContent=id;
-    mode="sender"; toggle.style.background="lightgreen"; toggle.textContent="🟢 Sender Mode";
-    ws?.send(JSON.stringify({ type:"update", device:DEVICE_ID, mode, lat:0, lon:0, Ytid:id }));
-  };
-
-  connect();
-  loop();
-})();
-</script>
