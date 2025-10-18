@@ -1,158 +1,230 @@
-// === FRONTEND-ONLY WEBRTC CALL (NO BACKEND) ===
+// ===== FRONTEND-ONLY WORKING WEBRTC CALL (manual SDP copy-paste) =====
 
-// Global variables
+// globals (keeps same variable names/IDs style)
 let localStream;
 let peerConnection;
-let dataChannel;
-let roomID;
 let callTimer;
 let callStartTime;
 const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
-// Simple ringtone for incoming call
+// ringtone + vibrate
 const ringtone = new Audio("https://github.com/Vivekmasona/vfy-fm/raw/refs/heads/main/sound/ringtone.mp3");
 ringtone.loop = true;
+function vibrateOnce(){ if ("vibrate" in navigator) navigator.vibrate(200); }
 
-// === Utility ===
-function vibrateOnce() {
-  if ("vibrate" in navigator) navigator.vibrate(300);
+// small helper: update status element safely
+function setStatus(text){ const el = document.getElementById('callStatus'); if(el) el.innerText = text; }
+
+// wait for ICE gathering to complete (or timeout)
+function waitForIceGathering(pc, timeout = 5000){
+  return new Promise((resolve) => {
+    if (!pc) return resolve();
+    if (pc.iceGatheringState === 'complete') return resolve();
+    function check(){ if (pc.iceGatheringState === 'complete'){ pc.removeEventListener('icegatheringstatechange', check); resolve(); } }
+    pc.addEventListener('icegatheringstatechange', check);
+    setTimeout(() => resolve(), timeout);
+  });
 }
 
-// === Auto Load Session ===
-window.addEventListener('load', () => {
-  roomID = localStorage.getItem('sessionId');
-  if (roomID) {
-    alert(`Your VFY ID loaded: ${roomID}`);
-    document.getElementById('callUser').disabled = false;
-  } else {
-    roomID = prompt("Enter a new VFY ID:");
-    if (roomID) {
-      localStorage.setItem('sessionId', roomID);
-      alert(`VFY ID created: ${roomID}`);
-      document.getElementById('callUser').disabled = false;
+// create peer connection and attach local stream
+async function createPeerAndAddLocalStream(){
+  localStream = await navigator.mediaDevices.getUserMedia({ audio: true }).catch(err=>{
+    console.error("getUserMedia failed:", err);
+    alert("Microphone access denied or unavailable.");
+    throw err;
+  });
+  peerConnection = new RTCPeerConnection(config);
+
+  // play remote audio on track
+  peerConnection.ontrack = (ev) => {
+    const remoteAudio = document.getElementById('remoteAudio') || new Audio();
+    remoteAudio.srcObject = ev.streams[0];
+    remoteAudio.autoplay = true;
+    try { remoteAudio.play(); } catch(e){/* play might be blocked until user gesture */ }
+  };
+
+  // add local audio track
+  if (localStream && localStream.getTracks().length > 0) {
+    peerConnection.addTrack(localStream.getTracks()[0], localStream);
+  }
+
+  // ICE candidate logging (we will share full SDP after gathering)
+  peerConnection.onicecandidate = (event) => {
+    // no-op: we wait for iceGathering complete to copy full SDP
+    // console.log("ice candidate:", event.candidate);
+  };
+
+  peerConnection.onconnectionstatechange = () => {
+    console.log("PC state:", peerConnection.connectionState);
+    setStatus("Connection: " + peerConnection.connectionState);
+    if (peerConnection.connectionState === "connected") startCallTimer();
+    if (peerConnection.connectionState === "disconnected" || peerConnection.connectionState === "failed" || peerConnection.connectionState === "closed"){
+      stopCallTimer();
     }
+  };
+
+  return peerConnection;
+}
+
+// ===== when user clicks Call (create offer) =====
+document.getElementById('callUser')?.addEventListener('click', async () => {
+  try {
+    setStatus('Creating offer...');
+    vibrateOnce();
+
+    // build PC and local stream
+    await createPeerAndAddLocalStream();
+
+    // create data channel optionally (not required for audio)
+    try { peerConnection.createDataChannel("vfy-signal"); } catch(e){}
+
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+
+    // wait until ICE complete (so SDP has ICE candidates)
+    await waitForIceGathering(peerConnection, 5000);
+
+    // full local description (offer + ICE)
+    const fullOffer = peerConnection.localDescription;
+    const offerText = JSON.stringify(fullOffer);
+
+    // copy to clipboard for easy share
+    try {
+      await navigator.clipboard.writeText(offerText);
+      setStatus('Offer created & copied to clipboard. Send to callee.');
+      alert('Offer copied to clipboard — send this text (via WhatsApp/Message) to the other user.');
+    } catch (err) {
+      // fallback: show prompt with text
+      setStatus('Offer created. (copy manually)');
+      alert('Could not copy to clipboard automatically. Use this dialog to copy the offer:\n\n' + offerText);
+    }
+  } catch (err) {
+    console.error("Call(create offer) error:", err);
+    setStatus('Error creating offer');
   }
 });
 
-// === Create Offer ===
-document.getElementById('callUser').addEventListener('click', async () => {
-  document.getElementById('callStatus').innerText = 'Creating Offer...';
-  vibrateOnce();
+// ===== Accept incoming offer (paste offer into prompt) =====
+// This uses the same ID acceptCall as your UI. When user clicks Accept, prompt to paste the OFFER JSON string.
+document.getElementById('acceptCall')?.addEventListener('click', async () => {
+  try {
+    const offerText = prompt("Paste the OFFER JSON you received from caller:");
+    if (!offerText) return;
+    vibrateOnce();
+    setStatus('Accepting incoming offer...');
+    ringtone.pause(); ringtone.currentTime = 0;
 
-  localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  peerConnection = new RTCPeerConnection(config);
-  peerConnection.addTrack(localStream.getTracks()[0], localStream);
+    // create pc and add local stream
+    await createPeerAndAddLocalStream();
 
-  // Data channel for signaling manually (copy-paste mode)
-  dataChannel = peerConnection.createDataChannel("vfychat");
-  dataChannel.onmessage = (e) => console.log("Remote:", e.data);
+    // handle remote datachannel if any
+    peerConnection.ondatachannel = (ev) => {
+      ev.channel.onmessage = (m) => console.log("Data channel message:", m.data);
+    };
 
-  peerConnection.onicecandidate = (event) => {
-    if (event.candidate) return;
-    // When ICE gathering is done
-    const offer = peerConnection.localDescription;
-    document.getElementById('callStatus').innerText = 'Offer Created ✅';
-    navigator.clipboard.writeText(JSON.stringify(offer));
-    alert("Offer copied to clipboard! Send this text to your friend to connect.");
-  };
+    // set remote (offer)
+    const remoteDesc = JSON.parse(offerText);
+    await peerConnection.setRemoteDescription(new RTCSessionDescription(remoteDesc));
 
-  const offer = await peerConnection.createOffer();
-  await peerConnection.setLocalDescription(offer);
+    // create answer
+    const answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer);
+
+    // wait for ICE gathering, then copy answer to clipboard
+    await waitForIceGathering(peerConnection, 5000);
+    const fullAnswer = peerConnection.localDescription;
+    const answerText = JSON.stringify(fullAnswer);
+    try {
+      await navigator.clipboard.writeText(answerText);
+      setStatus('Answer created & copied. Send back to caller.');
+      alert('Answer copied to clipboard — send this back to caller.');
+    } catch (err) {
+      setStatus('Answer created. Copy it manually from the dialog.');
+      alert('Could not copy automatically. Use this dialog to copy answer:\n\n' + answerText);
+    }
+
+    // show connected when remote sets answer
+  } catch (err) {
+    console.error("Accept offer error:", err);
+    setStatus('Error accepting offer');
+  }
 });
 
-// === Accept Incoming Offer ===
-async function acceptOffer(offerText) {
-  ringtone.play();
-  document.getElementById('callStatus').innerText = 'Incoming Call...';
-  vibrateOnce();
+// ===== Provide function to paste ANSWER on caller side =====
+// We will map this to rejectCall button (since your UI had rejectCall). Clicking it will prompt to paste ANSWER.
+// NOTE: keep ID names same but behavior is to paste answer.
+document.getElementById('rejectCall')?.addEventListener('click', async () => {
+  try {
+    const answerText = prompt("Paste ANSWER JSON you received from callee:");
+    if (!answerText) return;
+    setStatus('Applying remote answer...');
+    await peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(answerText)));
+    setStatus('Connected (answer applied)');
+    vibrateOnce();
+  } catch (err) {
+    console.error("Apply answer error:", err);
+    setStatus('Error applying answer');
+  }
+});
 
-  localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  peerConnection = new RTCPeerConnection(config);
-  peerConnection.addTrack(localStream.getTracks()[0], localStream);
-
-  peerConnection.ondatachannel = (event) => {
-    dataChannel = event.channel;
-    dataChannel.onmessage = (e) => console.log("Remote:", e.data);
-  };
-
-  peerConnection.ontrack = (event) => {
-    const remoteAudio = new Audio();
-    remoteAudio.srcObject = event.streams[0];
-    remoteAudio.play();
-  };
-
-  peerConnection.onicecandidate = (event) => {
-    if (event.candidate) return;
-    const answer = peerConnection.localDescription;
-    navigator.clipboard.writeText(JSON.stringify(answer));
-    ringtone.pause();
-    ringtone.currentTime = 0;
-    document.getElementById('callStatus').innerText = 'Answer Created ✅';
-    alert("Answer copied! Send this back to your friend.");
-  };
-
-  await peerConnection.setRemoteDescription(JSON.parse(offerText));
-  const answer = await peerConnection.createAnswer();
-  await peerConnection.setLocalDescription(answer);
-}
-
-// === Handle Answer ===
-async function handleAnswer(answerText) {
-  await peerConnection.setRemoteDescription(JSON.parse(answerText));
-  document.getElementById('callStatus').innerText = 'Connected 🎧';
-  startCallTimer();
-
-  peerConnection.ontrack = (event) => {
-    const remoteAudio = new Audio();
-    remoteAudio.srcObject = event.streams[0];
-    remoteAudio.play();
-  };
-}
-
-// === End Call ===
-document.getElementById('endCall').addEventListener('click', () => {
+// ===== End Call (same ID endCall) =====
+document.getElementById('endCall')?.addEventListener('click', () => {
   endCall();
   vibrateOnce();
 });
 
-function endCall() {
-  if (peerConnection) peerConnection.close();
-  peerConnection = null;
+function endCall(){
+  try {
+    if (peerConnection) {
+      peerConnection.close();
+      peerConnection = null;
+    }
+    if (localStream) {
+      localStream.getTracks().forEach(t => t.stop());
+      localStream = null;
+    }
+  } catch(e){ console.warn(e); }
+  setStatus('');
+  // hide incoming UI if present
+  const incoming = document.getElementById('incomingCall');
+  if (incoming) incoming.style.display = 'none';
   stopCallTimer();
-  document.getElementById('callStatus').innerText = 'Call Ended';
 }
 
-// === Call Timer ===
-function startCallTimer() {
+// ===== Ringtone control for demonstration (optional) =====
+// Show incoming-call UI if user wants to simulate receiving an offer by pasting it into a special prompt
+// But we use Accept flow above which prompts for an offer
+
+// ===== Call timer functions =====
+function startCallTimer(){
   callStartTime = new Date();
+  const el = document.getElementById('callTimer');
+  if (!el) return;
   callTimer = setInterval(() => {
     const now = new Date();
     const elapsed = Math.floor((now - callStartTime) / 1000);
-    const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
-    const seconds = String(elapsed % 60).padStart(2, '0');
-    document.getElementById('callTimer').innerText = `${minutes}:${seconds}`;
+    const m = String(Math.floor(elapsed / 60)).padStart(2,'0');
+    const s = String(elapsed % 60).padStart(2,'0');
+    el.innerText = `${m}:${s}`;
   }, 1000);
 }
-function stopCallTimer() {
+function stopCallTimer(){
   clearInterval(callTimer);
-  document.getElementById('callTimer').innerText = '';
+  const el = document.getElementById('callTimer');
+  if (el) el.innerText = '';
 }
 
-// === Manual buttons for offer/answer exchange ===
-document.addEventListener("DOMContentLoaded", () => {
-  const acceptBtn = document.createElement("button");
-  acceptBtn.innerText = "Paste Offer to Accept";
-  acceptBtn.onclick = () => {
-    const txt = prompt("Paste Offer JSON:");
-    if (txt) acceptOffer(txt);
-  };
-  document.body.appendChild(acceptBtn);
-
-  const answerBtn = document.createElement("button");
-  answerBtn.innerText = "Paste Answer to Connect";
-  answerBtn.onclick = () => {
-    const txt = prompt("Paste Answer JSON:");
-    if (txt) handleAnswer(txt);
-  };
-  document.body.appendChild(answerBtn);
-});
+// ===== Optional: show incoming-call prompt (if you want to simulate incoming without socket) =====
+/*
+  If you want a quick way to display incoming-call popup and play ringtone (so that Accept button becomes meaningful),
+  call showIncomingPopup() from console or a test button:
+*/
+function showIncomingPopup(){
+  const inc = document.getElementById('incomingCall');
+  if (inc) inc.style.display = 'block';
+  setStatus('Incoming Call...');
+  ringtone.play().catch(()=>{ /* autoplay lock */ });
+  vibrateOnce();
+}
+// expose for testing
+window.showIncomingPopup = showIncomingPopup;
