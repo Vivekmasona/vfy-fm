@@ -264,8 +264,163 @@ window.addEventListener('scroll', () => {
     
 
 
+<!-- Fullscreen Stylish Loader -->
+<div id="loader" style="
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:#000;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  z-index:9999999;
+  font-family:sans-serif;
+  text-align:center;
+  transition:opacity .5s;
+">
 
+  <!-- Logo -->
+  <h1 style="margin:0 0 10px 0; font-weight:bold; display:flex; align-items:center; gap:10px; position:relative;">
+    <span id="vLetter" style="
+      display:inline-block;
+      width:40px; height:40px;
+      position:absolute;
+      left:-10px; top:20px;
+      background:red;
+      border-radius:3px;
+    "></span>
+    <span style="
+      font-size:80px;
+      color:#00ffff;
+      text-shadow:0 0 10px #00ffff,0 0 20px #00ffff;
+      position:relative;
+    ">V</span>
+    <span id="fyLetters" style="
+      font-size:40px;
+      color:#dadada;
+      text-shadow:0 0 5px #dadada,0 0 10px #dadada;
+      opacity:0;
+      transition:opacity 1.5s;
+    ">F Y</span>
+  </h1>
 
+  <!-- Slogan -->
+  <p style="
+    font-size:20px;
+    font-weight:bold;
+    color:#dadada;
+    text-shadow:0 0 10px #dadada,0 0 20px #dadada;
+    margin-bottom:20px;
+  ">V F Y On- Depression Is Gone</p>
+
+  <!-- Loader Bar -->
+  <div style="
+    width:200px; height:4px;
+    background:#222;
+    border-radius:2px;
+    overflow:hidden;
+    margin-bottom:10px;
+  ">
+    <div id="bar" style="
+      height:100%;
+      width:0%;
+      background:#00ffff;
+      box-shadow:0 0 10px #00ffff,0 0 20px #00ffff, 0 0 30px #00ffff inset;
+      transition:width .3s;
+    "></div>
+  </div>
+
+  <!-- Percentage -->
+  <span id="percent" style="
+    color:#00ffff;
+    text-shadow:0 0 5px #00ffff,0 0 10px #00ffff;
+    margin-bottom:20px;
+    display:block;
+  ">0%</span>
+
+  <!-- Error message (hidden initially) -->
+  <p id="errorMsg" style="
+    display:none;
+    color:red;
+    font-size:16px;
+    font-weight:bold;
+    margin-top:10px;
+    text-shadow:0 0 5px red,0 0 10px red;
+  "></p>
+
+  <!-- Footer -->
+  <p style="
+    position:absolute;
+    bottom:10px;
+    font-size:12px;
+    color:#dadada;
+  "> {•v•} Powered By VivekFy</p>
+</div>
+
+<script>
+const bar = document.getElementById("bar");
+const text = document.getElementById("percent");
+const fyLetters = document.getElementById("fyLetters");
+const loader = document.getElementById("loader");
+const errorMsg = document.getElementById("errorMsg");
+
+// Get device memory (in GB, approx)
+let deviceRAM = navigator.deviceMemory || 0;
+
+// If RAM < 6 GB, show error message
+if (deviceRAM < 6 && deviceRAM !== 0) {
+  loader.innerHTML = `
+    <h1 style="color:#ff3333; font-size:40px;">⚠️ Device Not Supported</h1>
+    <p style="color:#dadada; font-size:18px;">Your device has only ${deviceRAM} GB RAM.<br>
+    This app requires at least <b>6 GB RAM</b> to run properly.</p>
+    <p style="margin-top:20px; color:#999;">Please use a higher performance device.</p>
+  `;
+} else {
+  // Normal loader animation
+  let percent = 0;
+  let interval = setInterval(() => {
+    if (percent < 75) {
+      percent += 5;
+      if (percent > 75) percent = 75;
+      bar.style.width = percent + "%";
+      text.textContent = percent + "%";
+      if (percent >= 40 && fyLetters.style.opacity === "0") {
+        fyLetters.style.opacity = "1";
+      }
+    } else {
+      clearInterval(interval);
+    }
+  }, 600);
+
+  // When page fully loads
+  window.addEventListener("load", () => {
+    let start = percent;
+    let end = 100;
+    let steps = 10;
+    let stepValue = (end - start) / steps;
+    let i = 0;
+    let fast = setInterval(() => {
+      percent = Math.min(100, Math.floor(start + stepValue * i));
+      bar.style.width = percent + "%";
+      text.textContent = percent + "%";
+      i++;
+      if (percent >= 100) {
+        clearInterval(fast);
+        setTimeout(() => {
+          loader.style.opacity = "0";
+          setTimeout(() => loader.style.display = "none", 500);
+
+          // Play welcome sound
+          const audio = new Audio('/sound/fw.mp3');
+          audio.volume = 1.0;
+          audio.play().catch(e => console.log("Autoplay blocked", e));
+        }, 200);
+      }
+    }, 100);
+  });
+}
+</script>  
     
 
   
@@ -1055,16 +1210,14 @@ width: 50%;
    <div id="autocomplete-results"></div>
 
 
-<button id="toggleMode" onclick="toggleMode()" 
-style="padding:8px 14px;margin:8px;border-radius:10px;background:#ffc107;
-border:none;font-weight:bold;font-family:sans-serif;">
-⚪ Receiver Mode
+
+	<button id="toggleMode"
+  onclick="toggleMode()"
+  style="padding:8px 16px;margin:10px;border-radius:8px;background:#ffd700;font-weight:bold;border:none;">
+  ⚪ Receiver Mode
 </button>
 
 
-
-
-		
 		
 <!-- Mode Toggle -->
 <div id="videoListContainer">
@@ -1275,7 +1428,7 @@ border:none;font-weight:bold;font-family:sans-serif;">
 
 
 <div id="songs"></div>
-<div id="listContainer"></div>
+<div id="listContainer"></div>	
 <div id="song-container"></div>
 
 <!-- Favorite List ke liye Alag Div -->
@@ -1803,108 +1956,144 @@ document.getElementById("modeToggleBtn").addEventListener("click", () => {
     document.getElementById("modeToggleBtn").innerText = `Mode: ${isVideoMode ? 'Video' : 'Audio'}`;
 });
 
-
-
-
-
-
-
-
-// === Receiver / Sender Toggle ===
+// === Global ===
 let isSender = false;
-const ws = new WebSocket("wss://vfy-call.deno.dev");
+let ws;
+let userId = null;
+let connected = false;
 
-ws.onopen = () => console.log("✅ Connected to Nearby Sync Server");
-ws.onclose = () => console.log("❌ Disconnected from server");
+// === Connect to Deno WebSocket Server ===
+function connectWS() {
+  ws = new WebSocket("wss://vfy-call.deno.dev");
+
+  ws.onopen = () => {
+    connected = true;
+    console.log("✅ Connected to sync server");
+
+    // send initial location (if available)
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        ws.send(JSON.stringify({
+          type: "updateLocation",
+          lat: pos.coords.latitude,
+          lon: pos.coords.longitude
+        }));
+      });
+    }
+  };
+
+  ws.onmessage = (e) => {
+    const msg = JSON.parse(e.data);
+    if (msg.type === "welcome") {
+      userId = msg.id;
+    }
+
+    // 📥 Received synced song from sender
+    if (msg.type === "addSong" && msg.data) {
+      console.log("📩 Received synced song:", msg.data.snippet.title);
+      addSyncedSong(msg.data);
+    }
+
+    if (msg.type === "paired") {
+      console.log(`🔗 Paired: ${msg.from} ↔ ${msg.to} (${msg.dist}m)`);
+    }
+  };
+
+  ws.onclose = () => {
+    connected = false;
+    console.log("❌ Disconnected, retrying...");
+    setTimeout(connectWS, 3000);
+  };
+}
 
 // === Toggle Sender / Receiver ===
 function toggleMode() {
   isSender = !isSender;
-  ws.send(JSON.stringify({ type: "mode", mode: isSender ? "sender" : "receiver" }));
+  if (ws && connected) {
+    ws.send(JSON.stringify({ type: "mode", mode: isSender ? "sender" : "receiver" }));
+  }
   const btn = document.getElementById("toggleMode");
   if (btn) btn.innerText = isSender ? "🟢 Sender Mode" : "⚪ Receiver Mode";
 }
 
-// === Generate List Item ===  
-function getOutput(item, i){  
-    var id = item.id?.videoId || item.id;  
-    var title = item.snippet?.title || "No title";  
-    var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';  
-    if(item.snippet?.liveBroadcastContent==="live") return '';  
-    return `  
-<div style="margin-bottom:12px;">  
-  <b index="${i}" class="music-item list" vid="${id}" onclick="handleItemClick(this)">  
-      <div class="thumb-wrap">  
-          <img src="${thumbUrl}" alt="${title}">  
-          <div class="overlay-play">  
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">  
-                  <path d="M3 22v-20l18 10-18 10z"/>  
-              </svg>  
-          </div>  
-      </div>  
-      <div class="title">${title}</div>  
-      <button class="save-btn" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">  
-          <i class="fas fa-heart"></i>  
-      </button>  
-  </b>  
-</div>`;  
-}  
-
-// === When user clicks a song ===
-function handleItemClick(el) {
-    const id = el.getAttribute("vid");
-    const title = el.querySelector(".title")?.innerText || "Unknown";
-    const thumbUrl = el.querySelector("img")?.src || "";
-
-    // Agar sender mode on hai to send karo
-    if (isSender && ws.readyState === 1) {
-        ws.send(JSON.stringify({
-            type: "songClick",
-            data: {
-                id,
-                snippet: {
-                    title,
-                    thumbnails: { medium: { url: thumbUrl } },
-                    liveBroadcastContent: "none"
-                }
-            }
-        }));
-        console.log("📤 Sent song to receivers:", title);
-    }
-
-    // Yahan tumhara normal play logic chalega
-    console.log("▶️ Local play:", title);
+// === Generate List Item (Same As Yours) ===
+function getOutput(item, i) {
+  var id = item.id?.videoId || item.id;
+  var title = item.snippet?.title || "No title";
+  var thumbUrl =
+    item.snippet?.thumbnails?.medium?.url ||
+    "https://example.com/default-thumbnail.jpg";
+  if (item.snippet?.liveBroadcastContent === "live") return "";
+  return `
+<div style="margin-bottom:12px;">
+  <b index="${i}" class="music-item list" vid="${id}" onclick="handleItemClick(this)">
+      <div class="thumb-wrap">
+          <img src="${thumbUrl}" alt="${title}">
+          <div class="overlay-play">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
+                  <path d="M3 22v-20l18 10-18 10z"/>
+              </svg>
+          </div>
+      </div>
+      <div class="title">${title}</div>
+      <button class="save-btn" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">
+          <i class="fas fa-heart"></i>
+      </button>
+  </b>
+</div>`;
 }
 
-// === Receiver pe song milne par list me add + auto click ===
-ws.onmessage = (e) => {
-    const msg = JSON.parse(e.data);
-    if (msg.type === "addSong" && msg.data) {
-        console.log("📥 Received song from sender:", msg.data.snippet.title);
+// === When Song Clicked (on Sender) ===
+function handleItemClick(el) {
+  const id = el.getAttribute("vid");
+  const title = el.querySelector(".title")?.innerText || "Unknown";
+  const thumbUrl = el.querySelector("img")?.src || "";
 
-        const container = document.querySelector("#listContainer");
-        if (!container) return;
+  console.log("🎧 Clicked:", title);
 
-        // naya song top pe add karo
-        const html = getOutput(msg.data, 0);
-        container.insertAdjacentHTML("afterbegin", html);
+  // Only send to receivers if sender mode is ON
+  if (isSender && ws && connected) {
+    ws.send(
+      JSON.stringify({
+        type: "songClick",
+        data: {
+          id,
+          snippet: {
+            title,
+            thumbnails: { medium: { url: thumbUrl } },
+            liveBroadcastContent: "none",
+          },
+        },
+      })
+    );
+    console.log("📤 Sent song to nearby receivers:", title);
+  }
 
-        // abhi add hua song auto-click ho
-        const newSong = container.querySelector(".music-item");
-        if (newSong) {
-            setTimeout(() => {
-                console.log("🎶 Auto-clicking synced song:", msg.data.snippet.title);
-                newSong.click();
-            }, 300);
-        }
-    }
-};
+  // local play / open
+  // (tumhara player code yahan chalega)
+}
 
+// === Receiver: Add Synced Song to List ===
+function addSyncedSong(songData) {
+  const container = document.querySelector("#listContainer");
+  if (!container) return;
 
+  const html = getOutput(songData, 0);
+  container.insertAdjacentHTML("afterbegin", html);
 
+  // auto-click new song
+  const newItem = container.querySelector(".music-item");
+  if (newItem) {
+    setTimeout(() => {
+      console.log("🎶 Auto click synced song:", songData.snippet.title);
+      newItem.click();
+    }, 400);
+  }
+}
 
+// === Start connection on load ===
+window.addEventListener("load", connectWS);
 
-	
 
 // === Handle Item Click ===
 function handleItemClick(el){
@@ -5092,7 +5281,3 @@ window.addEventListener('beforeunload', () => {
 
       
 
-
-
-    
-    
