@@ -1799,30 +1799,108 @@ document.getElementById("modeToggleBtn").addEventListener("click", () => {
     document.getElementById("modeToggleBtn").innerText = `Mode: ${isVideoMode ? 'Video' : 'Audio'}`;
 });
 
-// === Generate List Item ===
-function getOutput(item, i){
-    var id = item.id?.videoId || item.id;
-    var title = item.snippet?.title || "No title";
-    var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';
-    if(item.snippet?.liveBroadcastContent==="live") return '';
-    return `
-<div style="margin-bottom:12px;">
-  <b index="${i}" class="music-item list" vid="${id}" onclick="handleItemClick(this)">
-      <div class="thumb-wrap">
-          <img src="${thumbUrl}" alt="${title}">
-          <div class="overlay-play">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">
-                  <path d="M3 22v-20l18 10-18 10z"/>
-              </svg>
-          </div>
-      </div>
-      <div class="title">${title}</div>
-      <button class="save-btn" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">
-          <i class="fas fa-heart"></i>
-      </button>
-  </b>
-</div>`;
+
+
+
+
+
+
+
+// === Receiver / Sender Toggle ===
+let isSender = false;
+const ws = new WebSocket("wss://vfy-call.deno.dev");
+
+ws.onopen = () => console.log("✅ Connected to Nearby Sync Server");
+ws.onclose = () => console.log("❌ Disconnected from server");
+
+// === Toggle Sender / Receiver ===
+function toggleMode() {
+  isSender = !isSender;
+  ws.send(JSON.stringify({ type: "mode", mode: isSender ? "sender" : "receiver" }));
+  const btn = document.getElementById("toggleMode");
+  if (btn) btn.innerText = isSender ? "🟢 Sender Mode" : "⚪ Receiver Mode";
 }
+
+// === Generate List Item ===  
+function getOutput(item, i){  
+    var id = item.id?.videoId || item.id;  
+    var title = item.snippet?.title || "No title";  
+    var thumbUrl = item.snippet?.thumbnails?.medium?.url || 'https://example.com/default-thumbnail.jpg';  
+    if(item.snippet?.liveBroadcastContent==="live") return '';  
+    return `  
+<div style="margin-bottom:12px;">  
+  <b index="${i}" class="music-item list" vid="${id}" onclick="handleItemClick(this)">  
+      <div class="thumb-wrap">  
+          <img src="${thumbUrl}" alt="${title}">  
+          <div class="overlay-play">  
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="transparent">  
+                  <path d="M3 22v-20l18 10-18 10z"/>  
+              </svg>  
+          </div>  
+      </div>  
+      <div class="title">${title}</div>  
+      <button class="save-btn" onclick="event.stopPropagation(); saveFavorite(${i}, '${title}', '${thumbUrl}', '${id}')">  
+          <i class="fas fa-heart"></i>  
+      </button>  
+  </b>  
+</div>`;  
+}  
+
+// === When user clicks a song ===
+function handleItemClick(el) {
+    const id = el.getAttribute("vid");
+    const title = el.querySelector(".title")?.innerText || "Unknown";
+    const thumbUrl = el.querySelector("img")?.src || "";
+
+    // Agar sender mode on hai to send karo
+    if (isSender && ws.readyState === 1) {
+        ws.send(JSON.stringify({
+            type: "songClick",
+            data: {
+                id,
+                snippet: {
+                    title,
+                    thumbnails: { medium: { url: thumbUrl } },
+                    liveBroadcastContent: "none"
+                }
+            }
+        }));
+        console.log("📤 Sent song to receivers:", title);
+    }
+
+    // Yahan tumhara normal play logic chalega
+    console.log("▶️ Local play:", title);
+}
+
+// === Receiver pe song milne par list me add + auto click ===
+ws.onmessage = (e) => {
+    const msg = JSON.parse(e.data);
+    if (msg.type === "addSong" && msg.data) {
+        console.log("📥 Received song from sender:", msg.data.snippet.title);
+
+        const container = document.querySelector("#listContainer");
+        if (!container) return;
+
+        // naya song top pe add karo
+        const html = getOutput(msg.data, 0);
+        container.insertAdjacentHTML("afterbegin", html);
+
+        // abhi add hua song auto-click ho
+        const newSong = container.querySelector(".music-item");
+        if (newSong) {
+            setTimeout(() => {
+                console.log("🎶 Auto-clicking synced song:", msg.data.snippet.title);
+                newSong.click();
+            }, 300);
+        }
+    }
+};
+
+
+
+
+
+	
 
 // === Handle Item Click ===
 function handleItemClick(el){
