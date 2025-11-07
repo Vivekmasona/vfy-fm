@@ -6,7 +6,7 @@
   heart.style.transition = "all 0.3s ease";
   heart.style.textShadow = "0 0 0 rgba(0,0,0,0)";
 
-  const API_BASE = "https://vfycall.onrender.com"; // आपका server
+  const API_BASE = "hhttps://vfycall.onrender.com"; // आपका server
   const HEARTBEAT_MS = 5000;
   const sessionId = localStorage.getItem("sessionId");
   const deviceId = "DEV-" + Math.random().toString(36).slice(2,10);
