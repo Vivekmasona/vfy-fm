@@ -1,6 +1,6 @@
-<script src="https://vfylive.onrender.com/socket.io/socket.io.js"></script>
+<script src="hhttps://vfylive.onrender.com/socket.io/socket.io.js"></script>
 <script>
-const socket = io("https://vfylive.onrender.com");
+const socket = io("hhttps://vfylive.onrender.com");
 const greenDot = document.getElementById('greenDot');
 const joinBtn = document.getElementById('joinBtn');
 const sessionInput = document.getElementById('sessionInput');
