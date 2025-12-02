@@ -61,7 +61,6 @@
 
 
 
-
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const container = document.getElementById('audioPlayerContainer');
@@ -69,26 +68,33 @@ document.addEventListener('DOMContentLoaded', function () {
     const statusDot = document.getElementById('statusDot');
     const statusText = document.getElementById('statusText');
 
-    // Default: preserve layout, hide content
     container.style.transition = 'opacity 0.3s ease';
-    container.style.visibility = 'visible'; // visible by default
-    container.style.pointerEvents = 'auto';
 
-    // Page load par localStorage se state read karo
+    // LocalStorage read
     const savedState = localStorage.getItem('audioPlayerContainerVisible');
-    if (savedState === 'hidden') {
+
+    if (!savedState) {
+        // FIRST TIME USER → Default OFF
         container.style.visibility = 'hidden';
         container.style.pointerEvents = 'none';
         statusDot.style.background = 'red';
-        statusText.textContent = 'call-Off';
-    } else {
+        statusText.textContent = 'System Off';
+        localStorage.setItem('audioPlayerContainerVisible', 'hidden');
+    } 
+    else if (savedState === 'visible') {
         container.style.visibility = 'visible';
         container.style.pointerEvents = 'auto';
         statusDot.style.background = 'green';
-        statusText.textContent = 'call-On';
+        statusText.textContent = 'System On';
+    } 
+    else {
+        container.style.visibility = 'hidden';
+        container.style.pointerEvents = 'none';
+        statusDot.style.background = 'red';
+        statusText.textContent = 'System Off';
     }
 
-    // Button click par toggle karo
+    // Toggle Button
     toggleButton.addEventListener('click', () => {
         if (container.style.visibility === 'hidden') {
             container.style.visibility = 'visible';
@@ -105,7 +111,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
-</script>
+			</script>
+
 <style>/* Toggle Button Container */
 #toggleContainerButton {
     
