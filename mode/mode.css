@@ -10,9 +10,7 @@
 
 /* container */
 .mode-toggle {
-  position: fixed;
-  right: 48px;
-  bottom: 94.5%;
+  
   width: 64px;
   height: 38px;
   display: inline-flex;
