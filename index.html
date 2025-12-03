@@ -5125,3 +5125,122 @@ window.addEventListener('beforeunload', () => {
 //function showDetail() { alert('Heart clicked'); }
 </script>	
 	            
+
+
+
+
+
+
+
+
+	<style>
+  /* Background blur behind popup */
+  #fs-overlay {
+    position: fixed;
+    inset: 0;
+    backdrop-filter: blur(10px);
+    background: rgba(0,0,0,0.25);
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;   /* bottom */
+    z-index: 999999;
+  }
+
+  /* Bottom Popup */
+  #fs-popup {
+    width: 100%;
+    max-width: 480px;
+    background: rgba(30,30,30,0.55);
+    backdrop-filter: blur(20px);
+    border-radius: 22px 22px 0 0;
+    padding: 25px 28px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 -10px 25px rgba(0,0,0,0.4);
+
+    /* slide up */
+    animation: slideUp 0.38s cubic-bezier(0.25, 1.1, 0.4, 1);
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+  }
+
+  /* SVG Icon */
+  #fs-icon {
+    width: 58px;
+    height: 58px;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 5px 10px rgba(255,70,70,0.5));
+  }
+
+  /* Buttons */
+  .fs-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 14px;
+    border: none;
+    margin-top: 12px;
+    cursor: pointer;
+    transition: 0.25s;
+  }
+
+  #fs-yes {
+    background: linear-gradient(135deg, #ff4b4b, #ff1e1e);
+    color: white;
+    box-shadow: 0 6px 18px rgba(255,40,40,0.35);
+  }
+  #fs-yes:hover {
+    transform: translateY(-2px);
+  }
+
+  #fs-no {
+    background: rgba(255,255,255,0.15);
+    color: white;
+  }
+</style>
+
+<!-- Fullscreen Bottom Popup -->
+<div id="fs-overlay">
+  <div id="fs-popup">
+
+    <!-- Icon -->
+    <svg id="fs-icon" viewBox="0 0 24 24" fill="none" stroke="#ff3333" stroke-width="2" stroke-linecap="round">
+      <path d="M8 3H5a2 2 0 0 0-2 2v3"/>
+      <path d="M16 3h3a2 2 0 0 1 2 2v3"/>
+      <path d="M8 21H5a2 2 0 1 1 -2-2v-3"/>
+      <path d="M16 21h3a2 2 0 0 0 2-2v-3"/>
+      <rect x="8" y="8" width="8" height="8" rx="2"/>
+    </svg>
+
+    <h2 style="margin:0;font-size:20px;">Enter Fullscreen</h2>
+    <p style="margin-top:6px;font-size:14px;color:#ddd;">
+      Continue for the best full-screen experience.
+    </p>
+
+    <button id="fs-yes" class="fs-btn">Continue in Fullscreen</button>
+    <button id="fs-no" class="fs-btn">No Thanks</button>
+
+  </div>
+</div>
+
+<script>
+  async function goFullscreen() {
+    const el = document.documentElement;
+
+    if (el.requestFullscreen) await el.requestFullscreen();
+    else if (el.webkitRequestFullscreen) await el.webkitRequestFullscreen();
+    else if (el.msRequestFullscreen) await el.msRequestFullscreen();
+
+    document.getElementById("fs-overlay").style.display = "none";
+  }
+
+  document.getElementById("fs-yes").addEventListener("click", goFullscreen);
+
+  document.getElementById("fs-no").addEventListener("click", () => {
+    document.getElementById("fs-overlay").style.display = "none";
+  });
+</script>
