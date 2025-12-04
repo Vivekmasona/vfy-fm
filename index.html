@@ -1980,6 +1980,9 @@ function enforceAudioPause(){
     document.querySelectorAll("#SAudio").forEach(a=>{a.pause(); a.currentTime=0;});
 }
 
+
+
+
 // === Play Mini Video Player ===
 function playMiniVideoPlayer(videoId){
     stopVideoIfPlaying();
@@ -2046,12 +2049,21 @@ transition: all 1s ease;">V F Y</div>`);
         else{ ytPlayer.playVideo(); $("#mini-playpause i").removeClass("fa-play").addClass("fa-pause"); }
     });
 
-    $("#mini-fullscreen").click(()=>{
-        if(!isMiniPlayerFullscreen){
-            $(".yt-mini-player").css({width:"100vw",height:"100vh",bottom:0,right:0,borderRadius:0}); isMiniPlayerFullscreen=true;
-        } else{
-            $(".yt-mini-player").css({width:"271px",height:"180px",bottom:"110px",right:"10px",borderRadius:"6px"}); isMiniPlayerFullscreen=false;
+    // ============================
+    // ⭐ NATIVE YOUTUBE FULLSCREEN
+    // ============================
+    function openYTNativeFullscreen(playerId){
+        const iframe = document.querySelector(`#${playerId} iframe`);
+        if(iframe){
+            if(iframe.requestFullscreen) iframe.requestFullscreen();
+            else if(iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
+            else if(iframe.mozRequestFullScreen) iframe.mozRequestFullScreen();
+            else if(iframe.msRequestFullscreen) iframe.msRequestFullscreen();
         }
+    }
+
+    $("#mini-fullscreen").click(()=>{
+        openYTNativeFullscreen(`yt-mini-${videoId}`);
     });
 
     $("#mini-close").click(()=>stopVideoIfPlaying());
@@ -2190,82 +2202,6 @@ function makeMiniPlayerResizable(playerSelector){
         isResizing=false;
     });
 }
-
-// Optional: Handle touch resize for mobile
-function makeMiniPlayerResizableTouch(playerSelector){
-    const player=document.querySelector(playerSelector);
-    let isResizing=false,startX,startY,startWidth,startHeight;
-
-    const resizeHandle=document.createElement("div");
-    resizeHandle.style.width="20px";
-    resizeHandle.style.height="20px";
-    resizeHandle.style.position="absolute";
-    resizeHandle.style.right="0";
-    resizeHandle.style.bottom="0";
-    resizeHandle.style.background="#00ffff";
-    resizeHandle.style.borderRadius="50%";
-    resizeHandle.style.cursor="se-resize";
-    player.appendChild(resizeHandle);
-
-    resizeHandle.addEventListener("touchstart",(e)=>{
-        e.stopPropagation();
-        const touch=e.touches[0];
-        isResizing=true;
-        startX=touch.clientX;
-        startY=touch.clientY;
-        startWidth=player.offsetWidth;
-        startHeight=player.offsetHeight;
-    });
-
-    document.addEventListener("touchmove",(e)=>{
-        if(!isResizing) return;
-        e.preventDefault();
-        const touch=e.touches[0];
-        player.style.width=(startWidth + (touch.clientX - startX)) + "px";
-        player.style.height=(startHeight + (touch.clientY - startY)) + "px";
-    }, {passive:false});
-
-    document.addEventListener("touchend",()=>{ isResizing=false; });
-}
-
-// Apply both mouse and touch resize
-function makeMiniPlayerResizable(playerSelector){
-    makeMiniPlayerResizableTouch(playerSelector);
-    const player = document.querySelector(playerSelector);
-    let isResizing=false,startX,startY,startWidth,startHeight;
-
-    const resizeHandle=document.createElement("div");
-    resizeHandle.style.width="12px";
-    resizeHandle.style.height="12px";
-    resizeHandle.style.background="#00ffff";
-    resizeHandle.style.position="absolute";
-    resizeHandle.style.right="0";
-    resizeHandle.style.bottom="0";
-    resizeHandle.style.cursor="se-resize";
-    player.appendChild(resizeHandle);
-
-    resizeHandle.addEventListener("mousedown",(e)=>{
-        e.stopPropagation();
-        isResizing=true;
-        startX=e.clientX;
-        startY=e.clientY;
-        startWidth=player.offsetWidth;
-        startHeight=player.offsetHeight;
-    });
-
-    document.addEventListener("mousemove",(e)=>{
-        if(!isResizing) return;
-        e.preventDefault();
-        player.style.width=(startWidth + (e.clientX - startX)) + "px";
-        player.style.height=(startHeight + (e.clientY - startY)) + "px";
-    });
-
-    document.addEventListener("mouseup",()=>{ isResizing=false; });
-}
-
-
-    
-    
 
 
 
