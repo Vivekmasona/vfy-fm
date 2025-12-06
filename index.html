@@ -57,7 +57,25 @@
 
 
 
+<style>
+.yt-mini-player.fullscreen {
+    width: 100vw !important;
+    height: 100vh !important;
+    left: 0 !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    border-radius: 0 !important;
+    position: fixed !important;
+    z-index: 999999 !important;
+    overflow: hidden !important;
+    transition: all 0.25s ease !important;
+}
 
+.yt-mini-player {
+    transition: all 0.25s ease !important;
+}
+</style>
 
 
 
@@ -167,29 +185,6 @@ document.addEventListener('DOMContentLoaded', function () {
     color: #00ff00;
     text-shadow: 0 0 6px #00ff00, 0 0 12px rgba(0, 255, 0, 0.6);
 }
-
-
-
-.yt-mini-player.fullscreen {
-    width: 100vw !important;
-    height: 100vh !important;
-    left: 0 !important;
-    top: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    border-radius: 0 !important;
-    position: fixed !important;
-    z-index: 999999 !important;
-    overflow: hidden !important;
-    transition: all 0.25s ease !important;
-}
-
-.yt-mini-player {
-    transition: all 0.25s ease !important;
-}
-
-
-	
 	</style>
 
 
@@ -2006,277 +2001,228 @@ function enforceAudioPause(){
 
 
 
+// === Play Mini Video Player ===
+function playMiniVideoPlayer(videoId){
+    stopVideoIfPlaying();
+    enforceAudioPause();
 
+    // Mini Player Container
+    let overlay=$(`
+<div class="yt-mini-player" style="position:fixed; bottom:110px; right:10px; width:271px; height:180px; background:#111; border-radius:6px; overflow:hidden; z-index:99999; display:flex; flex-direction:column; box-shadow:0 12px 28px rgba(0,0,0,0.7);">
+    <div class="video-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; background:transparent; z-index:998; pointer-events:all;"></div>
+    <div id="yt-mini-${videoId}" style="flex:1; background:black; position:relative; z-index:1;"></div>
+    <div class="mini-control-bar" style="height:50px; width:100%; display:flex; align-items:center; justify-content:space-between; padding:0 12px; backdrop-filter: blur(4px); background: rgba(255,255,255,0.08); border-top:1px solid rgba(255,255,255,0.15); z-index:999; pointer-events:auto;">
+        <button id="mini-playpause" style="color:#00ffff; border:none; background:none; cursor:pointer; font-size:20px; margin-right:8px; text-shadow:0 0 8px #00ffff;"><i class="fas fa-pause"></i></button>
+        <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="flex:1; margin:0 8px; -webkit-appearance:none; height:4px; border-radius:2px; background:linear-gradient(to right,#ff6a00,#ee0979); box-shadow:0 0 8px #ff6a00,0 0 12px #ee0979; cursor:pointer;">
+        <button id="mini-fullscreen" style="color:#00ffff; border:none; background:none; cursor:pointer; font-size:20px; margin-right:8px; text-shadow:0 0 8px #00ffff;"><i class="fas fa-expand"></i></button>
+        <button id="mini-auto-next" style="width:18px; height:18px; border-radius:50%; margin-right:8px; border:none; cursor:pointer;"></button>
+        <button id="mini-close" style="color:#ff4f4f; border:none; background:none; cursor:pointer; font-size:22px; text-shadow:0 0 8px #ff4f4f;"><i class="fa fa-close"></i></button>
+    </div>
+</div>`);
 
-    
-    
-// === Play Mini Video Player ===  
-function playMiniVideoPlayer(videoId){  
-    stopVideoIfPlaying();  
-    enforceAudioPause();  
+    $("body").append(overlay);
 
-    // Mini Player Container  
-    let overlay = $(`  
-<div class="yt-mini-player" style="position:fixed; bottom:110px; right:10px; width:271px; height:180px; background:#111; border-radius:6px; overflow:hidden; z-index:99999; display:flex; flex-direction:column; box-shadow:0 12px 28px rgba(0,0,0,0.7);">  
-    <div class="video-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; background:transparent; z-index:998; pointer-events:all;"></div>  
-    <div id="yt-mini-${videoId}" style="flex:1; background:black; position:relative; z-index:1;"></div>  
+    // Auto-next toggle
+    const autoNextBtn=$("#mini-auto-next");
+    autoNextBtn.css("background",isAutoNext?"#00ff00":"#555");
+    autoNextBtn.click(()=>{ isAutoNext=!isAutoNext; autoNextBtn.css("background",isAutoNext?"#00ff00":"#555"); });
 
-    <div class="mini-control-bar" style="height:50px; width:100%; display:flex; align-items:center; justify-content:space-between; padding:0 12px; backdrop-filter: blur(4px); background: rgba(255,255,255,0.08); border-top:1px solid rgba(255,255,255,0.15); z-index:999; pointer-events:auto;">  
-        <button id="mini-playpause" style="color:#00ffff; border:none; background:none; cursor:pointer; font-size:20px; margin-right:8px; text-shadow:0 0 8px #00ffff;"><i class="fas fa-pause"></i></button>  
-        <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="flex:1; margin:0 8px; -webkit-appearance:none; height:4px; border-radius:2px; background:linear-gradient(to right,#ff6a00,#ee0979); box-shadow:0 0 8px #ff6a00,0 0 12px #ee0979; cursor:pointer;">  
-        <button id="mini-fullscreen" style="color:#00ffff; border:none; background:none; cursor:pointer; font-size:20px; margin-right:8px; text-shadow:0 0 8px #00ffff;"><i class="fas fa-expand"></i></button>  
-        <button id="mini-auto-next" style="width:18px; height:18px; border-radius:50%; margin-right:8px; border:none; cursor:pointer;"></button>  
-        <button id="mini-close" style="color:#ff4f4f; border:none; background:none; cursor:pointer; font-size:22px; text-shadow:0 0 8px #ff4f4f;"><i class="fa fa-close"></i></button>  
-    </div>  
-</div>`);  
+    // V F Y pre-roll overlay
+    function showVFYOverlay(){
+        $(".vfy-overlay").remove();
+        let vfy=$(`
+<div class="vfy-overlay" style="
+position:absolute;top:0;left:0;width:100%;height:100%; display:flex;justify-content:center;align-items:center;
+background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);
+z-index:100000;font-family:'Khula',sans-serif;font-size:36px;font-weight:700;
+color:#00ffff;text-shadow:0 0 8px #00ffff,0 0 16px #00ffff;
+transition: all 1s ease;">V F Y</div>`);
+        $(`#yt-mini-${videoId}`).append(vfy);
+        setTimeout(()=>vfy.css({top:'-50px',opacity:0}),1000);
+        setTimeout(()=>vfy.remove(),2000);
+    }
 
-    $("body").append(overlay);  
+    $(`#yt-mini-${videoId}`).click(()=>{ showVFYOverlay(); });
+    showVFYOverlay();
 
-    // Auto-next toggle  
-    const autoNextBtn = $("#mini-auto-next");  
-    autoNextBtn.css("background", isAutoNext ? "#00ff00" : "#555");  
-    autoNextBtn.click(()=>{  
-        isAutoNext = !isAutoNext;  
-        autoNextBtn.css("background", isAutoNext ? "#00ff00" : "#555");  
-    });  
+    // === YT Player ===
+    ytPlayer=new YT.Player(`yt-mini-${videoId}`,{
+        videoId:videoId,
+        width:"100%",
+        height:"100%",
+        playerVars:{autoplay:1,controls:0,modestbranding:1,rel:0,showinfo:0},
+        events:{
+            onReady:e=>{ e.target.playVideo(); isPlaying=true; updateSeekBar(); makeMiniPlayerLongPressDraggable(".yt-mini-player"); makeMiniPlayerResizable(".yt-mini-player"); },
+            onStateChange:event=>{
+                if(event.data===YT.PlayerState.ENDED && isAutoNext) playNextVideo();
+            }
+        }
+    });
 
-    // V F Y overlay  
-    function showVFYOverlay(){  
-        $(".vfy-overlay").remove();  
-        let vfy = $(`  
-<div class="vfy-overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;justify-content:center;align-items:center;background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);z-index:100000;font-family:'Khula',sans-serif;font-size:36px;font-weight:700;color:#00ffff;text-shadow:0 0 8px #00ffff,0 0 16px #00ffff;transition: all 1s ease;">V F Y</div>`);  
-        $(`#yt-mini-${videoId}`).append(vfy);  
-        setTimeout(()=>vfy.css({top:'-50px',opacity:0}),1000);  
-        setTimeout(()=>vfy.remove(),2000);  
-    }  
+    // Controls
+    $("#mini-playpause").click(()=>{
+        if(!ytPlayer) return;
+        const state=ytPlayer.getPlayerState();
+        if(state===YT.PlayerState.PLAYING){ ytPlayer.pauseVideo(); $("#mini-playpause i").removeClass("fa-pause").addClass("fa-play"); }
+        else{ ytPlayer.playVideo(); $("#mini-playpause i").removeClass("fa-play").addClass("fa-pause"); }
+    });
 
-    $(`#yt-mini-${videoId}`).click(()=>{ showVFYOverlay(); });  
-    showVFYOverlay();  
+    // ============================
+    // ⭐ NATIVE YOUTUBE FULLSCREEN
+    // ============================
+    function openYTNativeFullscreen(playerId){
+        const iframe = document.querySelector(`#${playerId} iframe`);
+        if(iframe){
+            if(iframe.requestFullscreen) iframe.requestFullscreen();
+            else if(iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
+            else if(iframe.mozRequestFullScreen) iframe.mozRequestFullScreen();
+            else if(iframe.msRequestFullscreen) iframe.msRequestFullscreen();
+        }
+    }
 
-    // === YT Player ===  
-    ytPlayer = new YT.Player(`yt-mini-${videoId}`,{  
-        videoId: videoId,  
-        width: "100%",  
-        height: "100%",  
-        playerVars:{ autoplay:1, controls:0, modestbranding:1, rel:0, showinfo:0 },  
-        events:{  
-            onReady:e=>{  
-                e.target.playVideo();  
-                isPlaying=true;  
-                updateSeekBar();  
-                makeMiniPlayerLongPressDraggable(".yt-mini-player");  
-                makeMiniPlayerResizable(".yt-mini-player");  
-            },  
-            onStateChange:event=>{  
-                if(event.data===YT.PlayerState.ENDED && isAutoNext) playNextVideo();  
-            }  
-        }  
-    });  
+    $("#mini-fullscreen").click(()=>{
+        openYTNativeFullscreen(`yt-mini-${videoId}`);
+    });
 
-    // Play / Pause  
-    $("#mini-playpause").click(()=>{  
-        if(!ytPlayer) return;  
-        const state=ytPlayer.getPlayerState();  
-        if(state===YT.PlayerState.PLAYING){  
-            ytPlayer.pauseVideo();  
-            $("#mini-playpause i").removeClass("fa-pause").addClass("fa-play");  
-        } else {  
-            ytPlayer.playVideo();  
-            $("#mini-playpause i").removeClass("fa-play").addClass("fa-pause");  
-        }  
-    });  
+    $("#mini-close").click(()=>stopVideoIfPlaying());
 
-    // === PERFECT FULLSCREEN CODE ===  
-    $("#mini-fullscreen").click(() => {  
-        const player = document.querySelector(".yt-mini-player");  
+    $("#mini-seekbar").on("input",function(){
+        if(!ytPlayer) return;
+        const dur=ytPlayer.getDuration();
+        ytPlayer.seekTo((this.value/100)*dur,true);
+    });
 
-        if (!document.fullscreenElement) {  
-            player.classList.add("fullscreen");  
+    function updateSeekBar(){
+        if(!ytPlayer) return;
+        const state=ytPlayer.getPlayerState();
+        if(state===YT.PlayerState.PLAYING||state===YT.PlayerState.PAUSED){
+            const cur=ytPlayer.getCurrentTime();
+            const dur=ytPlayer.getDuration();
+            if(dur>0) $("#mini-seekbar").val((cur/dur)*100);
+        }
+        requestAnimationFrame(updateSeekBar);
+    }
+}
 
-            if (player.requestFullscreen) player.requestFullscreen();  
-            else if (player.webkitRequestFullscreen) player.webkitRequestFullscreen();  
+// Auto next video
+function playNextVideo(){
+    if(!currentVideoListItem) return;
+    let nextDiv=currentVideoListItem.parentElement.nextElementSibling;
+    if(nextDiv){
+        let nextItem=nextDiv.querySelector(".music-item");
+        if(nextItem){
+            setCurrentVideo(nextItem);
+            playMiniVideoPlayer($(nextItem).attr("vid"));
+        }
+    }
+}
 
-            isMiniPlayerFullscreen = true;  
-        } else {  
-            document.exitFullscreen();  
-        }  
-    });  
+// Prevent Audio play during video
+document.addEventListener("play",e=>{
+    if(isVideoMode && ytPlayer && isPlaying && e.target.id==="SAudio") e.target.pause();
+},true);
 
-    // ESC / Back → auto normal  
-    document.addEventListener("fullscreenchange", () => {  
-        const player = $(".yt-mini-player");  
+// === Long Press Drag ===
+function makeMiniPlayerLongPressDraggable(playerSelector){
+    const player = document.querySelector(playerSelector);
+    let isDragging=false;
+    let startX, startY;
+    let longPressTimer=null;
 
-        if (!document.fullscreenElement) {  
-            player.removeClass("fullscreen");  
-            isMiniPlayerFullscreen = false;  
+    player.addEventListener("mousedown",(e)=>{
+        e.preventDefault();
+        longPressTimer=setTimeout(()=>{
+            isDragging=true;
+            startX=e.clientX - player.offsetLeft;
+            startY=e.clientY - player.offsetTop;
+            player.style.cursor="grabbing";
+        },500);
+    });
 
-            player.css({  
-                width:"271px",  
-                height:"180px",  
-                bottom:"110px",  
-                right:"10px",  
-                borderRadius:"6px"  
-            });  
-        }  
-    });  
+    player.addEventListener("touchstart",(e)=>{
+        longPressTimer=setTimeout(()=>{
+            isDragging=true;
+            const touch=e.touches[0];
+            startX=touch.clientX - player.offsetLeft;
+            startY=touch.clientY - player.offsetTop;
+            player.style.cursor="grabbing";
+        },500);
+    });
 
-    // Close  
-    $("#mini-close").click(()=>stopVideoIfPlaying());  
+    const cancelLongPress = ()=>{
+        clearTimeout(longPressTimer);
+    };
+    player.addEventListener("mouseup",cancelLongPress);
+    player.addEventListener("mouseleave",cancelLongPress);
+    player.addEventListener("touchend",cancelLongPress);
+    player.addEventListener("touchcancel",cancelLongPress);
 
-    // Seekbar  
-    $("#mini-seekbar").on("input", function(){  
-        if(!ytPlayer) return;  
-        const dur = ytPlayer.getDuration();  
-        ytPlayer.seekTo((this.value/100)*dur, true);  
-    });  
+    const moveDrag = (e)=>{
+        if(!isDragging) return;
+        e.preventDefault();
+        let clientX, clientY;
+        if(e.type.startsWith("touch")){
+            clientX=e.touches[0].clientX;
+            clientY=e.touches[0].clientY;
+        } else {
+            clientX=e.clientX;
+            clientY=e.clientY;
+        }
+        player.style.left=(clientX-startX)+"px";
+        player.style.top=(clientY-startY)+"px";
+        player.style.position="fixed";
+    };
 
-    function updateSeekBar(){  
-        if(!ytPlayer) return;  
-        const state=ytPlayer.getPlayerState();  
-        if(state===YT.PlayerState.PLAYING || state===YT.PlayerState.PAUSED){  
-            const cur=ytPlayer.getCurrentTime();  
-            const dur=ytPlayer.getDuration();  
-            if(dur>0) $("#mini-seekbar").val((cur/dur)*100);  
-        }  
-        requestAnimationFrame(updateSeekBar);  
-    }  
-}  
+    document.addEventListener("mousemove",moveDrag);
+    document.addEventListener("touchmove",moveDrag,{passive:false});
 
-// Auto next video  
-function playNextVideo(){  
-    if(!currentVideoListItem) return;  
-    let nextDiv=currentVideoListItem.parentElement.nextElementSibling;  
-    if(nextDiv){  
-        let nextItem=nextDiv.querySelector(".music-item");  
-        if(nextItem){  
-            setCurrentVideo(nextItem);  
-            playMiniVideoPlayer($(nextItem).attr("vid"));  
-        }  
-    }  
-}  
+    const releaseDrag = ()=>{
+        if(isDragging) player.style.cursor="grab";
+        isDragging=false;
+    };
+    document.addEventListener("mouseup",releaseDrag);
+    document.addEventListener("touchend",releaseDrag);
+    document.addEventListener("touchcancel",releaseDrag);
+}
 
-// Prevent Audio play during video  
-document.addEventListener("play", e => {  
-    if(isVideoMode && ytPlayer && isPlaying && e.target.id==="SAudio")  
-        e.target.pause();  
-}, true);  
+// === Resize from bottom-right corner ===
+function makeMiniPlayerResizable(playerSelector){
+    const player = document.querySelector(playerSelector);
+    let isResizing=false,startX,startY,startWidth,startHeight;
 
-// === Drag (Long Press) ===  
-function makeMiniPlayerLongPressDraggable(playerSelector){  
-    const player = document.querySelector(playerSelector);  
-    let isDragging=false;  
-    let startX,startY;  
-    let longPressTimer=null;  
+    const resizeHandle=document.createElement("div");
+    resizeHandle.style.width="12px";
+    resizeHandle.style.height="12px";
+    resizeHandle.style.background="#00ffff";
+    resizeHandle.style.position="absolute";
+    resizeHandle.style.right="0";
+    resizeHandle.style.bottom="0";
+    resizeHandle.style.cursor="se-resize";
+    player.appendChild(resizeHandle);
 
-    player.addEventListener("mousedown",(e)=>{  
-        e.preventDefault();  
-        longPressTimer=setTimeout(()=>{  
-            isDragging=true;  
-            startX=e.clientX - player.offsetLeft;  
-            startY=e.clientY - player.offsetTop;  
-            player.style.cursor="grabbing";  
-        },500);  
-    });  
+    resizeHandle.addEventListener("mousedown",(e)=>{
+        e.stopPropagation();
+        isResizing=true;
+        startX=e.clientX;
+        startY=e.clientY;
+        startWidth=player.offsetWidth;
+        startHeight=player.offsetHeight;
+    });
 
-    player.addEventListener("touchstart",(e)=>{  
-        longPressTimer=setTimeout(()=>{  
-            isDragging=true;  
-            const t=e.touches[0];  
-            startX=t.clientX - player.offsetLeft;  
-            startY=t.clientY - player.offsetTop;  
-            player.style.cursor="grabbing";  
-        },500);  
-    });  
+    document.addEventListener("mousemove",(e)=>{
+        if(!isResizing) return;
+        e.preventDefault();
+        player.style.width=(startWidth + (e.clientX - startX)) + "px";
+        player.style.height=(startHeight + (e.clientY - startY)) + "px";
+    });
 
-    const cancelLongPress = ()=> clearTimeout(longPressTimer);  
-    player.addEventListener("mouseup",cancelLongPress);  
-    player.addEventListener("mouseleave",cancelLongPress);  
-    player.addEventListener("touchend",cancelLongPress);  
-    player.addEventListener("touchcancel",cancelLongPress);  
-
-    const moveDrag = (e)=>{  
-        if(!isDragging) return;  
-        e.preventDefault();  
-        let x,y;  
-        if(e.type.includes("touch")){  
-            x=e.touches[0].clientX;  
-            y=e.touches[0].clientY;  
-        } else {  
-            x=e.clientX;  
-            y=e.clientY;  
-        }  
-        player.style.left = (x-startX)+"px";  
-        player.style.top  = (y-startY)+"px";  
-        player.style.position="fixed";  
-    };  
-
-    document.addEventListener("mousemove",moveDrag);  
-    document.addEventListener("touchmove",moveDrag,{passive:false});  
-
-    document.addEventListener("mouseup",()=>{ isDragging=false; player.style.cursor="grab"; });  
-    document.addEventListener("touchend",()=>{ isDragging=false; player.style.cursor="grab"; });  
-}  
-
-// === Resize (Mouse + Touch) ===  
-function makeMiniPlayerResizable(playerSelector){  
-    const player=document.querySelector(playerSelector);  
-    let isResizing=false,startX,startY,startW,startH;  
-
-    const handle=document.createElement("div");  
-    handle.style.width="14px";  
-    handle.style.height="14px";  
-    handle.style.background="#00ffff";  
-    handle.style.position="absolute";  
-    handle.style.right="0";  
-    handle.style.bottom="0";  
-    handle.style.cursor="se-resize";  
-    player.appendChild(handle);  
-
-    handle.addEventListener("mousedown",(e)=>{  
-        e.stopPropagation();  
-        isResizing=true;  
-        startX=e.clientX;  
-        startY=e.clientY;  
-        startW=player.offsetWidth;  
-        startH=player.offsetHeight;  
-    });  
-
-    document.addEventListener("mousemove",(e)=>{  
-        if(!isResizing) return;  
-        e.preventDefault();  
-        player.style.width = (startW + (e.clientX - startX))+"px";  
-        player.style.height = (startH + (e.clientY - startY))+"px";  
-    });  
-
-    document.addEventListener("mouseup",()=>{ isResizing=false; });  
-
-    // Touch  
-    handle.addEventListener("touchstart",(e)=>{  
-        const t=e.touches[0];  
-        isResizing=true;  
-        startX=t.clientX;  
-        startY=t.clientY;  
-        startW=player.offsetWidth;  
-        startH=player.offsetHeight;  
-    });  
-
-    document.addEventListener("touchmove",(e)=>{  
-        if(!isResizing) return;  
-        const t=e.touches[0];  
-        player.style.width = (startW + (t.clientX - startX))+"px";  
-        player.style.height = (startH + (t.clientY - startY))+"px";  
-    },{passive:false});  
-
-    document.addEventListener("touchend",()=>{ isResizing=false; });  
+    document.addEventListener("mouseup",()=>{
+        isResizing=false;
+    });
 }
 
 
 
-
-
-
-
-	
 
 
 	
