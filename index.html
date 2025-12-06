@@ -257,171 +257,160 @@ window.addEventListener('scroll', () => {
     
 
 
-<!-- Fullscreen Stylish Loader -->
-<div id="loader" style="
-  position:fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background:#000;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  z-index:9999999;
-  font-family:sans-serif;
-  text-align:center;
-  transition:opacity .5s;
-">
 
-  <!-- Logo -->
-  <h1 style="margin:0 0 10px 0; font-weight:bold; display:flex; align-items:center; gap:10px; position:relative;">
-    <span id="vLetter" style="
-      display:inline-block;
-      width:40px; height:40px;
-      position:absolute;
-      left:-10px; top:20px;
-      background:red;
-      border-radius:3px;
-    "></span>
-    <span style="
-      font-size:80px;
-      color:#00ffff;
-      text-shadow:0 0 10px #00ffff,0 0 20px #00ffff;
-      position:relative;
-    ">V</span>
-    <span id="fyLetters" style="
-      font-size:40px;
-      color:#dadada;
-      text-shadow:0 0 5px #dadada,0 0 10px #dadada;
-      opacity:0;
-      transition:opacity 1.5s;
-    ">F Y</span>
-  </h1>
+      
+    
+    
+  <!-- Smart Neon App Loader -->
+<style>
+  #smartLoader {
+    position: fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    backdrop-filter: blur(12px) brightness(0.45);
+    background: rgba(0,0,0,0.55);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    z-index:99999999;
+    font-family: Poppins, sans-serif;
+    color:#fff;
+    transition: opacity .6s;
+  }
 
-  <!-- Slogan -->
-  <p style="
-    font-size:20px;
-    font-weight:bold;
-    color:#dadada;
-    text-shadow:0 0 10px #dadada,0 0 20px #dadada;
-    margin-bottom:20px;
-  ">V F Y On- Depression Is Gone</p>
+  .titleWrap {
+    text-align:center;
+    margin-bottom:25px;
+  }
 
-  <!-- Loader Bar -->
-  <div style="
-    width:200px; height:4px;
-    background:#222;
-    border-radius:2px;
+  .mainLogo {
+    font-size:70px;
+    font-weight:900;
+    color:#00ffff;
+    text-shadow:0 0 15px #00ffff, 0 0 30px #00ffff;
+    animation: glowPulse 2s infinite alternate;
+  }
+
+  @keyframes glowPulse {
+    from { text-shadow:0 0 8px #00ffff; transform:scale(1); }
+    to   { text-shadow:0 0 25px #00ffff; transform:scale(1.04); }
+  }
+
+  .subtitle {
+    font-size:18px;
+    opacity:0.8;
+    margin-top:5px;
+    letter-spacing:2px;
+  }
+
+  /* Loader Bar */
+  #smartBar {
+    width:240px;
+    height:6px;
+    background:#1d1d1d;
+    border-radius:4px;
     overflow:hidden;
-    margin-bottom:10px;
-  ">
-    <div id="bar" style="
-      height:100%;
-      width:0%;
-      background:#00ffff;
-      box-shadow:0 0 10px #00ffff,0 0 20px #00ffff, 0 0 30px #00ffff inset;
-      transition:width .3s;
-    "></div>
+    box-shadow:0 0 10px #00ffff55 inset;
+    margin-top:10px;
+  }
+
+  #smartProgress {
+    width:0%;
+    height:100%;
+    background:#00ffff;
+    box-shadow:0 0 18px #00ffff;
+    transition:width .3s linear;
+  }
+
+  .stepText {
+    margin-top:12px;
+    font-size:16px;
+    opacity:0.8;
+    text-shadow:0 0 10px #00ffff;
+  }
+
+  .footerDev {
+    position:absolute;
+    bottom:12px;
+    font-size:13px;
+    opacity:0.4;
+  }
+</style>
+
+<div id="smartLoader">
+  <div class="titleWrap">
+    <div class="mainLogo">V F Y</div>
+    <div class="subtitle">ON — DEPRESSION IS GONE</div>
   </div>
 
-  <!-- Percentage -->
-  <span id="percent" style="
-    color:#00ffff;
-    text-shadow:0 0 5px #00ffff,0 0 10px #00ffff;
-    margin-bottom:20px;
-    display:block;
-  ">0%</span>
+  <!-- Progress Bar -->
+  <div id="smartBar"><div id="smartProgress"></div></div>
 
-  <!-- Error message (hidden initially) -->
-  <p id="errorMsg" style="
-    display:none;
-    color:red;
-    font-size:16px;
-    font-weight:bold;
-    margin-top:10px;
-    text-shadow:0 0 5px red,0 0 10px red;
-  "></p>
+  <div class="stepText" id="loaderStep">Starting…</div>
 
-  <!-- Footer -->
-  <p style="
-    position:absolute;
-    bottom:10px;
-    font-size:12px;
-    color:#dadada;
-  "> {•v•} developer vivekmasona</p>
+  <div class="footerDev">{•v•} Developer Vivek Masona</div>
 </div>
 
-      <script>
-const bar = document.getElementById("bar");
-const text = document.getElementById("percent");
-const fyLetters = document.getElementById("fyLetters");
-const loader = document.getElementById("loader");
-const errorMsg = document.getElementById("errorMsg");
+<script>
+(function(){
+  const loader = document.getElementById("smartLoader");
+  const bar = document.getElementById("smartProgress");
+  const step = document.getElementById("loaderStep");
 
-// Try detecting device RAM
-let deviceRAM = navigator.deviceMemory || 0;
-console.log("Detected Device RAM:", deviceRAM, "GB");
+  let ram = navigator.deviceMemory || 0;
+  console.log("Detected RAM:", ram);
 
-// === Minimum required RAM ===
-const MIN_RAM = 4;
+  const steps = [
+    "Checking System Performance…",
+    "Optimizing App Engine…",
+    "Loading Assets…",
+    "Configuring UI…",
+    "Finalizing…"
+  ];
 
-// If RAM < 4 GB and value is valid
-if (deviceRAM && deviceRAM < MIN_RAM) {
-  loader.innerHTML = `
-    <h1 style="color:#ff3333; font-size:40px;">⚠️ Device Not Supported</h1>
-    <p style="color:#dadada; font-size:18px;">Your device has only <b>${deviceRAM} GB RAM</b>.<br>
-    This app requires at least <b>${MIN_RAM} GB RAM</b> to run smoothly.</p>
-    <p style="margin-top:20px; color:#999;">Please use a higher-performance device.</p>
-  `;
-} else {
-  // Normal loader animation
-  let percent = 0;
-  let interval = setInterval(() => {
-    if (percent < 75) {
-      percent += 5;
-      if (percent > 75) percent = 75;
-      bar.style.width = percent + "%";
-      text.textContent = percent + "%";
-      if (percent >= 40 && fyLetters.style.opacity === "0") {
-        fyLetters.style.opacity = "1";
-      }
-    } else {
-      clearInterval(interval);
+  let p = 0, stepIndex = 0;
+
+  // If RAM < 4GB
+  if(ram && ram < 4){
+    loader.innerHTML = `
+      <h1 style="color:#ff5050;text-shadow:0 0 10px red;">⚠️ Unsupported Device</h1>
+      <p>Your device has only <b>${ram}GB</b> RAM.</p>
+      <p>This app requires at least <b>4GB RAM</b> for smooth performance.</p>
+    `;
+    return;
+  }
+
+  // Progress Simulation
+  let loadInterval = setInterval(()=>{
+    p += Math.random()*8 + 3; // fast but smooth
+    if(p > 100) p = 100;
+
+    bar.style.width = p + "%";
+
+    if(p > (stepIndex+1)*20 && stepIndex < steps.length){
+      step.innerText = steps[stepIndex++];
     }
-  }, 600);
 
-  // Continue to 100% after page loads
-  window.addEventListener("load", () => {
-    let start = percent;
-    let end = 100;
-    let steps = 10;
-    let stepValue = (end - start) / steps;
-    let i = 0;
-    let fast = setInterval(() => {
-      percent = Math.min(100, Math.floor(start + stepValue * i));
-      bar.style.width = percent + "%";
-      text.textContent = percent + "%";
-      i++;
-      if (percent >= 100) {
-        clearInterval(fast);
-        setTimeout(() => {
-          loader.style.opacity = "0";
-          setTimeout(() => loader.style.display = "none", 500);
+    if(p >= 100){
+      clearInterval(loadInterval);
 
-          // Play welcome sound
-          const audio = new Audio('/sound/fw.mp3');
-          audio.volume = 1.0;
-          audio.play().catch(e => console.log("Autoplay blocked", e));
-        }, 200);
-      }
-    }, 100);
-  });
-}
+      step.innerText = "Welcome!";
 
-// Fallback: If RAM detection unsupported (0)
-if (deviceRAM === 0) {
-  console.log("Device RAM not detectable, skipping restriction.");
-}
+      setTimeout(()=>{
+        loader.style.opacity = "0";
+        setTimeout(()=> loader.remove(), 600);
+
+        // Welcome Sound
+        const audio = new Audio('/sound/fw.mp3');
+        audio.volume = 1;
+        audio.play().catch(()=>{});
+      }, 500);
+    }
+
+  }, 400);
+
+})();
 </script>
     
 
