@@ -1912,32 +1912,12 @@ let isAutoNext = true;
 
 
 
-// --- DEFAULT VIDEO MODE ---
-let isVideoMode = true;
-
-// Checkbox element
-const modeToggle = document.getElementById("modeToggleBtn");
-
-// Page load par checkbox ko ON rakho (Video Mode)
-modeToggle.checked = true;
-
-// Toggle change event
-modeToggle.addEventListener("change", () => {
-    isVideoMode = modeToggle.checked;
-
-    console.log("Current Mode:", isVideoMode ? "Video Mode" : "Audio Mode");
-
-    // Yaha ap video/audio ka function chala sakte ho:
-    if (isVideoMode) {
-        // VIDEO MODE ON
-        console.log("▶ Video Mode Activated");
-    } else {
-        // AUDIO MODE ON
-        console.log("🎧 Audio Mode Activated");
-    }
-});
-
-
+// === Mode Toggle Button ===    
+document.getElementById("modeToggleBtn").addEventListener("click", () => {    
+    isAudioMode = !isAudioMode;    
+    document.getElementById("modeToggleBtn").innerText = `Mode: ${isAudioMode ? 'Audio' : 'Video'}`;    
+});    
+    
 	
 
 // === Generate List Item ===
