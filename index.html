@@ -1908,10 +1908,17 @@ let isVideoMode = false;
 let isMiniPlayerFullscreen = false;
 let isAutoNext = true;
 
+// === Default Mode ===
+let isVideoMode = true;   // Start in Video mode
+
+// Set initial button text
+document.getElementById("modeToggleBtn").innerText = "Mode: Video";
+
 // === Mode Toggle Button ===
 document.getElementById("modeToggleBtn").addEventListener("click", () => {
     isVideoMode = !isVideoMode;
-    document.getElementById("modeToggleBtn").innerText = `Mode: ${isVideoMode ? 'Video' : 'Audio'}`;
+    document.getElementById("modeToggleBtn").innerText =
+        `Mode: ${isVideoMode ? 'Video' : 'Audio'}`;
 });
 
 // === Generate List Item ===
