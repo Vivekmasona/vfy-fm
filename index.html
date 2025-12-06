@@ -1900,6 +1900,7 @@ function paginate(direction) {
   fetchResults(apiUrl);
 }
 
+	
 // === Global Variables ===
 let currentVideoListItem = null;
 let ytPlayer = null;
@@ -1908,17 +1909,27 @@ let isVideoMode = false;
 let isMiniPlayerFullscreen = false;
 let isAutoNext = true;
 
-// === Default Mode ===
-let isVideoMode = true;   // Start in Video mode
+// Default: VIDEO MODE ON
+let isVideoMode = true;
 
-// Set initial button text
-document.getElementById("modeToggleBtn").innerText = "Mode: Video";
+// Checkbox ko default checked set karein (Video Mode)
+const toggleCheckbox = document.getElementById("modeToggleBtn");
+toggleCheckbox.checked = true;
 
-// === Mode Toggle Button ===
-document.getElementById("modeToggleBtn").addEventListener("click", () => {
-    isVideoMode = !isVideoMode;
-    document.getElementById("modeToggleBtn").innerText =
-        `Mode: ${isVideoMode ? 'Video' : 'Audio'}`;
+// Toggle event
+toggleCheckbox.addEventListener("change", () => {
+    isVideoMode = toggleCheckbox.checked;
+
+    console.log("Mode:", isVideoMode ? "Video" : "Audio");
+
+    // === Yaha aap apna audio/video switching code likh sakte ho ===
+    if (isVideoMode) {
+        // video mode on
+        // yourVideoPlayer.play();
+    } else {
+        // audio mode on
+        // yourAudioPlayer.play();
+    }
 });
 
 // === Generate List Item ===
