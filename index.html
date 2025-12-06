@@ -1909,28 +1909,36 @@ let isVideoMode = false;
 let isMiniPlayerFullscreen = false;
 let isAutoNext = true;
 
-// Default: VIDEO MODE ON
+
+
+
+// --- DEFAULT VIDEO MODE ---
 let isVideoMode = true;
 
-// Checkbox ko default checked set karein (Video Mode)
-const toggleCheckbox = document.getElementById("modeToggleBtn");
-toggleCheckbox.checked = true;
+// Checkbox element
+const modeToggle = document.getElementById("modeToggleBtn");
 
-// Toggle event
-toggleCheckbox.addEventListener("change", () => {
-    isVideoMode = toggleCheckbox.checked;
+// Page load par checkbox ko ON rakho (Video Mode)
+modeToggle.checked = true;
 
-    console.log("Mode:", isVideoMode ? "Video" : "Audio");
+// Toggle change event
+modeToggle.addEventListener("change", () => {
+    isVideoMode = modeToggle.checked;
 
-    // === Yaha aap apna audio/video switching code likh sakte ho ===
+    console.log("Current Mode:", isVideoMode ? "Video Mode" : "Audio Mode");
+
+    // Yaha ap video/audio ka function chala sakte ho:
     if (isVideoMode) {
-        // video mode on
-        // yourVideoPlayer.play();
+        // VIDEO MODE ON
+        console.log("▶ Video Mode Activated");
     } else {
-        // audio mode on
-        // yourAudioPlayer.play();
+        // AUDIO MODE ON
+        console.log("🎧 Audio Mode Activated");
     }
 });
+
+
+	
 
 // === Generate List Item ===
 function getOutput(item, i){
