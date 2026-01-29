@@ -62,14 +62,32 @@
 <script>
   window.addEventListener("load", () => {
     const toggle = document.getElementById("modeToggleBtn");
+    const footer = document.getElementById("footer"); // ← apna footer id yahan
+
+    function updateFooter() {
+      if (toggle.checked) {
+        // VIDEO MODE → footer hide
+        footer.style.display = "none";
+      } else {
+        // AUDIO MODE → footer show
+        footer.style.display = "";
+      }
+    }
 
     setTimeout(() => {
-      // ensure starting state
+      // ensure starting state = audio
       toggle.checked = false;
 
-      // ab click karne par VIDEO side pe jayega
+      // video mode pe le jao
       toggle.click();
+
+      // footer sync
+      updateFooter();
     }, 200);
+
+    // manual toggle pe bhi sync rahe
+    toggle.addEventListener("change", updateFooter);
+    toggle.addEventListener("click", updateFooter);
   });
 </script>
 
