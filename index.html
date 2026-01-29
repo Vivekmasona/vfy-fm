@@ -57,52 +57,21 @@
 <b onclick="alert('This is a stylish alert!')"></b>
 
 
-<script>  
-  window.addEventListener("load", () => {  
-    const toggle = document.getElementById("modeToggleBtn");  
-    const footer = document.querySelector(".fixed-footer");
-    const progressBar = document.querySelector(".progressBarContainer");
 
-    setTimeout(() => {  
-      // ensure starting state  
-      toggle.checked = false;  
 
-      // click → VIDEO MODE
-      toggle.click();  
+<script>
+  window.addEventListener("load", () => {
+    const toggle = document.getElementById("modeToggleBtn");
 
-      // initial apply
-      updateVisibility();
-    }, 200);  
+    setTimeout(() => {
+      // ensure starting state
+      toggle.checked = false;
 
-    // toggle change pe update
-    toggle.addEventListener("change", updateVisibility);
-
-    function updateVisibility() {
-      if (toggle.checked) {
-        // 🎥 VIDEO MODE → hide
-        if (footer) {
-          footer.style.opacity = "0";
-          footer.style.pointerEvents = "none";
-        }
-        if (progressBar) {
-          progressBar.style.opacity = "0";
-          progressBar.style.pointerEvents = "none";
-        }
-      } else {
-        // 🎧 AUDIO MODE → show
-        if (footer) {
-          footer.style.opacity = "1";
-          footer.style.pointerEvents = "auto";
-        }
-        if (progressBar) {
-          progressBar.style.opacity = "1";
-          progressBar.style.pointerEvents = "auto";
-        }
-      }
-    }
-  });  
+      // ab click karne par VIDEO side pe jayega
+      toggle.click();
+    }, 200);
+  });
 </script>
-
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -2541,7 +2510,42 @@ function loadSong(song, ind) {
 //});
 
 
+// ---- RESUME LAST SONG ON PAGE LOAD ----
+window.addEventListener("load", function () {
+    var lastId = localStorage.getItem("lastPlayedId");
+    if (!lastId) return;
 
+    var songsCache = JSON.parse(localStorage.getItem("songsCache") || "{}");
+    var songInfo = songsCache[lastId];
+
+    if (songInfo) {
+        var dummy = $('<div>')
+            .attr("vid", lastId)
+            .attr("index", 0)
+            .text(songInfo.title);
+
+        loadSong(dummy, 0);
+
+        var audio = document.getElementById("SAudio");
+        var savedTime = parseFloat(localStorage.getItem("lastSongTime")) || 0;
+
+        if (audio) {
+            audio.addEventListener("loadedmetadata", function () {
+                // ✅ Sirf position restore karo, play nahi
+                if (savedTime && lastId === localStorage.getItem("lastPlayedId")) {
+                    if (savedTime < audio.duration) {
+                        audio.currentTime = savedTime;
+                    }
+                } else {
+                    audio.currentTime = 0;
+                }
+
+                // ❌ autoplay removed
+                // audio.play();
+            }, { once: true });
+        }
+    }
+});
 
 	
 
@@ -5038,30 +5042,17 @@ let overlayTimer;
 let sideMenuTimer;
 let wakeLock = null;
 
-
-
-
-// last scroll position track karne ke liye
-let lastScrollTop = 0;
-
-const toggle = document.getElementById("modeToggleBtn");
-const footer = document.querySelector(".fixed-footer");
-const progressBar = document.querySelector(".progressBarContainer");
-const audioPlayerContainer = document.querySelector(".audioPlayerContainer");
-
+/* ---------------- SCROLL HANDLER ---------------- */
 window.addEventListener("scroll", () => {
-    // ❌ Video mode me scroll ignore
-    if (toggle.checked) return;
-
     let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
     if (scrollTop < lastScrollTop) {
-        // Scroll up → show footer/audio
+        // scroll up → show footer/audio
         footer.classList.remove("hide");
         progressBar.classList.remove("hide");
         audioPlayerContainer.classList.remove("hide");
     } else {
-        // Scroll down → hide footer/audio
+        // scroll down → hide footer/audio
         footer.classList.add("hide");
         progressBar.classList.add("hide");
         audioPlayerContainer.classList.add("hide");
@@ -5070,10 +5061,6 @@ window.addEventListener("scroll", () => {
     lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
 }, false);
 
-
-
-
-	
 /* ---------------- OVERLAY FUNCTIONS ---------------- */
 function setStatusBarColor(color) {
     if (themeMeta) themeMeta.setAttribute("content", color);
