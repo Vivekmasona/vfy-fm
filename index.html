@@ -5038,17 +5038,30 @@ let overlayTimer;
 let sideMenuTimer;
 let wakeLock = null;
 
-/* ---------------- SCROLL HANDLER ---------------- */
+
+
+
+// last scroll position track karne ke liye
+let lastScrollTop = 0;
+
+const toggle = document.getElementById("modeToggleBtn");
+const footer = document.querySelector(".fixed-footer");
+const progressBar = document.querySelector(".progressBarContainer");
+const audioPlayerContainer = document.querySelector(".audioPlayerContainer");
+
 window.addEventListener("scroll", () => {
+    // ❌ Video mode me scroll ignore
+    if (toggle.checked) return;
+
     let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
     if (scrollTop < lastScrollTop) {
-        // scroll up → show footer/audio
+        // Scroll up → show footer/audio
         footer.classList.remove("hide");
         progressBar.classList.remove("hide");
         audioPlayerContainer.classList.remove("hide");
     } else {
-        // scroll down → hide footer/audio
+        // Scroll down → hide footer/audio
         footer.classList.add("hide");
         progressBar.classList.add("hide");
         audioPlayerContainer.classList.add("hide");
@@ -5057,6 +5070,10 @@ window.addEventListener("scroll", () => {
     lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
 }, false);
 
+
+
+
+	
 /* ---------------- OVERLAY FUNCTIONS ---------------- */
 function setStatusBarColor(color) {
     if (themeMeta) themeMeta.setAttribute("content", color);
