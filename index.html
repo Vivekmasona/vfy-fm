@@ -56,7 +56,19 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <b onclick="alert('This is a stylish alert!')"></b>
 
+<script>
+  window.addEventListener("load", () => {
+    const toggle = document.getElementById("modeToggleBtn");
 
+    setTimeout(() => {
+      // ensure starting state
+      toggle.checked = false;
+
+      // ab click karne par VIDEO side pe jayega
+      toggle.click();
+    }, 200);
+  });
+</script>
 
 
 
