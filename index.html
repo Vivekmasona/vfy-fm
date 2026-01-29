@@ -63,16 +63,12 @@
   window.addEventListener("load", () => {
     const toggle = document.getElementById("modeToggleBtn");
 
-    // thoda wait — sab JS, listeners, video ready hone do
     setTimeout(() => {
       toggle.checked = true;
-
-      // EXACT same action as user click
-      toggle.click();
+      toggle.dispatchEvent(new Event("change", { bubbles: true }));
     }, 200);
   });
 </script>
-
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
