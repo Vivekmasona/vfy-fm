@@ -60,13 +60,43 @@
   window.addEventListener("load", () => {
     const toggle = document.getElementById("modeToggleBtn");
 
+    // Footer & Progress bar elements
+    const footer = document.querySelector(".fixed-footer");
+    const progressContainer = document.querySelector(".progressBarContainer");
+    const progressBar = document.querySelector(".progress");
+
     setTimeout(() => {
       // ensure starting state
       toggle.checked = false;
 
-      // ab click karne par VIDEO side pe jayega
+      // click → VIDEO MODE
       toggle.click();
+
+      // initial apply
+      updateUI();
     }, 200);
+
+    // toggle change pe UI update
+    toggle.addEventListener("change", updateUI);
+
+    function updateUI() {
+      if (toggle.checked) {
+        // 🎥 VIDEO MODE → hide footer & progress
+        footer.style.opacity = "0";
+        footer.style.pointerEvents = "none";
+
+        if (progressContainer) progressContainer.style.opacity = "0";
+        if (progressBar) progressBar.style.opacity = "0";
+
+      } else {
+        // 🎧 AUDIO MODE → show footer & progress
+        footer.style.opacity = "1";
+        footer.style.pointerEvents = "auto";
+
+        if (progressContainer) progressContainer.style.opacity = "1";
+        if (progressBar) progressBar.style.opacity = "1";
+      }
+    }
   });
 </script>
 
