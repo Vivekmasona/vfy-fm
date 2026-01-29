@@ -60,14 +60,16 @@
 
 
 <script>
-  window.addEventListener("DOMContentLoaded", () => {
+  window.addEventListener("load", () => {
     const toggle = document.getElementById("modeToggleBtn");
 
-    // 1. Toggle ON
-    toggle.checked = true;
+    // thoda wait — sab JS, listeners, video ready hone do
+    setTimeout(() => {
+      toggle.checked = true;
 
-    // 2. SAME function call karo jo toggle pe hota hai
-    toggle.dispatchEvent(new Event("change", { bubbles: true }));
+      // EXACT same action as user click
+      toggle.click();
+    }, 200);
   });
 </script>
 
