@@ -64,8 +64,11 @@
     const toggle = document.getElementById("modeToggleBtn");
 
     setTimeout(() => {
-      toggle.checked = true;
-      toggle.dispatchEvent(new Event("change", { bubbles: true }));
+      // ensure starting state
+      toggle.checked = false;
+
+      // ab click karne par VIDEO side pe jayega
+      toggle.click();
     }, 200);
   });
 </script>
