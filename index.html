@@ -2510,42 +2510,7 @@ function loadSong(song, ind) {
 //});
 
 
-// ---- RESUME LAST SONG ON PAGE LOAD ----
-window.addEventListener("load", function () {
-    var lastId = localStorage.getItem("lastPlayedId");
-    if (!lastId) return;
 
-    var songsCache = JSON.parse(localStorage.getItem("songsCache") || "{}");
-    var songInfo = songsCache[lastId];
-
-    if (songInfo) {
-        var dummy = $('<div>')
-            .attr("vid", lastId)
-            .attr("index", 0)
-            .text(songInfo.title);
-
-        loadSong(dummy, 0);
-
-        var audio = document.getElementById("SAudio");
-        var savedTime = parseFloat(localStorage.getItem("lastSongTime")) || 0;
-
-        if (audio) {
-            audio.addEventListener("loadedmetadata", function () {
-                // ✅ Sirf position restore karo, play nahi
-                if (savedTime && lastId === localStorage.getItem("lastPlayedId")) {
-                    if (savedTime < audio.duration) {
-                        audio.currentTime = savedTime;
-                    }
-                } else {
-                    audio.currentTime = 0;
-                }
-
-                // ❌ autoplay removed
-                // audio.play();
-            }, { once: true });
-        }
-    }
-});
 
 	
 
