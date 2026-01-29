@@ -59,7 +59,17 @@
 
 
 
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    const modeToggle = document.getElementById("modeToggleBtn");
+    
+    // Page load होते ही Video Mode ON
+    modeToggle.checked = true;
 
+    // Agar tumhara video mode kisi function / event se chalta hai
+    modeToggle.dispatchEvent(new Event("change"));
+  });
+</script>
 
 
 <script>
