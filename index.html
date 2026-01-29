@@ -61,6 +61,7 @@
   window.addEventListener("load", () => {  
     const toggle = document.getElementById("modeToggleBtn");  
     const footer = document.querySelector(".fixed-footer");
+    const progressBar = document.querySelector(".progressBarContainer");
 
     setTimeout(() => {  
       // ensure starting state  
@@ -70,25 +71,37 @@
       toggle.click();  
 
       // initial apply
-      updateFooter();
+      updateVisibility();
     }, 200);  
 
-    // toggle change pe footer update
-    toggle.addEventListener("change", updateFooter);
+    // toggle change pe update
+    toggle.addEventListener("change", updateVisibility);
 
-    function updateFooter() {
+    function updateVisibility() {
       if (toggle.checked) {
-        // 🎥 VIDEO MODE → footer hide
-        footer.style.opacity = "0";
-        footer.style.pointerEvents = "none";
+        // 🎥 VIDEO MODE → hide
+        if (footer) {
+          footer.style.opacity = "0";
+          footer.style.pointerEvents = "none";
+        }
+        if (progressBar) {
+          progressBar.style.opacity = "0";
+          progressBar.style.pointerEvents = "none";
+        }
       } else {
-        // 🎧 AUDIO MODE → footer show
-        footer.style.opacity = "1";
-        footer.style.pointerEvents = "auto";
+        // 🎧 AUDIO MODE → show
+        if (footer) {
+          footer.style.opacity = "1";
+          footer.style.pointerEvents = "auto";
+        }
+        if (progressBar) {
+          progressBar.style.opacity = "1";
+          progressBar.style.pointerEvents = "auto";
+        }
       }
     }
   });  
-			</script>
+</script>
 
 
 <script>
