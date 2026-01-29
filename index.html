@@ -57,9 +57,39 @@
 <b onclick="alert('This is a stylish alert!')"></b>
 
 
+<script>  
+  window.addEventListener("load", () => {  
+    const toggle = document.getElementById("modeToggleBtn");  
+    const footer = document.querySelector(".fixed-footer");
 
+    setTimeout(() => {  
+      // ensure starting state  
+      toggle.checked = false;  
 
-<script>window.addEventListener("load",()=>{const t=document.getElementById("modeToggleBtn");setTimeout(()=>{t.checked=false;t.click();},200);t.addEventListener("change",()=>[footer,progressBar,audioPlayerContainer].forEach(el=>el.classList.toggle("hide",t.checked)));window.addEventListener("scroll",()=>t.checked||((window.pageYOffset||document.documentElement.scrollTop)<lastScrollTop?[footer,progressBar,audioPlayerContainer].forEach(el=>el.classList.remove("hide")):[footer,progressBar,audioPlayerContainer].forEach(el=>el.classList.add("hide")),lastScrollTop=(window.pageYOffset||document.documentElement.scrollTop)||0));</script>
+      // click → VIDEO MODE
+      toggle.click();  
+
+      // initial apply
+      updateFooter();
+    }, 200);  
+
+    // toggle change pe footer update
+    toggle.addEventListener("change", updateFooter);
+
+    function updateFooter() {
+      if (toggle.checked) {
+        // 🎥 VIDEO MODE → footer hide
+        footer.style.opacity = "0";
+        footer.style.pointerEvents = "none";
+      } else {
+        // 🎧 AUDIO MODE → footer show
+        footer.style.opacity = "1";
+        footer.style.pointerEvents = "auto";
+      }
+    }
+  });  
+			</script>
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
