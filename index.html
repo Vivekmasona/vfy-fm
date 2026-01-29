@@ -5039,6 +5039,14 @@ let wakeLock = null;
 
 /* ---------------- SCROLL HANDLER ---------------- */
 window.addEventListener("scroll", () => {
+    // 🎥 VIDEO MODE → footer/progress hamesha hide, scroll ignore
+    if (document.getElementById("modeToggleBtn").checked) {
+        footer.classList.add("hide");
+        progressBar.classList.add("hide");
+        audioPlayerContainer.classList.add("hide");
+        return; // ⛔ scroll logic yahin stop
+    }
+
     let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
     if (scrollTop < lastScrollTop) {
@@ -5055,7 +5063,6 @@ window.addEventListener("scroll", () => {
 
     lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
 }, false);
-
 /* ---------------- OVERLAY FUNCTIONS ---------------- */
 function setStatusBarColor(color) {
     if (themeMeta) themeMeta.setAttribute("content", color);
