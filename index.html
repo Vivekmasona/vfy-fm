@@ -4882,9 +4882,22 @@ setInterval(() => {
 }, 500);
 
 
+const modeToggleBtn = document.getElementById("modeToggleBtn");
 
-
-
+/* -------- MODE TOGGLE HANDLER -------- */
+modeToggleBtn.addEventListener("change", () => {
+    if (modeToggleBtn.checked) {
+        // 🎥 VIDEO MODE → footer hamesha hide
+        footer.classList.add("hide");
+        progressBar.classList.add("hide");
+        audioPlayerContainer.classList.add("hide");
+    } else {
+        // 🎧 AUDIO MODE → footer show
+        footer.classList.remove("hide");
+        progressBar.classList.remove("hide");
+        audioPlayerContainer.classList.remove("hide");
+    }
+});
 
 
 /* ---------------- SCROLL HANDLER ---------------- */
@@ -4899,21 +4912,22 @@ window.addEventListener("scroll", () => {
 
     let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-    if (scrollTop < lastScrollTop) {
-        // ⬆️ scroll UP → SHOW footer
-        footer.classList.remove("hide");
-        progressBar.classList.remove("hide");
-        audioPlayerContainer.classList.remove("hide");
-    } else {
+    if (scrollTop > lastScrollTop) {
         // ⬇️ scroll DOWN → HIDE footer
         footer.classList.add("hide");
         progressBar.classList.add("hide");
         audioPlayerContainer.classList.add("hide");
+    } else {
+        // ⬆️ scroll UP → SHOW footer
+        footer.classList.remove("hide");
+        progressBar.classList.remove("hide");
+        audioPlayerContainer.classList.remove("hide");
     }
 
     lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
 }, false);
-	
+
+
     
 	
 /* ---------------- WAKE LOCK ---------------- */
