@@ -4902,16 +4902,23 @@ modeToggleBtn.addEventListener("change", () => {
 
 /* ---------------- SCROLL HANDLER ---------------- */
 window.addEventListener("scroll", () => {
-    // 🎥 VIDEO MODE → scroll ignore
-    if (modeToggleBtn.checked) return;
+    // 🎥 VIDEO MODE → footer hamesha hide
+    if (modeToggleBtn.checked) {
+        footer.classList.add("hide");
+        progressBar.classList.add("hide");
+        audioPlayerContainer.classList.add("hide");
+        return;
+    }
 
     let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-    if (scrollTop < lastScrollTop) {
+    if (scrollTop > lastScrollTop) {
+        // ⬇️ scroll DOWN → SHOW footer
         footer.classList.remove("hide");
         progressBar.classList.remove("hide");
         audioPlayerContainer.classList.remove("hide");
     } else {
+        // ⬆️ scroll UP → HIDE footer
         footer.classList.add("hide");
         progressBar.classList.add("hide");
         audioPlayerContainer.classList.add("hide");
@@ -4919,7 +4926,6 @@ window.addEventListener("scroll", () => {
 
     lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
 }, false);
-
 
 
 
