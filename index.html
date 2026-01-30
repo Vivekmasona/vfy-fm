@@ -4885,8 +4885,22 @@ setInterval(() => {
 
 
 
-let lastScrollTop = 0;
 const modeToggleBtn = document.getElementById("modeToggleBtn");
+
+/* -------- MODE TOGGLE HANDLER -------- */
+modeToggleBtn.addEventListener("change", () => {
+    if (modeToggleBtn.checked) {
+        // 🎥 VIDEO MODE → footer hamesha hide
+        footer.classList.add("hide");
+        progressBar.classList.add("hide");
+        audioPlayerContainer.classList.add("hide");
+    } else {
+        // 🎧 AUDIO MODE → footer show
+        footer.classList.remove("hide");
+        progressBar.classList.remove("hide");
+        audioPlayerContainer.classList.remove("hide");
+    }
+});
 
 /* ---------------- SCROLL HANDLER ---------------- */
 window.addEventListener("scroll", () => {
@@ -4901,21 +4915,19 @@ window.addEventListener("scroll", () => {
     let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
     if (scrollTop < lastScrollTop) {
-        // ⬆️ scroll UP → SHOW (previous reel)
+        // ⬆️ scroll UP → SHOW footer
         footer.classList.remove("hide");
         progressBar.classList.remove("hide");
         audioPlayerContainer.classList.remove("hide");
-    } else if (scrollTop > lastScrollTop) {
-        // ⬇️ scroll DOWN → HIDE (next reel)
+    } else {
+        // ⬇️ scroll DOWN → HIDE footer
         footer.classList.add("hide");
         progressBar.classList.add("hide");
         audioPlayerContainer.classList.add("hide");
     }
 
     lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-}, { passive: true });
-
-
+}, false);
 
 
 	
