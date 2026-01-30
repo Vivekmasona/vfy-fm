@@ -330,37 +330,7 @@ window.addEventListener('scroll', () => {
   <span class="mode-thumb"></span>
 </label>
 
-
-
-
-
-
-
-  
-
-<script>
-  // Page load hote hi sid check karo
-  window.addEventListener("DOMContentLoaded", () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const sid = urlParams.get("sid");
-
-    if (sid) {
-      // LocalStorage me save karo
-      localStorage.setItem("sessionId", sid);
-      console.log("Session ID saved:", sid);
-
-      // Agar chaho to user ko notify kar do
-      alert("Session joined successfully! Session ID saved: " + sid);
-
-      // Clean URL (sid remove karke)
-      const newUrl = window.location.origin + window.location.pathname;
-      window.history.replaceState({}, document.title, newUrl);
-    }
-  });
-</script>
-  
-    
-    <script>
+   <script>
 // App ke load hone ke baad ek state push karte hain
 //window.addEventListener('load', () => {
 //  history.pushState(null, null, window.location.href);
@@ -4911,6 +4881,48 @@ setInterval(() => {
     overlayTime.textContent = `${curr} / ${total}`;
 }, 500);
 
+
+
+
+
+const modeToggleBtn = document.getElementById("modeToggleBtn");
+
+/* -------- MODE TOGGLE HANDLER -------- */
+modeToggleBtn.addEventListener("change", () => {
+    if (modeToggleBtn.checked) {
+        // 🎥 VIDEO MODE → footer hamesha hide
+        footer.classList.add("hide");
+        progressBar.classList.add("hide");
+        audioPlayerContainer.classList.add("hide");
+    } else {
+        // 🎧 AUDIO MODE → footer show
+        footer.classList.remove("hide");
+        progressBar.classList.remove("hide");
+        audioPlayerContainer.classList.remove("hide");
+    }
+});
+
+/* ---------------- SCROLL HANDLER ---------------- */
+window.addEventListener("scroll", () => {
+    // 🎥 VIDEO MODE → scroll ignore
+    if (modeToggleBtn.checked) return;
+
+    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+    if (scrollTop < lastScrollTop) {
+        footer.classList.remove("hide");
+        progressBar.classList.remove("hide");
+        audioPlayerContainer.classList.remove("hide");
+    } else {
+        footer.classList.add("hide");
+        progressBar.classList.add("hide");
+        audioPlayerContainer.classList.add("hide");
+    }
+
+    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+}, false);
+
+	
 /* ---------------- WAKE LOCK ---------------- */
 async function keepScreenOn() {
     try {
