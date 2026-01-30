@@ -4886,16 +4886,17 @@ setInterval(() => {
 
 
 const modeToggleBtn = document.getElementById("modeToggleBtn");
+let lastScrollTop = 0;
 
 /* -------- MODE TOGGLE HANDLER -------- */
 modeToggleBtn.addEventListener("change", () => {
     if (modeToggleBtn.checked) {
-        // 🎥 VIDEO MODE → footer hamesha hide
+        // 🎥 VIDEO MODE → always hide
         footer.classList.add("hide");
         progressBar.classList.add("hide");
         audioPlayerContainer.classList.add("hide");
     } else {
-        // 🎧 AUDIO MODE → footer show
+        // 🎧 AUDIO MODE → default show
         footer.classList.remove("hide");
         progressBar.classList.remove("hide");
         audioPlayerContainer.classList.remove("hide");
@@ -4904,16 +4905,19 @@ modeToggleBtn.addEventListener("change", () => {
 
 /* ---------------- SCROLL HANDLER ---------------- */
 window.addEventListener("scroll", () => {
-    // 🎥 VIDEO MODE → scroll ignore
+
+    // 🎥 VIDEO MODE → ignore scroll
     if (modeToggleBtn.checked) return;
 
     let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-    if (scrollTop < lastScrollTop) {
+    if (scrollTop > lastScrollTop) {
+        // ⬇️ scroll DOWN → SHOW
         footer.classList.remove("hide");
         progressBar.classList.remove("hide");
         audioPlayerContainer.classList.remove("hide");
     } else {
+        // ⬆️ scroll UP → HIDE
         footer.classList.add("hide");
         progressBar.classList.add("hide");
         audioPlayerContainer.classList.add("hide");
@@ -4922,6 +4926,9 @@ window.addEventListener("scroll", () => {
     lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
 }, false);
 
+
+	
+    
 	
 /* ---------------- WAKE LOCK ---------------- */
 async function keepScreenOn() {
