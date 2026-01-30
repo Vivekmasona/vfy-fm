@@ -45,7 +45,6 @@
 <script src="attachment/online.js" defer></script>
 <script src="detail/detail.js" defer></script>
 <script src="setting/setting.js" defer></script>
-<script src="call/call.js" defer></script>
 <script src="ui/uicolor11.js" defer></script>
 <script src="copy/copy.js" defer></script>
 <script src="slideshow/slide.js" defer></script>
@@ -69,123 +68,6 @@
     }, 200);
   });
 </script>
-
-
-
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const container = document.getElementById('audioPlayerContainer');
-    const toggleButton = document.getElementById('toggleContainerButton');
-    const statusDot = document.getElementById('statusDot');
-    const statusText = document.getElementById('statusText');
-
-    container.style.transition = 'opacity 0.3s ease';
-
-    // LocalStorage read
-    const savedState = localStorage.getItem('audioPlayerContainerVisible');
-
-    if (!savedState) {
-        // FIRST TIME USER → Default OFF
-        container.style.visibility = 'hidden';
-        container.style.pointerEvents = 'none';
-        statusDot.style.background = 'red';
-        statusText.textContent = 'System Off';
-        localStorage.setItem('audioPlayerContainerVisible', 'hidden');
-    } 
-    else if (savedState === 'visible') {
-        container.style.visibility = 'visible';
-        container.style.pointerEvents = 'auto';
-        statusDot.style.background = 'green';
-        statusText.textContent = 'System On';
-    } 
-    else {
-        container.style.visibility = 'hidden';
-        container.style.pointerEvents = 'none';
-        statusDot.style.background = 'red';
-        statusText.textContent = 'System Off';
-    }
-
-    // Toggle Button
-    toggleButton.addEventListener('click', () => {
-        if (container.style.visibility === 'hidden') {
-            container.style.visibility = 'visible';
-            container.style.pointerEvents = 'auto';
-            statusDot.style.background = 'green';
-            statusText.textContent = 'System On';
-            localStorage.setItem('audioPlayerContainerVisible', 'visible');
-        } else {
-            container.style.visibility = 'hidden';
-            container.style.pointerEvents = 'none';
-            statusDot.style.background = 'red';
-            statusText.textContent = 'System Off';
-            localStorage.setItem('audioPlayerContainerVisible', 'hidden');
-        }
-    });
-});
-			</script>
-
-<style>/* Toggle Button Container */
-#toggleContainerButton {
-    
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
-    background: rgba(0, 0, 0, 0.7);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5), 0 0 20px rgba(0, 255, 255, 0.3);
-}
-
-/* Glow effect on hover */
-#toggleContainerButton:hover {
-    background: rgba(0, 0, 0, 0.85);
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.8), 0 0 30px rgba(0, 255, 255, 0.5);
-    transform: scale(1.05);
-}
-
-/* Status Dot */
-#statusDot {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: red;
-    display: inline-block;
-    box-shadow: 0 0 6px red, 0 0 12px rgba(255, 0, 0, 0.5);
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Status Dot when system is ON (add class 'on' dynamically with JS) */
-#statusDot.on {
-    background: limegreen;
-    box-shadow: 0 0 6px limegreen, 0 0 14px rgba(0, 255, 0, 0.6);
-}
-
-/* Status Text */
-#statusText {
-    color: #00ffff;
-    font-weight: bold;
-    text-shadow: 0 0 4px #00ffff, 0 0 8px rgba(0, 255, 255, 0.5);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    transition: color 0.3s ease, text-shadow 0.3s ease;
-}
-
-/* Status Text when system is ON */
-#statusText.on {
-    color: #00ff00;
-    text-shadow: 0 0 6px #00ff00, 0 0 12px rgba(0, 255, 0, 0.6);
-}
-	</style>
-
-
-
-
-
-
 
 
 
