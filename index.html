@@ -4900,33 +4900,31 @@ modeToggleBtn.addEventListener("change", () => {
 });
 
 
-const SCROLL_GAP = 15; // 10–20 best
+let lastScrollTop = 0;
+const SCROLL_GAP = 10; // 👈 bas itna hi magic
 
+/* ---------------- SCROLL HANDLER ---------------- */
 window.addEventListener("scroll", () => {
     // 🎥 VIDEO MODE → footer hamesha hide
     if (modeToggleBtn.checked) {
         footer.classList.add("hide");
         progressBar.classList.add("hide");
         audioPlayerContainer.classList.add("hide");
-        lastScrollTop = window.pageYOffset || document.documentElement.scrollTop;
         return;
     }
 
     let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-    // 🛑 halka scroll ignore (BUT lastScrollTop update)
-    if (Math.abs(scrollTop - lastScrollTop) < SCROLL_GAP) {
-        lastScrollTop = scrollTop;
-        return;
-    }
+    // 🛑 halka scroll ignore
+    if (Math.abs(scrollTop - lastScrollTop) < SCROLL_GAP) return;
 
     if (scrollTop > lastScrollTop) {
-        // ⬇️ scroll DOWN → HIDE footer
+        // ⬇️ scroll DOWN → HIDE
         footer.classList.add("hide");
         progressBar.classList.add("hide");
         audioPlayerContainer.classList.add("hide");
     } else {
-        // ⬆️ scroll UP → SHOW footer
+        // ⬆️ scroll UP → SHOW (ab turant)
         footer.classList.remove("hide");
         progressBar.classList.remove("hide");
         audioPlayerContainer.classList.remove("hide");
