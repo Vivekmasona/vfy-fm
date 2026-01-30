@@ -4901,6 +4901,8 @@ modeToggleBtn.addEventListener("change", () => {
 
 
 /* ---------------- SCROLL HANDLER ---------------- */
+const SCROLL_GAP = 15; // 👈 jitna chaho (10–20 best)
+
 window.addEventListener("scroll", () => {
     // 🎥 VIDEO MODE → footer hamesha hide
     if (modeToggleBtn.checked) {
@@ -4911,6 +4913,9 @@ window.addEventListener("scroll", () => {
     }
 
     let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+    // 🛑 halka scroll ignore
+    if (Math.abs(scrollTop - lastScrollTop) < SCROLL_GAP) return;
 
     if (scrollTop > lastScrollTop) {
         // ⬇️ scroll DOWN → HIDE footer
