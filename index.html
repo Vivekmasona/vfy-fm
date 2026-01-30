@@ -4900,8 +4900,7 @@ modeToggleBtn.addEventListener("change", () => {
 });
 
 
-/* ---------------- SCROLL HANDLER ---------------- */
-const SCROLL_GAP = 15; // 👈 jitna chaho (10–20 best)
+const SCROLL_GAP = 15; // 10–20 best
 
 window.addEventListener("scroll", () => {
     // 🎥 VIDEO MODE → footer hamesha hide
@@ -4909,13 +4908,17 @@ window.addEventListener("scroll", () => {
         footer.classList.add("hide");
         progressBar.classList.add("hide");
         audioPlayerContainer.classList.add("hide");
+        lastScrollTop = window.pageYOffset || document.documentElement.scrollTop;
         return;
     }
 
     let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-    // 🛑 halka scroll ignore
-    if (Math.abs(scrollTop - lastScrollTop) < SCROLL_GAP) return;
+    // 🛑 halka scroll ignore (BUT lastScrollTop update)
+    if (Math.abs(scrollTop - lastScrollTop) < SCROLL_GAP) {
+        lastScrollTop = scrollTop;
+        return;
+    }
 
     if (scrollTop > lastScrollTop) {
         // ⬇️ scroll DOWN → HIDE footer
@@ -4931,7 +4934,6 @@ window.addEventListener("scroll", () => {
 
     lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
 }, false);
-
 
     
 	
