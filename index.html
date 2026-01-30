@@ -4885,22 +4885,7 @@ setInterval(() => {
 
 
 
-const modeToggleBtn = document.getElementById("modeToggleBtn");
 
-/* -------- MODE TOGGLE HANDLER -------- */
-modeToggleBtn.addEventListener("change", () => {
-    if (modeToggleBtn.checked) {
-        // 🎥 VIDEO MODE → footer hamesha hide
-        footer.classList.add("hide");
-        progressBar.classList.add("hide");
-        audioPlayerContainer.classList.add("hide");
-    } else {
-        // 🎧 AUDIO MODE → footer show
-        footer.classList.remove("hide");
-        progressBar.classList.remove("hide");
-        audioPlayerContainer.classList.remove("hide");
-    }
-});
 
 /* ---------------- SCROLL HANDLER ---------------- */
 window.addEventListener("scroll", () => {
