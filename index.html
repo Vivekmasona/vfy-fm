@@ -4900,9 +4900,6 @@ modeToggleBtn.addEventListener("change", () => {
 });
 
 
-let lastScrollTop = 0;
-const SCROLL_GAP = 10; // 👈 bas itna hi magic
-
 /* ---------------- SCROLL HANDLER ---------------- */
 window.addEventListener("scroll", () => {
     // 🎥 VIDEO MODE → footer hamesha hide
@@ -4915,16 +4912,13 @@ window.addEventListener("scroll", () => {
 
     let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-    // 🛑 halka scroll ignore
-    if (Math.abs(scrollTop - lastScrollTop) < SCROLL_GAP) return;
-
     if (scrollTop > lastScrollTop) {
-        // ⬇️ scroll DOWN → HIDE
+        // ⬇️ scroll DOWN → HIDE footer
         footer.classList.add("hide");
         progressBar.classList.add("hide");
         audioPlayerContainer.classList.add("hide");
     } else {
-        // ⬆️ scroll UP → SHOW (ab turant)
+        // ⬆️ scroll UP → SHOW footer
         footer.classList.remove("hide");
         progressBar.classList.remove("hide");
         audioPlayerContainer.classList.remove("hide");
@@ -4932,7 +4926,6 @@ window.addEventListener("scroll", () => {
 
     lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
 }, false);
-
     
 	
 /* ---------------- WAKE LOCK ---------------- */
