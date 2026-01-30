@@ -4883,22 +4883,10 @@ setInterval(() => {
 
 
 
-const modeToggleBtn = document.getElementById("modeToggleBtn");
 
-/* -------- MODE TOGGLE HANDLER -------- */
-modeToggleBtn.addEventListener("change", () => {
-    if (modeToggleBtn.checked) {
-        // 🎥 VIDEO MODE → footer hamesha hide
-        footer.classList.add("hide");
-        progressBar.classList.add("hide");
-        audioPlayerContainer.classList.add("hide");
-    } else {
-        // 🎧 AUDIO MODE → footer show
-        footer.classList.remove("hide");
-        progressBar.classList.remove("hide");
-        audioPlayerContainer.classList.remove("hide");
-    }
-});
+
+let lastScrollTop = 0;
+const modeToggleBtn = document.getElementById("modeToggleBtn");
 
 /* ---------------- SCROLL HANDLER ---------------- */
 window.addEventListener("scroll", () => {
@@ -4912,21 +4900,20 @@ window.addEventListener("scroll", () => {
 
     let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-    if (scrollTop > lastScrollTop) {
-        // ⬇️ scroll DOWN → SHOW footer
+    if (scrollTop < lastScrollTop) {
+        // ⬆️ scroll UP → SHOW (previous reel)
         footer.classList.remove("hide");
         progressBar.classList.remove("hide");
         audioPlayerContainer.classList.remove("hide");
-    } else {
-        // ⬆️ scroll UP → HIDE footer
+    } else if (scrollTop > lastScrollTop) {
+        // ⬇️ scroll DOWN → HIDE (next reel)
         footer.classList.add("hide");
         progressBar.classList.add("hide");
         audioPlayerContainer.classList.add("hide");
     }
 
     lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-}, false);
-
+}, { passive: true });
 
 
 
