@@ -79,7 +79,7 @@ function displaySongs(songs) {
 }
 
 async function loadTrendingSongs() {
-    const userQuery = localStorage.getItem("songQuery") || "Bhojpuri holi new song";
+    const userQuery = localStorage.getItem("songQuery") || "hindi x Bhojpuri songs";
 
     document.getElementById("songs").innerHTML = `
       <div class="loading-dots">
