@@ -1,6 +1,6 @@
 
   document.addEventListener('DOMContentLoaded', function() {
-    const apiUrl = 'https://vivekfy.vercel.app/search?q=Bhojpuri+hindi+mix+songs';
+    const apiUrl = 'https://vivekfy.vercel.app/search?q=hindi+remix';
     const videosContainer = document.getElementById('videos');
 
     fetch(apiUrl)
