@@ -21,10 +21,10 @@
     }
   },
   "screenshots": [
-    {"src": "./img/1.jpg", "type": "image/jpeg", "sizes": "320x640"},
-    {"src": "./img/2.jpg", "type": "image/jpeg", "sizes": "320x640"},
-    {"src": "./img/4.jpg", "type": "image/jpeg", "sizes": "320x640"},
-    {"src": "./img/5.jpg", "type": "image/jpeg", "sizes": "320x640"}
+    {"src": "./img/promotion1.jpg", "type": "image/jpeg", "sizes": "320x640"},
+    {"src": "./img/promotion2.jpg", "type": "image/jpeg", "sizes": "320x640"},
+    {"src": "./img/promotion4.jpg", "type": "image/jpeg", "sizes": "320x640"},
+    {"src": "./img/promotion5.jpg", "type": "image/jpeg", "sizes": "320x640"}
   ],
   "shortcuts": [
     {
