@@ -3,8 +3,8 @@
   "short_name": "𝐕𝐅𝐘 𝐌𝐮𝐬𝐢𝐜",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#00ffff",
-  "theme_color": "#00ffff",
+  "background_color": "#333",
+  "theme_color": "#333",
   "icons": [
     {
       "src": "./img/2026.png",
