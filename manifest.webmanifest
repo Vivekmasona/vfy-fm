@@ -3,11 +3,11 @@
   "short_name": "𝐕𝐅𝐘 𝐌𝐮𝐬𝐢𝐜",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#E74C3C",
-  "theme_color": "#E74C3C",
+  "background_color": "#00ffff",
+  "theme_color": "#00ffff",
   "icons": [
     {
-      "src": "./img/newdp.png",
+      "src": "./img/2026.png",
       "type": "image/png",
       "sizes": "512x512"
     }
