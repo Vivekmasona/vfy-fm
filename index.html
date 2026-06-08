@@ -4987,115 +4987,155 @@ window.addEventListener('beforeunload', () => {
 
 
 
-	<style>
-  /* Background blur behind popup */
-  #fs-overlay {
-    position: fixed;
-    inset: 0;
-    backdrop-filter: blur(10px);
-    background: rgba(0,0,0,0.25);
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;   /* bottom */
-    z-index: 999999;
-  }
+	
+<style>
+#fs-card{
+    position:fixed;
+    left:12px;
+    right:12px;
+    bottom:12px;
+    z-index:999999;
 
-  /* Bottom Popup */
-  #fs-popup {
-    width: 100%;
-    max-width: 480px;
-    background: rgba(30,30,30,0.55);
-    backdrop-filter: blur(20px);
-    border-radius: 22px 22px 0 0;
-    padding: 25px 28px;
-    text-align: center;
-    color: white;
-    box-shadow: 0 -10px 25px rgba(0,0,0,0.4);
+    background:rgba(25,25,25,.85);
+    backdrop-filter:blur(20px);
 
-    /* slide up */
-    animation: slideUp 0.38s cubic-bezier(0.25, 1.1, 0.4, 1);
-  }
+    border-radius:20px;
+    padding:14px;
 
-  @keyframes slideUp {
-    from { transform: translateY(100%); opacity: 0; }
-    to   { transform: translateY(0); opacity: 1; }
-  }
+    color:#fff;
 
-  /* SVG Icon */
-  #fs-icon {
-    width: 58px;
-    height: 58px;
-    margin-bottom: 10px;
-    filter: drop-shadow(0 5px 10px rgba(255,70,70,0.5));
-  }
+    box-shadow:
+      0 10px 40px rgba(0,0,0,.35);
 
-  /* Buttons */
-  .fs-btn {
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 14px;
-    border: none;
-    margin-top: 12px;
-    cursor: pointer;
-    transition: 0.25s;
-  }
+    animation:slideUp .35s ease;
+}
 
-  #fs-yes {
-    background: linear-gradient(135deg, #ff4b4b, #ff1e1e);
-    color: white;
-    box-shadow: 0 6px 18px rgba(255,40,40,0.35);
-  }
-  #fs-yes:hover {
-    transform: translateY(-2px);
-  }
+@keyframes slideUp{
+    from{
+        transform:translateY(120%);
+        opacity:0;
+    }
+    to{
+        transform:translateY(0);
+        opacity:1;
+    }
+}
 
-  #fs-no {
-    background: rgba(255,255,255,0.15);
-    color: white;
-  }
+.fs-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.fs-icon{
+    width:50px;
+    height:50px;
+    border-radius:14px;
+    background:#ff2d55;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:24px;
+    flex-shrink:0;
+}
+
+.fs-content{
+    flex:1;
+}
+
+.fs-title{
+    font-size:16px;
+    font-weight:700;
+}
+
+.fs-text{
+    font-size:13px;
+    opacity:.75;
+    margin-top:2px;
+}
+
+.fs-actions{
+    display:flex;
+    gap:8px;
+    margin-top:12px;
+}
+
+.fs-btn{
+    flex:1;
+    border:none;
+    padding:10px;
+    border-radius:12px;
+    font-weight:600;
+}
+
+.fs-open{
+    background:#ff2d55;
+    color:#fff;
+}
+
+.fs-close{
+    background:rgba(255,255,255,.12);
+    color:#fff;
+}
 </style>
 
-<!-- Fullscreen Bottom Popup -->
-<div id="fs-overlay">
-  <div id="fs-popup">
+<div id="fs-card">
 
-    <!-- Icon -->
-    <svg id="fs-icon" viewBox="0 0 24 24" fill="none" stroke="#ff3333" stroke-width="2" stroke-linecap="round">
-      <path d="M8 3H5a2 2 0 0 0-2 2v3"/>
-      <path d="M16 3h3a2 2 0 0 1 2 2v3"/>
-      <path d="M8 21H5a2 2 0 1 1 -2-2v-3"/>
-      <path d="M16 21h3a2 2 0 0 0 2-2v-3"/>
-      <rect x="8" y="8" width="8" height="8" rx="2"/>
-    </svg>
+    <div class="fs-row">
 
-    <h2 style="margin:0;font-size:20px;">Enter Fullscreen</h2>
-    <p style="margin-top:6px;font-size:14px;color:#ddd;">
-      Continue for the best full-screen experience.
-    </p>
+        <div class="fs-icon">⛶</div>
 
-    <button id="fs-yes" class="fs-btn">Continue in Fullscreen</button>
-    <button id="fs-no" class="fs-btn">No Thanks</button>
+        <div class="fs-content">
+            <div class="fs-title">
+                Fullscreen Available
+            </div>
 
-  </div>
+            <div class="fs-text">
+                Better viewing experience in fullscreen mode
+            </div>
+        </div>
+
+    </div>
+
+    <div class="fs-actions">
+        <button class="fs-btn fs-open" id="openFs">
+            Open
+        </button>
+
+        <button class="fs-btn fs-close" id="closeFs">
+            Later
+        </button>
+    </div>
+
 </div>
 
 <script>
-  async function goFullscreen() {
-    const el = document.documentElement;
+const card=document.getElementById("fs-card");
 
-    if (el.requestFullscreen) await el.requestFullscreen();
-    else if (el.webkitRequestFullscreen) await el.webkitRequestFullscreen();
-    else if (el.msRequestFullscreen) await el.msRequestFullscreen();
+function hideCard(){
+    card.style.transform="translateY(120%)";
+    card.style.opacity="0";
 
-    document.getElementById("fs-overlay").style.display = "none";
-  }
+    setTimeout(()=>{
+        card.remove();
+    },300);
+}
 
-  document.getElementById("fs-yes").addEventListener("click", goFullscreen);
+document.getElementById("closeFs")
+.onclick=hideCard;
 
-  document.getElementById("fs-no").addEventListener("click", () => {
-    document.getElementById("fs-overlay").style.display = "none";
-  });
+document.getElementById("openFs")
+.onclick=async()=>{
+    try{
+        await document.documentElement.requestFullscreen();
+    }catch(e){}
+    hideCard();
+};
+
+/* 3 second me auto hide */
+setTimeout(()=>{
+    if(document.body.contains(card)){
+        hideCard();
+    }
+},3000);
 </script>
- 
