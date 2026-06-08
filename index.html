@@ -1373,93 +1373,81 @@ body {
 
 
 
-
-
-
 let urlAutoPlay = false;
 
 $(document).ready(function() {
-
-  // =========================
-  // ?play PARAM (AUTO PLAY ENABLE ONLY HERE)
-  // =========================
+  // Get the search query from the URL
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
+  const query = urlParams.get('play');
 
-  const play = urlParams.get('play');
+  if (query) {
 
-  if (play) {
-    urlAutoPlay = true; // 👈 ONLY URL CONTROL
-    $(".search-bar").val(play);
-    search(play);
-    openModal();
+    urlAutoPlay = true; // 👈 ONLY THIS ADDED
+
+    $(".search-bar").val(query);
+
+    search(query);
+
   }
-
-  // =========================
-  // ?q PARAM (NO AUTO PLAY)
-  // =========================
-  const q = urlParams.get("q");
-
-  if (q) {
-    $(".search-bar").val(decodeURIComponent(q));
-    search(decodeURIComponent(q));
-    openModal();
-  }
-
 });
 
 
-// =========================
-// HASH SUPPORT
-// =========================
 $(document).ready(function() {
+  // URL params se q nikal lo
+  const params = new URLSearchParams(window.location.search);
+  const query = params.get("q");
 
+  if (query) {
+    $(".search-bar").val(decodeURIComponent(query));
+    search(decodeURIComponent(query));
+    openModal();
+  }
+});
+
+
+$(document).ready(function() {
+  // Get the hash from the URL (after #)
   const hash = window.location.hash.substring(1);
 
   if (hash) {
     $(".search-bar").val(decodeURIComponent(hash));
     search(decodeURIComponent(hash));
   }
-
 });
 
 
-// =========================
-// SEARCH RESPONSE HANDLER
-// (IMPORTANT PART FOR AUTO PLAY)
-// =========================
+/* =========================
+   SEARCH RESULT HANDLER
+   ========================= */
 function handleSearchData(data) {
 
-  // YOUR LIST RENDER FUNCTION
   renderList(data.items);
 
-  // =========================
-  // ONLY URL PLAY CONDITION
-  // =========================
+  // 👉 ONLY URL PLAY CONDITION
   if (urlAutoPlay && data.items && data.items.length > 0) {
 
     setTimeout(function () {
-      loadSong($(".list")[0], 0); // 👈 FIRST SONG PLAY
+      loadSong($(".list")[0], 0);
     }, 300);
 
-    urlAutoPlay = false; // run only once
+    urlAutoPlay = false;
+
   }
 }
 
 
-// =========================
-// YOUR SEARCH FUNCTION
-// (JUST ADD CALLBACK HOOK)
-// =========================
+/* =========================
+   SEARCH FUNCTION (PATCHED)
+   ========================= */
 function search(query) {
 
-  // 👇 your existing API call
   $.ajax({
     url: "/search?q=" + query,
     method: "GET",
     success: function(data) {
 
-      handleSearchData(data); // 👈 IMPORTANT
+      handleSearchData(data);
 
     }
   });
@@ -1467,16 +1455,17 @@ function search(query) {
 }
 
 
-// =========================
-// SWIPE LEFT
-// =========================
+/* =========================
+   SWIPE LEFT
+   ========================= */
 $(document).on('swipeleft', '.ui-page', function(event) {
+
     if (event.handled !== true) {
 
         var nextpage = $.mobile.activePage.next('[data-role="page"]');
 
         if (nextpage.length > 0) {
-            $.mobile.changePage(nextpage, {
+            $.mobile.changePage(nextpage, { 
                 transition: "slide",
                 reverse: false
             }, true, true);
@@ -1489,16 +1478,17 @@ $(document).on('swipeleft', '.ui-page', function(event) {
 });
 
 
-// =========================
-// SWIPE RIGHT
-// =========================
+/* =========================
+   SWIPE RIGHT
+   ========================= */
 $(document).on('swiperight', '.ui-page', function(event) {
+
     if (event.handled !== true) {
 
         var prevpage = $.mobile.activePage.prev('[data-role="page"]');
 
         if (prevpage.length > 0) {
-            $.mobile.changePage(prevpage, {
+            $.mobile.changePage(prevpage, { 
                 transition: "slide",
                 reverse: true
             }, true, true);
@@ -1509,6 +1499,10 @@ $(document).on('swiperight', '.ui-page', function(event) {
 
     return false;
 });
+
+
+
+
 
 
 
