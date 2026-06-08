@@ -1373,107 +1373,141 @@ body {
 
 
 
-$(document).ready(function () {
 
-  function handleQuery(query, autoPlayFirst = false, openModalFlag = false) {
-    if (!query) return;
 
-    const decoded = decodeURIComponent(query);
 
-    // set search bar
-    $(".search-bar").val(decoded);
+let urlAutoPlay = false;
 
-    // run search
-    search(decoded, function () {
+$(document).ready(function() {
 
-      // after search renders list
-      if (autoPlayFirst) {
-        setTimeout(function () {
+  // =========================
+  // ?play PARAM (AUTO PLAY ENABLE ONLY HERE)
+  // =========================
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
 
-          // try common selectors (adjust if needed)
-          let firstItem =
-            $(".list .item").first().length ? $(".list .item").first() :
-            $(".list li").first().length ? $(".list li").first() :
-            $(".song-item").first();
+  const play = urlParams.get('play');
 
-          if (firstItem && firstItem.length > 0) {
-            firstItem.trigger("click"); // IMPORTANT: triggers your play logic
-          }
-
-        }, 400); // wait for DOM update
-      }
-
-    });
-
-    // open modal if needed
-    if (openModalFlag) {
-      openModal();
-    }
+  if (play) {
+    urlAutoPlay = true; // 👈 ONLY URL CONTROL
+    $(".search-bar").val(play);
+    search(play);
+    openModal();
   }
 
   // =========================
-  // URL PARAMETERS
+  // ?q PARAM (NO AUTO PLAY)
   // =========================
-  const params = new URLSearchParams(window.location.search);
+  const q = urlParams.get("q");
 
-  const playQuery = params.get("play");
-  const qQuery = params.get("q");
-
-  if (playQuery) {
-    // ✅ play mode = auto play first song
-    handleQuery(playQuery, true, true);
-  } 
-  else if (qQuery) {
-    // normal mode
-    handleQuery(qQuery, false, true);
+  if (q) {
+    $(".search-bar").val(decodeURIComponent(q));
+    search(decodeURIComponent(q));
+    openModal();
   }
 
-  // =========================
-  // HASH SUPPORT
-  // =========================
+});
+
+
+// =========================
+// HASH SUPPORT
+// =========================
+$(document).ready(function() {
+
   const hash = window.location.hash.substring(1);
 
   if (hash) {
-    handleQuery(hash, false, false);
+    $(".search-bar").val(decodeURIComponent(hash));
+    search(decodeURIComponent(hash));
   }
 
 });
 
 
 // =========================
-// jQuery Mobile Swipe Navigation
+// SEARCH RESPONSE HANDLER
+// (IMPORTANT PART FOR AUTO PLAY)
 // =========================
-$(document).on('swipeleft', '.ui-page', function (event) {
-  if (event.handled) return false;
+function handleSearchData(data) {
 
-  var nextpage = $.mobile.activePage.next('[data-role="page"]');
+  // YOUR LIST RENDER FUNCTION
+  renderList(data.items);
 
-  if (nextpage.length > 0) {
-    $.mobile.changePage(nextpage, {
-      transition: "slide",
-      reverse: false
-    });
+  // =========================
+  // ONLY URL PLAY CONDITION
+  // =========================
+  if (urlAutoPlay && data.items && data.items.length > 0) {
+
+    setTimeout(function () {
+      loadSong($(".list")[0], 0); // 👈 FIRST SONG PLAY
+    }, 300);
+
+    urlAutoPlay = false; // run only once
   }
+}
 
-  event.handled = true;
-  return false;
+
+// =========================
+// YOUR SEARCH FUNCTION
+// (JUST ADD CALLBACK HOOK)
+// =========================
+function search(query) {
+
+  // 👇 your existing API call
+  $.ajax({
+    url: "/search?q=" + query,
+    method: "GET",
+    success: function(data) {
+
+      handleSearchData(data); // 👈 IMPORTANT
+
+    }
+  });
+
+}
+
+
+// =========================
+// SWIPE LEFT
+// =========================
+$(document).on('swipeleft', '.ui-page', function(event) {
+    if (event.handled !== true) {
+
+        var nextpage = $.mobile.activePage.next('[data-role="page"]');
+
+        if (nextpage.length > 0) {
+            $.mobile.changePage(nextpage, {
+                transition: "slide",
+                reverse: false
+            }, true, true);
+        }
+
+        event.handled = true;
+    }
+
+    return false;
 });
 
 
-$(document).on('swiperight', '.ui-page', function (event) {
-  if (event.handled) return false;
+// =========================
+// SWIPE RIGHT
+// =========================
+$(document).on('swiperight', '.ui-page', function(event) {
+    if (event.handled !== true) {
 
-  var prevpage = $.mobile.activePage.prev('[data-role="page"]');
+        var prevpage = $.mobile.activePage.prev('[data-role="page"]');
 
-  if (prevpage.length > 0) {
-    $.mobile.changePage(prevpage, {
-      transition: "slide",
-      reverse: true
-    });
-  }
+        if (prevpage.length > 0) {
+            $.mobile.changePage(prevpage, {
+                transition: "slide",
+                reverse: true
+            }, true, true);
+        }
 
-  event.handled = true;
-  return false;
+        event.handled = true;
+    }
+
+    return false;
 });
 
 
@@ -1595,10 +1629,10 @@ function fetchResults(apiUrl) {
       }
     });
 
-   if (firstSearch && data.items.length > 0) {
-      loadSong($(".list")[0], 0);
-      firstSearch = false;
-    }
+   //if (firstSearch && data.items.length > 0) {
+      //loadSong($(".list")[0], 0);
+      //firstSearch = false;
+    /)}
 
     $("#prev-btn").toggle(!!prevPageToken);
     $("#next-btn").toggle(!!nextPageToken);
