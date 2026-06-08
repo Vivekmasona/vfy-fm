@@ -1369,47 +1369,48 @@ body {
  
 <script>
 
+
+
 $(document).ready(function () {
 
-  let isUrlSearch = false; // only URL trigger flag
+  let isUrlSearch = false;
   let firstSearch = true;
 
+  // -----------------------------
+  // Common search handler
+  // -----------------------------
   function handleSearch(query) {
     if (!query) return;
 
     $(".search-bar").val(query);
     search(query);
 
-    // only URL search pe modal open
     if (isUrlSearch) {
       openModal();
     }
   }
 
-  // -------------------------
-  // 1. URL ?play=
-  // -------------------------
-  const urlParams = new URLSearchParams(window.location.search);
-  let query = urlParams.get("play");
+  // -----------------------------
+  // URL PARAMETERS CHECK
+  // -----------------------------
+  const params = new URLSearchParams(window.location.search);
+
+  let query = params.get("play");
+  let query2 = params.get("q");
 
   if (query) {
     isUrlSearch = true;
     handleSearch(decodeURIComponent(query));
   }
 
-  // -------------------------
-  // 2. URL ?q=
-  // -------------------------
-  const query2 = urlParams.get("q");
-
   if (query2) {
     isUrlSearch = true;
     handleSearch(decodeURIComponent(query2));
   }
 
-  // -------------------------
-  // 3. URL #hash
-  // -------------------------
+  // -----------------------------
+  // HASH (#song)
+  // -----------------------------
   const hash = window.location.hash.substring(1);
 
   if (hash) {
@@ -1417,16 +1418,23 @@ $(document).ready(function () {
     handleSearch(decodeURIComponent(hash));
   }
 
-  // -------------------------
-  // NORMAL SEARCH (manual typing)
-  // -------------------------
+  // -----------------------------
+  // MANUAL SEARCH BUTTON
+  // -----------------------------
   $(".search-btn").on("click", function () {
     isUrlSearch = false;
+    firstSearch = false; // reset autoplay block
     const q = $(".search-bar").val().trim();
     handleSearch(q);
   });
 
 });
+
+
+
+	
+
+	
 
 $(document).on('swipeleft', '.ui-page', function(event) {
     // Check if the event has already been handled to prevent multiple triggers
