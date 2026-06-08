@@ -1371,10 +1371,6 @@ body {
 
 
 
-
-
-let urlAutoPlay = false;
-
 $(document).ready(function() {
   // Get the search query from the URL
   const queryString = window.location.search;
@@ -1382,17 +1378,12 @@ $(document).ready(function() {
   const query = urlParams.get('play');
 
   if (query) {
-
-    urlAutoPlay = true; // 👈 ONLY THIS ADDED
-
+    // If a query is present in the URL, set it in the search bar
     $(".search-bar").val(query);
-
-    search(query);
-
+    // Trigger the search function with the query
+    search(query); // Pass the query to the search function
   }
 });
-
-
 $(document).ready(function() {
   // URL params se q nikal lo
   const params = new URLSearchParams(window.location.search);
@@ -1401,111 +1392,58 @@ $(document).ready(function() {
   if (query) {
     $(".search-bar").val(decodeURIComponent(query));
     search(decodeURIComponent(query));
-    openModal();
+    openModal(); // Saath me modal open ho
   }
 });
-
-
+	
 $(document).ready(function() {
   // Get the hash from the URL (after #)
-  const hash = window.location.hash.substring(1);
+  const hash = window.location.hash.substring(1); 
 
   if (hash) {
+    // If a song name is present in the hash, set it in the search bar
     $(".search-bar").val(decodeURIComponent(hash));
-    search(decodeURIComponent(hash));
+    // Trigger the search function with the song name
+    search(decodeURIComponent(hash)); // Pass the song name to the search function
   }
 });
 
-
-/* =========================
-   SEARCH RESULT HANDLER
-   ========================= */
-function handleSearchData(data) {
-
-  renderList(data.items);
-
-  // 👉 ONLY URL PLAY CONDITION
-  if (urlAutoPlay && data.items && data.items.length > 0) {
-
-    setTimeout(function () {
-      loadSong($(".list")[0], 0);
-    }, 300);
-
-    urlAutoPlay = false;
-
-  }
-}
-
-
-/* =========================
-   SEARCH FUNCTION (PATCHED)
-   ========================= */
-function search(query) {
-
-  $.ajax({
-    url: "/search?q=" + query,
-    method: "GET",
-    success: function(data) {
-
-      handleSearchData(data);
-
-    }
-  });
-
-}
-
-
-/* =========================
-   SWIPE LEFT
-   ========================= */
 $(document).on('swipeleft', '.ui-page', function(event) {
-
+    // Check if the event has already been handled to prevent multiple triggers
     if (event.handled !== true) {
-
+        // Find the next page using the jQuery Mobile structure
         var nextpage = $.mobile.activePage.next('[data-role="page"]');
 
+        // If there is a next page, navigate to it
         if (nextpage.length > 0) {
             $.mobile.changePage(nextpage, { 
-                transition: "slide",
-                reverse: false
+                transition: "slide",  // Use a sliding transition
+                reverse: false        // Navigate forward (not backward)
             }, true, true);
         }
-
+        
+        // Mark the event as handled to prevent further triggers
         event.handled = true;
     }
-
-    return false;
+    
+    return false;  // Prevent default action and stop event propagation
 });
 
-
-/* =========================
-   SWIPE RIGHT
-   ========================= */
+// Optional: You may also want to handle swipe right for navigation back
 $(document).on('swiperight', '.ui-page', function(event) {
-
     if (event.handled !== true) {
-
         var prevpage = $.mobile.activePage.prev('[data-role="page"]');
-
         if (prevpage.length > 0) {
             $.mobile.changePage(prevpage, { 
-                transition: "slide",
-                reverse: true
+                transition: "slide",  
+                reverse: true // Navigate backward
             }, true, true);
         }
-
         event.handled = true;
     }
-
-    return false;
+    
+    return false; 
 });
-
-
-
-
-
-
-
 
 
 $(document).ready(function(){
@@ -1536,8 +1474,7 @@ $(document).ready(function(){
     receiveResponse();
 });
 
-
-
+	
 
 	
 $(document).on('swiperight', '.ui-page', function(event){     
