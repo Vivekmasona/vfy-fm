@@ -192,242 +192,272 @@ animation:glow 3s infinite alternate;
 
     
 
-
-
 <!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>VFY Loader</title>
 
-<style>  
-*{  
-margin:0;  
-padding:0;  
-box-sizing:border-box;  
-font-family:Poppins,sans-serif;  
-}  
-  
-body{  
-background:#000;  
-color:#fff;  
-}  
-  
-#smartLoader{  
-position:fixed;  
-inset:0;  
-display:flex;  
-justify-content:center;  
-align-items:center;  
-flex-direction:column;  
-backdrop-filter:blur(15px);  
-background:rgba(0,0,0,.85);  
-z-index:999999;  
-overflow:hidden;  
-}  
-  
-#smartLoader::before{  
-content:"";  
-position:absolute;  
-width:300px;  
-height:300px;  
-background:#00ffff22;  
-border-radius:50%;  
-filter:blur(80px);  
-animation:pulse 3s infinite alternate;  
-}  
-  
-@keyframes pulse{  
-from{transform:scale(1);}  
-to{transform:scale(1.3);}  
-}  
-  
-.loaderCard{  
-padding:30px;  
-width:320px;  
-max-width:90%;  
-border-radius:25px;  
-background:rgba(255,255,255,.05);  
-backdrop-filter:blur(15px);  
-border:1px solid rgba(255,255,255,.08);  
-text-align:center;  
-box-shadow:0 0 40px #00ffff22;  
-}  
-  
-.logoWrap{  
-position:relative;  
-width:140px;  
-height:140px;  
-margin:auto;  
-display:flex;  
-align-items:center;  
-justify-content:center;  
-}  
-  
-.ring{  
-position:absolute;  
-width:130px;  
-height:130px;  
-border:3px solid #00ffff;  
-border-top-color:transparent;  
-border-radius:50%;  
-animation:spin 2s linear infinite;  
-box-shadow:0 0 25px #00ffff;  
-}  
-  
-@keyframes spin{  
-from{transform:rotate(0deg);}  
-to{transform:rotate(360deg);}  
-}  
-  
-.mainLogo{  
-font-size:48px;  
-font-weight:900;  
-color:#00ffff;  
-text-shadow:0 0 20px #00ffff;  
-z-index:2;  
-}  
-  
-.subtitle{  
-margin-top:10px;  
-font-size:14px;  
-letter-spacing:2px;  
-opacity:.8;  
-}  
-  
-.deviceInfo{  
-margin-top:15px;  
-font-size:13px;  
-opacity:.7;  
-line-height:22px;  
-}  
-  
-#smartBar{  
-width:100%;  
-height:8px;  
-margin-top:20px;  
-background:#111;  
-border-radius:20px;  
-overflow:hidden;  
-}  
-  
-#smartProgress{  
-height:100%;  
-width:0%;  
-background:#00ffff;  
-box-shadow:0 0 20px #00ffff;  
-transition:.3s;  
-}  
-  
-#loaderStep{  
-margin-top:15px;  
-font-size:15px;  
-color:#00ffff;  
-text-shadow:0 0 10px #00ffff;  
-}  
-  
-.footerDev{  
-margin-top:20px;  
-font-size:12px;  
-opacity:.5;  
-}  
-  
-.statusDot{  
-display:inline-block;  
-width:10px;  
-height:10px;  
-background:#00ff66;  
-border-radius:50%;  
-margin-right:5px;  
-box-shadow:0 0 10px #00ff66;  
-animation:blink 1s infinite;  
-}  
-  
-@keyframes blink{  
-50%{opacity:.3;}  
-}  
-</style>  <div id="smartLoader">  <div class="loaderCard">  <div class="logoWrap">  
-<div class="ring"></div>  
-<div class="mainLogo">VFY</div>  
-</div>  <div class="subtitle">SMART ENGINE INITIALIZATION</div>  <div class="deviceInfo" id="deviceInfo">  
-Detecting device...  
-</div>  <div id="smartBar">  
-<div id="smartProgress"></div>  
-</div>  <div id="loaderStep">  
-<span class="statusDot"></span>  
-Starting...  
-</div>  <div class="footerDev">  
-Developer • Vivek Masona  
-</div>  </div>  </div>  <script>  
-  
-const info=document.getElementById("deviceInfo");  
-const step=document.getElementById("loaderStep");  
-const progress=document.getElementById("smartProgress");  
-const loader=document.getElementById("smartLoader");  
-  
-const ram=navigator.deviceMemory || "Unknown";  
-const cores=navigator.hardwareConcurrency || "Unknown";  
-const online=navigator.onLine ? "Online" : "Offline";  
-  
-info.innerHTML=`  
-RAM : ${ram} GB<br>  
-CPU Cores : ${cores}<br>  
-Network : ${online}  
-`;  
-  
-const steps=[  
-"Checking System Performance...",  
-"Loading VFY Core...",  
-"Optimizing Memory...",  
-"Configuring Interface...",  
-"Preparing Media Engine...",  
-"Finalizing..."  
-];  
-  
-let p=0;  
-let current=0;  
-  
-const timer=setInterval(()=>{  
-  
-p+=Math.random()*8+3;  
-  
-if(p>100)p=100;  
-  
-progress.style.width=p+"%";  
-  
-if(current<steps.length && p>((current+1)*15)){  
-step.innerHTML=  
-'<span class="statusDot"></span>'+steps[current];  
-current++;  
-}  
-  
-if(p>=100){  
-  
-clearInterval(timer);  
-  
-step.innerHTML=  
-'<span class="statusDot"></span>Welcome To VFY';  
-  
-if(navigator.vibrate){  
-navigator.vibrate([100,50,100]);  
-}  
-  
-setTimeout(()=>{  
-  
-const audio=new Audio('/sound/fw.mp3');  
-audio.volume=1;  
-audio.play().catch(()=>{});  
-  
-loader.style.transition=".8s";  
-loader.style.opacity="0";  
-  
-setTimeout(()=>{  
-loader.remove();  
-},800);  
-  
-},1000);  
-  
-}  
-  
-},350);  
-  
-</script>  </!doctype>
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Poppins,sans-serif;
+}
+
+body{
+background:#050505;
+overflow:hidden;
+}
+
+/* BACKGROUND */
+#smartLoader{
+position:fixed;
+inset:0;
+display:flex;
+justify-content:center;
+align-items:center;
+background: radial-gradient(circle at top, #0f0f0f, #050505);
+z-index:999999;
+}
+
+/* soft blobs */
+#smartLoader::before,
+#smartLoader::after{
+content:"";
+position:absolute;
+width:280px;
+height:280px;
+border-radius:50%;
+filter:blur(90px);
+opacity:.15;
+}
+
+#smartLoader::before{
+background:#00c2c2;
+top:10%;
+left:10%;
+}
+
+#smartLoader::after{
+background:#6a5cff;
+bottom:10%;
+right:10%;
+}
+
+/* GLASS CARD */
+.loaderCard{
+width:340px;
+padding:28px;
+border-radius:22px;
+background: rgba(255,255,255,0.06);
+backdrop-filter: blur(18px);
+border:1px solid rgba(255,255,255,0.12);
+box-shadow:0 10px 40px rgba(0,0,0,0.6);
+text-align:center;
+}
+
+/* LOGO */
+.logoWrap{
+width:120px;
+height:120px;
+margin:auto;
+position:relative;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.ring{
+position:absolute;
+width:120px;
+height:120px;
+border-radius:50%;
+border:2px solid transparent;
+border-top:2px solid #00c2c2;
+border-right:2px solid #6a5cff;
+animation:spin 1.2s linear infinite;
+}
+
+@keyframes spin{
+to{transform:rotate(360deg);}
+}
+
+/* LOGO TEXT */
+.mainLogo{
+font-size:44px;
+font-weight:900;
+background:linear-gradient(90deg,#00c2c2,#fff,#6a5cff);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+/* TEXT */
+.subtitle{
+margin-top:10px;
+font-size:12px;
+letter-spacing:2px;
+color:#bbb;
+}
+
+.deviceInfo{
+margin-top:12px;
+font-size:12px;
+color:#999;
+line-height:18px;
+}
+
+/* PROGRESS */
+#smartBar{
+width:100%;
+height:7px;
+margin-top:16px;
+background:rgba(255,255,255,0.08);
+border-radius:50px;
+overflow:hidden;
+}
+
+#smartProgress{
+height:100%;
+width:0%;
+background:linear-gradient(90deg,#00c2c2,#6a5cff,#ff4fd8);
+transition:.2s;
+}
+
+/* STEP */
+#loaderStep{
+margin-top:12px;
+font-size:13px;
+color:#ddd;
+min-height:18px;
+}
+
+.statusDot{
+width:7px;
+height:7px;
+background:#00c2c2;
+border-radius:50%;
+display:inline-block;
+margin-right:6px;
+}
+
+/* FOOTER (UPDATED) */
+.footerDev{
+margin-top:14px;
+font-size:12px;
+color:#aaa;
+font-weight:700;
+letter-spacing:0.5px;
+animation:softPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes softPulse{
+0%{opacity:.6; transform:scale(1);}
+50%{opacity:1; transform:scale(1.03);}
+100%{opacity:.6; transform:scale(1);}
+}
+
+/* fade */
+.fadeOut{
+opacity:0;
+transition:0.7s ease;
+}
+</style>
+</head>
+
+<body>
+
+<div id="smartLoader">
+
+  <div class="loaderCard">
+
+    <div class="logoWrap">
+      <div class="ring"></div>
+      <div class="mainLogo">VFY</div>
+    </div>
+
+    <div class="subtitle">SYSTEM BOOTING</div>
+
+    <div class="deviceInfo" id="deviceInfo">Detecting device...</div>
+
+    <div id="smartBar">
+      <div id="smartProgress"></div>
+    </div>
+
+    <div id="loaderStep">
+      <span class="statusDot"></span>Starting...
+    </div>
+
+    <div class="footerDev">Developer • Vivek Masona</div>
+
+  </div>
+
+</div>
+
+<script>
+
+const info=document.getElementById("deviceInfo");
+const step=document.getElementById("loaderStep");
+const progress=document.getElementById("smartProgress");
+const loader=document.getElementById("smartLoader");
+
+const ram=navigator.deviceMemory || "Unknown";
+const cores=navigator.hardwareConcurrency || "Unknown";
+const online=navigator.onLine ? "Online" : "Offline";
+
+info.innerHTML=`
+RAM: ${ram} GB<br>
+CPU: ${cores} Cores<br>
+Network: ${online}
+`;
+
+const steps=[
+"Checking system...",
+"Loading modules...",
+"Preparing interface...",
+"Optimizing performance...",
+"Starting engine...",
+"Welcome..."
+];
+
+let p=0;
+let i=0;
+
+const timer=setInterval(()=>{
+
+p+=Math.random()*8+2;
+if(p>100)p=100;
+
+progress.style.width=p+"%";
+
+if(i<steps.length && p>i*17){
+step.innerHTML=`<span class="statusDot"></span>${steps[i]}`;
+i++;
+}
+
+if(p>=100){
+clearInterval(timer);
+
+step.innerHTML=`<span class="statusDot"></span>Ready`;
+
+setTimeout(()=>{
+loader.classList.add("fadeOut");
+setTimeout(()=>loader.remove(),700);
+},800);
+
+}
+
+},260);
+
+</script>
+
+</body>
+</html>
+
+
+
+
 
 
 
