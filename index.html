@@ -147,6 +147,7 @@ window.addEventListener('scroll', () => {
 
   
  
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -158,10 +159,9 @@ window.addEventListener('scroll', () => {
   body{
     margin:0;
     font-family:system-ui;
-    overflow:hidden;
+    overflow:hidden; /* default hidden only for loader */
   }
 
-  /* 🌈 FULL SCREEN ANIMATED GRADIENT */
   #smartLoader{
     position:fixed;
     inset:0;
@@ -182,20 +182,16 @@ window.addEventListener('scroll', () => {
     100%{background-position:0% 50%;}
   }
 
-  /* 🧊 GLASS BOX */
   .wrap{
     width:290px;
     padding:30px 22px;
     border-radius:20px;
-
     background:rgba(0,0,0,0.35);
     backdrop-filter: blur(16px);
-
     box-shadow:0 20px 60px rgba(0,0,0,0.6);
     text-align:center;
   }
 
-  /* LOGO */
   .logo{
     font-size:54px;
     font-weight:900;
@@ -209,7 +205,6 @@ window.addEventListener('scroll', () => {
     letter-spacing:2px;
   }
 
-  /* LOADING BAR */
   .loader{
     margin:25px auto 0;
     width:180px;
@@ -217,7 +212,6 @@ window.addEventListener('scroll', () => {
     background:#222;
     border-radius:50px;
     overflow:hidden;
-    position:relative;
   }
 
   .bar{
@@ -238,7 +232,6 @@ window.addEventListener('scroll', () => {
     opacity:0.7;
   }
 
-  /* DEV TEXT */
   .dev{
     position:fixed;
     bottom:15px;
@@ -246,14 +239,12 @@ window.addEventListener('scroll', () => {
     text-align:center;
     font-size:11px;
     opacity:0.35;
-    letter-spacing:1px;
   }
 </style>
 </head>
 
 <body>
 
-<!-- LOADER -->
 <div id="smartLoader">
   <div class="wrap">
     <div class="logo">V F Y</div>
@@ -291,6 +282,10 @@ window.addEventListener('scroll', () => {
 
       setTimeout(()=>{
         loader.style.opacity = "0";
+
+        // ✅ IMPORTANT: scroll restore here
+        document.body.style.overflow = "auto";
+
         setTimeout(()=> loader.remove(), 500);
       }, 700);
     }
@@ -299,7 +294,7 @@ window.addEventListener('scroll', () => {
 </script>
 
 </body>
-</html>    
+</html>
 
 
   
