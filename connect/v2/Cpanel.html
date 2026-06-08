@@ -3,7 +3,7 @@
 <head>  
 <meta charset="UTF-8">  
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">  
-<title>VidofyFM ” Live</title>  
+<title>BiharFM ” Live</title>  
   
 <!-- ✅ PWA Setup -->  
 <link rel="manifest" href="manifest.json">  
@@ -102,12 +102,7 @@ header{width:100%;display:flex;justify-content:space-between;align-items:center;
 <body>  
 
 <!-- INSTALL POPUP -->  
-<div class="install-popup" id="installPopup">  
-  <div class="close-install" onclick="hideInstallPopup()">×</div>  
-  <h3>📻 Install BiharFM App</h3>  
-  <p>Listen live anytime with one tap!</p>  
-  <button class="install-btn" id="installBtn">Install Now</button>  
-</div>  
+
 
 <div class="top">  
   <header>  
@@ -118,7 +113,7 @@ header{width:100%;display:flex;justify-content:space-between;align-items:center;
 
   <div class="song-info">  
     <h2 id="songTitle">Bihar FM</h2>  
-    <p id="artistName">By VFY</p>  
+    <p id="artistName">By vivek-kushwaha</p>  
   </div>  
 
   <div class="controls">  
@@ -143,7 +138,16 @@ header{width:100%;display:flex;justify-content:space-between;align-items:center;
   <button id="retryBtn">Tap to Retry</button>  
 </div>  
 
-
+<!-- Longpress popup -->  
+<div class="longpress-popup" id="lpPopup">  
+  <h4>Dashboard</h4>  
+  <p>Enter Correct Password</p>  
+  <input id="lpInput" type="password" placeholder="Password" />  
+  <div class="lp-actions">  
+    <button class="lp-cancel" id="lpCancel">Cancel</button>  
+    <button class="lp-submit" id="lpSubmit">Open</button>  
+  </div>  
+</div>  
 
 <audio id="player" autoplay></audio>  
 
@@ -166,35 +170,7 @@ const timeCounter = document.getElementById("timeCounter");
 const retryOverlay = document.getElementById("retryOverlay");
 const retryBtn = document.getElementById("retryBtn");
 
-/* ================= LONG PRESS DASHBOARD ================= */
-let lpTimer = null;
-const lpPopup = document.getElementById("lpPopup");
-const lpInput = document.getElementById("lpInput");
-const lpCancel = document.getElementById("lpCancel");
-const lpSubmit = document.getElementById("lpSubmit");
 
-function openPopup() {
-  lpPopup.classList.add("show");
-  lpInput.focus();
-}
-function closePopup() {
-  lpPopup.classList.remove("show");
-}
-
-document.body.addEventListener("touchstart", () => {
-  lpTimer = setTimeout(openPopup, 1500);
-});
-document.body.addEventListener("touchend", () => clearTimeout(lpTimer));
-
-lpCancel.onclick = closePopup;
-lpSubmit.onclick = () => {
-  if (lpInput.value === "vk007") {
-    window.location.href = "/cast";
-  } else {
-    lpPopup.classList.add("wrong");
-    setTimeout(() => lpPopup.classList.remove("wrong"), 400);
-  }
-};
 
 /* ================= TIME COUNTER ================= */
 setInterval(() => {
@@ -373,29 +349,7 @@ document.getElementById("chatBtn").onclick = () => {
   );
 };
 
-/* ================= PWA INSTALL ================= */
-let deferredPrompt;
-const installPopup = document.getElementById("installPopup");
-const installBtn = document.getElementById("installBtn");
 
-window.addEventListener("beforeinstallprompt", (e) => {
-  if (localStorage.getItem("biharFMInstalled")) return;
-  e.preventDefault();
-  deferredPrompt = e;
-  setTimeout(() => installPopup.classList.add("show"), 2000);
-});
-
-installBtn.onclick = async () => {
-  installPopup.classList.remove("show");
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    const res = await deferredPrompt.userChoice;
-    if (res.outcome === "accepted") {
-      localStorage.setItem("biharFMInstalled", "true");
-    }
-    deferredPrompt = null;
-  }
-};
 
 /* ================= INIT ================= */
 connectWS();
