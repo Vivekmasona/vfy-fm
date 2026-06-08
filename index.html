@@ -1369,66 +1369,47 @@ body {
  
 <script>
 
-
-
 $(document).ready(function () {
 
   let isUrlSearch = false;
+  let autoPlayEnabled = false;
   let firstSearch = true;
 
-  // -----------------------------
-  // Common search handler
-  // -----------------------------
-  function handleSearch(query) {
+  function triggerSearch(query) {
     if (!query) return;
 
     $(".search-bar").val(query);
-    search(query);
 
-    if (isUrlSearch) {
-      openModal();
-    }
+    search(query);
   }
 
-  // -----------------------------
-  // URL PARAMETERS CHECK
-  // -----------------------------
+  // ---------------- URL ----------------
   const params = new URLSearchParams(window.location.search);
 
-  let query = params.get("play");
-  let query2 = params.get("q");
+  let query = params.get("play") || params.get("q");
+  let hash = window.location.hash.substring(1);
 
-  if (query) {
+  if (query || hash) {
     isUrlSearch = true;
-    handleSearch(decodeURIComponent(query));
+    autoPlayEnabled = true;
+
+    triggerSearch(decodeURIComponent(query || hash));
   }
 
-  if (query2) {
-    isUrlSearch = true;
-    handleSearch(decodeURIComponent(query2));
-  }
-
-  // -----------------------------
-  // HASH (#song)
-  // -----------------------------
-  const hash = window.location.hash.substring(1);
-
-  if (hash) {
-    isUrlSearch = true;
-    handleSearch(decodeURIComponent(hash));
-  }
-
-  // -----------------------------
-  // MANUAL SEARCH BUTTON
-  // -----------------------------
+  // ---------------- manual search ----------------
   $(".search-btn").on("click", function () {
-    isUrlSearch = false;
-    firstSearch = false; // reset autoplay block
-    const q = $(".search-bar").val().trim();
-    handleSearch(q);
+    autoPlayEnabled = false; // IMPORTANT
+    firstSearch = false;
+
+    let q = $(".search-bar").val().trim();
+    triggerSearch(q);
   });
 
 });
+
+
+
+
 
 
 
