@@ -21,7 +21,7 @@
     }
   },
   "screenshots": [
-    {"src": "./img/promotion1.jpg", "type": "image/jpeg", "sizes": "320x640"},
+    {"src": "./img/promotion.jpg", "type": "image/jpeg", "sizes": "320x640"},
     {"src": "./img/promotion2.jpg", "type": "image/jpeg", "sizes": "320x640"},
     {"src": "./img/promotion4.jpg", "type": "image/jpeg", "sizes": "320x640"},
     {"src": "./img/promotion5.jpg", "type": "image/jpeg", "sizes": "320x640"}
