@@ -1370,75 +1370,81 @@ body {
 <script>
 
 
-// Get the search query from the URL (?play=...)
 $(document).ready(function () {
 
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
-  const queryPlay = urlParams.get('play');
+  function handleQuery(query, openModalFlag = false) {
+    if (!query) return;
 
-  if (queryPlay) {
-    $(".search-bar").val(queryPlay);
+    const decoded = decodeURIComponent(query);
 
-    // ❗ autoplay OFF on first load
-    search(queryPlay, { autoplayFirst: false });
-  }
+    $(".search-bar").val(decoded);
+    search(decoded);
 
-});
-
-
-// (?q=...) version
-$(document).ready(function () {
-
-  const params = new URLSearchParams(window.location.search);
-  const queryQ = params.get("q");
-
-  if (queryQ) {
-    const q = decodeURIComponent(queryQ);
-
-    $(".search-bar").val(q);
-
-    search(q, { autoplayFirst: false });
-    openModal();
-  }
-
-});
-
-
-// (#hash) version
-$(document).ready(function () {
-
-  const hash = window.location.hash.substring(1);
-
-  if (hash) {
-    const q = decodeURIComponent(hash);
-
-    $(".search-bar").val(q);
-
-    search(q, { autoplayFirst: false });
-  }
-
-});
-
-$(document).on('swipeleft', '.ui-page', function(event) {
-    // Check if the event has already been handled to prevent multiple triggers
-    if (event.handled !== true) {
-        // Find the next page using the jQuery Mobile structure
-        var nextpage = $.mobile.activePage.next('[data-role="page"]');
-
-        // If there is a next page, navigate to it
-        if (nextpage.length > 0) {
-            $.mobile.changePage(nextpage, { 
-                transition: "slide",  // Use a sliding transition
-                reverse: false        // Navigate forward (not backward)
-            }, true, true);
-        }
-        
-        // Mark the event as handled to prevent further triggers
-        event.handled = true;
+    if (openModalFlag) {
+      openModal(); // 👈 modal open here
     }
-    
-    return false;  // Prevent default action and stop event propagation
+  }
+
+  // =========================
+  // 1. ?play= parameter
+  // =========================
+  const params = new URLSearchParams(window.location.search);
+
+  const playQuery = params.get("play");
+  const qQuery = params.get("q");
+
+  if (playQuery) {
+    handleQuery(playQuery, true);   // modal OPEN
+  } 
+  else if (qQuery) {
+    handleQuery(qQuery, true);      // modal OPEN
+  }
+
+  // =========================
+  // 2. #hash support
+  // =========================
+  const hash = window.location.hash.substring(1);
+  if (hash) {
+    handleQuery(hash, false); // modal optional (false)
+  }
+
+});
+
+
+// =========================
+// Swipe Navigation (jQuery Mobile)
+// =========================
+$(document).on('swipeleft', '.ui-page', function (event) {
+  if (event.handled) return false;
+
+  var nextpage = $.mobile.activePage.next('[data-role="page"]');
+
+  if (nextpage.length > 0) {
+    $.mobile.changePage(nextpage, {
+      transition: "slide",
+      reverse: false
+    });
+  }
+
+  event.handled = true;
+  return false;
+});
+
+
+$(document).on('swiperight', '.ui-page', function (event) {
+  if (event.handled) return false;
+
+  var prevpage = $.mobile.activePage.prev('[data-role="page"]');
+
+  if (prevpage.length > 0) {
+    $.mobile.changePage(prevpage, {
+      transition: "slide",
+      reverse: true
+    });
+  }
+
+  event.handled = true;
+  return false;
 });
 
 // Optional: You may also want to handle swipe right for navigation back
