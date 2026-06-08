@@ -1369,41 +1369,55 @@ body {
  
 <script>
 
-$(document).ready(function() {
-  // Get the search query from the URL
+
+// Get the search query from the URL (?play=...)
+$(document).ready(function () {
+
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-  const query = urlParams.get('play');
+  const queryPlay = urlParams.get('play');
 
-  if (query) {
-    // If a query is present in the URL, set it in the search bar
-    $(".search-bar").val(query);
-    // Trigger the search function with the query
-    search(query); // Pass the query to the search function
+  if (queryPlay) {
+    $(".search-bar").val(queryPlay);
+
+    // ❗ autoplay OFF on first load
+    search(queryPlay, { autoplayFirst: false });
   }
+
 });
-$(document).ready(function() {
-  // URL params se q nikal lo
+
+
+// (?q=...) version
+$(document).ready(function () {
+
   const params = new URLSearchParams(window.location.search);
-  const query = params.get("q");
+  const queryQ = params.get("q");
 
-  if (query) {
-    $(".search-bar").val(decodeURIComponent(query));
-    search(decodeURIComponent(query));
-    openModal(); // Saath me modal open ho
+  if (queryQ) {
+    const q = decodeURIComponent(queryQ);
+
+    $(".search-bar").val(q);
+
+    search(q, { autoplayFirst: false });
+    openModal();
   }
+
 });
-	
-$(document).ready(function() {
-  // Get the hash from the URL (after #)
-  const hash = window.location.hash.substring(1); 
+
+
+// (#hash) version
+$(document).ready(function () {
+
+  const hash = window.location.hash.substring(1);
 
   if (hash) {
-    // If a song name is present in the hash, set it in the search bar
-    $(".search-bar").val(decodeURIComponent(hash));
-    // Trigger the search function with the song name
-    search(decodeURIComponent(hash)); // Pass the song name to the search function
+    const q = decodeURIComponent(hash);
+
+    $(".search-bar").val(q);
+
+    search(q, { autoplayFirst: false });
   }
+
 });
 
 $(document).on('swipeleft', '.ui-page', function(event) {
