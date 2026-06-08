@@ -1,31 +1,50 @@
 async function fetchTrendingSongs(query) {
 
-    
     function playErrorSound() {
         const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
         audio.play();
     }
 
-  
     const blockedPattern = /(tuntun|tutun|tun|टुन|टुनटुन)/i;
 
-    
     if (blockedPattern.test(query.toLowerCase())) {
         console.warn("❌ Blocked query detected:", query);
-        playErrorSound(); 
+        playErrorSound();
         alert("❌ This search query is not allowed!");
         document.getElementById("songs").innerHTML =
             "<p style='color:red;'>⚠️ This search query is blocked.</p>";
-        return []; 
+        return [];
     }
 
-    
-    const apiUrl = `https://self12-lac.vercel.app/v3-api?q=${encodeURIComponent(query)}`;
+    const denoApiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(query)}`;
+    const selfApiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(query)}`;
+
     try {
-        const response = await fetch(apiUrl);
+
+        // First API
+        let response = await fetch(denoApiUrl);
+
+        if (response.ok) {
+            const data = await response.json();
+
+            if (data.items && data.items.length > 0) {
+                console.log("✅ Songs loaded from Deno API");
+                return data.items;
+            }
+        }
+
+        console.log("⚠️ Deno API failed, trying Self API...");
+
+        // Fallback API
+        response = await fetch(selfApiUrl);
+
         if (!response.ok) throw new Error("Network response was not ok");
+
         const data = await response.json();
-        return data.items;
+
+        console.log("✅ Songs loaded from Self API");
+        return data.items || [];
+
     } catch (error) {
         console.error("Error fetching trending songs:", error);
         return [];
@@ -34,11 +53,11 @@ async function fetchTrendingSongs(query) {
 
 function createPlaylistSongElement(videoId, title, channelTitle, videoDate, index) {
     const thumbUrl = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+
     return `
 <div style="margin-bottom:12px;">
   <b index="${index}" class="music-item list" vid="${videoId}" onclick="handleItemClick(this)">
-      
-      <!-- Thumbnail -->
+
       <div class="thumb-wrap">
           <img src="${thumbUrl}" alt="${title}">
           <div class="overlay-play">
@@ -48,11 +67,10 @@ function createPlaylistSongElement(videoId, title, channelTitle, videoDate, inde
           </div>
       </div>
 
-      <!-- Title -->
       <div class="title">${title}</div>
 
-      <!-- Save button -->
-      <button class="save-btn" onclick="event.stopPropagation(); saveFavorite(${index}, '${title}', '${thumbUrl}', '${videoId}')">
+      <button class="save-btn"
+          onclick="event.stopPropagation(); saveFavorite(${index}, '${title.replace(/'/g, "\\'")}', '${thumbUrl}', '${videoId}')">
           <i class="fas fa-heart"></i>
       </button>
 
@@ -64,22 +82,35 @@ function createPlaylistSongElement(videoId, title, channelTitle, videoDate, inde
 function displaySongs(songs) {
     const songsContainer = document.getElementById("songs");
     songsContainer.innerHTML = "";
+
     if (songs.length === 0) {
         songsContainer.innerHTML = "<p>No trending songs found.</p>";
         return;
     }
+
     songs.forEach((song, index) => {
         const videoId = song.id.videoId;
         const title = song.snippet.title;
         const channelTitle = song.snippet.channelTitle;
         const videoDate = song.snippet.publishedAt;
-        const songElement = createPlaylistSongElement(videoId, title, channelTitle, videoDate, index);
+
+        const songElement = createPlaylistSongElement(
+            videoId,
+            title,
+            channelTitle,
+            videoDate,
+            index
+        );
+
         songsContainer.innerHTML += songElement;
     });
 }
 
 async function loadTrendingSongs() {
-    const userQuery = localStorage.getItem("songQuery") || "hindi x Bhojpuri songs";
+
+    const userQuery =
+        localStorage.getItem("songQuery") ||
+        "hindi x Bhojpuri songs";
 
     document.getElementById("songs").innerHTML = `
       <div class="loading-dots">
@@ -87,21 +118,29 @@ async function loadTrendingSongs() {
       </div>
     `;
 
-    
     const blockedPattern = /(tuntun|tutun|tun|टुन|टुनटुन)/i;
+
     if (blockedPattern.test(userQuery.toLowerCase())) {
-        const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+
+        const audio = new Audio(
+            "https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
+        );
+
         audio.play();
+
         alert("❌ Blocked search detected in saved query!");
+
         localStorage.removeItem("songQuery");
+
         document.getElementById("songs").innerHTML =
             "<p style='color:red;'>⚠️ Blocked search term detected. Please try another keyword.</p>";
+
         return;
     }
 
     const trendingSongs = await fetchTrendingSongs(userQuery);
+
     displaySongs(trendingSongs);
 }
-
 
 window.onload = loadTrendingSongs;
