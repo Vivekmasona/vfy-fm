@@ -1369,8 +1369,6 @@ body {
  
 <script>
 
-
-
 $(document).ready(function() {
   // Get the search query from the URL
   const queryString = window.location.search;
@@ -1474,7 +1472,8 @@ $(document).ready(function(){
     receiveResponse();
 });
 
-	
+
+
 
 	
 $(document).on('swiperight', '.ui-page', function(event){     
@@ -1560,10 +1559,10 @@ function fetchResults(apiUrl) {
       }
     });
 
-   //if (firstSearch && data.items.length > 0) {
-      //loadSong($(".list")[0], 0);
-      //firstSearch = false;
-    /)}
+    if (firstSearch && data.items.length > 0) {
+      loadSong($(".list")[0], 0);
+      firstSearch = false;
+    }
 
     $("#prev-btn").toggle(!!prevPageToken);
     $("#next-btn").toggle(!!nextPageToken);
