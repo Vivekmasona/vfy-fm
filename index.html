@@ -1573,10 +1573,10 @@ function fetchResults(apiUrl) {
       }
     });
 
-    if (firstSearch && data.items.length > 0) {
-      loadSong($(".list")[0], 0);
-      firstSearch = false;
-    }
+  //  if (firstSearch && data.items.length > 0) {
+    //  loadSong($(".list")[0], 0);
+     // firstSearch = false;
+    //}
 
     $("#prev-btn").toggle(!!prevPageToken);
     $("#next-btn").toggle(!!nextPageToken);
