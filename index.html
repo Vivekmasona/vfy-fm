@@ -1369,41 +1369,82 @@ body {
  
 <script>
 
-$(document).ready(function () {
-
-  let isUrlSearch = false;
-  let autoPlayEnabled = false;
-  let firstSearch = true;
-
-  function triggerSearch(query) {
-    if (!query) return;
-
-    $(".search-bar").val(query);
-
-    search(query);
-  }
-
-  // ---------------- URL ----------------
-  const params = new URLSearchParams(window.location.search);
 
   let query = params.get("play") || params.get("q");
-  let hash = window.location.hash.substring(1);
+  $(document).ready(function () {
 
-  if (query || hash) {
-    isUrlSearch = true;
-    autoPlayEnabled = true;
+  // =============================
+  // GLOBAL FLAGS
+  // =============================
+  let isUrlSearch = false;
+  let autoPlayed = false;
 
-    triggerSearch(decodeURIComponent(query || hash));
+  // =============================
+  // SEARCH TRIGGER WRAPPER
+  // =============================
+  function triggerSearch(q) {
+    if (!q) return;
+    $(".search-bar").val(q);
+    search(q);
   }
 
-  // ---------------- manual search ----------------
+  // =============================
+  // URL CHECK (play / q / hash)
+  // =============================
+  const params = new URLSearchParams(window.location.search);
+
+  let urlQuery = params.get("play") || params.get("q");
+  let hashQuery = window.location.hash.substring(1);
+
+  let finalQuery = urlQuery || hashQuery;
+
+  if (finalQuery) {
+    isUrlSearch = true;
+    triggerSearch(decodeURIComponent(finalQuery));
+  }
+
+  // =============================
+  // MANUAL SEARCH ONLY
+  // =============================
   $(".search-btn").on("click", function () {
-    autoPlayEnabled = false; // IMPORTANT
-    firstSearch = false;
+
+    isUrlSearch = false;
+    autoPlayed = true; // block autoplay forever
 
     let q = $(".search-bar").val().trim();
     triggerSearch(q);
   });
+
+  // =============================
+  // SEARCH FUNCTION FIX
+  // =============================
+  window.search = function (query) {
+
+    apiCall(query, function (data) {
+
+      renderList(data);
+
+      // wait for DOM render
+      setTimeout(function () {
+
+        // ONLY URL SEARCH AUTO PLAY FIRST SONG
+        if (isUrlSearch && !autoPlayed && data.items && data.items.length > 0) {
+
+          let first = $(".list").first()[0];
+
+          if (first) {
+            loadSong(first, 0);
+            openModal();
+          }
+
+          autoPlayed = true;
+        }
+
+      }, 400);
+
+    });
+
+  };
 
 });
 
