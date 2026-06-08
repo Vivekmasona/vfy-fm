@@ -1369,41 +1369,63 @@ body {
  
 <script>
 
-$(document).ready(function() {
-  // Get the search query from the URL
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
-  const query = urlParams.get('play');
+$(document).ready(function () {
 
-  if (query) {
-    // If a query is present in the URL, set it in the search bar
+  let isUrlSearch = false; // only URL trigger flag
+  let firstSearch = true;
+
+  function handleSearch(query) {
+    if (!query) return;
+
     $(".search-bar").val(query);
-    // Trigger the search function with the query
-    search(query); // Pass the query to the search function
+    search(query);
+
+    // only URL search pe modal open
+    if (isUrlSearch) {
+      openModal();
+    }
   }
-});
-$(document).ready(function() {
-  // URL params se q nikal lo
-  const params = new URLSearchParams(window.location.search);
-  const query = params.get("q");
+
+  // -------------------------
+  // 1. URL ?play=
+  // -------------------------
+  const urlParams = new URLSearchParams(window.location.search);
+  let query = urlParams.get("play");
 
   if (query) {
-    $(".search-bar").val(decodeURIComponent(query));
-    search(decodeURIComponent(query));
-    openModal(); // Saath me modal open ho
+    isUrlSearch = true;
+    handleSearch(decodeURIComponent(query));
   }
-});
-	
-$(document).ready(function() {
-  // Get the hash from the URL (after #)
-  const hash = window.location.hash.substring(1); 
+
+  // -------------------------
+  // 2. URL ?q=
+  // -------------------------
+  const query2 = urlParams.get("q");
+
+  if (query2) {
+    isUrlSearch = true;
+    handleSearch(decodeURIComponent(query2));
+  }
+
+  // -------------------------
+  // 3. URL #hash
+  // -------------------------
+  const hash = window.location.hash.substring(1);
 
   if (hash) {
-    // If a song name is present in the hash, set it in the search bar
-    $(".search-bar").val(decodeURIComponent(hash));
-    // Trigger the search function with the song name
-    search(decodeURIComponent(hash)); // Pass the song name to the search function
+    isUrlSearch = true;
+    handleSearch(decodeURIComponent(hash));
   }
+
+  // -------------------------
+  // NORMAL SEARCH (manual typing)
+  // -------------------------
+  $(".search-btn").on("click", function () {
+    isUrlSearch = false;
+    const q = $(".search-bar").val().trim();
+    handleSearch(q);
+  });
+
 });
 
 $(document).on('swipeleft', '.ui-page', function(event) {
@@ -1559,10 +1581,10 @@ function fetchResults(apiUrl) {
       }
     });
 
-    if (firstSearch && data.items.length > 0) {
-      loadSong($(".list")[0], 0);
-      firstSearch = false;
-    }
+    //if (firstSearch && data.items.length > 0) {
+     // loadSong($(".list")[0], 0);
+     // firstSearch = false;
+    //}
 
     $("#prev-btn").toggle(!!prevPageToken);
     $("#next-btn").toggle(!!nextPageToken);
