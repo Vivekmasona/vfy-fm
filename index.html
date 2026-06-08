@@ -1370,23 +1370,49 @@ body {
 <script>
 
 
+
+
+
 $(document).ready(function () {
 
-  function handleQuery(query, openModalFlag = false) {
+  function handleQuery(query, autoPlayFirst = false, openModalFlag = false) {
     if (!query) return;
 
     const decoded = decodeURIComponent(query);
 
+    // set search bar
     $(".search-bar").val(decoded);
-    search(decoded);
 
+    // run search
+    search(decoded, function () {
+
+      // after search renders list
+      if (autoPlayFirst) {
+        setTimeout(function () {
+
+          // try common selectors (adjust if needed)
+          let firstItem =
+            $(".list .item").first().length ? $(".list .item").first() :
+            $(".list li").first().length ? $(".list li").first() :
+            $(".song-item").first();
+
+          if (firstItem && firstItem.length > 0) {
+            firstItem.trigger("click"); // IMPORTANT: triggers your play logic
+          }
+
+        }, 400); // wait for DOM update
+      }
+
+    });
+
+    // open modal if needed
     if (openModalFlag) {
-      openModal(); // 👈 modal open here
+      openModal();
     }
   }
 
   // =========================
-  // 1. ?play= parameter
+  // URL PARAMETERS
   // =========================
   const params = new URLSearchParams(window.location.search);
 
@@ -1394,25 +1420,28 @@ $(document).ready(function () {
   const qQuery = params.get("q");
 
   if (playQuery) {
-    handleQuery(playQuery, true);   // modal OPEN
+    // ✅ play mode = auto play first song
+    handleQuery(playQuery, true, true);
   } 
   else if (qQuery) {
-    handleQuery(qQuery, true);      // modal OPEN
+    // normal mode
+    handleQuery(qQuery, false, true);
   }
 
   // =========================
-  // 2. #hash support
+  // HASH SUPPORT
   // =========================
   const hash = window.location.hash.substring(1);
+
   if (hash) {
-    handleQuery(hash, false); // modal optional (false)
+    handleQuery(hash, false, false);
   }
 
 });
 
 
 // =========================
-// Swipe Navigation (jQuery Mobile)
+// jQuery Mobile Swipe Navigation
 // =========================
 $(document).on('swipeleft', '.ui-page', function (event) {
   if (event.handled) return false;
@@ -1447,21 +1476,8 @@ $(document).on('swiperight', '.ui-page', function (event) {
   return false;
 });
 
-// Optional: You may also want to handle swipe right for navigation back
-$(document).on('swiperight', '.ui-page', function(event) {
-    if (event.handled !== true) {
-        var prevpage = $.mobile.activePage.prev('[data-role="page"]');
-        if (prevpage.length > 0) {
-            $.mobile.changePage(prevpage, { 
-                transition: "slide",  
-                reverse: true // Navigate backward
-            }, true, true);
-        }
-        event.handled = true;
-    }
-    
-    return false; 
-});
+
+
 
 
 $(document).ready(function(){
