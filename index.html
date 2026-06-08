@@ -1370,83 +1370,44 @@ body {
 <script>
 
 
-  let query = params.get("play") || params.get("q");
-  $(document).ready(function () {
+  
+    $(document).ready(function() {
+  // Get the search query from the URL
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const query = urlParams.get('play');
 
-  // =============================
-  // GLOBAL FLAGS
-  // =============================
-  let isUrlSearch = false;
-  let autoPlayed = false;
-
-  // =============================
-  // SEARCH TRIGGER WRAPPER
-  // =============================
-  function triggerSearch(q) {
-    if (!q) return;
-    $(".search-bar").val(q);
-    search(q);
+  if (query) {
+    // If a query is present in the URL, set it in the search bar
+    $(".search-bar").val(query);
+    // Trigger the search function with the query
+    search(query); // Pass the query to the search function
   }
-
-  // =============================
-  // URL CHECK (play / q / hash)
-  // =============================
-  const params = new URLSearchParams(window.location.search);
-
-  let urlQuery = params.get("play") || params.get("q");
-  let hashQuery = window.location.hash.substring(1);
-
-  let finalQuery = urlQuery || hashQuery;
-
-  if (finalQuery) {
-    isUrlSearch = true;
-    triggerSearch(decodeURIComponent(finalQuery));
-  }
-
-  // =============================
-  // MANUAL SEARCH ONLY
-  // =============================
-  $(".search-btn").on("click", function () {
-
-    isUrlSearch = false;
-    autoPlayed = true; // block autoplay forever
-
-    let q = $(".search-bar").val().trim();
-    triggerSearch(q);
-  });
-
-  // =============================
-  // SEARCH FUNCTION FIX
-  // =============================
-  window.search = function (query) {
-
-    apiCall(query, function (data) {
-
-      renderList(data);
-
-      // wait for DOM render
-      setTimeout(function () {
-
-        // ONLY URL SEARCH AUTO PLAY FIRST SONG
-        if (isUrlSearch && !autoPlayed && data.items && data.items.length > 0) {
-
-          let first = $(".list").first()[0];
-
-          if (first) {
-            loadSong(first, 0);
-            openModal();
-          }
-
-          autoPlayed = true;
-        }
-
-      }, 400);
-
-    });
-
-  };
-
 });
+$(document).ready(function() {
+  // URL params se q nikal lo
+  const params = new URLSearchParams(window.location.search);
+  const query = params.get("q");
+
+  if (query) {
+    $(".search-bar").val(decodeURIComponent(query));
+    search(decodeURIComponent(query));
+    openModal(); // Saath me modal open ho
+  }
+});
+	
+$(document).ready(function() {
+  // Get the hash from the URL (after #)
+  const hash = window.location.hash.substring(1); 
+
+  if (hash) {
+    // If a song name is present in the hash, set it in the search bar
+    $(".search-bar").val(decodeURIComponent(hash));
+    // Trigger the search function with the song name
+    search(decodeURIComponent(hash)); // Pass the song name to the search function
+  }
+});
+	
 
 
 
