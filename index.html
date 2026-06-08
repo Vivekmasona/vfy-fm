@@ -5105,32 +5105,38 @@ window.addEventListener('beforeunload', () => {
 </div>
 
 <script>
-const card=document.getElementById("fs-card");
+const card = document.getElementById("fs-card");
 
+/* smooth hide function */
 function hideCard(){
-    card.style.transform="translateY(120%)";
-    card.style.opacity="0";
+    card.style.transform = "translateY(120%)";
+    card.style.opacity = "0";
 
-    setTimeout(()=>{
+    setTimeout(() => {
         card.remove();
-    },300);
+    }, 300);
 }
 
-document.getElementById("closeFs")
-.onclick=hideCard;
+/* buttons */
+document.getElementById("closeFs").onclick = hideCard;
 
-document.getElementById("openFs")
-.onclick=async()=>{
-    try{
+document.getElementById("openFs").onclick = async () => {
+    try {
         await document.documentElement.requestFullscreen();
-    }catch(e){}
+    } catch (e) {}
     hideCard();
 };
 
-/* 3 second me auto hide */
-setTimeout(()=>{
-    if(document.body.contains(card)){
-        hideCard();
+/* SHOW after 2 seconds */
+setTimeout(() => {
+    if (document.body.contains(card)) {
+        card.style.transform = "translateY(0)";
+        card.style.opacity = "1";
+
+        /* HIDE after 2 seconds of being visible */
+        setTimeout(() => {
+            hideCard();
+        }, 2000);
     }
-},3000);
+}, 2000);
 </script>
