@@ -149,7 +149,123 @@ window.addEventListener('scroll', () => {
  
     
 
+<style>
+  #smartLoader{
+    position:fixed;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#0b0b0f;
+    z-index:999999;
+    font-family:system-ui;
+    color:#fff;
+  }
 
+  .wrap{
+    text-align:center;
+  }
+
+  /* Premium Logo */
+  .logo{
+    font-size:54px;
+    font-weight:900;
+    letter-spacing:10px;
+    color:#ffffff;
+  }
+
+  .logo span{
+    color:#9b9b9b;
+    font-weight:300;
+  }
+
+  .tag{
+    margin-top:6px;
+    font-size:12px;
+    opacity:0.5;
+    letter-spacing:2px;
+  }
+
+  /* Minimal line loader */
+  .loader{
+    margin:25px auto 0;
+    width:180px;
+    height:1px;
+    background:#222;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .loader::before{
+    content:"";
+    position:absolute;
+    left:-40%;
+    width:40%;
+    height:100%;
+    background:#fff;
+    animation:move 1.2s linear infinite;
+  }
+
+  @keyframes move{
+    0%{ left:-40%; }
+    100%{ left:100%; }
+  }
+
+  .step{
+    margin-top:12px;
+    font-size:12px;
+    opacity:0.6;
+  }
+
+  .dev{
+    position:fixed;
+    bottom:15px;
+    font-size:11px;
+    opacity:0.35;
+    letter-spacing:1px;
+  }
+</style>
+
+<div id="smartLoader">
+  <div class="wrap">
+    <div class="logo">V<span>FY</span></div>
+    <div class="tag">system initializing</div>
+
+    <div class="loader"></div>
+    <div class="step" id="stepText">Starting...</div>
+  </div>
+
+  <div class="dev">Developer • Vivek Kushwaha</div>
+</div>
+
+<script>
+(function(){
+  const loader = document.getElementById("smartLoader");
+  const step = document.getElementById("stepText");
+
+  const steps = [
+    "Booting core...",
+    "Loading engine...",
+    "Preparing UI...",
+    "Finalizing..."
+  ];
+
+  let i = 0;
+
+  let interval = setInterval(()=>{
+    if(i < steps.length){
+      step.innerText = steps[i++];
+    } else {
+      clearInterval(interval);
+
+      setTimeout(()=>{
+        loader.style.opacity = "0";
+        setTimeout(()=> loader.remove(), 400);
+      }, 600);
+    }
+  }, 700);
+})();
+</script>
 
       
     
