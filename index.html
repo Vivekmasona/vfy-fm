@@ -2027,16 +2027,15 @@ function makeMiniPlayerResizable(playerSelector){
     const resizeHandle = document.createElement("div");
     resizeHandle.className = "resize-handle";
 
-    resizeHandle.style.width = "24px";
-    resizeHandle.style.height = "24px";
-    resizeHandle.style.position = "absolute";
-    resizeHandle.style.right = "0";
-    resizeHandle.style.bottom = "0";
-    resizeHandle.style.background = "#00ffff";
-    resizeHandle.style.borderRadius = "50%";
-    resizeHandle.style.cursor = "se-resize";
-    resizeHandle.style.zIndex = "100001";
-
+    resizeHandle.style.width = "20px";
+resizeHandle.style.height = "20px";
+resizeHandle.style.position = "absolute";
+resizeHandle.style.right = "0";
+resizeHandle.style.bottom = "0";
+resizeHandle.style.background = "transparent";
+resizeHandle.style.opacity = "0";
+resizeHandle.style.cursor = "se-resize";
+resizeHandle.style.zIndex = "100001";
     player.appendChild(resizeHandle);
 
     // Mouse
