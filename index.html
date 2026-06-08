@@ -144,94 +144,138 @@ window.addEventListener('scroll', () => {
 
 
 
-
-  
- 
-    
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loader</title>
 
 <style>
+  body{
+    margin:0;
+    font-family:system-ui;
+    overflow:hidden;
+  }
+
+  /* 🌈 DARK + CYAN + ORANGE ANIMATED BACKGROUND */
   #smartLoader{
     position:fixed;
     inset:0;
     display:flex;
     justify-content:center;
     align-items:center;
-    background:#0b0b0f;
     z-index:999999;
-    font-family:system-ui;
     color:#fff;
+
+    background:linear-gradient(
+      -45deg,
+      #000000,
+      #00ffff,
+      #0b0b0f,
+      #ff7a00,
+      #000000
+    );
+
+    background-size:400% 400%;
+    animation: bgFlow 6s ease infinite;
   }
 
+  @keyframes bgFlow{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+  }
+
+  /* soft glow depth */
+  #smartLoader::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at top, rgba(0,255,255,0.25), transparent 40%),
+      radial-gradient(circle at bottom, rgba(255,122,0,0.20), transparent 45%);
+    pointer-events:none;
+  }
+
+  /* 🧊 GLASS CENTER */
   .wrap{
+    position:relative;
+    width:300px;
+    padding:32px 24px;
+    border-radius:20px;
+
+    background:rgba(0,0,0,0.45);
+    backdrop-filter: blur(18px);
+
+    box-shadow:0 20px 60px rgba(0,0,0,0.7);
     text-align:center;
   }
 
-  /* Premium Logo */
   .logo{
     font-size:54px;
     font-weight:900;
     letter-spacing:10px;
-    color:#ffffff;
-  }
-
-  .logo span{
-    color:#9b9b9b;
-    font-weight:300;
   }
 
   .tag{
-    margin-top:6px;
     font-size:12px;
-    opacity:0.5;
+    opacity:0.6;
+    margin-top:6px;
     letter-spacing:2px;
   }
 
-  /* Minimal line loader */
+  /* LOADING BAR */
   .loader{
     margin:25px auto 0;
     width:180px;
-    height:1px;
-    background:#222;
-    position:relative;
+    height:2px;
+    background:#111;
+    border-radius:50px;
     overflow:hidden;
   }
 
-  .loader::before{
-    content:"";
-    position:absolute;
-    left:-40%;
+  .bar{
     width:40%;
     height:100%;
     background:#fff;
-    animation:move 1.2s linear infinite;
+    animation:move 1.1s linear infinite;
   }
 
   @keyframes move{
-    0%{ left:-40%; }
-    100%{ left:100%; }
+    0%{transform:translateX(-100%);}
+    100%{transform:translateX(250%);}
   }
 
   .step{
     margin-top:12px;
     font-size:12px;
-    opacity:0.6;
+    opacity:0.7;
   }
 
   .dev{
     position:fixed;
     bottom:15px;
+    width:100%;
+    text-align:center;
     font-size:11px;
     opacity:0.35;
     letter-spacing:1px;
   }
 </style>
+</head>
+
+<body>
 
 <div id="smartLoader">
   <div class="wrap">
-    <div class="logo">V<span>FY</span></div>
+    <div class="logo">V F Y</div>
     <div class="tag">system initializing</div>
 
-    <div class="loader"></div>
+    <div class="loader">
+      <div class="bar"></div>
+    </div>
+
     <div class="step" id="stepText">Starting...</div>
   </div>
 
@@ -244,7 +288,7 @@ window.addEventListener('scroll', () => {
   const step = document.getElementById("stepText");
 
   const steps = [
-    "Booting core...",
+    "Booting system...",
     "Loading engine...",
     "Preparing UI...",
     "Finalizing..."
@@ -260,14 +304,21 @@ window.addEventListener('scroll', () => {
 
       setTimeout(()=>{
         loader.style.opacity = "0";
-        setTimeout(()=> loader.remove(), 400);
-      }, 600);
+        setTimeout(()=> loader.remove(), 500);
+      }, 700);
     }
   }, 700);
 })();
 </script>
 
-      
+</body>
+</html>
+  
+ 
+    
+
+
+  
     
     
   
