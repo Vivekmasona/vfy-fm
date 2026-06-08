@@ -168,12 +168,10 @@ background:#000;
 font-family:sans-serif;
 }
 
+/* Loader */
 #loader{
 position:fixed;
 inset:0;
-width:100vw;
-height:100vh;
-z-index:999999;
 display:flex;
 justify-content:center;
 align-items:center;
@@ -181,10 +179,12 @@ background:#000;
 transition: opacity 0.6s ease;
 }
 
+/* Center Box */
 .box{
 text-align:center;
 }
 
+/* Circle */
 .circle{
 width:90px;
 height:90px;
@@ -206,7 +206,7 @@ animation:glow 3s infinite alternate;
 100%{box-shadow:0 0 25px #00ffff55;}
 }
 
-/* VFY TEXT STYLE */
+/* VFY TEXT */
 .innerText{
 display:flex;
 gap:4px;
@@ -245,6 +245,7 @@ color:#00ffff;
 letter-spacing:2px;
 }
 
+/* Progress Bar */
 .bar{
 width:170px;
 height:5px;
@@ -257,7 +258,7 @@ overflow:hidden;
 .fill{
 height:100%;
 width:0%;
-background:#00ffff; /* NO GRADIENT */
+background:#00ffff;
 box-shadow:0 0 10px #00ffff;
 transition:.2s;
 }
@@ -286,34 +287,46 @@ transition:.2s;
 </div>
 
 <script>
-let p=0;
-let fill=document.getElementById("fill");
-let txt=document.getElementById("txt");
+let p = 0;
+let fill = document.getElementById("fill");
+let txt = document.getElementById("txt");
+let loader = document.getElementById("loader");
 
-let msgs=["Booting","Starting Engine","Loading UI","Ready"];
-let i=0;
+let msgs = ["Booting","Starting Engine","Loading UI","Ready"];
+let i = 0;
 
-let t=setInterval(()=>{
-  p+=Math.random()*10;
-  if(p>100)p=100;
+let t = setInterval(() => {
+  p += Math.random() * 10;
+  if(p > 100) p = 100;
 
-  fill.style.width=p+"%";
+  fill.style.width = p + "%";
 
-  if(p>i*25 && i<msgs.length){
-    txt.innerHTML=msgs[i];
+  if(p > i * 25 && i < msgs.length){
+    txt.innerHTML = msgs[i];
     i++;
   }
 
-  if(p>=100){
+  if(p >= 100){
     clearInterval(t);
-    txt.innerHTML="Welcome To VFY";
-    setTimeout(()=>document.getElementById("loader").remove(),700);
+    txt.innerHTML = "Welcome To VFY";
+
+    // Smooth hide instead of remove
+    setTimeout(()=>{
+      loader.style.opacity = "0";
+
+      setTimeout(()=>{
+        loader.style.display = "none";
+      }, 600);
+
+    }, 700);
   }
-},200);
+
+}, 200);
 </script>
 
 </body>
 </html>
+    
 
 
 
