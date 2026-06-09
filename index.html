@@ -1963,7 +1963,8 @@ function makeMiniPlayerLongPressDraggable(playerSelector){
 
 
 
-    // VFY Pause / Loading Overlay
+    
+// VFY Pause / Loading Overlay
 if(!$("#vfyPauseOverlay").length){
 
     $(".yt-mini-player").append(`
@@ -1976,34 +1977,53 @@ if(!$("#vfyPauseOverlay").length){
             display:flex;
             justify-content:center;
             align-items:center;
-            background:rgba(0,0,0,.25);
+            background:rgba(0,0,0,.22);
             backdrop-filter:blur(8px);
             z-index:999999;
             pointer-events:none;
-            transition:.4s;
+            transition:.5s;
         ">
-            <div id="vfyText" style="
-                color:#00ffff;
-                font-size:34px;
-                font-weight:700;
-                letter-spacing:4px;
-                text-shadow:0 0 12px #00ffff;
-                font-family:Arial,sans-serif;
-            ">
-                VFY
-            </div>
+            <div id="vfyText"></div>
         </div>
 
         <style>
-        @keyframes vfyBlink{
-            0%{opacity:.2}
-            50%{opacity:1}
-            100%{opacity:.2}
+
+        @keyframes vfySpin{
+            from{transform:rotate(0deg);}
+            to{transform:rotate(360deg);}
         }
 
-        #vfyDots{
-            animation:vfyBlink .8s infinite;
+        #vfyLoader{
+            width:95px;
+            height:95px;
+            border:4px solid rgba(0,255,255,.15);
+            border-top:4px solid #00ffff;
+            border-radius:50%;
+            animation:vfySpin .9s linear infinite;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            box-shadow:0 0 20px rgba(0,255,255,.5);
         }
+
+        #vfyLoader span{
+            font-family:Arial,sans-serif;
+            font-size:26px;
+            font-weight:700;
+            color:#00ffff;
+            letter-spacing:2px;
+            text-shadow:0 0 12px #00ffff;
+        }
+
+        #vfyLogo{
+            font-family:Arial,sans-serif;
+            font-size:34px;
+            font-weight:700;
+            color:#00ffff;
+            letter-spacing:4px;
+            text-shadow:0 0 15px #00ffff;
+        }
+
         </style>
     `);
 
@@ -2027,20 +2047,23 @@ setInterval(function(){
 
             clearTimeout(hideTimer);
 
-            $("#vfyPauseOverlay").show().css("opacity",1);
+            $("#vfyPauseOverlay").stop(true,true).show().css("opacity",1);
 
             $("#vfyText").html(`
-                <span>VFY</span>
-                <span style="font-size:18px;display:block;margin-top:8px;">
-                    Loading<span id="vfyDots">...</span>
-                </span>
+                <div id="vfyLoader">
+                    <span>VFY</span>
+                </div>
             `);
 
             hideTimer=setTimeout(function(){
 
-                $("#vfyPauseOverlay").fadeOut(500);
+                $("#vfyPauseOverlay").animate({
+                    opacity:0
+                },800,function(){
+                    $(this).hide().css("opacity",1);
+                });
 
-            },3000);
+            },4000);
 
         }
 
@@ -2055,16 +2078,19 @@ setInterval(function(){
 
             clearTimeout(hideTimer);
 
-            $("#vfyPauseOverlay").show().css("opacity",1);
+            $("#vfyPauseOverlay").stop(true,true).show().css("opacity",1);
 
-            $("#vfyText").html("VFY");
+            $("#vfyText").html(`
+                <div id="vfyLogo">
+                    VFY
+                </div>
+            `);
 
         }
 
     }
 
 },200);
-
 		
 
 
