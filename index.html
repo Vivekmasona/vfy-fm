@@ -1956,23 +1956,44 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
 
     $("#mini-close").click(()=>stopVideoIfPlaying());
 
-    $("#mini-seekbar").on("input",function(){
-        if(!ytPlayer) return;
-        const dur=ytPlayer.getDuration();
-        ytPlayer.seekTo((this.value/100)*dur,true);
-    });
 
-    function updateSeekBar(){
-        if(!ytPlayer) return;
-        const state=ytPlayer.getPlayerState();
-        if(state===YT.PlayerState.PLAYING||state===YT.PlayerState.PAUSED){
-            const cur=ytPlayer.getCurrentTime();
-            const dur=ytPlayer.getDuration();
-            if(dur>0) $("#mini-seekbar").val((cur/dur)*100);
-        }
-        requestAnimationFrame(updateSeekBar);
-    }
-}
+
+	$("#mini-seekbar").on("input", function () {
+
+    if (!ytPlayer) return;
+
+    clearTimeout(hideTimer);
+
+    $("#vfyPauseOverlay")
+        .stop(true, true)
+        .show()
+        .css("opacity", 1);
+
+    $("#vfyText").html(`
+        <div id="vfyLoader">
+            <span>V F Y</span>
+            <div class="vfyDots">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+    `);
+
+    hideTimer = setTimeout(function () {
+
+        $("#vfyPauseOverlay").animate({
+            opacity: 0
+        }, 500, function () {
+            $(this).hide().css("opacity", 1);
+        });
+
+    }, 1000);
+
+    const dur = ytPlayer.getDuration();
+    ytPlayer.seekTo((this.value / 100) * dur, true);
+
+});
 
 // Auto next video
 function playNextVideo(){
@@ -2150,31 +2171,7 @@ setInterval(function () {
     const state = ytPlayer.getPlayerState();
     const currentTime = ytPlayer.getCurrentTime();
 
-    // ===== SEEK DETECT =====
-    if (lastTime !== 0 && Math.abs(currentTime - lastTime) > 2 && state === YT.PlayerState.PLAYING) {
-
-        if (!isSeeking) {
-
-            isSeeking = true;
-            overlayState = "seek";
-
-            clearTimeout(hideTimer);
-
-            $("#vfyPauseOverlay")
-                .stop(true, true)
-                .show()
-                .css("opacity", 1);
-
-            $("#vfyText").html(`
-                <div id="vfyLoader">
-                    <span>V F Y</span>
-                    <div class="vfyDots">
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                    </div>
-                </div>
-            `);
+    
 
             hideTimer = setTimeout(function () {
 
