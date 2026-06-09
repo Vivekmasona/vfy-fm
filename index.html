@@ -1998,34 +1998,63 @@ if (!$("#vfyPauseOverlay").length) {
         }
 
         /* Loading Spinner */
-        #vfyLoader{
-            width:95px;
-            height:95px;
-            position:relative;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-        }
+        
 
-        /* Rotating Red Neon Ring */
-        #vfyLoader::before{
-            content:"";
-            position:absolute;
-            width:95px;
-            height:95px;
-            border-radius:50%;
-            border:4px solid rgba(255,0,0,.15);
-            border-top:4px solid #ff0000;
-            border-right:4px solid #ff5555;
-            box-shadow:
-                0 0 10px #ff0000,
-                0 0 25px #ff0000,
-                0 0 45px rgba(255,0,0,.8),
-                inset 0 0 10px rgba(255,0,0,.35);
+#vfyLoader{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+}
 
-            animation:vfySpin .8s linear infinite;
-        }
+#vfyLoader span{
+    font-family:Arial,sans-serif;
+    font-size:34px;
+    font-weight:700;
+    letter-spacing:4px;
+    color:#00ffff;
+    text-shadow:
+        0 0 10px #00ffff,
+        0 0 20px #00ffff,
+        0 0 35px #00ffff;
+}
 
+.vfyDots{
+    display:flex;
+    gap:10px;
+}
+
+.vfyDots div{
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    background:#ff0000;
+    box-shadow:
+        0 0 10px #ff0000,
+        0 0 20px #ff0000;
+    animation:vfyBounce 0.8s infinite alternate;
+}
+
+.vfyDots div:nth-child(2){
+    animation-delay:.2s;
+}
+
+.vfyDots div:nth-child(3){
+    animation-delay:.4s;
+}
+
+@keyframes vfyBounce{
+    from{
+        transform:translateY(0) scale(1);
+    }
+    to{
+        transform:translateY(-12px) scale(1.2);
+    }
+}
+
+
+	
         /* Center Logo (Static) */
         #vfyLoader span{
             position:relative;
@@ -2083,10 +2112,15 @@ setInterval(function () {
                 .css("opacity", 1);
 
             $("#vfyText").html(`
-                <div id="vfyLoader">
-                    <span>VFY</span>
-                </div>
-            `);
+    <div id="vfyLoader">
+        <span>VFY</span>
+        <div class="vfyDots">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+`);
 
             hideTimer = setTimeout(function () {
 
