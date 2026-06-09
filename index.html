@@ -2147,12 +2147,15 @@ setInterval(function () {
 
     const state = ytPlayer.getPlayerState();
 
-    // PLAY
-    if (state === YT.PlayerState.PLAYING) {
+    // PLAY + BUFFERING
+    if (
+        state === YT.PlayerState.PLAYING ||
+        state === YT.PlayerState.BUFFERING
+    ) {
 
-        if (overlayState !== "play") {
+        if (overlayState !== state) {
 
-            overlayState = "play";
+            overlayState = state;
 
             clearTimeout(hideTimer);
 
@@ -2162,16 +2165,58 @@ setInterval(function () {
                 .css("opacity", 1);
 
             $("#vfyText").html(`
-    <div id="vfyLoader">
-        <span>V F Y</span>
-        <div class="vfyDots">
-            <div></div>
-            <div></div>
-            <div></div>
-        </div>
-    </div>
-`);
+                <div id="vfyLoader">
+                    <span>V F Y</span>
+                    <div class="vfyDots">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+            `);
 
+            // PLAYING me 4 sec baad hide
+            if (state === YT.PlayerState.PLAYING) {
+                hideTimer = setTimeout(function () {
+
+                    $("#vfyPauseOverlay").animate({
+                        opacity: 0
+                    }, 800, function () {
+                        $(this).hide().css("opacity", 1);
+                    });
+
+                }, 4000);
+            }
+
+        }
+
+    }
+
+    // PAUSE
+    else if (state === YT.PlayerState.PAUSED) {
+
+        if (overlayState !== "pause") {
+
+            overlayState = "pause";
+
+            clearTimeout(hideTimer);
+
+            $("#vfyPauseOverlay")
+                .stop(true, true)
+                .show()
+                .css("opacity", 1);
+
+            $("#vfyText").html(`
+                <div id="vfyLogo">
+                    V F Y
+                </div>
+            `);
+
+        }
+
+    }
+
+}, 200);
             hideTimer = setTimeout(function () {
 
                 $("#vfyPauseOverlay").animate({
