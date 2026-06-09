@@ -2140,15 +2140,61 @@ if (!$("#vfyPauseOverlay").length) {
 
 let overlayState = "";
 let hideTimer = null;
+let lastTime = 0;
+let isSeeking = false;
 
 setInterval(function () {
 
     if (!ytPlayer) return;
 
     const state = ytPlayer.getPlayerState();
+    const currentTime = ytPlayer.getCurrentTime();
 
-    // PLAY
-    if (state === YT.PlayerState.PLAYING) {
+    // ===== SEEK DETECT =====
+    if (lastTime !== 0 && Math.abs(currentTime - lastTime) > 2 && state === YT.PlayerState.PLAYING) {
+
+        if (!isSeeking) {
+
+            isSeeking = true;
+            overlayState = "seek";
+
+            clearTimeout(hideTimer);
+
+            $("#vfyPauseOverlay")
+                .stop(true, true)
+                .show()
+                .css("opacity", 1);
+
+            $("#vfyText").html(`
+                <div id="vfyLoader">
+                    <span>V F Y</span>
+                    <div class="vfyDots">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+            `);
+
+            hideTimer = setTimeout(function () {
+
+                $("#vfyPauseOverlay").animate({
+                    opacity: 0
+                }, 800, function () {
+                    $(this).hide().css("opacity", 1);
+                });
+
+                isSeeking = false;
+                overlayState = "";
+
+            }, 1200);
+        }
+    }
+
+    lastTime = currentTime;
+
+    // ===== PLAY =====
+    if (state === YT.PlayerState.PLAYING && !isSeeking) {
 
         if (overlayState !== "play") {
 
@@ -2162,15 +2208,15 @@ setInterval(function () {
                 .css("opacity", 1);
 
             $("#vfyText").html(`
-    <div id="vfyLoader">
-        <span>V F Y</span>
-        <div class="vfyDots">
-            <div></div>
-            <div></div>
-            <div></div>
-        </div>
-    </div>
-`);
+                <div id="vfyLoader">
+                    <span>V F Y</span>
+                    <div class="vfyDots">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+            `);
 
             hideTimer = setTimeout(function () {
 
@@ -2186,7 +2232,7 @@ setInterval(function () {
 
     }
 
-    // PAUSE
+    // ===== PAUSE =====
     else if (state === YT.PlayerState.PAUSED) {
 
         if (overlayState !== "pause") {
@@ -2211,7 +2257,6 @@ setInterval(function () {
     }
 
 }, 200);
-        
             
 		
 
