@@ -1956,44 +1956,23 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
 
     $("#mini-close").click(()=>stopVideoIfPlaying());
 
+    $("#mini-seekbar").on("input",function(){
+        if(!ytPlayer) return;
+        const dur=ytPlayer.getDuration();
+        ytPlayer.seekTo((this.value/100)*dur,true);
+    });
 
-
-	$("#mini-seekbar").on("input", function () {
-
-    if (!ytPlayer) return;
-
-    clearTimeout(hideTimer);
-
-    $("#vfyPauseOverlay")
-        .stop(true, true)
-        .show()
-        .css("opacity", 1);
-
-    $("#vfyText").html(`
-        <div id="vfyLoader">
-            <span>V F Y</span>
-            <div class="vfyDots">
-                <div></div>
-                <div></div>
-                <div></div>
-            </div>
-        </div>
-    `);
-
-    hideTimer = setTimeout(function () {
-
-        $("#vfyPauseOverlay").animate({
-            opacity: 0
-        }, 500, function () {
-            $(this).hide().css("opacity", 1);
-        });
-
-    }, 1000);
-
-    const dur = ytPlayer.getDuration();
-    ytPlayer.seekTo((this.value / 100) * dur, true);
-
-});
+    function updateSeekBar(){
+        if(!ytPlayer) return;
+        const state=ytPlayer.getPlayerState();
+        if(state===YT.PlayerState.PLAYING||state===YT.PlayerState.PAUSED){
+            const cur=ytPlayer.getCurrentTime();
+            const dur=ytPlayer.getDuration();
+            if(dur>0) $("#mini-seekbar").val((cur/dur)*100);
+        }
+        requestAnimationFrame(updateSeekBar);
+    }
+}
 
 // Auto next video
 function playNextVideo(){
@@ -2161,37 +2140,15 @@ if (!$("#vfyPauseOverlay").length) {
 
 let overlayState = "";
 let hideTimer = null;
-let lastTime = 0;
-let isSeeking = false;
 
 setInterval(function () {
 
     if (!ytPlayer) return;
 
     const state = ytPlayer.getPlayerState();
-    const currentTime = ytPlayer.getCurrentTime();
 
-    
-
-            hideTimer = setTimeout(function () {
-
-                $("#vfyPauseOverlay").animate({
-                    opacity: 0
-                }, 800, function () {
-                    $(this).hide().css("opacity", 1);
-                });
-
-                isSeeking = false;
-                overlayState = "";
-
-            }, 1200);
-        }
-    }
-
-    lastTime = currentTime;
-
-    // ===== PLAY =====
-    if (state === YT.PlayerState.PLAYING && !isSeeking) {
+    // PLAY
+    if (state === YT.PlayerState.PLAYING) {
 
         if (overlayState !== "play") {
 
@@ -2205,15 +2162,15 @@ setInterval(function () {
                 .css("opacity", 1);
 
             $("#vfyText").html(`
-                <div id="vfyLoader">
-                    <span>V F Y</span>
-                    <div class="vfyDots">
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                    </div>
-                </div>
-            `);
+    <div id="vfyLoader">
+        <span>V F Y</span>
+        <div class="vfyDots">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+`);
 
             hideTimer = setTimeout(function () {
 
@@ -2229,7 +2186,7 @@ setInterval(function () {
 
     }
 
-    // ===== PAUSE =====
+    // PAUSE
     else if (state === YT.PlayerState.PAUSED) {
 
         if (overlayState !== "pause") {
@@ -2254,6 +2211,7 @@ setInterval(function () {
     }
 
 }, 200);
+        
             
 		
 
