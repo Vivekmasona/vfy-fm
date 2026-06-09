@@ -1962,76 +1962,110 @@ function makeMiniPlayerLongPressDraggable(playerSelector){
 
 
 
-// VFY Pause Overlay
+
+    // VFY Pause / Loading Overlay
 if(!$("#vfyPauseOverlay").length){
+
     $(".yt-mini-player").append(`
         <div id="vfyPauseOverlay" style="
             position:absolute;
-            inset:0;
+            top:0;
+            left:0;
+            width:100%;
+            height:80%;
             display:flex;
             justify-content:center;
             align-items:center;
-            background:#000;
+            background:rgba(0,0,0,.25);
+            backdrop-filter:blur(8px);
             z-index:999999;
             pointer-events:none;
+            transition:.4s;
         ">
-            <div style="
+            <div id="vfyText" style="
                 color:#00ffff;
-                font-size:42px;
+                font-size:34px;
                 font-weight:700;
-                letter-spacing:8px;
-                text-shadow:0 0 15px #00ffff;
-            ">VFY</div>
+                letter-spacing:4px;
+                text-shadow:0 0 12px #00ffff;
+                font-family:Arial,sans-serif;
+            ">
+                VFY
+            </div>
         </div>
+
+        <style>
+        @keyframes vfyBlink{
+            0%{opacity:.2}
+            50%{opacity:1}
+            100%{opacity:.2}
+        }
+
+        #vfyDots{
+            animation:vfyBlink .8s infinite;
+        }
+        </style>
     `);
+
 }
 
-let overlayVisible = true;
-let fadeTimer = null;
+let overlayState="";
+let hideTimer=null;
 
 setInterval(function(){
 
     if(!ytPlayer) return;
 
-    const state = ytPlayer.getPlayerState();
+    const state=ytPlayer.getPlayerState();
 
-    // Pause
-    if(state === YT.PlayerState.PAUSED){
+    // PLAY
+    if(state===YT.PlayerState.PLAYING){
 
-        if(!overlayVisible){
+        if(overlayState!=="play"){
 
-            clearTimeout(fadeTimer);
+            overlayState="play";
 
-            $("#vfyPauseOverlay")
-                .stop(true,true)
-                .show()
-                .css("opacity",1);
+            clearTimeout(hideTimer);
 
-            overlayVisible = true;
+            $("#vfyPauseOverlay").show().css("opacity",1);
+
+            $("#vfyText").html(`
+                <span>VFY</span>
+                <span style="font-size:18px;display:block;margin-top:8px;">
+                    Loading<span id="vfyDots">...</span>
+                </span>
+            `);
+
+            hideTimer=setTimeout(function(){
+
+                $("#vfyPauseOverlay").fadeOut(500);
+
+            },3000);
+
         }
 
     }
 
-    // Play
-    else if(state === YT.PlayerState.PLAYING){
+    // PAUSE
+    else if(state===YT.PlayerState.PAUSED){
 
-        if(overlayVisible){
+        if(overlayState!=="pause"){
 
-            overlayVisible = false;
+            overlayState="pause";
 
-            clearTimeout(fadeTimer);
+            clearTimeout(hideTimer);
 
-            fadeTimer = setTimeout(function(){
+            $("#vfyPauseOverlay").show().css("opacity",1);
 
-                $("#vfyPauseOverlay").fadeOut(500);
-
-            },2000);
+            $("#vfyText").html("VFY");
 
         }
 
     }
 
 },200);
+
+		
 
 
 
