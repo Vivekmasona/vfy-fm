@@ -112,11 +112,26 @@ async function loadTrendingSongs() {
         localStorage.getItem("songQuery") ||
         "hindi x Bhojpuri songs";
 
+   // document.getElementById("songs").innerHTML = `
+     // <div class="loading-dots">
+         // <span></span><span></span><span></span>
+      //</div>
+    //`;
+
     document.getElementById("songs").innerHTML = `
-      <div class="loading-dots">
-          <span></span><span></span><span></span>
-      </div>
-    `;
+<div class="skeleton-list">
+    ${Array(8).fill(`
+    <div class="skeleton-item">
+        <div class="skeleton-thumb"></div>
+        <div class="skeleton-content">
+            <div class="skeleton-line line1"></div>
+            <div class="skeleton-line line2"></div>
+        </div>
+        <div class="skeleton-heart"></div>
+    </div>
+    `).join("")}
+</div>
+`;
 
     const blockedPattern = /(tuntun|tutun|tun|टुन|टुनटुन)/i;
 
