@@ -2148,65 +2148,11 @@ setInterval(function () {
     const state = ytPlayer.getPlayerState();
 
     // PLAY
-    // PLAY
-if (state === YT.PlayerState.PLAYING) {
+    if (state === YT.PlayerState.PLAYING) {
 
-    if (overlayState !== "play") {
+        if (overlayState !== "play") {
 
-        overlayState = "play";
-
-        clearTimeout(hideTimer);
-
-        $("#vfyPauseOverlay")
-            .stop(true, true)
-            .show()
-            .css("opacity", 1);
-
-        $("#vfyText").html(`
-            <div id="vfyLoader">
-                <span>V F Y</span>
-                <div class="vfyDots">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-            </div>
-        `);
-
-        // Skip/Seek ke baad bhi thodi der logo dikhega
-        hideTimer = setTimeout(function () {
-
-            $("#vfyPauseOverlay").animate({
-                opacity: 0
-            }, 500, function () {
-                $(this).hide().css("opacity", 1);
-            });
-
-        }, 1000);
-
-    }
-
-}
-            hideTimer = setTimeout(function () {
-
-                $("#vfyPauseOverlay").animate({
-                    opacity: 0
-                }, 800, function () {
-                    $(this).hide().css("opacity", 1);
-                });
-
-            }, 4000);
-
-        }
-
-    }
-
-    // PAUSE
-    else if (state === YT.PlayerState.PAUSED) {
-
-        if (overlayState !== "pause") {
-
-            overlayState = "pause";
+            overlayState = "play";
 
             clearTimeout(hideTimer);
 
@@ -2216,60 +2162,16 @@ if (state === YT.PlayerState.PLAYING) {
                 .css("opacity", 1);
 
             $("#vfyText").html(`
-                <div id="vfyLogo">
-                    V F Y
-                </div>
-            `);
+    <div id="vfyLoader">
+        <span>V F Y</span>
+        <div class="vfyDots">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+`);
 
-        }
-
-    }
-
-}, 200);
-
-
-            // PLAYING me 4 sec baad hide
-            if (state === YT.PlayerState.PLAYING) {
-                hideTimer = setTimeout(function () {
-
-                    $("#vfyPauseOverlay").animate({
-                        opacity: 0
-                    }, 800, function () {
-                        $(this).hide().css("opacity", 1);
-                    });
-
-                }, 4000);
-            }
-
-        }
-
-    }
-
-    // PAUSE
-    else if (state === YT.PlayerState.PAUSED) {
-
-        if (overlayState !== "pause") {
-
-            overlayState = "pause";
-
-            clearTimeout(hideTimer);
-
-            $("#vfyPauseOverlay")
-                .stop(true, true)
-                .show()
-                .css("opacity", 1);
-
-            $("#vfyText").html(`
-                <div id="vfyLogo">
-                    V F Y
-                </div>
-            `);
-
-        }
-
-    }
-
-}, 200);
             hideTimer = setTimeout(function () {
 
                 $("#vfyPauseOverlay").animate({
