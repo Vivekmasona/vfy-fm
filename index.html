@@ -89,6 +89,85 @@
 </div>
 
 <!-- CSS -->
+
+<style>
+
+.skeleton-list{
+    padding:10px;
+}
+
+.skeleton-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:14px;
+}
+
+.skeleton-thumb{
+    width:90px;
+    height:60px;
+    border-radius:12px;
+    background:linear-gradient(
+        90deg,
+        #1a1a1a 25%,
+        #2b2b2b 50%,
+        #1a1a1a 75%
+    );
+    background-size:400% 100%;
+    animation:skeletonLoading 1.2s infinite linear;
+}
+
+.skeleton-content{
+    flex:1;
+}
+
+.skeleton-line{
+    height:12px;
+    border-radius:20px;
+    margin-bottom:10px;
+    background:linear-gradient(
+        90deg,
+        #1a1a1a 25%,
+        #2b2b2b 50%,
+        #1a1a1a 75%
+    );
+    background-size:400% 100%;
+    animation:skeletonLoading 1.2s infinite linear;
+}
+
+.line1{
+    width:95%;
+}
+
+.line2{
+    width:60%;
+}
+
+.skeleton-heart{
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    background:linear-gradient(
+        90deg,
+        #1a1a1a 25%,
+        #2b2b2b 50%,
+        #1a1a1a 75%
+    );
+    background-size:400% 100%;
+    animation:skeletonLoading 1.2s infinite linear;
+}
+
+@keyframes skeletonLoading{
+    0%{
+        background-position:100% 0;
+    }
+    100%{
+        background-position:-100% 0;
+    }
+}
+	
+</style>
+
 <style>
 .fixed-right-buttons {
   position: fixed;
