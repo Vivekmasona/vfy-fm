@@ -2147,15 +2147,66 @@ setInterval(function () {
 
     const state = ytPlayer.getPlayerState();
 
-    // PLAY + BUFFERING
-    if (
-        state === YT.PlayerState.PLAYING ||
-        state === YT.PlayerState.BUFFERING
-    ) {
+    // PLAY
+    // PLAY
+if (state === YT.PlayerState.PLAYING) {
 
-        if (overlayState !== state) {
+    if (overlayState !== "play") {
 
-            overlayState = state;
+        overlayState = "play";
+
+        clearTimeout(hideTimer);
+
+        $("#vfyPauseOverlay")
+            .stop(true, true)
+            .show()
+            .css("opacity", 1);
+
+        $("#vfyText").html(`
+            <div id="vfyLoader">
+                <span>V F Y</span>
+                <div class="vfyDots">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+        `);
+
+        // Skip/Seek ke baad bhi thodi der logo dikhega
+        hideTimer = setTimeout(function () {
+
+            $("#vfyPauseOverlay").animate({
+                opacity: 0
+            }, 500, function () {
+                $(this).hide().css("opacity", 1);
+            });
+
+        }, 1000);
+
+    }
+
+}
+            hideTimer = setTimeout(function () {
+
+                $("#vfyPauseOverlay").animate({
+                    opacity: 0
+                }, 800, function () {
+                    $(this).hide().css("opacity", 1);
+                });
+
+            }, 4000);
+
+        }
+
+    }
+
+    // PAUSE
+    else if (state === YT.PlayerState.PAUSED) {
+
+        if (overlayState !== "pause") {
+
+            overlayState = "pause";
 
             clearTimeout(hideTimer);
 
@@ -2165,15 +2216,17 @@ setInterval(function () {
                 .css("opacity", 1);
 
             $("#vfyText").html(`
-                <div id="vfyLoader">
-                    <span>V F Y</span>
-                    <div class="vfyDots">
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                    </div>
+                <div id="vfyLogo">
+                    V F Y
                 </div>
             `);
+
+        }
+
+    }
+
+}, 200);
+
 
             // PLAYING me 4 sec baad hide
             if (state === YT.PlayerState.PLAYING) {
