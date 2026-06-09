@@ -1961,39 +1961,33 @@ function makeMiniPlayerLongPressDraggable(playerSelector){
 
 
 
+
 // VFY Pause Overlay
 if(!$("#vfyPauseOverlay").length){
     $(".yt-mini-player").append(`
         <div id="vfyPauseOverlay" style="
             position:absolute;
-            top:0;
-            left:0;
-            width:100%;
-            height:100%;
+            inset:0;
             display:flex;
             justify-content:center;
             align-items:center;
             background:#000;
             z-index:999999;
             pointer-events:none;
-            opacity:1;
         ">
-            <svg width="120" height="60" viewBox="0 0 220 80">
-                <text x="50%" y="50%"
-                    text-anchor="middle"
-                    dominant-baseline="middle"
-                    font-size="42"
-                    font-family="Arial"
-                    font-weight="700"
-                    fill="#00ffff">
-                    VFY
-                </text>
-            </svg>
+            <div style="
+                color:#00ffff;
+                font-size:42px;
+                font-weight:700;
+                letter-spacing:8px;
+                text-shadow:0 0 15px #00ffff;
+            ">VFY</div>
         </div>
     `);
 }
 
-let vfyFadeTimeout;
+let overlayVisible = true;
+let fadeTimer = null;
 
 setInterval(function(){
 
@@ -2001,32 +1995,39 @@ setInterval(function(){
 
     const state = ytPlayer.getPlayerState();
 
+    // Pause
     if(state === YT.PlayerState.PAUSED){
 
-        clearTimeout(vfyFadeTimeout);
+        if(!overlayVisible){
 
-        $("#vfyPauseOverlay")
-            .stop(true,true)
-            .css({
-                display:"flex",
-                opacity:1
-            });
+            clearTimeout(fadeTimer);
 
-    }else if(state === YT.PlayerState.PLAYING){
+            $("#vfyPauseOverlay")
+                .stop(true,true)
+                .show()
+                .css("opacity",1);
 
-        clearTimeout(vfyFadeTimeout);
+            overlayVisible = true;
+        }
 
-        vfyFadeTimeout = setTimeout(function(){
+    }
 
-            $("#vfyPauseOverlay").animate({
-                opacity:0
-            },500,function(){
+    // Play
+    else if(state === YT.PlayerState.PLAYING){
 
-                $(this).hide();
+        if(overlayVisible){
 
-            });
+            overlayVisible = false;
 
-        },2000); // Play hone ke 2 second baad fade out
+            clearTimeout(fadeTimer);
+
+            fadeTimer = setTimeout(function(){
+
+                $("#vfyPauseOverlay").fadeOut(500);
+
+            },2000);
+
+        }
 
     }
 
