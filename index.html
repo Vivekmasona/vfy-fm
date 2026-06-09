@@ -1711,7 +1711,7 @@ function paginate(direction) {
   if (selectedAPI === "self") {
     apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
   } else if (selectedAPI === "self1") {
-    apiUrl = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
+    apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
   } else if (selectedAPI === "deno") {
     apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
   } else {
@@ -1842,19 +1842,69 @@ transition: all 1s ease;">V F Y</div>`);
     showVFYOverlay();
 
     // === YT Player ===
-    ytPlayer=new YT.Player(`yt-mini-${videoId}`,{
-        videoId:videoId,
-        width:"100%",
-        height:"100%",
-        playerVars:{autoplay:1,controls:0,modestbranding:1,rel:0,showinfo:0},
-        events:{
-            onReady:e=>{ e.target.playVideo(); isPlaying=true; updateSeekBar(); makeMiniPlayerLongPressDraggable(".yt-mini-player"); makeMiniPlayerResizable(".yt-mini-player"); },
-            onStateChange:event=>{
-                if(event.data===YT.PlayerState.ENDED && isAutoNext) playNextVideo();
+   // ytPlayer=new YT.Player(`yt-mini-${videoId}`,{
+      //  videoId:videoId,
+    //    width:"100%",
+      //  height:"100%",
+     //   playerVars:{autoplay:1,controls:0,modestbranding:1,rel:0,showinfo:0},
+       // events:{
+           // onReady:e=>{ e.target.playVideo(); isPlaying=true; updateSeekBar(); makeMiniPlayerLongPressDraggable(".yt-mini-player"); makeMiniPlayerResizable(".yt-mini-player"); },
+           // onStateChange:event=>{
+               // if(event.data===YT.PlayerState.ENDED && isAutoNext) playNextVideo();
+            //}
+        //}
+   // });
+
+
+// === YT Player ===
+ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
+    videoId: videoId,
+    width: "100%",
+    height: "100%",
+    playerVars: {
+        autoplay: 1,
+        controls: 0,
+        modestbranding: 1,
+        rel: 0,
+        showinfo: 0
+    },
+    events: {
+
+        onReady: e => {
+            e.target.playVideo();
+            isPlaying = true;
+            updateSeekBar();
+            makeMiniPlayerLongPressDraggable(".yt-mini-player");
+            makeMiniPlayerResizable(".yt-mini-player");
+        },
+
+        onStateChange: event => {
+            if (event.data === YT.PlayerState.ENDED && isAutoNext) {
+                playNextVideo();
+            }
+        },
+
+        // Video unavailable / copyright / embed disabled
+        onError: event => {
+            console.log("YT Error:", event.data);
+
+            // Error Codes:
+            // 2   = Invalid video ID
+            // 5   = HTML5 Player Error
+            // 100 = Video removed/private
+            // 101 = Embedding disabled
+            // 150 = Embedding disabled
+
+            if (isAutoNext) {
+                playNextVideo();
             }
         }
-    });
 
+    }
+});
+
+
+	
     // Controls
     $("#mini-playpause").click(()=>{
         if(!ytPlayer) return;
