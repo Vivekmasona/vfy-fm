@@ -91,7 +91,30 @@
 <!-- CSS -->
 
 <style>
+.autocomplete-suggestion{
+    margin:0;
+    padding:14px 18px;
+    color:#00ffff;          /* Single cyan color */
+    font-size:15px;
+    cursor:pointer;
+    transition:.25s;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    text-transform:capitalize; /* First letter capital */
+    border-bottom:1px solid rgba(255,255,255,.05);
+    font-weight:500;
+}
 
+.autocomplete-suggestion:hover{
+    background:linear-gradient(
+        90deg,
+        rgba(0,255,255,.18),
+        rgba(255,140,0,.18)
+    );
+    color:#00ffff;
+    padding-left:24px;
+}
 /* Search Suggestions Box */
 #autocomplete-results{
     position:absolute;
