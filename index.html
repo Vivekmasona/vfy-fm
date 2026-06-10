@@ -1664,15 +1664,19 @@ body {
     search(query); // Pass the query to the search function
   }
 });
-$(document).ready(function() {
-  // URL params se q nikal lo
+$(document).ready(function () {
   const params = new URLSearchParams(window.location.search);
-  const query = params.get("q");
+  const videoId = params.get("q");
 
-  if (query) {
-    $(".search-bar").val(decodeURIComponent(query));
-    search(decodeURIComponent(query));
-    openModal(); // Saath me modal open ho
+  if (videoId) {
+    // Search box me video id dikhani ho to
+    $(".search-bar").val(videoId);
+
+    // Direct player open karo
+    playSong(videoId); // Ya jo tumhare player ka function hai
+
+    // Agar modal open karna hai
+    openModal();
   }
 });
 	
