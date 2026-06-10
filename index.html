@@ -1666,6 +1666,8 @@ body {
 });
 
 
+
+
 $(document).ready(function () {
 
     const params = new URLSearchParams(window.location.search);
@@ -1673,19 +1675,27 @@ $(document).ready(function () {
 
     if (!q) return;
 
+    // URL se play hua hai
+    window.isUrlSong = true;
+
     // Agar YouTube Video ID hai
     if (/^[a-zA-Z0-9_-]{11}$/.test(q)) {
 
         play(q, 0);
-        openModal();
+
+        setTimeout(function () {
+            openModal();
+        }, 300);
 
     } else {
 
-        // Pehle search
+        // Search text
         $(".search-bar").val(decodeURIComponent(q));
+
+        // Search start
         search(decodeURIComponent(q));
 
-        // Search complete hone ka wait
+        // Search result ka wait
         let wait = setInterval(function () {
 
             let firstSong = document.querySelector(".list");
@@ -1694,13 +1704,23 @@ $(document).ready(function () {
 
                 clearInterval(wait);
 
-                // First song play
+                // Sirf first song load karo
                 firstSong.click();
 
-                // Fir modal open
+                // Playlist ko ek hi item tak limit kar do
                 setTimeout(function () {
+
+                    const allSongs = document.querySelectorAll(".list");
+
+                    allSongs.forEach(function (song, index) {
+                        if (index > 0) {
+                            song.remove();
+                        }
+                    });
+
                     openModal();
-                }, 300);
+
+                }, 500);
 
             }
 
@@ -1708,7 +1728,8 @@ $(document).ready(function () {
 
     }
 
-});	
+});
+	
 
 
 	
