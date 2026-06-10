@@ -91,63 +91,88 @@
 <!-- CSS -->
 
 <style>
- #autocomplete-results{
+ /* Search Suggestions Box */
+#autocomplete-results{
+    position:absolute;
+    top:100%;
+    left:0;
+    width:100%;
     margin-top:8px;
-    background:#111;
+    background:rgba(20,20,20,.92);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    border:0px solid rgba(255,255,255,.08);
     border-radius:18px;
     overflow:hidden;
-    box-shadow:0 10px 30px rgba(0,0,0,.35);
-    backdrop-filter:blur(20px);
-    border:1px solid rgba(255,255,255,.06);
+    z-index:99999;
+    box-shadow:
+        0 10px 30px rgba(0,0,0,.35),
+        0 0 20px rgba(0,255,255,.08);
+    animation:fadeIn .25s ease;
 }
 
+/* Each Suggestion */
 .autocomplete-suggestion{
+    margin:0;
+    padding:14px 18px;
+    color:#fff;
+    font-size:15px;
+    cursor:pointer;
+    transition:.25s;
     display:flex;
     align-items:center;
-    padding:15px 18px;
-    margin:0;
-    color:#e8e8e8;
-    font-size:16px;
-    font-weight:500;
-    cursor:pointer;
-    transition:.2s;
-    text-transform:capitalize;
-    border-bottom:1px solid rgba(255,255,255,.05);
+    gap:10px;
+    border-bottom:0px solid rgba(255,255,255,.05);
 }
 
+/* Search Icon */
+.autocomplete-suggestion::before{
+    content:"🔍";
+    font-size:14px;
+    opacity:.8;
+}
+
+/* Hover Effect */
+.autocomplete-suggestion:hover{
+    background:linear-gradient(
+        90deg,
+        rgba(0,255,255,.18),
+        rgba(255,140,0,.18)
+    );
+    color:#00ffff;
+    padding-left:24px;
+}
+
+/* Last Item */
 .autocomplete-suggestion:last-child{
     border-bottom:none;
 }
 
-.autocomplete-suggestion::before{
-    content:"";
-    width:7px;
-    height:7px;
-    border-radius:50%;
-    background:#00d9ff;
-    margin-right:12px;
-    flex-shrink:0;
-}
-	.autocomplete-suggestion{
-    padding:14px 18px;
-    color:#fff;
-    font-size:16px;
-    font-weight:500;
-    text-transform:lowercase;
+/* Scrollbar */
+#autocomplete-results::-webkit-scrollbar{
+    width:6px;
 }
 
-.autocomplete-suggestion::first-letter{
-    color:#00ffff;
-    text-transform:uppercase;
+#autocomplete-results::-webkit-scrollbar-thumb{
+    background:#00ffff;
+    border-radius:20px;
 }
 
-.autocomplete-suggestion:hover,
-.autocomplete-suggestion:active{
-    background:rgba(255,255,255,.06);
-    color:#fff;
-    padding-left:24px;
+#autocomplete-results::-webkit-scrollbar-track{
+    background:transparent;
 }
 
+/* Animation */
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(-8px) scale(.98);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
+}
 </style>
 <style>
 
