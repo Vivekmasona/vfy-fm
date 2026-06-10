@@ -1665,19 +1665,25 @@ body {
   }
 });
 $(document).ready(function () {
-  const params = new URLSearchParams(window.location.search);
-  const videoId = params.get("q");
+    const params = new URLSearchParams(window.location.search);
+    const videoId = params.get("q");
 
-  if (videoId) {
-    // Search box me video id dikhani ho to
-    $(".search-bar").val(videoId);
+    if (videoId) {
 
-    // Direct player open karo
-    playSong(videoId); // Ya jo tumhare player ka function hai
+        // Search box me id mat dalo agar nahi chahiye
+        $(".search-bar").val("");
 
-    // Agar modal open karna hai
-    openModal();
-  }
+        // Sirf ek song ka HTML banao
+        $(".songs").html(`
+            <div class="list" onclick="play('${videoId}',0)">
+            </div>
+        `);
+
+        // Automatically play
+        play(videoId, 0);
+
+        openModal();
+    }
 });
 	
 $(document).ready(function() {
