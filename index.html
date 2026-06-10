@@ -1821,15 +1821,16 @@ function search() {
   let apiUrl;
 
   if (selectedAPI === "self") {
-    apiUrl = `https://-lac.vercel.app/v3-api?q=${encodeURIComponent(q)}`;
-  } else if (selectedAPI === "self1") {
-    apiUrl = `https://-lac.vercel.app/v3-api1?q=${encodeURIComponent(q)}`;
-  } else if (selectedAPI === "deno") {
-    apiUrl = `https://vkmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(q)}`;
-  } else {
-    apiUrl = `https://www.ggleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=40&key=${youtubeApiKey}`;
-  }
-
+    apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(q)}`;
+} else if (selectedAPI === "self1") {
+    // अब self1 पर YouTube API
+    apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=40&key=${youtubeApiKey}`;
+} else if (selectedAPI === "deno") {
+    apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(q)}`;
+} else {
+    // Default API अब Deno
+    apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(q)}`;
+}
   fetchResults(apiUrl);
 }
 
@@ -1872,14 +1873,16 @@ function paginate(direction) {
 
   let apiUrl;
   if (selectedAPI === "self") {
-    apiUrl = `https://-lac.vercel.app/v3-api?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
-  } else if (selectedAPI === "self1") {
-    apiUrl = `https://-lac.vercel.app/v3-api?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
-  } else if (selectedAPI === "deno") {
-    apiUrl = `https://vkmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
-  } else {
-    apiUrl = `https://www.geapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(currentQuery)}&type=video&maxResults=40&pageToken=${pageToken}&key=${youtubeApiKey}`;
-  }
+    apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
+} else if (selectedAPI === "self1") {
+    // अब self1 पर YouTube API
+    apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(currentQuery)}&type=video&maxResults=40&pageToken=${pageToken}&key=${youtubeApiKey}`;
+} else if (selectedAPI === "deno") {
+    apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
+} else {
+    // Default API अब Deno
+    apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
+}
 
   fetchResults(apiUrl);
 }
