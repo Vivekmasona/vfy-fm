@@ -1665,25 +1665,45 @@ body {
   }
 });
 $(document).ready(function () {
+
     const params = new URLSearchParams(window.location.search);
-    const videoId = params.get("q");
+    const q = params.get("q");
 
-    if (videoId) {
+    if (!q) return;
 
-        // Search box me id mat dalo agar nahi chahiye
+    // YouTube Video ID check (11 chars)
+    const isVideoId = /^[a-zA-Z0-9_-]{11}$/.test(q);
+
+    if (isVideoId) {
+
         $(".search-bar").val("");
 
-        // Sirf ek song ka HTML banao
         $(".songs").html(`
-            <div class="list" onclick="play('${videoId}',0)">
-            </div>
+            <div class="list" onclick="play('${q}',0)"></div>
         `);
 
-        // Automatically play
-        play(videoId, 0);
-
+        play(q, 0);
         openModal();
+
+    } else {
+
+        // Song name search
+        $(".search-bar").val(decodeURIComponent(q));
+        search(decodeURIComponent(q));
+        openModal();
+
+        // Search complete hone ke baad first song auto play
+        const timer = setInterval(function () {
+            const firstSong = document.querySelector(".list");
+
+            if (firstSong) {
+                clearInterval(timer);
+                firstSong.click();
+            }
+        }, 300);
+
     }
+
 });
 	
 $(document).ready(function() {
