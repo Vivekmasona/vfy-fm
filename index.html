@@ -1784,7 +1784,7 @@ var firstSearch = true;
 var currentQuery = "";
 var nextPageToken = "";
 var prevPageToken = "";
-var youtubeApiKey = "AIzaSyCucRPiYESnpi1fTrr3XOqAjIWr7J3Jcb81"; // Your YouTube API Key
+var youtubeApiKey = "AIzaSyCucRPiYESnpi1fTrr3XOqAjIWr7J3Jcb812"; // Your YouTube API Key
 
 // ❌ Block pattern — ये tun / tuntun / tutun / टुन / टुनटुन सब पकड़ लेगा
 const blockedPattern = /(tuntun|tutun|tun|टुन|टुनटुन)/i;
@@ -1816,43 +1816,25 @@ function search() {
   }
 
   // ⬇️ तुम्हारा original code जस का तस
- // currentQuery = q;
- // let selectedAPI = $("input[name='apiSelection']:checked").val();
-//  let apiUrl;
+  currentQuery = q;
+  let selectedAPI = $("input[name='apiSelection']:checked").val();
+  let apiUrl;
 
-  //if (selectedAPI === "self") {
- //   apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(q)}`;
-//  } else if (selectedAPI === "self1") {
-//    apiUrl = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(q)}`;
- // } else if (selectedAPI === "deno") {
-  //  apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(q)}`;
-//  } else {
-   // apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=40&key=${youtubeApiKey}`;
- // }
+  if (selectedAPI === "self") {
+   apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(q)}`;
+  } else if (selectedAPI === "self1") {
+    apiUrl = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(q)}`;
+  } else if (selectedAPI === "deno") {
+   apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(q)}`;
+  } else {
+    apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=40&key=${youtubeApiKey}`;
+  }
 
- // fetchResults(apiUrl);
-//}
-
-// ⬇️ modified code
-currentQuery = q;
-let selectedAPI = $("input[name='apiSelection']:checked").val();
-let apiUrl;
-
-if (firstSearch) {
-  // पहली search हमेशा deno API से
-  apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(q)}`;
-  firstSearch = false;
-} else if (selectedAPI === "self") {
-  apiUrl = `https://self-lac.vercel.app/v3-api?1q=${encodeURIComponent(q)}`;
-} else if (selectedAPI === "self1") {
-  apiUrl = `https://self-lac.vercel.app/v3-api1?1q=${encodeURIComponent(q)}`;
-} else if (selectedAPI === "deno") {
-  apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?1q=${encodeURIComponent(q)}`;
-} else {
-  apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=40&key=${youtubeApiKey}`;
+  fetchResults(apiUrl);
 }
 
-fetchResults(apiUrl);
+
+
 	
 
 function fetchResults(apiUrl) {
