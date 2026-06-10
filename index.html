@@ -1784,7 +1784,7 @@ var firstSearch = true;
 var currentQuery = "";
 var nextPageToken = "";
 var prevPageToken = "";
-var youtubeApiKey = "AIzaSyCucRPiYESnpi1fTrr3XOqAjIWr7J3Jcb812"; // Your YouTube API Key
+var youtubeApiKey = "AIzaSyCucRPiYESnpi1fTrr3XOqAjIWr7J3Jcb8"; // Your YouTube API Key
 
 // ❌ Block pattern — ये tun / tuntun / tutun / टुन / टुनटुन सब पकड़ लेगा
 const blockedPattern = /(tuntun|tutun|tun|टुन|टुनटुन)/i;
@@ -1823,7 +1823,7 @@ function search() {
   if (selectedAPI === "self") {
    apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(q)}`;
   } else if (selectedAPI === "self1") {
-    apiUrl = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(q)}`;
+    apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(q)}`;
   } else if (selectedAPI === "deno") {
    apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(q)}`;
   } else {
