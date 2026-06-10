@@ -1816,22 +1816,44 @@ function search() {
   }
 
   // ⬇️ तुम्हारा original code जस का तस
-  currentQuery = q;
-  let selectedAPI = $("input[name='apiSelection']:checked").val();
-  let apiUrl;
+ // currentQuery = q;
+ // let selectedAPI = $("input[name='apiSelection']:checked").val();
+//  let apiUrl;
 
-  if (selectedAPI === "self") {
-    apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(q)}`;
-  } else if (selectedAPI === "self1") {
-    apiUrl = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(q)}`;
-  } else if (selectedAPI === "deno") {
-    apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(q)}`;
-  } else {
-    apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=40&key=${youtubeApiKey}`;
-  }
+  //if (selectedAPI === "self") {
+ //   apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(q)}`;
+//  } else if (selectedAPI === "self1") {
+//    apiUrl = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(q)}`;
+ // } else if (selectedAPI === "deno") {
+  //  apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(q)}`;
+//  } else {
+   // apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=40&key=${youtubeApiKey}`;
+ // }
 
-  fetchResults(apiUrl);
+ // fetchResults(apiUrl);
+//}
+
+// ⬇️ modified code
+currentQuery = q;
+let selectedAPI = $("input[name='apiSelection']:checked").val();
+let apiUrl;
+
+if (firstSearch) {
+  // पहली search हमेशा deno API से
+  apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(q)}`;
+  firstSearch = false;
+} else if (selectedAPI === "self") {
+  apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(q)}`;
+} else if (selectedAPI === "self1") {
+  apiUrl = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(q)}`;
+} else if (selectedAPI === "deno") {
+  apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(q)}`;
+} else {
+  apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=40&key=${youtubeApiKey}`;
 }
+
+fetchResults(apiUrl);
+	
 
 function fetchResults(apiUrl) {
   $.get(apiUrl, function (data) {
@@ -1852,10 +1874,10 @@ function fetchResults(apiUrl) {
       }
     });
 
-    if (firstSearch && data.items.length > 0) {
-     loadSong($(".list")[0], 0);
-     firstSearch = false;
-    }
+    //if (firstSearch && data.items.length > 0) {
+   //  loadSong($(".list")[0], 0);
+    // firstSearch = false;
+   // }
 
     $("#prev-btn").toggle(!!prevPageToken);
     $("#next-btn").toggle(!!nextPageToken);
