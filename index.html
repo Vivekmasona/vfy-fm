@@ -91,6 +91,32 @@
 <!-- CSS -->
 
 <style>
+.search-bar{
+    width:100%;
+    padding:14px 18px;
+    border:none;
+    outline:none;
+    border-radius:50px;
+    background:rgba(255,255,255,.08);
+    backdrop-filter:blur(12px);
+    color:#fff;
+    font-size:16px;
+    box-shadow:0 0 15px rgba(0,255,255,.08);
+    transition:.3s;
+}
+
+.search-bar::placeholder{
+    color:rgba(255,255,255,.6);
+}
+
+.search-bar:focus{
+    box-shadow:
+        0 0 0 2px rgba(0,255,255,.4),
+        0 0 20px rgba(0,255,255,.2);
+}
+
+
+	
 
 /* Search Suggestions Box */
 #autocomplete-results{
