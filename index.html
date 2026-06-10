@@ -1822,7 +1822,7 @@ function search() {
 
   if (selectedAPI === "self") {
    apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(q)}`;
-  } else if (selectedAPI === "self1") {
+  } else if (selectedAPI === "self2") {
     apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(q)}`;
   } else if (selectedAPI === "deno") {
    apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(q)}`;
@@ -1877,7 +1877,7 @@ function paginate(direction) {
   let apiUrl;
   if (selectedAPI === "self") {
     apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
-  } else if (selectedAPI === "self1") {
+  } else if (selectedAPI === "self2") {
     apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
   } else if (selectedAPI === "deno") {
     apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
