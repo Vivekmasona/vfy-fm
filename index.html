@@ -1821,21 +1821,17 @@ function search() {
   let apiUrl;
 
   if (selectedAPI === "self") {
-   apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(q)}`;
-  } else if (selectedAPI === "self2") {
     apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(q)}`;
+  } else if (selectedAPI === "self1") {
+    apiUrl = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(q)}`;
   } else if (selectedAPI === "deno") {
-   apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(q)}`;
+    apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(q)}`;
   } else {
     apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&type=video&maxResults=40&key=${youtubeApiKey}`;
   }
 
   fetchResults(apiUrl);
 }
-
-
-
-	
 
 function fetchResults(apiUrl) {
   $.get(apiUrl, function (data) {
@@ -1857,9 +1853,9 @@ function fetchResults(apiUrl) {
     });
 
     //if (firstSearch && data.items.length > 0) {
-   //  loadSong($(".list")[0], 0);
-    // firstSearch = false;
-   // }
+     // loadSong($(".list")[0], 0);
+     // firstSearch = false;
+    //}
 
     $("#prev-btn").toggle(!!prevPageToken);
     $("#next-btn").toggle(!!nextPageToken);
@@ -1877,7 +1873,7 @@ function paginate(direction) {
   let apiUrl;
   if (selectedAPI === "self") {
     apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
-  } else if (selectedAPI === "self2") {
+  } else if (selectedAPI === "self1") {
     apiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
   } else if (selectedAPI === "deno") {
     apiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
@@ -4999,8 +4995,8 @@ document.getElementById('search-btn').addEventListener('click', function() {
         <input type="radio" id="self" name="apiSelection" value="self">
         <label for="self">V</label>
 
-        <input type="radio" id="self2" name="apiSelection" value="self2">
-        <label for="self2">V</label>
+        <input type="radio" id="self1" name="apiSelection" value="self1">
+        <label for="self1">V</label>
 
         <input type="radio" id="youtube" name="apiSelection" value="youtube">
         <label for="youtube">v3</label>
