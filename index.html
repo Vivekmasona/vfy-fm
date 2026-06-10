@@ -1664,6 +1664,8 @@ body {
     search(query); // Pass the query to the search function
   }
 });
+
+
 $(document).ready(function () {
 
     const params = new URLSearchParams(window.location.search);
@@ -1671,40 +1673,44 @@ $(document).ready(function () {
 
     if (!q) return;
 
-    // YouTube Video ID check (11 chars)
-    const isVideoId = /^[a-zA-Z0-9_-]{11}$/.test(q);
-
-    if (isVideoId) {
-
-        $(".search-bar").val("");
-
-        $(".songs").html(`
-            <div class="list" onclick="play('${q}',0)"></div>
-        `);
+    // Agar YouTube Video ID hai
+    if (/^[a-zA-Z0-9_-]{11}$/.test(q)) {
 
         play(q, 0);
         openModal();
 
     } else {
 
-        // Song name search
+        // Pehle search
         $(".search-bar").val(decodeURIComponent(q));
         search(decodeURIComponent(q));
-        openModal();
 
-        // Search complete hone ke baad first song auto play
-        const timer = setInterval(function () {
-            const firstSong = document.querySelector(".list");
+        // Search complete hone ka wait
+        let wait = setInterval(function () {
+
+            let firstSong = document.querySelector(".list");
 
             if (firstSong) {
-                clearInterval(timer);
+
+                clearInterval(wait);
+
+                // First song play
                 firstSong.click();
+
+                // Fir modal open
+                setTimeout(function () {
+                    openModal();
+                }, 300);
+
             }
+
         }, 300);
 
     }
 
-});
+});	
+
+
 	
 $(document).ready(function() {
   // Get the hash from the URL (after #)
