@@ -69,7 +69,42 @@
   });
 </script>
 
+<script>
+const audio = document.getElementById("SAudio");
 
+const colors = [
+  "#ff0000",
+  "#2196F3",
+  "#4CAF50",
+  "#9C27B0",
+  "#FF9800",
+  "#E91E63",
+  "#009688",
+  "#3F51B5"
+];
+
+const themeMeta = document.querySelector('meta[name="theme-color"]');
+let colorInterval;
+let index = 0;
+
+audio.addEventListener("play", () => {
+  clearInterval(colorInterval);
+
+  colorInterval = setInterval(() => {
+    themeMeta.setAttribute("content", colors[index]);
+    index = (index + 1) % colors.length;
+  }, 800);
+});
+
+audio.addEventListener("pause", () => {
+  clearInterval(colorInterval);
+});
+
+audio.addEventListener("ended", () => {
+  clearInterval(colorInterval);
+});
+
+</script>
 
     
 <b id="play"></b>
