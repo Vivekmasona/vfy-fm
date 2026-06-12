@@ -71,39 +71,31 @@
 
 <script>
 const audio = document.getElementById("SAudio");
+const themeColor = document.getElementById("themeColor");
 
-const colors = [
-  "#ff0000",
-  "#2196F3",
-  "#4CAF50",
-  "#9C27B0",
-  "#FF9800",
-  "#E91E63",
-  "#009688",
-  "#3F51B5"
-];
+let timer;
 
-const themeMeta = document.querySelector('meta[name="theme-color"]');
-let colorInterval;
-let index = 0;
+function randomColor() {
+  return "#" + Math.floor(Math.random() * 16777215)
+    .toString(16)
+    .padStart(6, "0");
+}
 
 audio.addEventListener("play", () => {
-  clearInterval(colorInterval);
+  clearInterval(timer);
 
-  colorInterval = setInterval(() => {
-    themeMeta.setAttribute("content", colors[index]);
-    index = (index + 1) % colors.length;
-  }, 800);
+  timer = setInterval(() => {
+    themeColor.setAttribute("content", randomColor());
+  }, 1000);
 });
 
 audio.addEventListener("pause", () => {
-  clearInterval(colorInterval);
+  clearInterval(timer);
 });
 
 audio.addEventListener("ended", () => {
-  clearInterval(colorInterval);
+  clearInterval(timer);
 });
-
 </script>
 
     
