@@ -69,38 +69,8 @@
   });
 </script>
 
-<script>
-const audio = document.getElementById("SAudio");
-const meta = document.getElementById("themeColorMeta");
 
-let timer;
 
-function randomColor() {
-  return "#" + Math.floor(Math.random() * 16777215)
-    .toString(16)
-    .padStart(6, "0");
-}
-
-function updateTheme(color) {
-  meta.setAttribute("content", color);
-
-  // FORCE refresh trick (important for some Android/PWA)
-  let clone = meta.cloneNode(true);
-  meta.parentNode.removeChild(meta);
-  document.head.appendChild(clone);
-}
-
-audio.addEventListener("play", () => {
-  clearInterval(timer);
-
-  timer = setInterval(() => {
-    updateTheme(randomColor());
-  }, 1000);
-});
-
-audio.addEventListener("pause", () => clearInterval(timer));
-audio.addEventListener("ended", () => clearInterval(timer));
-</script>
 
     
 <b id="play"></b>
