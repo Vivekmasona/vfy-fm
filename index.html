@@ -71,7 +71,7 @@
 
 <script>
 const audio = document.getElementById("SAudio");
-const themeColor = document.getElementById("themeColor");
+const themeMeta = document.getElementById("themeColorMeta");
 
 let timer;
 
@@ -85,7 +85,8 @@ audio.addEventListener("play", () => {
   clearInterval(timer);
 
   timer = setInterval(() => {
-    themeColor.setAttribute("content", randomColor());
+    const color = randomColor();
+    themeMeta.setAttribute("content", color);
   }, 1000);
 });
 
