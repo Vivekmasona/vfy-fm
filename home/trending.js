@@ -17,7 +17,7 @@ async function fetchTrendingSongs(query) {
     }
 
     const denoApiUrl = `https://vivekmasona-denocall-61.deno.dev/search?qq=${encodeURIComponent(query)}`;
-    const selfApiUrl = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(query)}`;
+    const selfApiUrl = `https://self-lac.vercel.app/v3-api2?q=${encodeURIComponent(query)}`;
 
     try {
 
