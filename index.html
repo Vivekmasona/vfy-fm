@@ -2021,11 +2021,7 @@ function playMiniVideoPlayer(videoId){
                                                 					
 	
 	
-        
-        
-            
-            
-        // 1. DYNAMIC COMPACT DIAL STYLES (Fixed Circular Elements & Layouts)
+// 1. DYNAMIC COMPACT DIAL STYLES (Fixed Both Seekbars Navigation)
 if ($("#mini-player-styles").length === 0) {
     $("head").append(`
         <style id="mini-player-styles">
@@ -2048,7 +2044,7 @@ if ($("#mini-player-styles").length === 0) {
                 box-shadow: 0 3px 10px rgba(106, 27, 154, 0.8), 0 0 8px rgba(168, 50, 255, 0.6) !important;
                 color: #ffffff !important;
                 border: 2px solid rgba(255, 255, 255, 0.4) !important;
-                border-radius: 50% !important; /* Forces 100% Round Shape */
+                border-radius: 50% !important;
             }
             .glow-green-btn {
                 background: #34c759 !important;
@@ -2161,7 +2157,7 @@ let overlay=$(`
         }
     });
 
-    // Track arc touch mapper
+    // Track arc touch mapper for Circular Mode
     function bindSvgSeekEvents() {
         $(".clickable-svg-path").on("click mousedown touchstart", function(e) {
             e.stopPropagation();
@@ -2180,6 +2176,15 @@ let overlay=$(`
         });
     }
     bindSvgSeekEvents();
+
+    // FIXED: Video Mode Linear Slider Event Listener (Click & Drag Mapping)
+    $("#mini-seekbar").on("input change click", function(e) {
+        e.stopPropagation();
+        if (!ytPlayer) return;
+        const pct = $(this).val() / 100;
+        const dur = ytPlayer.getDuration();
+        ytPlayer.seekTo(pct * dur, true);
+    });
 
     // Resize tracking for dynamic scaling
     let isDialResizing = false, startSize = 0, startY = 0;
@@ -2224,7 +2229,7 @@ let overlay=$(`
     let isRoundMusicMode = true; 
     $("#mini-mode-toggle").click(() => {
         if (isRoundMusicMode) {
-            // FIXED: Full Restoration to crisp Rectangular Video View (Play button styling fixed)
+            // Full Restoration to crisp Rectangular Video View
             player.css({ width: "271px", height: "180px", borderRadius: "6px", background: "#111", boxShadow: "0 12px 28px rgba(0,0,0,0.7)", border: "none" });
             $(".ui-pin-tip, #svg-half-track").remove();
             
@@ -2235,7 +2240,7 @@ let overlay=$(`
                 position: "relative", top: "", left: "", width: "100%", height: "50px", borderRadius: "0", background: "rgba(255,255,255,0.08)", borderTop: "1px solid rgba(255,255,255,0.15)", padding: "0 12px"
             });
 
-            // Play button fully cleaned up for Rectangular controls (Resetting back to normal text layout)
+            // Play button fully cleaned up for Rectangular controls
             $("#mini-playpause").removeClass("music-dial-center").css({
                 position: "static", transform: "none", width: "auto", height: "auto", borderRadius: "0", display: "inline-block", background: "none", boxShadow: "none", border: "none", color: "#00ffff", textShadow: "0 0 8px #00ffff", marginRight: "8px", zIndex: "auto"
             });
@@ -2284,7 +2289,6 @@ let overlay=$(`
                 position: "absolute", top: "0", left: "0", width: "100%", height: "100%", background: "transparent", borderTop: "none", backdropFilter: "none", padding: "0"
             });
 
-            // FIXED: Added 100% border-radius logic to ensure perfect roundness inside Audio Dial layout
             $("#mini-playpause").addClass("music-dial-center").css({
                 position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
                 width: "38px", height: "38px", borderRadius: "50% !important", display: "flex", alignItems: "center", justifyContent: "center", margin: "0", textShadow: "none", zIndex: "1020"
@@ -2328,6 +2332,8 @@ let overlay=$(`
             const dur=ytPlayer.getDuration();
             if(dur>0) {
                 const percentage = (cur/dur)*100;
+                
+                // Keep input range sync in background/foreground
                 $("#mini-seekbar").val(percentage);
 
                 const path = document.getElementById("svg-half-progress");
@@ -2353,7 +2359,12 @@ function playNextVideo(){
             playMiniVideoPlayer($(nextItem).attr("vid"));
         }
     }
-}
+				}
+	
+        
+            
+            
+                    
 
 	
             
