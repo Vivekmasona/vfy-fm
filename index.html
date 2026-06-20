@@ -2014,7 +2014,7 @@ function playMiniVideoPlayer(videoId){
 	
         
                         
-// 1. STYLES FOR SPINNING, TRANSITION FREE SWAP & LIGHTWEIGHT OVERLAYS
+    // 1. ADVANCED CSS: DYNAMIC SPINNING & LAG-FREE EXPANSION STYLES
 if ($("#mini-player-styles").length === 0) {
     $("head").append(`
         <style id="mini-player-styles">
@@ -2028,19 +2028,21 @@ if ($("#mini-player-styles").length === 0) {
             .paused-spin {
                 animation-play-state: paused !important;
             }
+            /* Removes lag completely during dragging and fullscreen toggle */
             .is-dragging, .instant-motion {
                 transition: none !important;
             }
-            .music-dial-center {
-                background: #8e24aa !important;
-                box-shadow: 0 0 15px rgba(142, 36, 170, 0.6) !important;
-                color: #fff !important;
+            /* Highlighted Glowing Center Play Button from screenshot */
+            .music-dial-center-btn {
+                background: linear-gradient(135deg, #a832ff 0%, #6a1b9a 100%) !important;
+                box-shadow: 0 4px 15px rgba(106, 27, 154, 0.6), 0 0 10px rgba(168, 50, 255, 0.4) !important;
+                color: #ffffff !important;
             }
         </style>
     `);
 }
 
-// Mini Player Container (Original structure completely retained)
+// Mini Player Container (Aapka authentic structure hierarchy undisturbed)
 let overlay=$(`
 <div class="yt-mini-player" style="position:fixed; bottom:110px; right:10px; width:271px; height:180px; background:#111; border-radius:6px; overflow:hidden; z-index:99999; display:flex; flex-direction:column; box-shadow:0 12px 28px rgba(0,0,0,0.7); transition: all 0.4s ease;">
     <div class="video-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; background:transparent; z-index:998; pointer-events:all;"></div>
@@ -2063,10 +2065,15 @@ let overlay=$(`
 
 $("body").append(overlay);
 
+// Auto-next button state check
 const autoNextBtn=$("#mini-auto-next");
 autoNextBtn.css("background",isAutoNext?"#00ff00":"#555");
-autoNextBtn.click(()=>{ isAutoNext=!isAutoNext; autoNextBtn.css("background",isAutoNext?"#00ff00":"#555"); });
+autoNextBtn.click(()=>{ 
+    isAutoNext=!isAutoNext; 
+    autoNextBtn.css("background",isAutoNext?"#00ff00":"#555"); 
+});
 
+// V F Y Core Animation Overlay
 function showVFYOverlay(){
     $(".vfy-overlay").remove();
     let vfy=$(`
@@ -2077,7 +2084,7 @@ function showVFYOverlay(){
 }
 showVFYOverlay();
 
-// === YT Player ===
+// === YT Player (Native standard implementation) ===
 ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
     videoId: videoId,
     width: "100%",
@@ -2088,9 +2095,10 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
             e.target.playVideo();
             isPlaying = true;
             updateSeekBar();
-            makeMiniPlayerLongPressDraggable(".yt-mini-player");
-            makeMiniPlayerResizable(".yt-mini-player");
+            if (typeof makeMiniPlayerLongPressDraggable === "function") makeMiniPlayerLongPressDraggable(".yt-mini-player");
+            if (typeof makeMiniPlayerResizable === "function") makeMiniPlayerResizable(".yt-mini-player");
 
+            // Real-time Drag Performance Improver
             $(".yt-mini-player").on("mousedown touchstart", function() { $(this).addClass("is-dragging"); });
             $(document).on("mouseup touchend", function() { $(".yt-mini-player").removeClass("is-dragging"); });
         },
@@ -2106,6 +2114,7 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
     }
 });
 
+// Playback Trigger Action Handler
 $("#mini-playpause").click(()=>{
     if(!ytPlayer) return;
     const state=ytPlayer.getPlayerState();
@@ -2121,7 +2130,7 @@ $("#mini-playpause").click(()=>{
     }
 });
 
-// MODE TOGGLE FUNCTION (Premium Border SVG Seekbar & Dynamic Icon Highlights)
+// MODE TOGGLE FUNCTION (Pure Non-blocking CSS-Border Track Progress Design)
 let isRoundMusicMode = false;
 $("#mini-mode-toggle").click(() => {
     const player = $(".yt-mini-player");
@@ -2130,7 +2139,7 @@ $("#mini-mode-toggle").click(() => {
     const seekbar = $("#mini-seekbar");
 
     if (!isRoundMusicMode) {
-        // === Premium Round Dial Shell ===
+        // === Premium Dial Structure Shell ===
         player.css({
             width: "220px", height: "220px", borderRadius: "50%",
             background: "radial-gradient(circle, #fcfcfc 0%, #e5e5e5 75%, #cccccc 100%)",
@@ -2140,54 +2149,45 @@ $("#mini-mode-toggle").click(() => {
         
         player.append('<div class="ui-pin-tip" style="position:absolute; bottom:-1px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:10px solid transparent; border-right:10px solid transparent; border-top:10px solid #b5b5b5; z-index:996;"></div>');
 
-        // Dynamic Premium Border SVG Seekbar Layer
-        player.append(`
-            <svg id="svg-ring-container" style="position:absolute; top:0; left:0; width:100%; height:100%; transform: rotate(-90deg); z-index:998; pointer-events:none;">
-                <circle cx="110" cy="110" r="102" fill="none" stroke="rgba(0,0,0,0.05)" stroke-width="5"/>
-                <circle id="svg-seek-progress" cx="110" cy="110" r="102" fill="none" stroke="url(#cyan-magenta-grad)" stroke-width="5" stroke-dasharray="640" stroke-dashoffset="640" stroke-linecap="round"/>
-                <defs>
-                    <linearGradient id="cyan-magenta-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#00ffff" />
-                        <stop offset="100%" stop-color="#ff00ff" />
-                    </linearGradient>
-                </defs>
-            </svg>
-        `);
-
+        // Perfect Vinyl Disc fitting inside inner space
         roundThumb.css({
-            height: "82%", width: "82%", top: "9%", left: "9%", borderRadius: "50%", boxShadow: "0 4px 12px rgba(0,0,0,0.25)"
-        }).show().addClass("spinning");
+            height: "82%", width: "82%", top: "9%", left: "9%", borderRadius: "50%", boxShadow: "0 4px 12px rgba(0,0,0,0.25)", display: "block"
+        }).addClass("spinning");
 
         if (ytPlayer && ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) roundThumb.addClass("paused-spin");
         $(`#yt-mini-${videoId}`).css({ opacity: "0" });
         
+        // Control Container Released as full structural transparent window wrapper
         controlBar.css({
             position: "absolute", top: "0", left: "0", width: "100%", height: "100%", background: "transparent", borderTop: "none", backdropFilter: "none", padding: "0"
         });
 
-        // 1. HIGHLIGHTED CENTER PLAY/PAUSE (Clean Premium Circle)
-        $("#mini-playpause").addClass("music-dial-center").css({
+        // 1. CENTER PLAY/PAUSE (Premium Glow Highlight Target)
+        $("#mini-playpause").addClass("music-dial-center-btn").css({
             position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
-            width: "56px", height: "56px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0", fontSize: "20px"
+            width: "56px", height: "56px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0", fontSize: "20px", zIndex: "1001"
         });
 
-        // 2. VIDEO MODE TOGGLE BUTTON (Placed at Left - Highlighted Style)
+        // 2. VIDEO MODE TOGGLE BUTTON (Left Alignment Arrow Map)
         $("#mini-mode-toggle").css({
-            position: "absolute", bottom: "45px", left: "35px", margin: "0", textShadow: "none", color: "#666", fontSize: "16px"
+            position: "absolute", bottom: "45px", left: "35px", margin: "0", textShadow: "none", color: "#666", fontSize: "16px", zIndex: "1001"
         }).find('i').removeClass("fa-music").addClass("fa-video");
 
-        // 3. GREEN AUTO-NEXT LOOP BUTTON (Placed at Right)
-        autoNextBtn.css({ position: "absolute", bottom: "45px", right: "35px", margin: "0" });
+        // 3. GREEN LOOP AUTO-NEXT TOGGLE (Right Alignment Map)
+        autoNextBtn.css({ position: "absolute", bottom: "45px", right: "35px", margin: "0", zIndex: "1001" });
 
-        // Hide old flat elements completely
-        seekbar.css({ position: "absolute", opacity: "0", top: "0", left: "0", width: "100%", height: "100%", zIndex: "999", cursor: "pointer" }).show();
+        // 4. TRANSITIONAL LINEAR TRACK SLIDER (Invisible overlay for drag/touch mapping)
+        seekbar.css({
+            position: "absolute", top: "14px", left: "10%", width: "80%", height: "8px",
+            background: "linear-gradient(to right, #00ffff, #ff00ff)", borderRadius: "10px", boxShadow: "0 0 8px rgba(0,255,255,0.4)", zIndex: "1002"
+        }).show();
+
         $("#mini-fullscreen, #mini-close").hide();
-
         isRoundMusicMode = true;
     } else {
         // Revert back to Original Rectangle Video Player Look
         player.css({ width: "271px", height: "180px", borderRadius: "6px", background: "#111", boxShadow: "0 12px 28px rgba(0,0,0,0.7)", border: "none" });
-        $(".ui-pin-tip, #svg-ring-container").remove();
+        $(".ui-pin-tip").remove();
         
         roundThumb.css({ height: "calc(100% - 50px)", width: "100%", top: "0", left: "0", borderRadius: "50% 50% 0 0" }).hide().removeClass("spinning paused-spin"); 
         $(`#yt-mini-${videoId}`).css({ opacity: "1" });
@@ -2196,21 +2196,21 @@ $("#mini-mode-toggle").click(() => {
             position: "relative", top: "", left: "", width: "100%", height: "50px", borderRadius: "0", background: "rgba(255,255,255,0.08)", borderTop: "1px solid rgba(255,255,255,0.15)", padding: "0 12px"
         });
 
-        $("#mini-playpause").removeClass("music-dial-center").css({
+        $("#mini-playpause").removeClass("music-dial-center-btn").css({
             position: "static", transform: "none", width: "auto", height: "auto", borderRadius: "0", display: "inline-block", color: "#00ffff", textShadow: "0 0 8px #00ffff", marginRight: "8px", fontSize: "20px"
         });
         
         $("#mini-mode-toggle").css({ position: "static", transform: "none", color: "#ff00ff", textShadow: "0 0 8px #ff00ff", marginRight: "8px", fontSize: "18px" }).find('i').removeClass("fa-video").addClass("fa-music");
         autoNextBtn.css({ position: "static", transform: "none", marginRight: "8px" });
         
-        seekbar.css({ position: "static", opacity: "1", width: "auto", left: "", bottom: "", height: "4px", background: "linear-gradient(to right,#ff6a00,#ee0979)", boxShadow: "0 0 8px #ff6a00" });
+        seekbar.css({ position: "static", width: "auto", left: "", bottom: "", height: "4px", background: "linear-gradient(to right,#ff6a00,#ee0979)", boxShadow: "0 0 8px #ff6a00" });
 
         $("#mini-fullscreen, #mini-close").show();
         isRoundMusicMode = false;
     }
 });
 
-// Fast Lag-Free Fullscreen Trigger
+// Instant Performance Fullscreen Trigger
 $("#mini-fullscreen").click(()=>{
     const player = $(".yt-mini-player");
     player.addClass("instant-motion");
@@ -2231,16 +2231,17 @@ $("#mini-fullscreen").click(()=>{
 
 $("#mini-close").click(()=>stopVideoIfPlaying());
 
-// Click mapping for SVG Circular Ring via hidden proxy layer
+// Range Input Tracker
 $("#mini-seekbar").on("input", function(){
     if(!ytPlayer) return;
     const dur=ytPlayer.getDuration();
     ytPlayer.seekTo((this.value/100)*dur, true);
 });
 
+// Dynamic Seek Engine Loop
 function updateSeekBar(){
     if(!ytPlayer) return;
-    const state=ytPlayer.getPlayerState();
+    const state=ytPlayer.getOriginalPlayerState ? ytPlayer.getOriginalPlayerState() : ytPlayer.getPlayerState();
     if(state===YT.PlayerState.PLAYING||state===YT.PlayerState.PAUSED){
         const cur=ytPlayer.getCurrentTime();
         const dur=ytPlayer.getDuration();
@@ -2248,14 +2249,9 @@ function updateSeekBar(){
             const percentage = (cur/dur)*100;
             $("#mini-seekbar").val(percentage);
             
-            // Dynamic SVG Circular Progress Update
-            const circle = document.getElementById("svg-seek-progress");
-            if (circle) {
-                const radius = circle.r.baseVal.value;
-                const circumference = 2 * Math.PI * radius;
-                const offset = circumference - (percentage / 100) * circumference;
-                circle.style.strokeDasharray = circumference;
-                circle.style.strokeDashoffset = offset;
+            // Dynamic Conic Gradient Border tracking progress cleanly (Screenshot design matched)
+            if (isRoundMusicMode) {
+                $(".yt-mini-player").css("border-image", `conic-gradient(#00ffff ${percentage}%, #b5b5b5 ${percentage}%) 1`);
             }
         }
     }
@@ -2273,6 +2269,7 @@ function playNextVideo(){
         }
     }
 }
+	
 	
 
     
