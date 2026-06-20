@@ -2014,12 +2014,7 @@ function playMiniVideoPlayer(videoId){
 	
         
                         
-            
-	
-
-    
-        
-// 1. ULTRA-SMOOTH DRAGGING FIX & VINYL STYLES (No layout breaking overrides)
+// 1. DYNAMIC CYBERPUNK STYLES (No layout breakage, lag-free transitions)
 if ($("#mini-player-styles").length === 0) {
     $("head").append(`
         <style id="mini-player-styles">
@@ -2033,11 +2028,11 @@ if ($("#mini-player-styles").length === 0) {
             .paused-spin {
                 animation-play-state: paused !important;
             }
-            /* Lag-free real-time movement trigger */
-            .is-dragging {
+            /* Instant Response for drag & fullscreen switch */
+            .is-dragging, .instant-motion {
                 transition: none !important;
             }
-            /* Glowing dial components */
+            /* Glowing dial center */
             .music-dial-center {
                 background: linear-gradient(135deg, #a832ff 0%, #6a1b9a 100%) !important;
                 box-shadow: 0 4px 15px rgba(106, 27, 154, 0.6), 0 0 10px rgba(168, 50, 255, 0.4) !important;
@@ -2047,7 +2042,7 @@ if ($("#mini-player-styles").length === 0) {
     `);
 }
 
-// Mini Player Container (Aapka original structure bina kisi hierarchy badle)
+// Mini Player Container (Original structure untouched)
 let overlay=$(`
 <div class="yt-mini-player" style="position:fixed; bottom:110px; right:10px; width:271px; height:180px; background:#111; border-radius:6px; overflow:hidden; z-index:99999; display:flex; flex-direction:column; box-shadow:0 12px 28px rgba(0,0,0,0.7); transition: all 0.4s ease;">
     <div class="video-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; background:transparent; z-index:998; pointer-events:all;"></div>
@@ -2093,7 +2088,7 @@ transition: all 1s ease;">V F Y</div>`);
     $(`#yt-mini-${videoId}`).click(()=>{ showVFYOverlay(); });
     showVFYOverlay();
 
-// === YT Player (Aapka ORIGINAL Code bina kisi badlaav ke, taaki error na aaye) ===
+// === YT Player (Original events intact) ===
 ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
     videoId: videoId,
     width: "100%",
@@ -2106,7 +2101,6 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
         showinfo: 0
     },
     events: {
-
         onReady: e => {
             e.target.playVideo();
             isPlaying = true;
@@ -2114,7 +2108,7 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
             makeMiniPlayerLongPressDraggable(".yt-mini-player");
             makeMiniPlayerResizable(".yt-mini-player");
 
-            // Real-time Smooth Drag Triggers (Transition temporary drops on click)
+            // Lag-free mouse down fix
             $(".yt-mini-player").on("mousedown touchstart", function() {
                 $(this).addClass("is-dragging");
             });
@@ -2122,31 +2116,24 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
                 $(".yt-mini-player").removeClass("is-dragging");
             });
         },
-
         onStateChange: event => {
             if (event.data === YT.PlayerState.ENDED && isAutoNext) {
                 playNextVideo();
             }
-            // Auto sync vinyl spin state
             const roundThumb = $(".mini-round-thumb");
             if (isRoundMusicMode) {
                 if (event.data === YT.PlayerState.PLAYING) roundThumb.removeClass("paused-spin");
                 else roundThumb.addClass("paused-spin");
             }
         },
-
-        // Video unavailable / copyright / embed disabled
         onError: event => {
             console.log("YT Error:", event.data);
             if (isAutoNext) {
                 playNextVideo();
             }
         }
-
     }
 });
-
-
 	
     // Controls
     $("#mini-playpause").click(()=>{
@@ -2165,7 +2152,7 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
         }
     });
 
-    // MODE TOGGLE FUNCTION (Bina structural breakage ke perfect image mapping layer style)
+    // MODE TOGGLE FUNCTION (Top Seekbar + Dynamic Icons Integration)
     let isRoundMusicMode = false;
     $("#mini-mode-toggle").click(() => {
         const player = $(".yt-mini-player");
@@ -2174,7 +2161,7 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
         const seekbar = $("#mini-seekbar");
 
         if (!isRoundMusicMode) {
-            // === Transform to Image accurate Round Dial (Safe CSS adjustments) ===
+            // === Change to Dial Look ===
             player.css({
                 width: "220px",
                 height: "220px",
@@ -2184,10 +2171,8 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
                 border: "4px solid #adadad"
             });
             
-            // Add subtle pointer pin tip
             player.append('<div class="ui-pin-tip" style="position:absolute; bottom:-1px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:10px solid transparent; border-right:10px solid transparent; border-top:10px solid #adadad; z-index:996;"></div>');
 
-            // Set thumbnail as a perfect vinyl center disk
             roundThumb.css({
                 height: "80%",
                 width: "80%",
@@ -2203,31 +2188,30 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
             
             $(`#yt-mini-${videoId}`).css({ opacity: "0" });
             
-            // Re-arraging controls dynamically into dial positions safely
             controlBar.css({
                 position: "absolute", top: "0", left: "0", width: "100%", height: "100%",
                 background: "transparent", borderTop: "none", backdropFilter: "none", padding: "0"
             });
 
-            // 1. Highlight Center Play/Pause Circle
+            // 1. CENTER PLAY/PAUSE (Highlighted Glow Circle)
             $("#mini-playpause").addClass("music-dial-center").css({
                 position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
                 width: "52px", height: "52px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0", textShadow: "none"
             });
 
-            // 2. Mode Toggle (Acting as left backward arrow look)
+            // 2. MODE BUTTON (Left position acting as dynamic layout arrow changer)
             $("#mini-mode-toggle").css({
                 position: "absolute", bottom: "45px", left: "32px", margin: "0", textShadow: "none", color: "#555"
-            }).find('i').removeClass("fa-music").addClass("fa-backward");
+            }).find('i').removeClass("fa-music").addClass("fa-video");
 
-            // 3. Green Auto-next Button (Positioned at right loop)
+            // 3. GREEN AUTO-NEXT LOOP BUTTON
             autoNextBtn.css({
                 position: "absolute", bottom: "45px", right: "32px", margin: "0"
             });
 
-            // 4. Arc Seekbar integration (Half-round arc strip at bottom edge)
+            // 4. SEEKBAR AT THE TOP SIDE HALF ROUND ARC
             seekbar.css({
-                position: "absolute", bottom: "14px", left: "10%", width: "80%", height: "5px",
+                position: "absolute", top: "14px", left: "10%", width: "80%", height: "5px",
                 background: "linear-gradient(to right, #00ffff, #ff00ff)", borderRadius: "10px", boxShadow: "0 0 8px rgba(0,255,255,0.4)"
             });
 
@@ -2255,7 +2239,7 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
             
             $("#mini-mode-toggle").css({
                 position: "static", transform: "none", color: "#ff00ff", textShadow: "0 0 8px #ff00ff", marginRight: "8px"
-            }).find('i').removeClass("fa-backward").addClass("fa-music");
+            }).find('i').removeClass("fa-video").addClass("fa-music");
             
             autoNextBtn.css({ position: "static", transform: "none", marginRight: "8px" });
             
@@ -2268,41 +2252,31 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
         }
     });
 
+    // Lag-free fast Fullscreen Integration
     $("#mini-fullscreen").click(()=>{
+        const player = $(".yt-mini-player");
+        player.addClass("instant-motion"); // Disable layout animations during resize to fix lag
 
-    const player = $(".yt-mini-player");
-
-    if(!isMiniPlayerFullscreen){
-
-        player.css({
-            position:"fixed",
-            width:"100vw",
-            height:"100vh",
-            top:"0",
-            left:"0",
-            right:"0",
-            bottom:"0",
-            margin:"0",
-            borderRadius:"0",
-            zIndex:"99999"
-        });
-
-        isMiniPlayerFullscreen = true;
-
-    }else{
-        if(isRoundMusicMode) {
+        if(!isMiniPlayerFullscreen){
             player.css({
-                position:"fixed", width:"220px", height:"220px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"50%", zIndex:"99999"
+                position:"fixed", width:"100vw", height:"100vh", top:"0", left:"0", right:"0", bottom:"0", margin:"0", borderRadius:"0", zIndex:"99999"
             });
-        } else {
-            player.css({
-                position:"fixed", width:"271px", height:"180px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"6px", zIndex:"99999"
-            });
+            isMiniPlayerFullscreen = true;
+        }else{
+            if(isRoundMusicMode) {
+                player.css({
+                    position:"fixed", width:"220px", height:"220px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"50%", zIndex:"99999"
+                });
+            } else {
+                player.css({
+                    position:"fixed", width:"271px", height:"180px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"6px", zIndex:"99999"
+                });
+            }
+            isMiniPlayerFullscreen = false;
         }
-        isMiniPlayerFullscreen = false;
-    }
-
-});
+        
+        setTimeout(() => player.removeClass("instant-motion"), 50);
+    });
 
     $("#mini-close").click(()=>stopVideoIfPlaying());
 
@@ -2337,15 +2311,17 @@ function playNextVideo(){
     }
 }
 	
+	
+
+    
         
- 
+                
 
 
 
 
 
-
-
+	
 
 
 	
