@@ -5269,6 +5269,7 @@ updateClock();
 
 
 <script>
+
 /* ---------------- GLOBAL ELEMENTS ---------------- */
 const footer = document.querySelector('.fixed-footer');
 const progressBar = document.getElementById('progressBarContainer');
@@ -5279,14 +5280,14 @@ const overlayTitle = document.getElementById("overlayTitle");
 const overlayTime = document.getElementById("overlayTime");
 const audioPlayer = document.getElementById("SAudio");
 const themeMeta = document.getElementById("themeColorMeta");
-const modeToggle = document.getElementById("modeToggleBtn");
+const modeToggleBtn = document.getElementById("modeToggleBtn");
 const sideMenu = document.getElementById('sideMenu');
 
 let lastScrollTop = 0;
 let overlayTimer;
 let sideMenuTimer;
 let wakeLock = null;
-
+let isScrollTicking = false; // Scroll performance optimization ke liye
 
 /* ---------------- OVERLAY FUNCTIONS ---------------- */
 function setStatusBarColor(color) {
@@ -5294,7 +5295,7 @@ function setStatusBarColor(color) {
 }
 
 function showOverlay() {
-    if (modeToggle.checked) return; // video mode → overlay na dikhe
+    if (modeToggleBtn.checked) return; // Video mode me overlay nahi dikhega
     lockOverlay.style.display = "flex";
     setStatusBarColor("#000000");
 }
@@ -5305,7 +5306,6 @@ function hideOverlay() {
     resetOverlayTimer();
 }
 
-// unlock button
 document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
 
 /* ---------------- SIDE MENU FUNCTIONS ---------------- */
@@ -5314,18 +5314,18 @@ function showMenu() { sideMenu.classList.remove('hidden'); }
 
 /* ---------------- TIMERS ---------------- */
 function resetOverlayTimer(e) {
-    // ignore scroll events for overlay
     if (e && e.type === "scroll") return;
     if (overlayTimer) clearTimeout(overlayTimer);
-    if (!modeToggle.checked) {
-        overlayTimer = setTimeout(showOverlay, 12000); // 10 sec inactivity
+    
+    if (!modeToggleBtn.checked) {
+        overlayTimer = setTimeout(showOverlay, 12000); // 12 sec inactivity
     }
 }
 
 function resetSideMenuTimer() {
     showMenu();
     if (sideMenuTimer) clearTimeout(sideMenuTimer);
-    sideMenuTimer = setTimeout(hideMenu, 2000); // 4 sec inactivity
+    sideMenuTimer = setTimeout(hideMenu, 2000); // 2 sec inactivity
 }
 
 /* ---------------- USER ACTIVITY ---------------- */
@@ -5333,15 +5333,16 @@ function resetSideMenuTimer() {
     document.addEventListener(evt, e => {
         resetOverlayTimer(e);
         resetSideMenuTimer();
-    }, {passive: true});
+    }, { passive: true });
 });
 
-// start timers on load
+// Initial start
 resetOverlayTimer();
 resetSideMenuTimer();
 
-/* ---------------- OVERLAY CONTENT UPDATER ---------------- */
-setInterval(() => {
+/* ---------------- EVENT-DRIVEN OVERLAY UPDATER ---------------- */
+// Hata diya 500ms ka setInterval! Ab data sirf tab badlega jab actual me change hoga.
+function updateOverlayContent() {
     const thumbSrc = document.getElementById("Fimg")?.src;
     if (thumbSrc) overlayThumb.src = thumbSrc;
 
@@ -5351,81 +5352,93 @@ setInterval(() => {
     const curr = document.getElementById("current-time")?.textContent || "0:00";
     const total = document.getElementById("total-time")?.textContent || "0:00";
     overlayTime.textContent = `${curr} / ${total}`;
-}, 500);
-
-
-const modeToggleBtn = document.getElementById("modeToggleBtn");
-
-/* -------- MODE TOGGLE HANDLER -------- */
-modeToggleBtn.addEventListener("change", () => {
-    if (modeToggleBtn.checked) {
-        // 🎥 VIDEO MODE → footer hamesha hide
-        footer.classList.add("hide");
-        progressBar.classList.add("hide");
-        audioPlayerContainer.classList.add("hide");
-    } else {
-        // 🎧 AUDIO MODE → footer show
-        footer.classList.remove("hide");
-        progressBar.classList.remove("hide");
-        audioPlayerContainer.classList.remove("hide");
-    }
-});
-
-
-/* ---------------- SCROLL HANDLER ---------------- */
-window.addEventListener("scroll", () => {
-    // 🎥 VIDEO MODE → footer hamesha hide
-    if (modeToggleBtn.checked) {
-        footer.classList.add("hide");
-        progressBar.classList.add("hide");
-        audioPlayerContainer.classList.add("hide");
-        return;
-    }
-
-    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-    if (scrollTop > lastScrollTop) {
-        // ⬇️ scroll DOWN → HIDE footer
-        footer.classList.add("hide");
-        progressBar.classList.add("hide");
-        audioPlayerContainer.classList.add("hide");
-    } else {
-        // ⬆️ scroll UP → SHOW footer
-        footer.classList.remove("hide");
-        progressBar.classList.remove("hide");
-        audioPlayerContainer.classList.remove("hide");
-    }
-
-    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-}, false);
-    
-	
-/* ---------------- WAKE LOCK ---------------- */
-async function keepScreenOn() {
-    try {
-        if ('wakeLock' in navigator && !audioPlayer.paused) {
-            wakeLock = await navigator.wakeLock.request('screen');
-            wakeLock.addEventListener('release', () => { wakeLock = null; });
-        }
-    } catch (err) { console.error(err); }
 }
 
-setInterval(() => {
-    if (audioPlayer && !audioPlayer.paused) {
-        if (!wakeLock) keepScreenOn();
-    } else {
-        if (wakeLock) wakeLock.release().then(() => wakeLock = null);
-    }
-}, 2000);
+// Audio progress aur details change hone par overlay update karein
+if (audioPlayer) {
+    audioPlayer.addEventListener('timeupdate', updateOverlayContent);
+    audioPlayer.addEventListener('loadedmetadata', updateOverlayContent);
+}
 
-window.addEventListener('beforeunload', () => {
-    if (wakeLock) wakeLock.release().then(() => wakeLock = null);
+/* -------- MODE TOGGLE HANDLER -------- */
+function toggleFooterVisibility(hide) {
+    const action = hide ? 'add' : 'remove';
+    footer.classList[action]("hide");
+    progressBar.classList[action]("hide");
+    audioPlayerContainer.classList[action]("hide");
+}
+
+modeToggleBtn.addEventListener("change", () => {
+    if (modeToggleBtn.checked) {
+        toggleFooterVisibility(true); // Video mode -> Hide hamesha
+        if (overlayTimer) clearTimeout(overlayTimer);
+    } else {
+        toggleFooterVisibility(false); // Audio mode -> Show footer
+        resetOverlayTimer();
+    }
 });
 
-/* ---------------- PLACEHOLDER FUNCTIONS ---------------- */
-//function openPopup() { alert('Settings clicked'); }
-//function startDictation() { alert('Microphone clicked'); }
-//function showDetail() { alert('Heart clicked'); }
+/* ---------------- SCROLL HANDLER (OPTIMIZED) ---------------- */
+window.addEventListener("scroll", () => {
+    if (modeToggleBtn.checked) return;
+
+    // requestAnimationFrame scroll lag ko khatam karta hai
+    if (!isScrollTicking) {
+        window.requestAnimationFrame(() => {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            if (scrollTop > lastScrollTop) {
+                toggleFooterVisibility(true);  // Scroll DOWN -> HIDE
+            } else {
+                toggleFooterVisibility(false); // Scroll UP -> SHOW
+            }
+
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+            isScrollTicking = false;
+        });
+        isScrollTicking = true;
+    }
+}, { passive: true });
+
+/* ---------------- WAKE LOCK (REFINED) ---------------- */
+async function keepScreenOn() {
+    if ('wakeLock' in navigator && audioPlayer && !audioPlayer.paused) {
+        try {
+            if (!wakeLock) {
+                wakeLock = await navigator.wakeLock.request('screen');
+                wakeLock.addEventListener('release', () => { wakeLock = null; });
+            }
+        } catch (err) { 
+            console.error("Wake Lock error:", err); 
+        }
+    }
+}
+
+async function releaseWakeLock() {
+    if (wakeLock) {
+        try {
+            await wakeLock.release();
+            wakeLock = null;
+        } catch (err) {
+            console.error("Wake lock release error:", err);
+        }
+    }
+}
+
+// `setInterval` hata kar seedhe audio events par bind kiya
+if (audioPlayer) {
+    audioPlayer.addEventListener('play', keepScreenOn);
+    audioPlayer.addEventListener('pause', releaseWakeLock);
+    audioPlayer.addEventListener('ended', releaseWakeLock);
+}
+
+// Agar user tab badal kar wapas aaye toh wake lock re-acquire karein
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        keepScreenOn();
+    }
+});
+	
 </script>	
 	            
 
