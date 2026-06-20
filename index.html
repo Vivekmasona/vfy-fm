@@ -2021,7 +2021,11 @@ function playMiniVideoPlayer(videoId){
                                                 					
 	
 	
-// 1. DYNAMIC COMPACT DIAL STYLES (Ultra premium small size engine)
+        
+        
+            
+            
+        // 1. DYNAMIC COMPACT DIAL STYLES (Fixed Circular Elements & Layouts)
 if ($("#mini-player-styles").length === 0) {
     $("head").append(`
         <style id="mini-player-styles">
@@ -2038,12 +2042,13 @@ if ($("#mini-player-styles").length === 0) {
             .is-dragging, .instant-motion {
                 transition: none !important;
             }
-            /* Clean Center Play Button for Circular Audio Mode Only */
+            /* STRICTLY CIRCULAR Center Play Button for Audio Mode */
             .music-dial-center {
                 background: linear-gradient(135deg, #a832ff 0%, #6a1b9a 100%) !important;
                 box-shadow: 0 3px 10px rgba(106, 27, 154, 0.8), 0 0 8px rgba(168, 50, 255, 0.6) !important;
                 color: #ffffff !important;
                 border: 2px solid rgba(255, 255, 255, 0.4) !important;
+                border-radius: 50% !important; /* Forces 100% Round Shape */
             }
             .glow-green-btn {
                 background: #34c759 !important;
@@ -2085,7 +2090,7 @@ let overlay=$(`
     <div id="yt-mini-${videoId}" style="flex:1; background:black; position:relative; z-index:1; opacity:0;"></div>
     
     <div class="mini-control-bar" style="position:absolute; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:space-between; padding:0; background:transparent; border-top:none; backdrop-filter: none; z-index:999; pointer-events:auto; transition: all 0.4s ease;">
-        <button id="mini-playpause" class="music-dial-center" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:38px; height:38px; border-radius:50%; border:none; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; margin:0; text-shadow:none; z-index:1020;"><i class="fas fa-pause"></i></button>
+        <button id="mini-playpause" class="music-dial-center" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:38px; height:38px; border-radius:50% !important; border:none; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; margin:0; text-shadow:none; z-index:1020;"><i class="fas fa-pause"></i></button>
         
         <button id="mini-mode-toggle" style="position:absolute; bottom:12px; left:25px; margin:0; border:none; background:none; cursor:pointer; font-size:14px; text-shadow:none; color:#ff3b30; z-index:1020;"><i class="fas fa-play-circle"></i></button>
         
@@ -2230,7 +2235,7 @@ let overlay=$(`
                 position: "relative", top: "", left: "", width: "100%", height: "50px", borderRadius: "0", background: "rgba(255,255,255,0.08)", borderTop: "1px solid rgba(255,255,255,0.15)", padding: "0 12px"
             });
 
-            // Play button fully cleaned up for Rectangular controls
+            // Play button fully cleaned up for Rectangular controls (Resetting back to normal text layout)
             $("#mini-playpause").removeClass("music-dial-center").css({
                 position: "static", transform: "none", width: "auto", height: "auto", borderRadius: "0", display: "inline-block", background: "none", boxShadow: "none", border: "none", color: "#00ffff", textShadow: "0 0 8px #00ffff", marginRight: "8px", zIndex: "auto"
             });
@@ -2242,7 +2247,7 @@ let overlay=$(`
             $("#mini-fullscreen, #mini-close").show();
             isRoundMusicMode = false;
         } else {
-            // Transform Back into Perfect Compact Dial Shape
+            // Transform Back into Perfect Compact Round Dial Shape
             player.css({
                 width: "145px", height: "145px", borderRadius: "50%",
                 background: "radial-gradient(circle, #fcfcfc 0%, #e0e0e0 70%, #b8b8b8 100%)",
@@ -2279,9 +2284,10 @@ let overlay=$(`
                 position: "absolute", top: "0", left: "0", width: "100%", height: "100%", background: "transparent", borderTop: "none", backdropFilter: "none", padding: "0"
             });
 
+            // FIXED: Added 100% border-radius logic to ensure perfect roundness inside Audio Dial layout
             $("#mini-playpause").addClass("music-dial-center").css({
                 position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
-                width: "38px", height: "38px", border_radius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0", textShadow: "none", zIndex: "1020"
+                width: "38px", height: "38px", borderRadius: "50% !important", display: "flex", alignItems: "center", justifyContent: "center", margin: "0", textShadow: "none", zIndex: "1020"
             });
 
             $("#mini-mode-toggle").css({
@@ -2348,6 +2354,7 @@ function playNextVideo(){
         }
     }
 }
+
 	
             
             
