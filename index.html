@@ -2022,7 +2022,7 @@ function playMiniVideoPlayer(videoId){
  
         
  
-// 1. DYNAMIC CSS FOR ROTATING VINYL DISK & REAL-TIME DRAGGING FIX
+     // 1. DYNAMIC CSS FOR ROTATING VINYL DISK, SMOOTH DRAG & ARC SEEKBAR
 if ($("#mini-player-styles").length === 0) {
     $("head").append(`
         <style id="mini-player-styles">
@@ -2036,15 +2036,27 @@ if ($("#mini-player-styles").length === 0) {
             .paused-spin {
                 animation-play-state: paused !important;
             }
-            /* Smooth drag experience fix (Stops transitions during laggy mouse movements) */
             .is-dragging {
                 transition: none !important;
+            }
+            /* Custom styling for seekbar to adapt arc look in music mode */
+            .music-arc-seekbar {
+                position: absolute !important;
+                bottom: 12px !important;
+                left: 10% !important;
+                width: 80% !important;
+                -webkit-appearance: none !important;
+                background: linear-gradient(to right, #00ffff, #ff00ff) !important;
+                height: 5px !important;
+                border-radius: 10px !important;
+                box-shadow: 0 0 10px rgba(0,255,255,0.5) !important;
+                z-index: 1002 !important;
             }
         </style>
     `);
 }
 
-// Mini Player Container (Original HTML Hierarchy is exactly the same)
+// Mini Player Container (Original Hierarchy Maintain ki hai)
 let overlay=$(`
 <div class="yt-mini-player" style="position:fixed; bottom:110px; right:10px; width:271px; height:180px; background:#111; border-radius:6px; overflow:hidden; z-index:99999; display:flex; flex-direction:column; box-shadow:0 12px 28px rgba(0,0,0,0.7); transition: all 0.4s ease;">
     <div class="video-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; background:transparent; z-index:998; pointer-events:all;"></div>
@@ -2060,35 +2072,38 @@ let overlay=$(`
         
         <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="flex:1; margin:0 8px; -webkit-appearance:none; height:4px; border-radius:2px; background:linear-gradient(to right,#ff6a00,#ee0979); box-shadow:0 0 8px #ff6a00,0 0 12px #ee0979; cursor:pointer;">
         <button id="mini-fullscreen" style="color:#00ffff; border:none; background:none; cursor:pointer; font-size:20px; margin-right:8px; text-shadow:0 0 8px #00ffff;"><i class="fas fa-expand"></i></button>
-        <button id="mini-auto-next" style="width:18px; height:18px; border-radius:50%; margin-right:8px; border:none; cursor:pointer;"></button>
+        <button id="mini-auto-next" style="width:18px; height:18px; border-radius:50%; margin-right:8px; border:none; cursor:pointer; transition: background 0.3s;"></button>
         <button id="mini-close" style="color:#ff4f4f; border:none; background:none; cursor:pointer; font-size:22px; text-shadow:0 0 8px #ff4f4f;"><i class="fa fa-close"></i></button>
     </div>
 </div>`);
 
-    $("body").append(overlay);
+$("body").append(overlay);
 
-    // Auto-next toggle
-    const autoNextBtn=$("#mini-auto-next");
-    autoNextBtn.css("background",isAutoNext?"#00ff00":"#555");
-    autoNextBtn.click(()=>{ isAutoNext=!isAutoNext; autoNextBtn.css("background",isAutoNext?"#00ff00":"#555"); });
+// Auto-next toggle
+const autoNextBtn=$("#mini-auto-next");
+autoNextBtn.css("background",isAutoNext?"#00ff00":"#555");
+autoNextBtn.click(()=>{ 
+    isAutoNext=!isAutoNext; 
+    autoNextBtn.css("background",isAutoNext?"#00ff00":"#555"); 
+});
 
-    // V F Y pre-roll overlay
-    function showVFYOverlay(){
-        $(".vfy-overlay").remove();
-        let vfy=$(`
+// V F Y pre-roll overlay
+function showVFYOverlay(){
+    $(".vfy-overlay").remove();
+    let vfy=$(`
 <div class="vfy-overlay" style="
 position:absolute;top:0;left:0;width:100%;height:100%; display:flex;justify-content:center;align-items:center;
 background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);
 z-index:100000;font-family:'Khula',sans-serif;font-size:36px;font-weight:700;
 color:#00ffff;text-shadow:0 0 8px #00ffff,0 0 16px #00ffff;
 transition: all 1s ease;">V F Y</div>`);
-        $(`#yt-mini-${videoId}`).append(vfy);
-        setTimeout(()=>vfy.css({top:'-50px',opacity:0}),1000);
-        setTimeout(()=>vfy.remove(),2000);
-    }
+    $(`#yt-mini-${videoId}`).append(vfy);
+    setTimeout(()=>vfy.css({top:'-50px',opacity:0}),1000);
+    setTimeout(()=>vfy.remove(),2000);
+}
 
-    $(`#yt-mini-${videoId}`).click(()=>{ showVFYOverlay(); });
-    showVFYOverlay();
+$(`#yt-mini-${videoId}`).click(()=>{ showVFYOverlay(); });
+showVFYOverlay();
 
 // === YT Player ===
 ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
@@ -2111,7 +2126,7 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
             if (typeof makeMiniPlayerLongPressDraggable === "function") makeMiniPlayerLongPressDraggable(".yt-mini-player");
             if (typeof makeMiniPlayerResizable === "function") makeMiniPlayerResizable(".yt-mini-player");
             
-            // Real-time Smooth Drag Integration (Removes lag completely)
+            // Real-time Smooth Drag Integration
             $(".yt-mini-player").on("mousedown touchstart", function() {
                 $(this).addClass("is-dragging");
             });
@@ -2138,190 +2153,174 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
     }
 });
 	
-    // Controls
-    $("#mini-playpause").click(()=>{
-        if(!ytPlayer) return;
-        const state=ytPlayer.getPlayerState();
-        const roundThumb = $(".mini-round-thumb");
-        if(state===YT.PlayerState.PLAYING){ 
-            ytPlayer.pauseVideo(); 
-            $("#mini-playpause i").removeClass("fa-pause").addClass("fa-play"); 
-            if(isRoundMusicMode) roundThumb.addClass("paused-spin");
+// Controls
+$("#mini-playpause").click(()=>{
+    if(!ytPlayer) return;
+    const state=ytPlayer.getPlayerState();
+    const roundThumb = $(".mini-round-thumb");
+    if(state===YT.PlayerState.PLAYING){ 
+        ytPlayer.pauseVideo(); 
+        $("#mini-playpause i").removeClass("fa-pause").addClass("fa-play"); 
+        if(isRoundMusicMode) roundThumb.addClass("paused-spin");
+    }
+    else{ 
+        ytPlayer.playVideo(); 
+        $("#mini-playpause i").removeClass("fa-play").addClass("fa-pause"); 
+        if(isRoundMusicMode) roundThumb.removeClass("paused-spin");
+    }
+});
+
+// MODE TOGGLE FUNCTION (Circular Dial layout with requested internal mappings)
+let isRoundMusicMode = false;
+$("#mini-mode-toggle").click(() => {
+    const player = $(".yt-mini-player");
+    const roundThumb = $(".mini-round-thumb");
+    const controlBar = $(".mini-control-bar");
+    const videoOverlay = $(".video-overlay");
+    const seekbar = $("#mini-seekbar");
+
+    if (!isRoundMusicMode) {
+        // === Image Accurate Dial Structure ===
+        player.css({
+            width: "220px",
+            height: "220px",
+            borderRadius: "50%",
+            background: "radial-gradient(circle, #fcfcfc 0%, #e0e0e0 70%, #b8b8b8 100%)",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.35), inset 0 2px 5px rgba(255,255,255,0.8)",
+            border: "4px solid #adadad",
+            overflow: "hidden"
+        });
+        
+        // Dynamic bottom pointer tip add karo
+        player.append('<div class="ui-pin-tip" style="position:absolute; bottom:-1px; left:50%; transform:translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 10px solid #adadad; z-index: 996;"></div>');
+        
+        // Thumbnail core disk setting
+        roundThumb.css({
+            height: "80%",
+            width: "80%",
+            top: "10%",
+            left: "10%",
+            borderRadius: "50%",
+            boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+            transformOrigin: "center"
+        }).show().addClass("spinning");
+
+        if (ytPlayer && ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) {
+            roundThumb.addClass("paused-spin");
         }
-        else{ 
-            ytPlayer.playVideo(); 
-            $("#mini-playpause i").removeClass("fa-play").addClass("fa-pause"); 
-            if(isRoundMusicMode) roundThumb.removeClass("paused-spin");
-        }
-    });
+        
+        $(`#yt-mini-${videoId}`).css({ borderRadius: "50%", opacity: "0" });
+        videoOverlay.css({ borderRadius: "50%" });
+        
+        // Structure release control bar mapping
+        controlBar.css({
+            position: "absolute", top: "0", left: "0", width: "100%", height: "100%",
+            background: "transparent", borderTop: "none", backdropFilter: "none", padding: "0", display: "block"
+        });
 
-    // MODE TOGGLE FUNCTION (Image accurate Circular Dial UI layout)
-    let isRoundMusicMode = false;
-    $("#mini-mode-toggle").click(() => {
-        const player = $(".yt-mini-player");
-        const roundThumb = $(".mini-round-thumb");
-        const controlBar = $(".mini-control-bar");
-        const videoOverlay = $(".video-overlay");
+        // 1. PLAY/PAUSE (Highlighted Center Glow Icon)
+        $("#mini-playpause").css({
+            position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+            fontSize: "22px", color: "#ffffff", background: "linear-gradient(135deg, #a832ff 0%, #6a1b9a 100%)",
+            width: "54px", height: "54px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+            boxShadow: "0 4px 15px rgba(106, 27, 154, 0.6), 0 0 10px rgba(168, 50, 255, 0.4)",
+            textShadow: "none", margin: "0", zIndex: "1005"
+        });
 
-        if (!isRoundMusicMode) {
-            // === Image Jaisa Round UI Border aur Shape ===
-            player.css({
-                width: "220px",
-                height: "220px",
-                borderRadius: "50%",
-                background: "radial-gradient(circle, #fcfcfc 0%, #e0e0e0 70%, #b8b8b8 100%)",
-                boxShadow: "0 10px 30px rgba(0,0,0,0.3), inset 0 2px 5px rgba(255,255,255,0.8)",
-                border: "4px solid #adadad",
-                overflow: "hidden"
-            });
-            
-            // Add image bottom pointer using dynamic styling injection securely
-            player.append('<div class="ui-pin-tip" style="position:absolute; bottom:-1px; left:50%; transform:translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 10px solid #adadad; z-index: 996;"></div>');
-            
-            // Image ki tarah ring effect dene ke liye thumbnail ko thoda chota karke center lock kiya
-            roundThumb.css({
-                height: "82%",
-                width: "82%",
-                top: "9%",
-                left: "9%",
-                borderRadius: "50%",
-                boxShadow: "0 4px 10px rgba(0,0,0,0.15), inset 0 0 20px rgba(0,0,0,0.2)",
-                transformOrigin: "center"
-            }).show().addClass("spinning");
+        // 2. MODE BUTTON (Positioned cleanly on Left Arc)
+        $("#mini-mode-toggle").css({
+            position: "absolute", bottom: "45px", left: "32px",
+            fontSize: "16px", color: "#555", textShadow: "none", margin: "0", zIndex: "1001"
+        }).find('i').removeClass("fa-music").addClass("fa-backward");
 
-            if (ytPlayer && ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) {
-                roundThumb.addClass("paused-spin");
-            }
-            
-            $(`#yt-mini-${videoId}`).css({ borderRadius: "50%", opacity: "0" });
-            videoOverlay.css({ borderRadius: "50%" });
-            
-            // === Controls Re-mapping inside the inner sphere circle ===
-            controlBar.css({
-                position: "absolute",
-                top: "0",
-                left: "0",
-                width: "100%",
-                height: "100%",
-                background: "transparent",
-                borderTop: "none",
-                backdropFilter: "none",
-                padding: "0",
-                display: "block" // Button positions manual float karne ke liye grid release ki
-            });
+        // 3. GREEN AUTO-NEXT BUTTON (Positioned on Right Arc)
+        autoNextBtn.css({
+            position: "absolute", bottom: "45px", right: "32px",
+            margin: "0", zIndex: "1001"
+        });
 
-            // Play/Pause right in the dead center (exactly like the image)
-            $("#mini-playpause").css({
-                position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
-                fontSize: "24px", color: "#6a1b9a", textShadow: "none", margin: "0", zIndex: "1001"
-            });
+        // 4. HALF ROUND/ARC SEEKBAR (Bottom lock curved look mapping)
+        seekbar.addClass("music-arc-seekbar").show();
 
-            // Mode Changer Button acting as the Left Arrow
-            $("#mini-mode-toggle").css({
-                position: "absolute", bottom: "35px", left: "40px",
-                fontSize: "16px", color: "#757575", textShadow: "none", margin: "0"
-            }).find('i').removeClass("fa-music").addClass("fa-backward");
+        // Standard screen adjust setups hidden
+        $("#mini-fullscreen, #mini-close").hide();
+        
+        isRoundMusicMode = true;
+    } else {
+        // Revert back to Original Rectangle Video Player Look
+        player.css({
+            width: "271px", height: "180px", borderRadius: "6px", background: "#111",
+            boxShadow: "0 12px 28px rgba(0,0,0,0.7)", border: "none", overflow: "hidden"
+        });
+        $(".ui-pin-tip").remove();
+        
+        roundThumb.css({ top: "0", left: "0", width: "100%", height: "100%" }).hide().removeClass("spinning paused-spin"); 
+        $(`#yt-mini-${videoId}`).css({ borderRadius: "0", opacity: "1" });
+        videoOverlay.css({ borderRadius: "0" });
+        
+        controlBar.css({
+            position: "relative", top: "", left: "", width: "100%", height: "50px",
+            borderRadius: "0", background: "rgba(255,255,255,0.08)", backdropFilter: "blur(4px)",
+            borderTop: "1px solid rgba(255,255,255,0.15)", boxShadow: "none", padding: "0 12px", display: "flex"
+        });
 
-            // Fullscreen Button acting as the Right Arrow
-            $("#mini-fullscreen").css({
-                position: "absolute", bottom: "35px", right: "40px",
-                fontSize: "16px", color: "#757575", textShadow: "none", margin: "0"
-            }).find('i').removeClass("fa-expand").addClass("fa-forward");
+        $("#mini-playpause").css({ 
+            position: "static", transform: "none", fontSize: "20px", color: "#00ffff", background: "none",
+            width: "auto", height: "auto", borderRadius: "0", boxShadow: "none", display: "inline-block", textShadow: "0 0 8px #00ffff", marginRight: "8px" 
+        });
+        
+        $("#mini-mode-toggle").css({ 
+            position: "static", transform: "none", fontSize: "18px", color: "#ff00ff", textShadow: "0 0 8px #ff00ff", marginRight: "8px" 
+        }).find('i').removeClass("fa-backward").addClass("fa-music");
+        
+        autoNextBtn.css({ 
+            position: "static", transform: "none", width: "18px", height: "18px", borderRadius: "50%", marginRight: "8px" 
+        });
 
-            // Close button configured as the bottom Settings gear icon
-            $("#mini-close").css({
-                position: "absolute", bottom: "20px", left: "50%", transform: "translateX(-50%)",
-                fontSize: "18px", color: "#555", textShadow: "none"
-            }).find('i').removeClass("fa-close").addClass("fa-gear");
+        seekbar.removeClass("music-arc-seekbar").css({
+            position: "static", width: "auto", left: "", bottom: "", height: "4px", background: "linear-gradient(to right,#ff6a00,#ee0979)", boxShadow: "0 0 8px #ff6a00"
+        }).show();
 
-            // Hide un-matching elements cleanly inside the layout
-            $("#mini-seekbar, #mini-auto-next").hide();
-            
-            isRoundMusicMode = true;
-        } else {
-            // Revert back to Original Rectangle Video Player Look
-            player.css({
-                width: "271px", height: "180px", borderRadius: "6px", background: "#111",
-                boxShadow: "0 12px 28px rgba(0,0,0,0.7)", border: "none", overflow: "hidden"
-            });
-            $(".ui-pin-tip").remove();
-            
-            roundThumb.css({ top: "0", left: "0", width: "100%", height: "100%" }).hide().removeClass("spinning paused-spin"); 
-            $(`#yt-mini-${videoId}`).css({ borderRadius: "0", opacity: "1" });
-            videoOverlay.css({ borderRadius: "0" });
-            
-            controlBar.css({
-                position: "relative", top: "", left: "", width: "100%", height: "50px",
-                borderRadius: "0", background: "rgba(255,255,255,0.08)", backdropFilter: "blur(4px)",
-                borderTop: "1px solid rgba(255,255,255,0.15)", boxShadow: "none", padding: "0 12px", display: "flex"
-            });
+        $("#mini-fullscreen, #mini-close").show();
+        isRoundMusicMode = false;
+    }
+});
 
-            $("#mini-playpause").css({ position: "static", transform: "none", fontSize: "20px", color: "#00ffff", textShadow: "0 0 8px #00ffff", marginRight: "8px" });
-            $("#mini-mode-toggle").css({ position: "static", transform: "none", fontSize: "18px", color: "#ff00ff", textShadow: "0 0 8px #ff00ff", marginRight: "8px" }).find('i').removeClass("fa-backward").addClass("fa-music");
-            $("#mini-fullscreen").css({ position: "static", transform: "none", fontSize: "20px", color: "#00ffff", textShadow: "0 0 8px #00ffff", marginRight: "8px" }).find('i').removeClass("fa-forward").addClass("fa-expand");
-            $("#mini-close").css({ position: "static", transform: "none", fontSize: "22px", color: "#ff4f4f", textShadow: "0 0 8px #ff4f4f" }).find('i').removeClass("fa-gear").addClass("fa-close");
+$("#mini-fullscreen").click(function(){
+    if(isRoundMusicMode) return;
+    const player = $(".yt-mini-player");
+    if(!isMiniPlayerFullscreen){
+        player.css({
+            position:"fixed", width:"100vw", height:"100vh", top:"0", left:"0", right:"0", bottom:"0", margin:"0", borderRadius:"0", zIndex:"99999"
+        });
+        isMiniPlayerFullscreen = true;
+    }else{
+        player.css({
+            position:"fixed", width:"271px", height:"180px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"6px", zIndex:"99999"
+        });
+        isMiniPlayerFullscreen = false;
+    }
+});
 
-            $("#mini-seekbar, #mini-auto-next").show();
-            isRoundMusicMode = false;
-        }
-    });
+$("#mini-close").click(() => stopVideoIfPlaying());
 
-    $("#mini-fullscreen").click(function(){
-        if(isRoundMusicMode) return; // Music controller doesn't upscale directly inside mapping
+$("#mini-seekbar").on("input",function(){
+    if(!ytPlayer) return;
+    const dur=ytPlayer.getDuration();
+    ytPlayer.seekTo((this.value/100)*dur,true);
+});
 
-        const player = $(".yt-mini-player");
-        if(!isMiniPlayerFullscreen){
-            player.css({
-                position:"fixed", width:"100vw", height:"100vh", top:"0", left:"0", right:"0", bottom:"0", margin:"0", borderRadius:"0", zIndex:"99999"
-            });
-            isMiniPlayerFullscreen = true;
-        }else{
-            player.css({
-                position:"fixed", width:"271px", height:"180px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"6px", zIndex:"99999"
-            });
-            isMiniPlayerFullscreen = false;
-        }
-    });
-
-    $("#mini-close").click(() => {
-        if(isRoundMusicMode) {
-            stopVideoIfPlaying(); // Agar gear daba to close standard setup triggers
-        } else {
-            stopVideoIfPlaying();
-        }
-    });
-
-    $("#mini-seekbar").on("input",function(){
-        if(!ytPlayer) return;
+function updateSeekBar(){
+    if(!ytPlayer) return;
+    const state=ytPlayer.getPlayerState();
+    if(state===YT.PlayerState.PLAYING||state===YT.PlayerState.PAUSED){
+        const cur=ytPlayer.getCurrentTime();
         const dur=ytPlayer.getDuration();
-        ytPlayer.seekTo((this.value/100)*dur,true);
-    });
-
-    function updateSeekBar(){
-        if(!ytPlayer) return;
-        const state=ytPlayer.getPlayerState();
-        if(state===YT.PlayerState.PLAYING||state===YT.PlayerState.PAUSED){
-            const cur=ytPlayer.getCurrentTime();
-            const dur=ytPlayer.getDuration();
-            if(dur>0) $("#mini-seekbar").val((cur/dur)*100);
-        }
-        requestAnimationFrame(updateSeekBar);
+        if(dur>0) $("#mini-seekbar").val((cur/dur)*100);
     }
+    requestAnimationFrame(updateSeekBar);
 }
-
-// Auto next video
-function playNextVideo(){
-    if(!currentVideoListItem) return;
-    let nextDiv=currentVideoListItem.parentElement.nextElementSibling;
-    if(nextDiv){
-        let nextItem=nextDiv.querySelector(".music-item");
-        if(nextItem){
-            setCurrentVideo(nextItem);
-            playMiniVideoPlayer($(nextItem).attr("vid"));
-        }
-    }
-}
-				
+	
                 
 	
 	
