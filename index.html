@@ -1996,13 +1996,24 @@ function playMiniVideoPlayer(videoId){
     stopVideoIfPlaying();
     enforceAudioPause();
 
-    // Mini Player Container
-    let overlay=$(`
-<div class="yt-mini-player" style="position:fixed; bottom:110px; right:10px; width:271px; height:180px; background:#111; border-radius:6px; overflow:hidden; z-index:99999; display:flex; flex-direction:column; box-shadow:0 12px 28px rgba(0,0,0,0.7);">
+
+// Variable to track layout mode (false = normal rectangle, true = round audio disc)
+let isRoundMusicMode = false;
+
+// Mini Player Container (Updated with Mode Button and Thumbnail Layer)
+let overlay = $(`
+<div class="yt-mini-player" style="position:fixed; bottom:110px; right:10px; width:271px; height:180px; background:#111; border-radius:6px; overflow:hidden; z-index:99999; display:flex; flex-direction:column; box-shadow:0 12px 28px rgba(0,0,0,0.7); transition: all 0.4s ease-in-out;">
     <div class="video-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; background:transparent; z-index:998; pointer-events:all;"></div>
-    <div id="yt-mini-${videoId}" style="flex:1; background:black; position:relative; z-index:1;"></div>
-    <div class="mini-control-bar" style="height:50px; width:100%; display:flex; align-items:center; justify-content:space-between; padding:0 12px; backdrop-filter: blur(4px); background: rgba(255,255,255,0.08); border-top:1px solid rgba(255,255,255,0.15); z-index:999; pointer-events:auto;">
+    
+    <div class="mini-thumbnail-bg" style="position:absolute; top:0; left:0; width:100%; height:100%; background: url('https://img.youtube.com/vi/${videoId}/hqdefault.jpg') center/cover no-repeat; z-index: 2; opacity: 0; pointer-events: none; transition: opacity 0.4s ease;"></div>
+    
+    <div id="yt-mini-${videoId}" style="flex:1; background:black; position:relative; z-index:1; transition: all 0.4s ease;"></div>
+    
+    <div class="mini-control-bar" style="height:50px; width:100%; display:flex; align-items:center; justify-content:space-between; padding:0 12px; backdrop-filter: blur(4px); background: rgba(255,255,255,0.08); border-top:1px solid rgba(255,255,255,0.15); z-index:999; pointer-events:auto; transition: all 0.4s ease;">
         <button id="mini-playpause" style="color:#00ffff; border:none; background:none; cursor:pointer; font-size:20px; margin-right:8px; text-shadow:0 0 8px #00ffff;"><i class="fas fa-pause"></i></button>
+        
+        <button id="mini-mode-toggle" style="color:#ff00ff; border:none; background:none; cursor:pointer; font-size:18px; margin-right:8px; text-shadow:0 0 8px #ff00ff;" title="Toggle Round/Normal Mode"><i class="fas fa-music"></i></button>
+        
         <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="flex:1; margin:0 8px; -webkit-appearance:none; height:4px; border-radius:2px; background:linear-gradient(to right,#ff6a00,#ee0979); box-shadow:0 0 8px #ff6a00,0 0 12px #ee0979; cursor:pointer;">
         <button id="mini-fullscreen" style="color:#00ffff; border:none; background:none; cursor:pointer; font-size:20px; margin-right:8px; text-shadow:0 0 8px #00ffff;"><i class="fas fa-expand"></i></button>
         <button id="mini-auto-next" style="width:18px; height:18px; border-radius:50%; margin-right:8px; border:none; cursor:pointer;"></button>
@@ -2010,45 +2021,30 @@ function playMiniVideoPlayer(videoId){
     </div>
 </div>`);
 
-    $("body").append(overlay);
+$("body").append(overlay);
 
-    // Auto-next toggle
-    const autoNextBtn=$("#mini-auto-next");
-    autoNextBtn.css("background",isAutoNext?"#00ff00":"#555");
-    autoNextBtn.click(()=>{ isAutoNext=!isAutoNext; autoNextBtn.css("background",isAutoNext?"#00ff00":"#555"); });
+// Auto-next toggle
+const autoNextBtn = $("#mini-auto-next");
+autoNextBtn.css("background", isAutoNext ? "#00ff00" : "#555");
+autoNextBtn.click(() => { isAutoNext = !isAutoNext; autoNextBtn.css("background", isAutoNext ? "#00ff00" : "#555"); });
 
-    // V F Y pre-roll overlay
-    function showVFYOverlay(){
-        $(".vfy-overlay").remove();
-        let vfy=$(`
+// V F Y pre-roll overlay
+function showVFYOverlay() {
+    $(".vfy-overlay").remove();
+    let vfy = $(`
 <div class="vfy-overlay" style="
 position:absolute;top:0;left:0;width:100%;height:100%; display:flex;justify-content:center;align-items:center;
 background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);
 z-index:100000;font-family:'Khula',sans-serif;font-size:36px;font-weight:700;
 color:#00ffff;text-shadow:0 0 8px #00ffff,0 0 16px #00ffff;
 transition: all 1s ease;">V F Y</div>`);
-        $(`#yt-mini-${videoId}`).append(vfy);
-        setTimeout(()=>vfy.css({top:'-50px',opacity:0}),1000);
-        setTimeout(()=>vfy.remove(),2000);
-    }
+    $(`#yt-mini-${videoId}`).append(vfy);
+    setTimeout(() => vfy.css({ top: '-50px', opacity: 0 }), 1000);
+    setTimeout(() => vfy.remove(), 2000);
+}
 
-    $(`#yt-mini-${videoId}`).click(()=>{ showVFYOverlay(); });
-    showVFYOverlay();
-
-    // === YT Player ===
-   // ytPlayer=new YT.Player(`yt-mini-${videoId}`,{
-      //  videoId:videoId,
-    //    width:"100%",
-      //  height:"100%",
-     //   playerVars:{autoplay:1,controls:0,modestbranding:1,rel:0,showinfo:0},
-       // events:{
-           // onReady:e=>{ e.target.playVideo(); isPlaying=true; updateSeekBar(); makeMiniPlayerLongPressDraggable(".yt-mini-player"); makeMiniPlayerResizable(".yt-mini-player"); },
-           // onStateChange:event=>{
-               // if(event.data===YT.PlayerState.ENDED && isAutoNext) playNextVideo();
-            //}
-        //}
-   // });
-
+$(`#yt-mini-${videoId}`).click(() => { showVFYOverlay(); });
+showVFYOverlay();
 
 // === YT Player ===
 ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
@@ -2063,7 +2059,6 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
         showinfo: 0
     },
     events: {
-
         onReady: e => {
             e.target.playVideo();
             isPlaying = true;
@@ -2071,116 +2066,141 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
             makeMiniPlayerLongPressDraggable(".yt-mini-player");
             makeMiniPlayerResizable(".yt-mini-player");
         },
-
         onStateChange: event => {
             if (event.data === YT.PlayerState.ENDED && isAutoNext) {
                 playNextVideo();
             }
         },
-
-        // Video unavailable / copyright / embed disabled
         onError: event => {
             console.log("YT Error:", event.data);
-
-            // Error Codes:
-            // 2   = Invalid video ID
-            // 5   = HTML5 Player Error
-            // 100 = Video removed/private
-            // 101 = Embedding disabled
-            // 150 = Embedding disabled
-
             if (isAutoNext) {
                 playNextVideo();
             }
         }
-
     }
 });
 
+// Controls
+$("#mini-playpause").click(() => {
+    if (!ytPlayer) return;
+    const state = ytPlayer.getPlayerState();
+    if (state === YT.PlayerState.PLAYING) { ytPlayer.pauseVideo(); $("#mini-playpause i").removeClass("fa-pause").addClass("fa-play"); }
+    else { ytPlayer.playVideo(); $("#mini-playpause i").removeClass("fa-play").addClass("fa-pause"); }
+});
 
-	
-    // Controls
-    $("#mini-playpause").click(()=>{
-        if(!ytPlayer) return;
-        const state=ytPlayer.getPlayerState();
-        if(state===YT.PlayerState.PLAYING){ ytPlayer.pauseVideo(); $("#mini-playpause i").removeClass("fa-pause").addClass("fa-play"); }
-        else{ ytPlayer.playVideo(); $("#mini-playpause i").removeClass("fa-play").addClass("fa-pause"); }
-    });
-
-    $("#mini-fullscreen").click(()=>{
-
+// Mode Toggle Button Logic (Changes Rectangle UI to Round Image UI)
+$("#mini-mode-toggle").click(() => {
     const player = $(".yt-mini-player");
+    const thumbBg = $(".mini-thumbnail-bg");
+    const videoElement = $(`#yt-mini-${videoId}`);
+    const controlBar = $(".mini-control-bar");
 
-    if(!isMiniPlayerFullscreen){
-
+    if (!isRoundMusicMode) {
+        // Change to Round Music Player
         player.css({
-            position:"fixed",
-            width:"100vw",
-            height:"100vh",
-            top:"0",
-            left:"0",
-            right:"0",
-            bottom:"0",
-            margin:"0",
-            borderRadius:"0",
-            zIndex:"99999"
+            width: "220px",
+            height: "220px",
+            borderRadius: "50%"
+        });
+        thumbBg.css("opacity", "1"); // Show Thumbnail image
+        videoElement.css("opacity", "0"); // Hide active video element but keep playing in background
+        
+        // Compact control design for circular mode
+        controlBar.css({
+            position: "absolute",
+            bottom: "10px",
+            width: "90%",
+            left: "5%",
+            borderRadius: "20px",
+            borderTop: "none",
+            background: "rgba(0,0,0,0.6)"
+        });
+        
+        $("#mini-mode-toggle i").removeClass("fa-music").addClass("fa-video");
+        isRoundMusicMode = true;
+    } else {
+        // Revert back to Normal Rectangle Video Player
+        player.css({
+            width: "271px",
+            height: "180px",
+            borderRadius: "6px"
+        });
+        thumbBg.css("opacity", "0");
+        videoElement.css("opacity", "1");
+        
+        controlBar.css({
+            position: "relative",
+            bottom: "",
+            width: "100%",
+            left: "",
+            borderRadius: "0",
+            borderTop: "1px solid rgba(255,255,255,0.15)",
+            background: "rgba(255,255,255,0.08)"
         });
 
+        $("#mini-mode-toggle i").removeClass("fa-video").addClass("fa-music");
+        isRoundMusicMode = false;
+    }
+});
+
+$("#mini-fullscreen").click(() => {
+    const player = $(".yt-mini-player");
+    if (!isMiniPlayerFullscreen) {
+        player.css({
+            position: "fixed",
+            width: "100vw",
+            height: "100vh",
+            top: "0", left: "0", right: "0", bottom: "0",
+            margin: "0", borderRadius: "0", zIndex: "99999"
+        });
         isMiniPlayerFullscreen = true;
-
-    }else{
-
-        player.css({
-            position:"fixed",
-            width:"271px",
-            height:"180px",
-            top:"",
-            left:"",
-            right:"10px",
-            bottom:"110px",
-            margin:"",
-            borderRadius:"6px",
-            zIndex:"99999"
-        });
-
+    } else {
+        // Fallback checks for normal mode sizes
+        if (isRoundMusicMode) {
+            player.css({ position: "fixed", width: "220px", height: "220px", top: "", left: "", right: "10px", bottom: "110px", margin: "", borderRadius: "50%", zIndex: "99999" });
+        } else {
+            player.css({ position: "fixed", width: "271px", height: "180px", top: "", left: "", right: "10px", bottom: "110px", margin: "", borderRadius: "6px", zIndex: "99999" });
+        }
         isMiniPlayerFullscreen = false;
     }
-
 });
 
-    $("#mini-close").click(()=>stopVideoIfPlaying());
+$("#mini-close").click(() => stopVideoIfPlaying());
 
-    $("#mini-seekbar").on("input",function(){
-        if(!ytPlayer) return;
-        const dur=ytPlayer.getDuration();
-        ytPlayer.seekTo((this.value/100)*dur,true);
-    });
+$("#mini-seekbar").on("input", function () {
+    if (!ytPlayer) return;
+    const dur = ytPlayer.getDuration();
+    ytPlayer.seekTo((this.value / 100) * dur, true);
+});
 
-    function updateSeekBar(){
-        if(!ytPlayer) return;
-        const state=ytPlayer.getPlayerState();
-        if(state===YT.PlayerState.PLAYING||state===YT.PlayerState.PAUSED){
-            const cur=ytPlayer.getCurrentTime();
-            const dur=ytPlayer.getDuration();
-            if(dur>0) $("#mini-seekbar").val((cur/dur)*100);
-        }
-        requestAnimationFrame(updateSeekBar);
+function updateSeekBar() {
+    if (!ytPlayer) return;
+    const state = ytPlayer.getPlayerState();
+    if (state === YT.PlayerState.PLAYING || state === YT.PlayerState.PAUSED) {
+        const cur = ytPlayer.getCurrentTime();
+        const dur = ytPlayer.getDuration();
+        if (dur > 0) $("#mini-seekbar").val((cur / dur) * 100);
     }
+    requestAnimationFrame(updateSeekBar);
 }
 
 // Auto next video
-function playNextVideo(){
-    if(!currentVideoListItem) return;
-    let nextDiv=currentVideoListItem.parentElement.nextElementSibling;
-    if(nextDiv){
-        let nextItem=nextDiv.querySelector(".music-item");
-        if(nextItem){
+function playNextVideo() {
+    if (!currentVideoListItem) return;
+    let nextDiv = currentVideoListItem.parentElement.nextElementSibling;
+    if (nextDiv) {
+        let nextItem = nextDiv.querySelector(".music-item");
+        if (nextItem) {
             setCurrentVideo(nextItem);
             playMiniVideoPlayer($(nextItem).attr("vid"));
         }
     }
 }
 
+
+
+
+	
 // Prevent Audio play during video
 document.addEventListener("play",e=>{
     if(isVideoMode && ytPlayer && isPlaying && e.target.id==="SAudio") e.target.pause();
