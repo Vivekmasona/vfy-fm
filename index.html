@@ -2021,7 +2021,8 @@ function playMiniVideoPlayer(videoId){
         
  
         
-// 1. DYNAMIC CSS FOR ROTATING VINYL DISK (Sirf premium animation look ke liye)
+ 
+            // 1. DYNAMIC CSS FOR ROTATING VINYL DISK & PERFECT ROUND WRAPPING
 if ($("#mini-player-styles").length === 0) {
     $("head").append(`
         <style id="mini-player-styles">
@@ -2035,11 +2036,15 @@ if ($("#mini-player-styles").length === 0) {
             .paused-spin {
                 animation-play-state: paused !important;
             }
+            /* Smooth drag experience fix (Stops transitions during laggy mouse movements) */
+            .is-dragging {
+                transition: none !important;
+            }
         </style>
     `);
 }
 
-// Mini Player Container (Aapka original structure)
+// Mini Player Container (Original Hierarchy Maintain ki hai)
 let overlay=$(`
 <div class="yt-mini-player" style="position:fixed; bottom:110px; right:10px; width:271px; height:180px; background:#111; border-radius:6px; overflow:hidden; z-index:99999; display:flex; flex-direction:column; box-shadow:0 12px 28px rgba(0,0,0,0.7); transition: all 0.4s ease;">
     <div class="video-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; background:transparent; z-index:998; pointer-events:all;"></div>
@@ -2085,7 +2090,7 @@ transition: all 1s ease;">V F Y</div>`);
     $(`#yt-mini-${videoId}`).click(()=>{ showVFYOverlay(); });
     showVFYOverlay();
 
-// === YT Player (Aapka ORIGINAL Code bina kisi badlaav ke, taaki error na aaye) ===
+// === YT Player ===
 ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
     videoId: videoId,
     width: "100%",
@@ -2098,39 +2103,45 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
         showinfo: 0
     },
     events: {
-
         onReady: e => {
             e.target.playVideo();
             isPlaying = true;
             updateSeekBar();
-            makeMiniPlayerLongPressDraggable(".yt-mini-player");
-            makeMiniPlayerResizable(".yt-mini-player");
+            
+            // Lag-free Drag & Resize custom integration
+            if (typeof makeMiniPlayerLongPressDraggable === "function") {
+                makeMiniPlayerLongPressDraggable(".yt-mini-player");
+            }
+            if (typeof makeMiniPlayerResizable === "function") {
+                makeMiniPlayerResizable(".yt-mini-player");
+            }
+            
+            // Ultra-smooth Drag fixes: Mouse down par CSS transition band karo aur up par chalu karo
+            $(".yt-mini-player").on("mousedown touchstart", function() {
+                $(this).addClass("is-dragging");
+            });
+            $(document).on("mouseup touchend", function() {
+                $(".yt-mini-player").removeClass("is-dragging");
+            });
         },
-
         onStateChange: event => {
             if (event.data === YT.PlayerState.ENDED && isAutoNext) {
                 playNextVideo();
             }
-            // Sync rotation style with player states
             const roundThumb = $(".mini-round-thumb");
             if (isRoundMusicMode) {
                 if (event.data === YT.PlayerState.PLAYING) roundThumb.removeClass("paused-spin");
                 else roundThumb.addClass("paused-spin");
             }
         },
-
-        // Video unavailable / copyright / embed disabled
         onError: event => {
             console.log("YT Error:", event.data);
             if (isAutoNext) {
                 playNextVideo();
             }
         }
-
     }
 });
-
-
 	
     // Controls
     $("#mini-playpause").click(()=>{
@@ -2149,7 +2160,7 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
         }
     });
 
-    // MODE TOGGLE FUNCTION (Aapka logic jise stylish and clean cyberpunk vinyl look diya hai)
+    // MODE TOGGLE FUNCTION (Controls INSIDE the round structure cleanly)
     let isRoundMusicMode = false;
     $("#mini-mode-toggle").click(() => {
         const player = $(".yt-mini-player");
@@ -2158,24 +2169,21 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
         const videoOverlay = $(".video-overlay");
 
         if (!isRoundMusicMode) {
-            // === STYLISH CYBERPUNK/VINYL LOOK ===
+            // Transform to Stylish Round Player with internal UI docks
             player.css({
                 width: "220px",
                 height: "220px",
                 borderRadius: "50%",
-                background: "#0d0d13",
-                boxShadow: "0 0 25px rgba(255, 0, 255, 0.4), inset 0 0 15px rgba(0, 255, 255, 0.15)",
+                background: "#0a0a0f",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.6), 0 0 15px rgba(255,0,255,0.3)",
                 border: "2px solid #ff00ff",
-                overflow: "visible" // Controls bottom me perfect bahar float hone ke liye
+                overflow: "hidden" // Safe cropping to keep everything inside circle
             });
             
-            // Thumbnail ko perfect vinyl disk ka style do aur spin chalu karo
             roundThumb.css({
                 height: "100%",
                 width: "100%",
                 borderRadius: "50%",
-                border: "4px solid #16161c",
-                boxShadow: "0 4px 15px rgba(0,0,0,0.7)",
                 transformOrigin: "center"
             }).show().addClass("spinning");
 
@@ -2183,23 +2191,22 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
                 roundThumb.addClass("paused-spin");
             }
             
-            // Video and overlay elements safety roundness
             $(`#yt-mini-${videoId}`).css({ borderRadius: "50%", opacity: "0" });
             videoOverlay.css({ borderRadius: "50%" });
             
-            // Floating Pill Control Dock (Baahar perfectly floating dikhega bina katre)
+            // Controls inside image overlay at the bottom arc
             controlBar.css({
                 position: "absolute",
-                bottom: "-25px", 
-                width: "240px",
-                left: "-12px",
-                height: "46px",
-                borderRadius: "23px",
-                background: "rgba(10, 10, 17, 0.9)",
-                backdropFilter: "blur(10px)",
-                border: "1px solid rgba(255, 0, 255, 0.3)",
-                boxShadow: "0 10px 30px rgba(0,0,0,0.65)",
-                padding: "0 14px"
+                bottom: "12px", 
+                width: "88%",
+                left: "6%",
+                height: "44px",
+                borderRadius: "22px",
+                background: "rgba(0, 0, 0, 0.72)",
+                backdropFilter: "blur(8px)",
+                border: "1px solid rgba(255, 255, 255, 0.15)",
+                boxShadow: "0 4px 15px rgba(0,0,0,0.5)",
+                padding: "0 10px"
             });
             
             $("#mini-mode-toggle i").removeClass("fa-music").addClass("fa-video");
@@ -2225,8 +2232,10 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
                 bottom: "",
                 width: "100%",
                 left: "",
+                height: "50px",
                 borderRadius: "0",
                 background: "rgba(255,255,255,0.08)",
+                backdropFilter: "blur(4px)",
                 borderTop: "1px solid rgba(255,255,255,0.15)",
                 boxShadow: "none",
                 padding: "0 12px"
@@ -2238,51 +2247,35 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
     });
 
     $("#mini-fullscreen").click(()=>{
+        const player = $(".yt-mini-player");
+        const controlBar = $(".mini-control-bar");
 
-    const player = $(".yt-mini-player");
-    const controlBar = $(".mini-control-bar");
-
-    if(!isMiniPlayerFullscreen){
-
-        player.css({
-            position:"fixed",
-            width:"100vw",
-            height:"100vh",
-            top:"0",
-            left:"0",
-            right:"0",
-            bottom:"0",
-            margin:"0",
-            borderRadius:"0",
-            zIndex:"99999",
-            border: "none",
-            boxShadow: "none"
-        });
-        controlBar.css({ position: "absolute", bottom: "10px", width: "96%", left: "2%", borderRadius: "12px" });
-        isMiniPlayerFullscreen = true;
-
-    }else{
-        // Fullscreen se nikalte waqt check karo ki kaunsa mode active hai
-        if(isRoundMusicMode) {
+        if(!isMiniPlayerFullscreen){
             player.css({
-                position:"fixed", width:"220px", height:"220px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"50%", zIndex:"99999",
-                background: "#0d0d13", border: "2px solid #ff00ff", boxShadow: "0 0 25px rgba(255, 0, 255, 0.4)"
+                position:"fixed", width:"100vw", height:"100vh", top:"0", left:"0", right:"0", bottom:"0", margin:"0", borderRadius:"0", zIndex:"99999", border: "none", boxShadow: "none"
             });
-            controlBar.css({
-                position: "absolute", bottom: "-25px", width: "240px", left: "-12px", borderRadius: "23px", background: "rgba(10, 10, 17, 0.9)", border: "1px solid rgba(255, 0, 255, 0.3)"
-            });
-        } else {
-            player.css({
-                position:"fixed", width:"271px", height:"180px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"6px", zIndex:"99999", border:"none", background:"#111"
-            });
-            controlBar.css({
-                position: "relative", bottom: "", width: "100%", left: "", borderRadius: "0", background: "rgba(255,255,255,0.08)", borderTop: "1px solid rgba(255,255,255,0.15)"
-            });
+            controlBar.css({ position: "absolute", bottom: "10px", width: "96%", left: "2%", borderRadius: "12px" });
+            isMiniPlayerFullscreen = true;
+        }else{
+            if(isRoundMusicMode) {
+                player.css({
+                    position:"fixed", width:"220px", height:"220px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"50%", zIndex:"99999",
+                    background: "#0a0a0f", border: "2px solid #ff00ff", boxShadow: "0 8px 32px rgba(0,0,0,0.6)"
+                });
+                controlBar.css({
+                    position: "absolute", bottom: "12px", width: "88%", left: "6%", borderRadius: "22px", background: "rgba(0, 0, 0, 0.72)", border: "1px solid rgba(255, 255, 255, 0.15)"
+                });
+            } else {
+                player.css({
+                    position:"fixed", width:"271px", height:"180px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"6px", zIndex:"99999", border:"none", background:"#111"
+                });
+                controlBar.css({
+                    position: "relative", bottom: "", width: "100%", left: "", borderRadius: "0", background: "rgba(255,255,255,0.08)", borderTop: "1px solid rgba(255,255,255,0.15)"
+                });
+            }
+            isMiniPlayerFullscreen = false;
         }
-        isMiniPlayerFullscreen = false;
-    }
-
-});
+    });
 
     $("#mini-close").click(()=>stopVideoIfPlaying());
 
@@ -2316,6 +2309,7 @@ function playNextVideo(){
         }
     }
 }
+	
 	
 	
         
