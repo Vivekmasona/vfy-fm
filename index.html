@@ -72,6 +72,101 @@
 
 
 
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fullscreen Prompt</title>
+    <style>
+        /* फुलस्क्रीन प्रॉम्प्ट का स्टाइल */
+        #fullscreen-prompt {
+            display: none; /* डिफ़ॉल्ट रूप से छिपा रहेगा */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+        }
+
+        #fullscreen-btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+
+        #fullscreen-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="fullscreen-prompt">
+        <h2>बेहतर अनुभव के लिए आगे बढ़ें</h2>
+        <button id="fullscreen-btn">Continue in Full Screen</button>
+    </div>
+
+    <div style="padding: 20px; text-align: center;">
+        <h1>मेरी वेबसाइट में आपका स्वागत है, विवेक!</h1>
+        <p>यह कंटेंट नॉर्मल या फुलस्क्रीन मोड में दिखाई देगा।</p>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const promptDiv = document.getElementById("fullscreen-prompt");
+            const btn = document.getElementById("fullscreen-btn");
+
+            // 1. चेक करें कि क्या यूजर पहले से PWA (Standalone Mode) में है
+            const isPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+            // 2. अगर PWA नहीं है (यानी नॉर्मल ब्राउज़र है), तो फुलस्क्रीन प्रॉम्प्ट दिखाएं
+            if (!isPWA) {
+                promptDiv.style.display = "flex";
+            }
+
+            // 3. बटन क्लिक होने पर फुलस्क्रीन एक्टिव करने का फंक्शन
+            btn.addEventListener("click", function () {
+                let docElm = document.documentElement;
+                
+                // अलग-अलग ब्राउज़र्स के लिए फुलस्क्रीन सपोर्ट
+                if (docElm.requestFullscreen) {
+                    docElm.requestFullscreen();
+                } else if (docElm.mozRequestFullScreen) { /* Firefox */
+                    docElm.mozRequestFullScreen();
+                } else if (docElm.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+                    docElm.webkitRequestFullscreen();
+                } else if (docElm.msRequestFullscreen) { /* IE/Edge */
+                    docElm.msRequestFullscreen();
+                }
+
+                // फुलस्क्रीन होने के बाद प्रॉम्प्ट को छिपा दें
+                promptDiv.style.display = "none";
+            });
+        });
+    </script>
+
+</body>
+</html>
+
+
+
+
+
+
     
 <b id="play"></b>
 <div class="fixed-right-buttons" id="scrollButtons">
