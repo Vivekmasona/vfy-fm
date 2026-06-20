@@ -2022,7 +2022,7 @@ function playMiniVideoPlayer(videoId){
  
         
  
-            // 1. DYNAMIC CSS FOR ROTATING VINYL DISK & PERFECT ROUND WRAPPING
+// 1. DYNAMIC CSS FOR ROTATING VINYL DISK & REAL-TIME DRAGGING FIX
 if ($("#mini-player-styles").length === 0) {
     $("head").append(`
         <style id="mini-player-styles">
@@ -2044,7 +2044,7 @@ if ($("#mini-player-styles").length === 0) {
     `);
 }
 
-// Mini Player Container (Original Hierarchy Maintain ki hai)
+// Mini Player Container (Original HTML Hierarchy is exactly the same)
 let overlay=$(`
 <div class="yt-mini-player" style="position:fixed; bottom:110px; right:10px; width:271px; height:180px; background:#111; border-radius:6px; overflow:hidden; z-index:99999; display:flex; flex-direction:column; box-shadow:0 12px 28px rgba(0,0,0,0.7); transition: all 0.4s ease;">
     <div class="video-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; background:transparent; z-index:998; pointer-events:all;"></div>
@@ -2108,15 +2108,10 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
             isPlaying = true;
             updateSeekBar();
             
-            // Lag-free Drag & Resize custom integration
-            if (typeof makeMiniPlayerLongPressDraggable === "function") {
-                makeMiniPlayerLongPressDraggable(".yt-mini-player");
-            }
-            if (typeof makeMiniPlayerResizable === "function") {
-                makeMiniPlayerResizable(".yt-mini-player");
-            }
+            if (typeof makeMiniPlayerLongPressDraggable === "function") makeMiniPlayerLongPressDraggable(".yt-mini-player");
+            if (typeof makeMiniPlayerResizable === "function") makeMiniPlayerResizable(".yt-mini-player");
             
-            // Ultra-smooth Drag fixes: Mouse down par CSS transition band karo aur up par chalu karo
+            // Real-time Smooth Drag Integration (Removes lag completely)
             $(".yt-mini-player").on("mousedown touchstart", function() {
                 $(this).addClass("is-dragging");
             });
@@ -2160,7 +2155,7 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
         }
     });
 
-    // MODE TOGGLE FUNCTION (Controls INSIDE the round structure cleanly)
+    // MODE TOGGLE FUNCTION (Image accurate Circular Dial UI layout)
     let isRoundMusicMode = false;
     $("#mini-mode-toggle").click(() => {
         const player = $(".yt-mini-player");
@@ -2169,21 +2164,28 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
         const videoOverlay = $(".video-overlay");
 
         if (!isRoundMusicMode) {
-            // Transform to Stylish Round Player with internal UI docks
+            // === Image Jaisa Round UI Border aur Shape ===
             player.css({
                 width: "220px",
                 height: "220px",
                 borderRadius: "50%",
-                background: "#0a0a0f",
-                boxShadow: "0 8px 32px rgba(0,0,0,0.6), 0 0 15px rgba(255,0,255,0.3)",
-                border: "2px solid #ff00ff",
-                overflow: "hidden" // Safe cropping to keep everything inside circle
+                background: "radial-gradient(circle, #fcfcfc 0%, #e0e0e0 70%, #b8b8b8 100%)",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.3), inset 0 2px 5px rgba(255,255,255,0.8)",
+                border: "4px solid #adadad",
+                overflow: "hidden"
             });
             
+            // Add image bottom pointer using dynamic styling injection securely
+            player.append('<div class="ui-pin-tip" style="position:absolute; bottom:-1px; left:50%; transform:translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 10px solid #adadad; z-index: 996;"></div>');
+            
+            // Image ki tarah ring effect dene ke liye thumbnail ko thoda chota karke center lock kiya
             roundThumb.css({
-                height: "100%",
-                width: "100%",
+                height: "82%",
+                width: "82%",
+                top: "9%",
+                left: "9%",
                 borderRadius: "50%",
+                boxShadow: "0 4px 10px rgba(0,0,0,0.15), inset 0 0 20px rgba(0,0,0,0.2)",
                 transformOrigin: "center"
             }).show().addClass("spinning");
 
@@ -2194,90 +2196,100 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
             $(`#yt-mini-${videoId}`).css({ borderRadius: "50%", opacity: "0" });
             videoOverlay.css({ borderRadius: "50%" });
             
-            // Controls inside image overlay at the bottom arc
+            // === Controls Re-mapping inside the inner sphere circle ===
             controlBar.css({
                 position: "absolute",
-                bottom: "12px", 
-                width: "88%",
-                left: "6%",
-                height: "44px",
-                borderRadius: "22px",
-                background: "rgba(0, 0, 0, 0.72)",
-                backdropFilter: "blur(8px)",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
-                boxShadow: "0 4px 15px rgba(0,0,0,0.5)",
-                padding: "0 10px"
+                top: "0",
+                left: "0",
+                width: "100%",
+                height: "100%",
+                background: "transparent",
+                borderTop: "none",
+                backdropFilter: "none",
+                padding: "0",
+                display: "block" // Button positions manual float karne ke liye grid release ki
             });
+
+            // Play/Pause right in the dead center (exactly like the image)
+            $("#mini-playpause").css({
+                position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+                fontSize: "24px", color: "#6a1b9a", textShadow: "none", margin: "0", zIndex: "1001"
+            });
+
+            // Mode Changer Button acting as the Left Arrow
+            $("#mini-mode-toggle").css({
+                position: "absolute", bottom: "35px", left: "40px",
+                fontSize: "16px", color: "#757575", textShadow: "none", margin: "0"
+            }).find('i').removeClass("fa-music").addClass("fa-backward");
+
+            // Fullscreen Button acting as the Right Arrow
+            $("#mini-fullscreen").css({
+                position: "absolute", bottom: "35px", right: "40px",
+                fontSize: "16px", color: "#757575", textShadow: "none", margin: "0"
+            }).find('i').removeClass("fa-expand").addClass("fa-forward");
+
+            // Close button configured as the bottom Settings gear icon
+            $("#mini-close").css({
+                position: "absolute", bottom: "20px", left: "50%", transform: "translateX(-50%)",
+                fontSize: "18px", color: "#555", textShadow: "none"
+            }).find('i').removeClass("fa-close").addClass("fa-gear");
+
+            // Hide un-matching elements cleanly inside the layout
+            $("#mini-seekbar, #mini-auto-next").hide();
             
-            $("#mini-mode-toggle i").removeClass("fa-music").addClass("fa-video");
             isRoundMusicMode = true;
         } else {
             // Revert back to Original Rectangle Video Player Look
             player.css({
-                width: "271px",
-                height: "180px",
-                borderRadius: "6px",
-                background: "#111",
-                boxShadow: "0 12px 28px rgba(0,0,0,0.7)",
-                border: "none",
-                overflow: "hidden"
+                width: "271px", height: "180px", borderRadius: "6px", background: "#111",
+                boxShadow: "0 12px 28px rgba(0,0,0,0.7)", border: "none", overflow: "hidden"
             });
+            $(".ui-pin-tip").remove();
             
-            roundThumb.hide().removeClass("spinning paused-spin"); 
+            roundThumb.css({ top: "0", left: "0", width: "100%", height: "100%" }).hide().removeClass("spinning paused-spin"); 
             $(`#yt-mini-${videoId}`).css({ borderRadius: "0", opacity: "1" });
             videoOverlay.css({ borderRadius: "0" });
             
             controlBar.css({
-                position: "relative",
-                bottom: "",
-                width: "100%",
-                left: "",
-                height: "50px",
-                borderRadius: "0",
-                background: "rgba(255,255,255,0.08)",
-                backdropFilter: "blur(4px)",
-                borderTop: "1px solid rgba(255,255,255,0.15)",
-                boxShadow: "none",
-                padding: "0 12px"
+                position: "relative", top: "", left: "", width: "100%", height: "50px",
+                borderRadius: "0", background: "rgba(255,255,255,0.08)", backdropFilter: "blur(4px)",
+                borderTop: "1px solid rgba(255,255,255,0.15)", boxShadow: "none", padding: "0 12px", display: "flex"
             });
 
-            $("#mini-mode-toggle i").removeClass("fa-video").addClass("fa-music");
+            $("#mini-playpause").css({ position: "static", transform: "none", fontSize: "20px", color: "#00ffff", textShadow: "0 0 8px #00ffff", marginRight: "8px" });
+            $("#mini-mode-toggle").css({ position: "static", transform: "none", fontSize: "18px", color: "#ff00ff", textShadow: "0 0 8px #ff00ff", marginRight: "8px" }).find('i').removeClass("fa-backward").addClass("fa-music");
+            $("#mini-fullscreen").css({ position: "static", transform: "none", fontSize: "20px", color: "#00ffff", textShadow: "0 0 8px #00ffff", marginRight: "8px" }).find('i').removeClass("fa-forward").addClass("fa-expand");
+            $("#mini-close").css({ position: "static", transform: "none", fontSize: "22px", color: "#ff4f4f", textShadow: "0 0 8px #ff4f4f" }).find('i').removeClass("fa-gear").addClass("fa-close");
+
+            $("#mini-seekbar, #mini-auto-next").show();
             isRoundMusicMode = false;
         }
     });
 
-    $("#mini-fullscreen").click(()=>{
-        const player = $(".yt-mini-player");
-        const controlBar = $(".mini-control-bar");
+    $("#mini-fullscreen").click(function(){
+        if(isRoundMusicMode) return; // Music controller doesn't upscale directly inside mapping
 
+        const player = $(".yt-mini-player");
         if(!isMiniPlayerFullscreen){
             player.css({
-                position:"fixed", width:"100vw", height:"100vh", top:"0", left:"0", right:"0", bottom:"0", margin:"0", borderRadius:"0", zIndex:"99999", border: "none", boxShadow: "none"
+                position:"fixed", width:"100vw", height:"100vh", top:"0", left:"0", right:"0", bottom:"0", margin:"0", borderRadius:"0", zIndex:"99999"
             });
-            controlBar.css({ position: "absolute", bottom: "10px", width: "96%", left: "2%", borderRadius: "12px" });
             isMiniPlayerFullscreen = true;
         }else{
-            if(isRoundMusicMode) {
-                player.css({
-                    position:"fixed", width:"220px", height:"220px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"50%", zIndex:"99999",
-                    background: "#0a0a0f", border: "2px solid #ff00ff", boxShadow: "0 8px 32px rgba(0,0,0,0.6)"
-                });
-                controlBar.css({
-                    position: "absolute", bottom: "12px", width: "88%", left: "6%", borderRadius: "22px", background: "rgba(0, 0, 0, 0.72)", border: "1px solid rgba(255, 255, 255, 0.15)"
-                });
-            } else {
-                player.css({
-                    position:"fixed", width:"271px", height:"180px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"6px", zIndex:"99999", border:"none", background:"#111"
-                });
-                controlBar.css({
-                    position: "relative", bottom: "", width: "100%", left: "", borderRadius: "0", background: "rgba(255,255,255,0.08)", borderTop: "1px solid rgba(255,255,255,0.15)"
-                });
-            }
+            player.css({
+                position:"fixed", width:"271px", height:"180px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"6px", zIndex:"99999"
+            });
             isMiniPlayerFullscreen = false;
         }
     });
 
-    $("#mini-close").click(()=>stopVideoIfPlaying());
+    $("#mini-close").click(() => {
+        if(isRoundMusicMode) {
+            stopVideoIfPlaying(); // Agar gear daba to close standard setup triggers
+        } else {
+            stopVideoIfPlaying();
+        }
+    });
 
     $("#mini-seekbar").on("input",function(){
         if(!ytPlayer) return;
@@ -2309,6 +2321,8 @@ function playNextVideo(){
         }
     }
 }
+				
+                
 	
 	
 	
