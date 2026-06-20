@@ -2019,14 +2019,34 @@ function playMiniVideoPlayer(videoId){
 
     
         
- // Mini Player Container (Aapka original HTML structure - BAS ek Mode Button aur Thumbnail layer add kiya hai bina hierarchy badle)
-    let overlay=$(`
+ 
+        
+// 1. DYNAMIC CSS FOR ROTATING VINYL DISK (Sirf premium animation look ke liye)
+if ($("#mini-player-styles").length === 0) {
+    $("head").append(`
+        <style id="mini-player-styles">
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+            .spinning {
+                animation: spin 12s linear infinite !important;
+            }
+            .paused-spin {
+                animation-play-state: paused !important;
+            }
+        </style>
+    `);
+}
+
+// Mini Player Container (Aapka original structure)
+let overlay=$(`
 <div class="yt-mini-player" style="position:fixed; bottom:110px; right:10px; width:271px; height:180px; background:#111; border-radius:6px; overflow:hidden; z-index:99999; display:flex; flex-direction:column; box-shadow:0 12px 28px rgba(0,0,0,0.7); transition: all 0.4s ease;">
     <div class="video-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; background:transparent; z-index:998; pointer-events:all;"></div>
     
-    <div class="mini-round-thumb" style="position:absolute; top:0; left:0; width:100%; height:calc(100% - 50px); background: url('https://img.youtube.com/vi/${videoId}/hqdefault.jpg') center/cover no-repeat; z-index:997; display:none; border-radius:50% 50% 0 0;"></div>
+    <div class="mini-round-thumb" style="position:absolute; top:0; left:0; width:100%; height:100%; background: url('https://img.youtube.com/vi/${videoId}/hqdefault.jpg') center/cover no-repeat; z-index:997; display:none; border-radius:50%;"></div>
     
-    <div id="yt-mini-${videoId}" style="flex:1; background:black; position:relative; z-index:1;"></div>
+    <div id="yt-mini-${videoId}" style="flex:1; background:black; position:relative; z-index:1; transition: all 0.4s ease;"></div>
     
     <div class="mini-control-bar" style="height:50px; width:100%; display:flex; align-items:center; justify-content:space-between; padding:0 12px; backdrop-filter: blur(4px); background: rgba(255,255,255,0.08); border-top:1px solid rgba(255,255,255,0.15); z-index:999; pointer-events:auto; transition: all 0.4s ease;">
         <button id="mini-playpause" style="color:#00ffff; border:none; background:none; cursor:pointer; font-size:20px; margin-right:8px; text-shadow:0 0 8px #00ffff;"><i class="fas fa-pause"></i></button>
@@ -2091,6 +2111,12 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
             if (event.data === YT.PlayerState.ENDED && isAutoNext) {
                 playNextVideo();
             }
+            // Sync rotation style with player states
+            const roundThumb = $(".mini-round-thumb");
+            if (isRoundMusicMode) {
+                if (event.data === YT.PlayerState.PLAYING) roundThumb.removeClass("paused-spin");
+                else roundThumb.addClass("paused-spin");
+            }
         },
 
         // Video unavailable / copyright / embed disabled
@@ -2110,34 +2136,70 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
     $("#mini-playpause").click(()=>{
         if(!ytPlayer) return;
         const state=ytPlayer.getPlayerState();
-        if(state===YT.PlayerState.PLAYING){ ytPlayer.pauseVideo(); $("#mini-playpause i").removeClass("fa-pause").addClass("fa-play"); }
-        else{ ytPlayer.playVideo(); $("#mini-playpause i").removeClass("fa-play").addClass("fa-pause"); }
+        const roundThumb = $(".mini-round-thumb");
+        if(state===YT.PlayerState.PLAYING){ 
+            ytPlayer.pauseVideo(); 
+            $("#mini-playpause i").removeClass("fa-pause").addClass("fa-play"); 
+            if(isRoundMusicMode) roundThumb.addClass("paused-spin");
+        }
+        else{ 
+            ytPlayer.playVideo(); 
+            $("#mini-playpause i").removeClass("fa-play").addClass("fa-pause"); 
+            if(isRoundMusicMode) roundThumb.removeClass("paused-spin");
+        }
     });
 
-    // MODE TOGGLE FUNCTION (Naya logic jo bina player ko kharab kiye smoothly roop badalta hai)
+    // MODE TOGGLE FUNCTION (Aapka logic jise stylish and clean cyberpunk vinyl look diya hai)
     let isRoundMusicMode = false;
     $("#mini-mode-toggle").click(() => {
         const player = $(".yt-mini-player");
         const roundThumb = $(".mini-round-thumb");
         const controlBar = $(".mini-control-bar");
+        const videoOverlay = $(".video-overlay");
 
         if (!isRoundMusicMode) {
-            // Transform to Round Music Player Look
+            // === STYLISH CYBERPUNK/VINYL LOOK ===
             player.css({
                 width: "220px",
                 height: "220px",
-                borderRadius: "50%"
+                borderRadius: "50%",
+                background: "#0d0d13",
+                boxShadow: "0 0 25px rgba(255, 0, 255, 0.4), inset 0 0 15px rgba(0, 255, 255, 0.15)",
+                border: "2px solid #ff00ff",
+                overflow: "visible" // Controls bottom me perfect bahar float hone ke liye
             });
-            roundThumb.show(); // Thumbnail ko video ke upar le aao
             
+            // Thumbnail ko perfect vinyl disk ka style do aur spin chalu karo
+            roundThumb.css({
+                height: "100%",
+                width: "100%",
+                borderRadius: "50%",
+                border: "4px solid #16161c",
+                boxShadow: "0 4px 15px rgba(0,0,0,0.7)",
+                transformOrigin: "center"
+            }).show().addClass("spinning");
+
+            if (ytPlayer && ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) {
+                roundThumb.addClass("paused-spin");
+            }
+            
+            // Video and overlay elements safety roundness
+            $(`#yt-mini-${videoId}`).css({ borderRadius: "50%", opacity: "0" });
+            videoOverlay.css({ borderRadius: "50%" });
+            
+            // Floating Pill Control Dock (Baahar perfectly floating dikhega bina katre)
             controlBar.css({
                 position: "absolute",
-                bottom: "10px",
-                width: "90%",
-                left: "5%",
-                borderRadius: "20px",
-                background: "rgba(0,0,0,0.75)",
-                borderTop: "none"
+                bottom: "-25px", 
+                width: "240px",
+                left: "-12px",
+                height: "46px",
+                borderRadius: "23px",
+                background: "rgba(10, 10, 17, 0.9)",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(255, 0, 255, 0.3)",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.65)",
+                padding: "0 14px"
             });
             
             $("#mini-mode-toggle i").removeClass("fa-music").addClass("fa-video");
@@ -2147,9 +2209,16 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
             player.css({
                 width: "271px",
                 height: "180px",
-                borderRadius: "6px"
+                borderRadius: "6px",
+                background: "#111",
+                boxShadow: "0 12px 28px rgba(0,0,0,0.7)",
+                border: "none",
+                overflow: "hidden"
             });
-            roundThumb.hide(); // Thumbnail hatao taaki original video dikhe
+            
+            roundThumb.hide().removeClass("spinning paused-spin"); 
+            $(`#yt-mini-${videoId}`).css({ borderRadius: "0", opacity: "1" });
+            videoOverlay.css({ borderRadius: "0" });
             
             controlBar.css({
                 position: "relative",
@@ -2158,7 +2227,9 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
                 left: "",
                 borderRadius: "0",
                 background: "rgba(255,255,255,0.08)",
-                borderTop: "1px solid rgba(255,255,255,0.15)"
+                borderTop: "1px solid rgba(255,255,255,0.15)",
+                boxShadow: "none",
+                padding: "0 12px"
             });
 
             $("#mini-mode-toggle i").removeClass("fa-video").addClass("fa-music");
@@ -2169,6 +2240,7 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
     $("#mini-fullscreen").click(()=>{
 
     const player = $(".yt-mini-player");
+    const controlBar = $(".mini-control-bar");
 
     if(!isMiniPlayerFullscreen){
 
@@ -2182,20 +2254,29 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
             bottom:"0",
             margin:"0",
             borderRadius:"0",
-            zIndex:"99999"
+            zIndex:"99999",
+            border: "none",
+            boxShadow: "none"
         });
-
+        controlBar.css({ position: "absolute", bottom: "10px", width: "96%", left: "2%", borderRadius: "12px" });
         isMiniPlayerFullscreen = true;
 
     }else{
         // Fullscreen se nikalte waqt check karo ki kaunsa mode active hai
         if(isRoundMusicMode) {
             player.css({
-                position:"fixed", width:"220px", height:"220px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"50%", zIndex:"99999"
+                position:"fixed", width:"220px", height:"220px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"50%", zIndex:"99999",
+                background: "#0d0d13", border: "2px solid #ff00ff", boxShadow: "0 0 25px rgba(255, 0, 255, 0.4)"
+            });
+            controlBar.css({
+                position: "absolute", bottom: "-25px", width: "240px", left: "-12px", borderRadius: "23px", background: "rgba(10, 10, 17, 0.9)", border: "1px solid rgba(255, 0, 255, 0.3)"
             });
         } else {
             player.css({
-                position:"fixed", width:"271px", height:"180px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"6px", zIndex:"99999"
+                position:"fixed", width:"271px", height:"180px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"6px", zIndex:"99999", border:"none", background:"#111"
+            });
+            controlBar.css({
+                position: "relative", bottom: "", width: "100%", left: "", borderRadius: "0", background: "rgba(255,255,255,0.08)", borderTop: "1px solid rgba(255,255,255,0.15)"
             });
         }
         isMiniPlayerFullscreen = false;
