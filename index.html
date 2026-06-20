@@ -2012,7 +2012,8 @@ function playMiniVideoPlayer(videoId){
 
                     
             
-// 1. DYNAMIC CYBERPUNK STYLES (No layout breakage, lag-free transitions)
+                                    
+        // 1. DYNAMIC CYBERPUNK STYLES (No layout breakage, lag-free transitions)
 if ($("#mini-player-styles").length === 0) {
     $("head").append(`
         <style id="mini-player-styles">
@@ -2041,7 +2042,7 @@ if ($("#mini-player-styles").length === 0) {
                 pointer-events: none !important;
             }
             .clickable-svg-path {
-                pointer-events: stroke !important; /* Rules touch ONLY on the line track, nowhere else */
+                pointer-events: stroke !important;
                 cursor: pointer;
             }
         </style>
@@ -2073,8 +2074,8 @@ let overlay=$(`
 
     // Auto-next toggle
     const autoNextBtn=$("#mini-auto-next");
-    autoNextBtn.css("background",isAutoNext?"#00ff00":"#555");
-    autoNextBtn.click(()=>{ isAutoNext=!isAutoNext; autoNextBtn.css("background",isAutoNext?"#00ff00":"#555"); });
+    autoNextBtn.css("background",isAutoNext?"#34c759":"#555");
+    autoNextBtn.click((e)=>{ e.stopPropagation(); isAutoNext=!isAutoNext; autoNextBtn.css("background",isAutoNext?"#34c759":"#555"); });
 
     // V F Y pre-roll overlay
     function showVFYOverlay(){
@@ -2143,7 +2144,7 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
 	
     // Controls
     $("#mini-playpause").click((e)=>{
-        e.stopPropagation(); // Stop target bubble leak
+        e.stopPropagation();
         if(!ytPlayer) return;
         const state=ytPlayer.getPlayerState();
         const roundThumb = $(".mini-round-thumb");
@@ -2159,7 +2160,7 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
         }
     });
 
-    // MODE TOGGLE FUNCTION (Pure Segmented Pointer-Events SVG Seekbar Arc Track)
+    // MODE TOGGLE FUNCTION (Icons shifted purely inside White/Gray Lower Arc Margin)
     let isRoundMusicMode = false;
     $("#mini-mode-toggle").click(() => {
         const player = $(".yt-mini-player");
@@ -2180,7 +2181,7 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
             
             player.append('<div class="ui-pin-tip" style="position:absolute; bottom:-1px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:10px solid transparent; border-right:10px solid transparent; border-top:10px solid #adadad; z-index:996;"></div>');
 
-            // Non-blocking Layer Injection (Container passes clicks down to buttons, path elements grab it)
+            // Non-blocking SVG Seekbar layer
             player.append(`
                 <svg id="svg-half-track" class="non-blocking-svg" style="position:absolute; top:8px; left:10px; width:200px; height:100px; z-index:999;">
                     <path class="clickable-svg-path" d="M 15,95 A 85,85 0 0,1 185,95" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="12" stroke-linecap="round"/>
@@ -2194,9 +2195,9 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
                 </svg>
             `);
 
-            // Binding click directly to individual responsive track paths
+            // Seek click execution
             $(".clickable-svg-path").on("click mousedown touchstart", function(e) {
-                e.stopPropagation(); // Restrict execution to the bar line ONLY
+                e.stopPropagation();
                 if(!ytPlayer) return;
                 const containerRect = document.getElementById("svg-half-track").getBoundingClientRect();
                 const clientX = e.clientX || (e.originalEvent.touches ? e.originalEvent.touches[0].clientX : 0);
@@ -2232,20 +2233,20 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
                 background: "transparent", borderTop: "none", backdropFilter: "none", padding: "0"
             });
 
-            // CENTER PLAY/PAUSE (Z-Index increased to dominate center touches)
+            // CENTER PLAY/PAUSE (Highlighted Purple Glow Circle)
             $("#mini-playpause").addClass("music-dial-center").css({
                 position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
                 width: "52px", height: "52px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0", textShadow: "none", zIndex: "1005"
             });
 
-            // MODE BUTTON
+            // MODE BUTTON (Shifted down to white area - Colored RED)
             $("#mini-mode-toggle").css({
-                position: "absolute", bottom: "45px", left: "32px", margin: "0", textShadow: "none", color: "#555", zIndex: "1005"
+                position: "absolute", bottom: "22px", left: "42px", margin: "0", textShadow: "none", color: "#ff3b30", fontScale: "1.1", zIndex: "1005"
             }).find('i').removeClass("fa-music").addClass("fa-video");
 
-            // GREEN AUTO-NEXT LOOP BUTTON
+            // AUTO-NEXT BUTTON (Shifted down to white area - Colored GREEN)
             autoNextBtn.css({
-                position: "absolute", bottom: "45px", right: "32px", margin: "0", zIndex: "1005"
+                position: "absolute", bottom: "24px", right: "42px", margin: "0", background: isAutoNext ? "#34c759" : "#555", zIndex: "1005"
             });
 
             seekbar.hide(); 
@@ -2275,7 +2276,7 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
                 position: "static", transform: "none", color: "#ff00ff", textShadow: "0 0 8px #ff00ff", marginRight: "8px", zIndex: "auto"
             }).find('i').removeClass("fa-video").addClass("fa-music");
             
-            autoNextBtn.css({ position: "static", transform: "none", marginRight: "8px", zIndex: "auto" });
+            autoNextBtn.css({ position: "static", transform: "none", marginRight: "8px", background: isAutoNext ? "#34c759" : "#555", zIndex: "auto" });
             
             seekbar.css({
                 position: "static", width: "auto", left: "", bottom: "", height: "4px", background: "linear-gradient(to right,#ff6a00,#ee0979)", boxShadow: "0 0 8px #ff6a00"
@@ -2349,6 +2350,7 @@ function playNextVideo(){
         }
     }
 }
+	
 	
 
 
