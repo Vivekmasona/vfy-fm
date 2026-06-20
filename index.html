@@ -2010,6 +2010,8 @@ function playMiniVideoPlayer(videoId){
 
 
 
+                    
+            
 // 1. DYNAMIC CYBERPUNK STYLES (No layout breakage, lag-free transitions)
 if ($("#mini-player-styles").length === 0) {
     $("head").append(`
@@ -2033,6 +2035,14 @@ if ($("#mini-player-styles").length === 0) {
                 background: linear-gradient(135deg, #a832ff 0%, #6a1b9a 100%) !important;
                 box-shadow: 0 4px 15px rgba(106, 27, 154, 0.6), 0 0 10px rgba(168, 50, 255, 0.4) !important;
                 color: #fff !important;
+            }
+            /* Pointer Event Fixed: Container transparent but paths absorb touch */
+            .non-blocking-svg {
+                pointer-events: none !important;
+            }
+            .clickable-svg-path {
+                pointer-events: stroke !important; /* Rules touch ONLY on the line track, nowhere else */
+                cursor: pointer;
             }
         </style>
     `);
@@ -2132,7 +2142,8 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
 });
 	
     // Controls
-    $("#mini-playpause").click(()=>{
+    $("#mini-playpause").click((e)=>{
+        e.stopPropagation(); // Stop target bubble leak
         if(!ytPlayer) return;
         const state=ytPlayer.getPlayerState();
         const roundThumb = $(".mini-round-thumb");
@@ -2148,7 +2159,7 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
         }
     });
 
-    // MODE TOGGLE FUNCTION (Top SVG Seekbar Interaction & Native Click fixes)
+    // MODE TOGGLE FUNCTION (Pure Segmented Pointer-Events SVG Seekbar Arc Track)
     let isRoundMusicMode = false;
     $("#mini-mode-toggle").click(() => {
         const player = $(".yt-mini-player");
@@ -2169,11 +2180,11 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
             
             player.append('<div class="ui-pin-tip" style="position:absolute; bottom:-1px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:10px solid transparent; border-right:10px solid transparent; border-top:10px solid #adadad; z-index:996;"></div>');
 
-            // 100% Working Clickable & Interactive Top Half-Round SVG Seekbar
+            // Non-blocking Layer Injection (Container passes clicks down to buttons, path elements grab it)
             player.append(`
-                <svg id="svg-half-track" style="position:absolute; top:8px; left:10px; width:200px; height:100px; z-index:999; pointer-events:all; cursor:pointer;">
-                    <path d="M 15,95 A 85,85 0 0,1 185,95" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="8" stroke-linecap="round"/>
-                    <path id="svg-half-progress" d="M 15,95 A 85,85 0 0,1 185,95" fill="none" stroke="url(#half-glow-grad)" stroke-width="6" stroke-dasharray="267" stroke-dashoffset="267" stroke-linecap="round"/>
+                <svg id="svg-half-track" class="non-blocking-svg" style="position:absolute; top:8px; left:10px; width:200px; height:100px; z-index:999;">
+                    <path class="clickable-svg-path" d="M 15,95 A 85,85 0 0,1 185,95" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="12" stroke-linecap="round"/>
+                    <path id="svg-half-progress" class="clickable-svg-path" d="M 15,95 A 85,85 0 0,1 185,95" fill="none" stroke="url(#half-glow-grad)" stroke-width="6" stroke-dasharray="267" stroke-dashoffset="267" stroke-linecap="round"/>
                     <defs>
                         <linearGradient id="half-glow-grad" x1="0%" y1="0%" x2="100%" y2="0%">
                             <stop offset="0%" stop-color="#00ffff" />
@@ -2183,15 +2194,16 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
                 </svg>
             `);
 
-            // Binding click directly to SVG track element to calculate horizontal position safely
-            $("#svg-half-track").on("click mousedown touchstart", function(e) {
+            // Binding click directly to individual responsive track paths
+            $(".clickable-svg-path").on("click mousedown touchstart", function(e) {
+                e.stopPropagation(); // Restrict execution to the bar line ONLY
                 if(!ytPlayer) return;
-                const rect = this.getBoundingClientRect();
+                const containerRect = document.getElementById("svg-half-track").getBoundingClientRect();
                 const clientX = e.clientX || (e.originalEvent.touches ? e.originalEvent.touches[0].clientX : 0);
                 if(!clientX) return;
                 
-                const offsetX = clientX - rect.left;
-                let pct = offsetX / rect.width; // Map horizontally across arc
+                const offsetX = clientX - containerRect.left;
+                let pct = offsetX / containerRect.width;
                 if(pct < 0) pct = 0;
                 if(pct > 1) pct = 1;
                 
@@ -2220,23 +2232,23 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
                 background: "transparent", borderTop: "none", backdropFilter: "none", padding: "0"
             });
 
-            // CENTER PLAY/PAUSE (Highlighted Purple Glow Circle)
+            // CENTER PLAY/PAUSE (Z-Index increased to dominate center touches)
             $("#mini-playpause").addClass("music-dial-center").css({
                 position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
-                width: "52px", height: "52px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0", textShadow: "none", zIndex: "1000"
+                width: "52px", height: "52px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0", textShadow: "none", zIndex: "1005"
             });
 
-            // MODE BUTTON (Left alignment acting as layout exit trigger)
+            // MODE BUTTON
             $("#mini-mode-toggle").css({
-                position: "absolute", bottom: "45px", left: "32px", margin: "0", textShadow: "none", color: "#555", zIndex: "1000"
+                position: "absolute", bottom: "45px", left: "32px", margin: "0", textShadow: "none", color: "#555", zIndex: "1005"
             }).find('i').removeClass("fa-music").addClass("fa-video");
 
             // GREEN AUTO-NEXT LOOP BUTTON
             autoNextBtn.css({
-                position: "absolute", bottom: "45px", right: "32px", margin: "0", zIndex: "1000"
+                position: "absolute", bottom: "45px", right: "32px", margin: "0", zIndex: "1005"
             });
 
-            seekbar.hide(); // Hide normal range element to prevent UI clash
+            seekbar.hide(); 
             $("#mini-fullscreen, #mini-close").hide();
             isRoundMusicMode = true;
         } else {
@@ -2256,14 +2268,14 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
             });
 
             $("#mini-playpause").removeClass("music-dial-center").css({
-                position: "static", transform: "none", width: "auto", height: "auto", borderRadius: "0", display: "inline-block", color: "#00ffff", textShadow: "0 0 8px #00ffff", marginRight: "8px"
+                position: "static", transform: "none", width: "auto", height: "auto", borderRadius: "0", display: "inline-block", color: "#00ffff", textShadow: "0 0 8px #00ffff", marginRight: "8px", zIndex: "auto"
             });
             
             $("#mini-mode-toggle").css({
-                position: "static", transform: "none", color: "#ff00ff", textShadow: "0 0 8px #ff00ff", marginRight: "8px"
+                position: "static", transform: "none", color: "#ff00ff", textShadow: "0 0 8px #ff00ff", marginRight: "8px", zIndex: "auto"
             }).find('i').removeClass("fa-video").addClass("fa-music");
             
-            autoNextBtn.css({ position: "static", transform: "none", marginRight: "8px" });
+            autoNextBtn.css({ position: "static", transform: "none", marginRight: "8px", zIndex: "auto" });
             
             seekbar.css({
                 position: "static", width: "auto", left: "", bottom: "", height: "4px", background: "linear-gradient(to right,#ff6a00,#ee0979)", boxShadow: "0 0 8px #ff6a00"
@@ -2277,7 +2289,7 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
     // Lag-free fast Fullscreen Integration
     $("#mini-fullscreen").click(()=>{
         const player = $(".yt-mini-player");
-        player.addClass("instant-motion"); // Disable layout animations during resize to fix lag
+        player.addClass("instant-motion"); 
 
         if(!isMiniPlayerFullscreen){
             player.css({
@@ -2312,7 +2324,6 @@ ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
                 const percentage = (cur/dur)*100;
                 $("#mini-seekbar").val(percentage);
 
-                // Precise SVG Half-Round progress track stroke offset calculations (R=85 arc length = ~267)
                 const path = document.getElementById("svg-half-progress");
                 if (path && isRoundMusicMode) {
                     const totalLength = 267;
@@ -2338,6 +2349,7 @@ function playNextVideo(){
         }
     }
 }
+	
 
 
 
