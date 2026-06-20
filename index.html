@@ -2014,7 +2014,15 @@ function playMiniVideoPlayer(videoId){
             
                                     
                               
-// 1. DYNAMIC PREMIUM STYLES (No layout breakage, lag-free transitions)
+
+                                
+	
+                            
+                                                					
+	
+	
+
+// 1. DYNAMIC PREMIUM STYLES (Restored Original Clean Play Logic)
 if ($("#mini-player-styles").length === 0) {
     $("head").append(`
         <style id="mini-player-styles">
@@ -2031,7 +2039,7 @@ if ($("#mini-player-styles").length === 0) {
             .is-dragging, .instant-motion {
                 transition: none !important;
             }
-            /* Glowing dial crisp center play layer - Solid visibility */
+            /* Original Clean Center Play Button Style */
             .music-dial-center {
                 background: linear-gradient(135deg, #a832ff 0%, #6a1b9a 100%) !important;
                 box-shadow: 0 4px 15px rgba(106, 27, 154, 0.9), 0 0 14px rgba(168, 50, 255, 0.7) !important;
@@ -2068,7 +2076,7 @@ if ($("#mini-player-styles").length === 0) {
     `);
 }
 
-// Mini Player Base Shell Structure
+// Mini Player Base Shell Structure (Default Round Layout)
 let overlay=$(`
 <div class="yt-mini-player" style="position:fixed; bottom:110px; right:10px; width:220px; height:220px; border-radius:50%; background: radial-gradient(circle, #fcfcfc 0%, #e0e0e0 70%, #b8b8b8 100%); box-shadow: 0 10px 30px rgba(0,0,0,0.35), inset 0 2px 5px rgba(255,255,255,0.8); border: 4px solid #adadad; transition: all 0.4s ease; display:flex; flex-direction:column; overflow:hidden; z-index:99999;">
     <div class="video-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; background:transparent; z-index:998; pointer-events:all;"></div>
@@ -2078,7 +2086,7 @@ let overlay=$(`
     <div id="yt-mini-${videoId}" style="flex:1; background:black; position:relative; z-index:1; opacity:0;"></div>
     
     <div class="mini-control-bar" style="position:absolute; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:space-between; padding:0; background:transparent; border-top:none; backdrop-filter: none; z-index:999; pointer-events:auto; transition: all 0.4s ease;">
-        <button id="mini-playpause" class="music-dial-center" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:50px; height:50px; borderRadius:50%; border:none; cursor:pointer; font-size:20px; display:flex; alignItems:center; justifyContent:center; margin:0; text-shadow:none; z-index:1020;"><i class="fas fa-pause"></i></button>
+        <button id="mini-playpause" class="music-dial-center" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:50px; height:50px; border-radius:50%; border:none; cursor:pointer; font-size:20px; display:flex; align-items:center; justify-content:center; margin:0; text-shadow:none; z-index:1020;"><i class="fas fa-pause"></i></button>
         
         <button id="mini-mode-toggle" style="position:absolute; bottom:22px; left:42px; margin:0; border:none; background:none; cursor:pointer; font-size:18px; text-shadow:none; color:#ff3b30; z-index:1020;"><i class="fas fa-play-circle"></i></button>
         
@@ -2092,14 +2100,15 @@ let overlay=$(`
 
     $("body").append(overlay);
 
-    // Initial Default Setup for Round Elements
     const player = $(".yt-mini-player");
     const roundThumb = $(".mini-round-thumb");
     const controlBar = $(".mini-control-bar");
     const seekbar = $("#mini-seekbar");
 
+    // Add resizing bottom arrow handle
     player.append('<div class="ui-pin-tip dial-resize-handle" style="position:absolute; bottom:-2px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:14px solid transparent; border-right:14px solid transparent; border-top:12px solid #adadad; z-index:1030;"></div>');
 
+    // Vector ViewBox Arc Progress Seekbar Layer
     player.append(`
         <svg id="svg-half-track" class="non-blocking-svg" viewBox="0 0 200 100" style="position:absolute; top:8px; left:5%; width:90%; height:45%; z-index:999;">
             <path class="clickable-svg-path" d="M 15,95 A 85,85 0 0,1 185,95" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="12" stroke-linecap="round"/>
@@ -2113,7 +2122,7 @@ let overlay=$(`
         </svg>
     `);
 
-    // Auto-next toggle setup
+    // Auto-next toggle logic
     const autoNextBtn=$("#mini-auto-next");
     autoNextBtn.addClass(isAutoNext ? "glow-green-btn" : "dim-green-btn");
     autoNextBtn.click((e)=>{ 
@@ -2148,7 +2157,7 @@ let overlay=$(`
         }
     });
 
-    // Bind Seekbar Click Functionality to SVG
+    // Arc track seeker mapper
     function bindSvgSeekEvents() {
         $(".clickable-svg-path").on("click mousedown touchstart", function(e) {
             e.stopPropagation();
@@ -2191,6 +2200,7 @@ let overlay=$(`
         if(isDialResizing) { isDialResizing = false; player.removeClass("instant-motion"); }
     });
 	
+    // Play Pause Button Event Handler
     $("#mini-playpause").click((e)=>{
         e.stopPropagation();
         if(!ytPlayer) return;
@@ -2206,7 +2216,7 @@ let overlay=$(`
         }
     });
 
-    // MODE SWITCH TOGGLE (SET DEFAULT TO ROUND MUSIC MODE)
+    // MODE SWITCH TOGGLE (Default = true)
     let isRoundMusicMode = true; 
     $("#mini-mode-toggle").click(() => {
         if (isRoundMusicMode) {
@@ -2339,13 +2349,6 @@ function playNextVideo(){
     }
 }
 	
-	
-                            
-                                                					
-	
-	
-
-
 
 
 	
