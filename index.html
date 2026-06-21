@@ -2014,14 +2014,7 @@ function playMiniVideoPlayer(videoId){
 
 
 
-
-
-
-
-
-
-
-	// 1. DYNAMIC COMPACT DIAL STYLES (Fixed Z-Index Layer Conflict for Lock Button)
+// 1. DYNAMIC COMPACT DIAL STYLES (Clean & Conflict-Free Layout)
 if ($("#mini-player-styles").length === 0) {
     $("head").append(`
         <style id="mini-player-styles">
@@ -2073,41 +2066,42 @@ if ($("#mini-player-styles").length === 0) {
                 background: #ff3b30 !important;
             }
             
-            /* --- FIXED LOCK BUTTON STATES WITH ABSOLUTE OVERRIDE --- */
-            /* UNLOCKED STATE: Cyan (#00ffff) with neon glow */
+            /* --- RE-DESIGNED LOCK & UNLOCK STATES --- */
+            /* UNLOCKED STATE: Cyan (#00ffff) Text with soft neon glow */
             .btn-state-unlocked {
                 background: none !important;
                 color: #00ffff !important;
                 text-shadow: 0 0 8px #00ffff !important;
                 box-shadow: none !important;
-                border-radius: 0 !important;
+                border: none !important;
             }
             
-            /* LOCKED STATE: Red Background + High Intensity Red Shadow */
+            /* LOCKED STATE: Red Background + High Intensity Red Glow Shadow */
             .btn-state-locked {
                 background: #ff3b30 !important;
                 color: #ffffff !important;
                 border-radius: 50% !important;
-                width: 26px !important;
-                height: 26px !important;
+                width: 28px !important;
+                height: 28px !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
                 box-shadow: 0 0 15px #ff3b30, 0 0 25px rgba(255, 59, 48, 0.9) !important;
+                border: 1px solid #fff !important;
                 text-shadow: none !important;
             }
         </style>
     `);
 }
 
-// Full-Page Transparent Click Shield Overlay (Layer: 99998)
-if ($("#full-page-touch-shield").length === 0) {
-    $("body").append(`
-        <div id="full-page-touch-shield" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0); z-index:99998; display:none; pointer-events:all; touch-action:none;"></div>
-    `);
-}
+// Pure Page Touch Shield Barrier (Iska display shuru me 'none' rahega taaki player block na ho)
+$("#full-page-touch-shield").remove();
+$("body").append(`
+    <div id="full-page-touch-shield" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0); z-index:99998; display:none; pointer-events:all; touch-action:none;"></div>
+`);
 
-// Mini Player Base Shell Structure (Layer: 99999)
+// Mini Player Base Shell Structure 
+$(".yt-mini-player").remove();
 let overlay=$(`
 <div class="yt-mini-player" style="position:fixed; bottom:110px; right:10px; width:145px; height:145px; border-radius:50%; background: radial-gradient(circle, #fcfcfc 0%, #e0e0e0 70%, #b8b8b8 100%); box-shadow: 0 10px 25px rgba(0,0,0,0.35), inset 0 2px 4px rgba(255,255,255,0.8); border: 3px solid #adadad; transition: all 0.4s ease; display:flex; flex-direction:column; overflow:hidden; z-index:99999;">
     
@@ -2159,14 +2153,14 @@ let overlay=$(`
         </svg>
     `);
 
-    // PERFECT UNINTERRUPTED TOGGLE CONTROLLER Engine
+    // CLEAN SINGLE BUTTON LOCK/UNLOCK HANDLER
     $("#mini-integrated-lock").on("click touchstart", function(e) {
         e.preventDefault();
         e.stopPropagation();
         isGlobalLocked = !isGlobalLocked;
         
         if (isGlobalLocked) {
-            // Screen Block Activate
+            // Full Page Block Activate
             $("#full-page-touch-shield, .mini-local-barrier").show();
             
             $("#mini-integrated-lock")
@@ -2177,7 +2171,7 @@ let overlay=$(`
             player.css({ "border-color": "#ff3b30", "box-shadow": "0 0 25px rgba(255,59,48,0.7)" });
             $("body").css({ "overflow": "hidden", "touch-action": "none" });
         } else {
-            // Screen Block Dissolve
+            // Full Page Block Dissolve
             $("#full-page-touch-shield, .mini-local-barrier").hide();
             
             $("#mini-integrated-lock")
@@ -2199,7 +2193,7 @@ let overlay=$(`
         autoNextBtn.removeClass("glow-green-btn dim-green-btn").addClass(isAutoNext ? "glow-green-btn" : "dim-green-btn"); 
     });
 
-    // Native YT Core Engine Init
+    // Native YT Core Engine Init (Conflict Free Execution)
     ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
         videoId: videoId, width: "100%", height: "100%",
         playerVars: { autoplay: 1, controls: 0, modestbranding: 1, rel: 0, showinfo: 0 },
@@ -2302,7 +2296,7 @@ let overlay=$(`
     $("#mini-mode-toggle").click(() => {
         if(isGlobalLocked) return false;
         if (isRoundMusicMode) {
-            // Rectangular view view
+            // Transform to Rectangular Video View
             player.css({ width: "271px", height: "180px", borderRadius: "6px", background: "#111", boxShadow: "0 12px 28px rgba(0,0,0,0.7)", border: "none" });
             $(".ui-pin-tip, #svg-half-track").remove();
             
@@ -2321,7 +2315,7 @@ let overlay=$(`
             autoNextBtn.css({ position: "static", transform: "none", width: "18px", height: "18px", marginRight: "8px", zIndex: "auto" });
             seekbar.css({ position: "static", width: "auto", left: "", bottom: "", height: "4px", background: "linear-gradient(to right,#ff6a00,#ee0979)", boxShadow: "0 0 8px #ff6a00" }).show();
             
-            // Layout Adjustments inside bar panel
+            // Adjust position for Rectangle Layout bar
             if(isGlobalLocked) {
                  $("#mini-integrated-lock").css({ top: "auto", bottom: "11px", left: "auto", right: "75px", transform: "none" });
             } else {
@@ -2331,7 +2325,7 @@ let overlay=$(`
             $("#mini-fullscreen, #mini-close").show();
             isRoundMusicMode = false;
         } else {
-            // Round Shape View
+            // Transform Back into Perfect Compact Round Dial Shape
             player.css({
                 width: "145px", height: "145px", borderRadius: "50%",
                 background: "radial-gradient(circle, #fcfcfc 0%, #e0e0e0 70%, #b8b8b8 100%)",
@@ -2379,7 +2373,7 @@ let overlay=$(`
 
             autoNextBtn.css({ position: "absolute", bottom: "14px", right: "25px", width: "12px", height: "12px", margin: "0", zIndex: "1005" });
             
-            // Reset to Center Top
+            // Revert back to Dynamic Center Top Layout
             if(isGlobalLocked) {
                  $("#mini-integrated-lock").css({ position: "absolute", top: "5px", bottom: "auto", left: "50%", right: "auto", transform: "translateX(-50%)" });
             } else {
@@ -2411,7 +2405,7 @@ let overlay=$(`
 
     $("#mini-close").click(()=>{ if(!isGlobalLocked) stopVideoIfPlaying(); });
 
-    // Drag Override Handler
+    // Drag block checking condition
     function makeMiniPlayerLongPressDraggable(selector) {
          $(selector).on("mousedown touchstart", function(e) {
               if(isGlobalLocked) { e.stopImmediatePropagation(); return false; }
@@ -2458,15 +2452,9 @@ function playNextVideo(){
 
 
 
-	
-	
-                
-                    
+
+	                
         
-
-
-
-
 
 
 
