@@ -2006,15 +2006,22 @@ function playMiniVideoPlayer(videoId){
 
 
 
-                        
+
+
+
+
+                    
+            
+                                    
+                              
+
+                                
+	
                             
-                                                        setCurrentVideo(nextItem);
-
-
-
-
-
-// 1. DYNAMIC COMPACT DIAL STYLES (Clean & Conflict-Free Layout)
+                                                					
+	
+	
+// 1. DYNAMIC COMPACT DIAL STYLES (Fixed Both Seekbars Navigation)
 if ($("#mini-player-styles").length === 0) {
     $("head").append(`
         <style id="mini-player-styles">
@@ -2065,48 +2072,13 @@ if ($("#mini-player-styles").length === 0) {
             .dial-resize-handle:hover {
                 background: #ff3b30 !important;
             }
-            
-            /* --- RE-DESIGNED LOCK & UNLOCK STATES --- */
-            /* UNLOCKED STATE: Cyan (#00ffff) Text with soft neon glow */
-            .btn-state-unlocked {
-                background: none !important;
-                color: #00ffff !important;
-                text-shadow: 0 0 8px #00ffff !important;
-                box-shadow: none !important;
-                border: none !important;
-            }
-            
-            /* LOCKED STATE: Red Background + High Intensity Red Glow Shadow */
-            .btn-state-locked {
-                background: #ff3b30 !important;
-                color: #ffffff !important;
-                border-radius: 50% !important;
-                width: 28px !important;
-                height: 28px !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                box-shadow: 0 0 15px #ff3b30, 0 0 25px rgba(255, 59, 48, 0.9) !important;
-                border: 1px solid #fff !important;
-                text-shadow: none !important;
-            }
         </style>
     `);
 }
 
-// Pure Page Touch Shield Barrier (Iska display shuru me 'none' rahega taaki player block na ho)
-$("#full-page-touch-shield").remove();
-$("body").append(`
-    <div id="full-page-touch-shield" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0); z-index:99998; display:none; pointer-events:all; touch-action:none;"></div>
-`);
-
-// Mini Player Base Shell Structure 
-$(".yt-mini-player").remove();
+// Mini Player Base Shell Structure (Default Premium Compact Size: 145px)
 let overlay=$(`
 <div class="yt-mini-player" style="position:fixed; bottom:110px; right:10px; width:145px; height:145px; border-radius:50%; background: radial-gradient(circle, #fcfcfc 0%, #e0e0e0 70%, #b8b8b8 100%); box-shadow: 0 10px 25px rgba(0,0,0,0.35), inset 0 2px 4px rgba(255,255,255,0.8); border: 3px solid #adadad; transition: all 0.4s ease; display:flex; flex-direction:column; overflow:hidden; z-index:99999;">
-    
-    <div class="mini-local-barrier" style="position:absolute; top:0; left:0; width:100%; height:100%; background:transparent; z-index:1010; display:none; pointer-events:all;"></div>
-
     <div class="video-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; background:transparent; z-index:998; pointer-events:all;"></div>
     
     <div class="mini-round-thumb" style="position:absolute; top:0; left:0; width:100%; height:100%; background: url('https://img.youtube.com/vi/${videoId}/hqdefault.jpg') center/cover no-repeat; z-index:997; border-radius:50%; box-shadow: inset 0 0 15px rgba(0,0,0,0.4); clip-path: circle(40% at 50% 50%); display:block;"></div>
@@ -2114,17 +2086,15 @@ let overlay=$(`
     <div id="yt-mini-${videoId}" style="flex:1; background:black; position:relative; z-index:1; opacity:0;"></div>
     
     <div class="mini-control-bar" style="position:absolute; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:space-between; padding:0; background:transparent; border-top:none; backdrop-filter: none; z-index:999; pointer-events:auto; transition: all 0.4s ease;">
-        <button id="mini-playpause" class="music-dial-center" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:38px; height:38px; border-radius:50% !important; border:none; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; margin:0; text-shadow:none; z-index:1005;"><i class="fas fa-pause"></i></button>
+        <button id="mini-playpause" class="music-dial-center" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:38px; height:38px; border-radius:50% !important; border:none; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; margin:0; text-shadow:none; z-index:1020;"><i class="fas fa-pause"></i></button>
         
-        <button id="mini-mode-toggle" style="position:absolute; bottom:12px; left:25px; margin:0; border:none; background:none; cursor:pointer; font-size:14px; text-shadow:none; color:#ff3b30; z-index:1005;"><i class="fas fa-play-circle"></i></button>
+        <button id="mini-mode-toggle" style="position:absolute; bottom:12px; left:25px; margin:0; border:none; background:none; cursor:pointer; font-size:14px; text-shadow:none; color:#ff3b30; z-index:1020;"><i class="fas fa-play-circle"></i></button>
         
         <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="display:none; flex:1; margin:0 8px; -webkit-appearance:none; height:4px; border-radius:2px; background:linear-gradient(to right,#ff6a00,#ee0979); box-shadow:0 0 8px #ff6a00,0 0 12px #ee0979; cursor:pointer;">
         
         <button id="mini-fullscreen" style="display:none; color:#00ffff; border:none; background:none; cursor:pointer; font-size:20px; margin-right:8px; text-shadow:0 0 8px #00ffff;"><i class="fas fa-expand"></i></button>
-        <button id="mini-auto-next" style="position:absolute; bottom:14px; right:25px; margin:0; width:12px; height:12px; border-radius:50%; border:none; cursor:pointer; transition: all 0.3s; z-index:1005;"></button>
+        <button id="mini-auto-next" style="position:absolute; bottom:14px; right:25px; margin:0; width:12px; height:12px; border-radius:50%; border:none; cursor:pointer; transition: all 0.3s; z-index:1020;"></button>
         <button id="mini-close" style="display:none; color:#ff4f4f; border:none; background:none; cursor:pointer; font-size:22px; text-shadow:0 0 8px #ff4f4f;"><i class="fa fa-close"></i></button>
-
-        <button id="mini-integrated-lock" class="btn-state-unlocked" style="position:absolute; top:12px; left:50%; transform:translateX(-50%); border:none; background:none; cursor:pointer; font-size:13px; z-index:100000; pointer-events:all !important; transition:all 0.3s, transform 0s;"><i class="fas fa-unlock"></i></button>
     </div>
 </div>`);
 
@@ -2134,12 +2104,11 @@ let overlay=$(`
     const roundThumb = $(".mini-round-thumb");
     const controlBar = $(".mini-control-bar");
     const seekbar = $("#mini-seekbar");
-    let isGlobalLocked = false;
 
     // Proportional Resize Handle for small dial
-    player.append('<div class="ui-pin-tip dial-resize-handle" style="position:absolute; bottom:-2px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:10px solid transparent; border-right:10px solid transparent; border-top:8px solid #adadad; z-index:1005;"></div>');
+    player.append('<div class="ui-pin-tip dial-resize-handle" style="position:absolute; bottom:-2px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:10px solid transparent; border-right:10px solid transparent; border-top:8px solid #adadad; z-index:1030;"></div>');
 
-    // Vector Arc Progress Bar
+    // Vector Arc Progress Bar adjusted for 145px layout
     player.append(`
         <svg id="svg-half-track" class="non-blocking-svg" viewBox="0 0 200 100" style="position:absolute; top:6px; left:5%; width:90%; height:45%; z-index:999;">
             <path class="clickable-svg-path" d="M 15,95 A 85,85 0 0,1 185,95" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="12" stroke-linecap="round"/>
@@ -2153,37 +2122,6 @@ let overlay=$(`
         </svg>
     `);
 
-    // CLEAN SINGLE BUTTON LOCK/UNLOCK HANDLER
-    $("#mini-integrated-lock").on("click touchstart", function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        isGlobalLocked = !isGlobalLocked;
-        
-        if (isGlobalLocked) {
-            // Full Page Block Activate
-            $("#full-page-touch-shield, .mini-local-barrier").show();
-            
-            $("#mini-integrated-lock")
-                .removeClass("btn-state-unlocked")
-                .addClass("btn-state-locked")
-                .find("i").removeClass("fa-unlock").addClass("fa-lock");
-                
-            player.css({ "border-color": "#ff3b30", "box-shadow": "0 0 25px rgba(255,59,48,0.7)" });
-            $("body").css({ "overflow": "hidden", "touch-action": "none" });
-        } else {
-            // Full Page Block Dissolve
-            $("#full-page-touch-shield, .mini-local-barrier").hide();
-            
-            $("#mini-integrated-lock")
-                .removeClass("btn-state-locked")
-                .addClass("btn-state-unlocked")
-                .find("i").removeClass("fa-lock").addClass("fa-unlock");
-                
-            player.css({ "border-color": "#adadad", "box-shadow": "0 10px 25px rgba(0,0,0,0.35)" });
-            $("body").css({ "overflow": "", "touch-action": "" });
-        }
-    });
-
     // Auto-next toggle handler
     const autoNextBtn=$("#mini-auto-next");
     autoNextBtn.addClass(isAutoNext ? "glow-green-btn" : "dim-green-btn");
@@ -2193,7 +2131,7 @@ let overlay=$(`
         autoNextBtn.removeClass("glow-green-btn dim-green-btn").addClass(isAutoNext ? "glow-green-btn" : "dim-green-btn"); 
     });
 
-    // Native YT Core Engine Init (Conflict Free Execution)
+    // Native YT Core Engine Init
     ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
         videoId: videoId, width: "100%", height: "100%",
         playerVars: { autoplay: 1, controls: 0, modestbranding: 1, rel: 0, showinfo: 0 },
@@ -2205,7 +2143,7 @@ let overlay=$(`
                 makeMiniPlayerLongPressDraggable(".yt-mini-player");
                 makeMiniPlayerResizable(".yt-mini-player");
                 if (isRoundMusicMode) roundThumb.addClass("spinning");
-                $(".yt-mini-player").on("mousedown touchstart", function() { if(!isGlobalLocked) $(this).addClass("is-dragging"); });
+                $(".yt-mini-player").on("mousedown touchstart", function() { $(this).addClass("is-dragging"); });
                 $(document).on("mouseup touchend", function() { $(".yt-mini-player").removeClass("is-dragging"); });
             },
             onStateChange: event => {
@@ -2222,7 +2160,6 @@ let overlay=$(`
     // Track arc touch mapper for Circular Mode
     function bindSvgSeekEvents() {
         $(".clickable-svg-path").on("click mousedown touchstart", function(e) {
-            if(isGlobalLocked) return false;
             e.stopPropagation();
             if(!ytPlayer) return;
             const containerRect = document.getElementById("svg-half-track").getBoundingClientRect();
@@ -2240,9 +2177,8 @@ let overlay=$(`
     }
     bindSvgSeekEvents();
 
-    // Video Mode Linear Slider Event Listener
+    // FIXED: Video Mode Linear Slider Event Listener (Click & Drag Mapping)
     $("#mini-seekbar").on("input change click", function(e) {
-        if(isGlobalLocked) return false;
         e.stopPropagation();
         if (!ytPlayer) return;
         const pct = $(this).val() / 100;
@@ -2253,7 +2189,6 @@ let overlay=$(`
     // Resize tracking for dynamic scaling
     let isDialResizing = false, startSize = 0, startY = 0;
     $(document).on("mousedown touchstart", ".dial-resize-handle", function(e) {
-        if(isGlobalLocked) return false;
         e.preventDefault(); e.stopPropagation();
         isDialResizing = true;
         startSize = player.width();
@@ -2262,7 +2197,7 @@ let overlay=$(`
     });
 
     $(document).on("mousemove touchmove", function(e) {
-        if (!isDialResizing || isGlobalLocked) return;
+        if (!isDialResizing) return;
         const currentY = e.clientY || (e.originalEvent.touches ? e.originalEvent.touches[0].clientY : 0);
         let newSize = startSize + (currentY - startY);
         if (newSize < 130) newSize = 130;
@@ -2276,7 +2211,6 @@ let overlay=$(`
 	
     // Play Pause Event Logic
     $("#mini-playpause").click((e)=>{
-        if(isGlobalLocked) return false;
         e.stopPropagation();
         if(!ytPlayer) return;
         const state=ytPlayer.getPlayerState();
@@ -2291,12 +2225,11 @@ let overlay=$(`
         }
     });
 
-    // MODE SWITCH TOGGLE
+    // MODE SWITCH TOGGLE (Smooth responsive transformation loop)
     let isRoundMusicMode = true; 
     $("#mini-mode-toggle").click(() => {
-        if(isGlobalLocked) return false;
         if (isRoundMusicMode) {
-            // Transform to Rectangular Video View
+            // Full Restoration to crisp Rectangular Video View
             player.css({ width: "271px", height: "180px", borderRadius: "6px", background: "#111", boxShadow: "0 12px 28px rgba(0,0,0,0.7)", border: "none" });
             $(".ui-pin-tip, #svg-half-track").remove();
             
@@ -2307,6 +2240,7 @@ let overlay=$(`
                 position: "relative", top: "", left: "", width: "100%", height: "50px", borderRadius: "0", background: "rgba(255,255,255,0.08)", borderTop: "1px solid rgba(255,255,255,0.15)", padding: "0 12px"
             });
 
+            // Play button fully cleaned up for Rectangular controls
             $("#mini-playpause").removeClass("music-dial-center").css({
                 position: "static", transform: "none", width: "auto", height: "auto", borderRadius: "0", display: "inline-block", background: "none", boxShadow: "none", border: "none", color: "#00ffff", textShadow: "0 0 8px #00ffff", marginRight: "8px", zIndex: "auto"
             });
@@ -2314,13 +2248,6 @@ let overlay=$(`
             $("#mini-mode-toggle").css({ position: "static", transform: "none", color: "#ff00ff", textShadow: "0 0 8px #ff00ff", marginRight: "8px", zIndex: "auto" }).find('i').removeClass("fa-play-circle").addClass("fa-music");
             autoNextBtn.css({ position: "static", transform: "none", width: "18px", height: "18px", marginRight: "8px", zIndex: "auto" });
             seekbar.css({ position: "static", width: "auto", left: "", bottom: "", height: "4px", background: "linear-gradient(to right,#ff6a00,#ee0979)", boxShadow: "0 0 8px #ff6a00" }).show();
-            
-            // Adjust position for Rectangle Layout bar
-            if(isGlobalLocked) {
-                 $("#mini-integrated-lock").css({ top: "auto", bottom: "11px", left: "auto", right: "75px", transform: "none" });
-            } else {
-                 $("#mini-integrated-lock").css({ top: "auto", bottom: "18px", left: "auto", right: "75px", transform: "none" });
-            }
 
             $("#mini-fullscreen, #mini-close").show();
             isRoundMusicMode = false;
@@ -2333,7 +2260,7 @@ let overlay=$(`
                 border: "3px solid #adadad"
             });
             
-            player.append('<div class="ui-pin-tip dial-resize-handle" style="position:absolute; bottom:-2px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:10px solid transparent; border-right:10px solid transparent; border-top:8px solid #adadad; z-index:1005;"></div>');
+            player.append('<div class="ui-pin-tip dial-resize-handle" style="position:absolute; bottom:-2px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:10px solid transparent; border-right:10px solid transparent; border-top:8px solid #adadad; z-index:1030;"></div>');
 
             player.append(`
                 <svg id="svg-half-track" class="non-blocking-svg" viewBox="0 0 200 100" style="position:absolute; top:6px; left:5%; width:90%; height:45%; z-index:999;">
@@ -2364,21 +2291,14 @@ let overlay=$(`
 
             $("#mini-playpause").addClass("music-dial-center").css({
                 position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
-                width: "38px", height: "38px", borderRadius: "50% !important", display: "flex", alignItems: "center", justifyContent: "center", margin: "0", textShadow: "none", zIndex: "1005"
+                width: "38px", height: "38px", borderRadius: "50% !important", display: "flex", alignItems: "center", justifyContent: "center", margin: "0", textShadow: "none", zIndex: "1020"
             });
 
             $("#mini-mode-toggle").css({
-                position: "absolute", bottom: "12px", left: "25px", margin: "0", textShadow: "none", color: "#ff3b30", zIndex: "1005"
+                position: "absolute", bottom: "12px", left: "25px", margin: "0", textShadow: "none", color: "#ff3b30", zIndex: "1020"
             }).find('i').removeClass("fa-music").addClass("fa-play-circle");
 
-            autoNextBtn.css({ position: "absolute", bottom: "14px", right: "25px", width: "12px", height: "12px", margin: "0", zIndex: "1005" });
-            
-            // Revert back to Dynamic Center Top Layout
-            if(isGlobalLocked) {
-                 $("#mini-integrated-lock").css({ position: "absolute", top: "5px", bottom: "auto", left: "50%", right: "auto", transform: "translateX(-50%)" });
-            } else {
-                 $("#mini-integrated-lock").css({ position: "absolute", top: "12px", bottom: "auto", left: "50%", right: "auto", transform: "translateX(-50%)" });
-            }
+            autoNextBtn.css({ position: "absolute", bottom: "14px", right: "25px", width: "12px", height: "12px", margin: "0", zIndex: "1020" });
 
             seekbar.hide(); $("#mini-fullscreen, #mini-close").hide();
             isRoundMusicMode = true;
@@ -2386,31 +2306,23 @@ let overlay=$(`
     });
 
     $("#mini-fullscreen").click(()=>{
-        if(isGlobalLocked) return false;
         const player = $(".yt-mini-player");
         player.addClass("instant-motion"); 
         if(!isMiniPlayerFullscreen){
-            player.css({ position:"fixed", width:"100vw", height:"100vh", top:"0", left:"0", right:"0", bottom:"0", margin:"0", borderRadius:"0", zIndex:"99996" });
+            player.css({ position:"fixed", width:"100vw", height:"100vh", top:"0", left:"0", right:"0", bottom:"0", margin:"0", borderRadius:"0", zIndex:"99999" });
             isMiniPlayerFullscreen = true;
         }else{
             if(isRoundMusicMode) {
-                player.css({ position:"fixed", width:"145px", height:"145px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"50%", zIndex:"99996" });
+                player.css({ position:"fixed", width:"145px", height:"145px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"50%", zIndex:"99999" });
             } else {
-                player.css({ position:"fixed", width:"271px", height:"180px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"6px", zIndex:"99996" });
+                player.css({ position:"fixed", width:"271px", height:"180px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"6px", zIndex:"99999" });
             }
             isMiniPlayerFullscreen = false;
         }
         setTimeout(() => player.removeClass("instant-motion"), 50);
     });
 
-    $("#mini-close").click(()=>{ if(!isGlobalLocked) stopVideoIfPlaying(); });
-
-    // Drag block checking condition
-    function makeMiniPlayerLongPressDraggable(selector) {
-         $(selector).on("mousedown touchstart", function(e) {
-              if(isGlobalLocked) { e.stopImmediatePropagation(); return false; }
-         });
-    }
+    $("#mini-close").click(()=>stopVideoIfPlaying());
 
     function updateSeekBar(){
         if(!ytPlayer) return;
@@ -2420,6 +2332,8 @@ let overlay=$(`
             const dur=ytPlayer.getDuration();
             if(dur>0) {
                 const percentage = (cur/dur)*100;
+                
+                // Keep input range sync in background/foreground
                 $("#mini-seekbar").val(percentage);
 
                 const path = document.getElementById("svg-half-progress");
@@ -2445,16 +2359,33 @@ function playNextVideo(){
             playMiniVideoPlayer($(nextItem).attr("vid"));
         }
     }
-}
-
-
-
-
-
-
-
-	                
+				}
+	
         
+            
+            
+                    
+
+	
+            
+            
+	
+
+
+	
+
+
+
+
+	
+        
+                        
+                    
+        
+
+
+
+
 
 
 
