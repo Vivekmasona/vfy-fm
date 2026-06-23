@@ -2010,9 +2010,10 @@ function playMiniVideoPlayer(videoId){
 
 
 
-                    
-            
-        // 1. DYNAMIC COMPACT DIAL STYLES (Fixed Both Seekbars Navigation & Exact Visual Sync)
+
+	        
+                        
+            // 1. DYNAMIC COMPACT DIAL STYLES (Fixed Both Seekbars Navigation)
 if ($("#mini-player-styles").length === 0) {
     $("head").append(`
         <style id="mini-player-styles">
@@ -2029,20 +2030,13 @@ if ($("#mini-player-styles").length === 0) {
             .is-dragging, .instant-motion {
                 transition: none !important;
             }
-            /* PREMIUM REPLICA DIAL CONTROLS */
+            /* STRICTLY CIRCULAR Center Play Button for Audio Mode */
             .music-dial-center {
-                width: 60px !important;
-                height: 34px !important;
-                border-radius: 17px !important;
-                background: linear-gradient(180deg, #ee5a5a 0%, #cb3b3b 100%) !important;
-                border: none !important;
-                color: white !important;
-                font-size: 13px !important;
-                cursor: pointer !important;
-                box-shadow: 0 4px 12px rgba(238, 90, 90, 0.3) !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
+                background: linear-gradient(135deg, #a832ff 0%, #6a1b9a 100%) !important;
+                box-shadow: 0 3px 10px rgba(106, 27, 154, 0.8), 0 0 8px rgba(168, 50, 255, 0.6) !important;
+                color: #ffffff !important;
+                border: 2px solid rgba(255, 255, 255, 0.4) !important;
+                border-radius: 50% !important;
             }
             .glow-green-btn {
                 background: #34c759 !important;
@@ -2063,95 +2057,105 @@ if ($("#mini-player-styles").length === 0) {
             }
             .dial-resize-handle {
                 cursor: nwse-resize !important;
-                background: #454f5e !important;
+                background: #adadad !important;
                 box-shadow: 0 -1px 4px rgba(0,0,0,0.3);
                 transition: background 0.2s;
             }
             .dial-resize-handle:hover {
                 background: #ff3b30 !important;
             }
+            /* Photo UI Style Volume & Controls Layout */
+            .photo-volume-container {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .photo-volume-slider {
+                -webkit-appearance: none;
+                width: 60px;
+                height: 5px;
+                background: #444;
+                border-radius: 3px;
+                outline: none;
+            }
+            .photo-volume-slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                width: 0;
+                height: 0;
+            }
         </style>
     `);
 }
 
-// Mini Player Base Shell Structure (Original Variables mapped inside Premium 350px layout)
-let overlay = $(`
-<div class="yt-mini-player" style="position:fixed; bottom:110px; right:10px; width:350px; height:350px; border-radius:50%; background:#19202a; padding:6px; box-shadow: 0 15px 40px rgba(0,0,0,0.4); display:flex; justify-content:center; align-items:center; z-index:99999; box-sizing:border-box;">
+// Mini Player Base Shell Structure (Default Premium Compact Size: 145px)
+let overlay=$(`
+<div class="yt-mini-player" style="position:fixed; bottom:110px; right:10px; width:145px; height:145px; border-radius:50%; background: radial-gradient(circle, #fcfcfc 0%, #e0e0e0 70%, #b8b8b8 100%); box-shadow: 0 10px 25px rgba(0,0,0,0.35), inset 0 2px 4px rgba(255,255,255,0.8); border: 3px solid #adadad; transition: all 0.4s ease; display:flex; flex-direction:column; overflow:hidden; z-index:99999;">
+    <div class="video-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; background:transparent; z-index:998; pointer-events:all;"></div>
     
-    <svg id="svg-half-track" class="non-blocking-svg" viewBox="0 0 360 360" style="position:absolute; top:-6px; left:-6px; width:360px; height:360px; z-index:15; transform: rotate(-90deg);">
-        <circle cx="180" cy="180" r="177" fill="none" stroke="#22d3ee" stroke-width="4.5" stroke-dasharray="1112" stroke-dashoffset="1112" stroke-linecap="round" />
-        <circle id="svg-half-progress" cx="180" cy="180" r="177" fill="none" stroke="#db2777" stroke-width="4.5" stroke-dasharray="1112" stroke-dashoffset="1112" stroke-linecap="round" transform="rotate(180 180 180)" />
-    </svg>
-
-    <div class="player-inner" style="width:100%; height:100%; border-radius:50%; overflow:hidden; position:relative; display:flex; flex-direction:column;">
+    <div class="mini-round-thumb" style="position:absolute; top:0; left:0; width:100%; height:100%; background: url('https://img.youtube.com/vi/${videoId}/hqdefault.jpg') center/cover no-repeat; z-index:997; border-radius:50%; box-shadow: inset 0 0 15px rgba(0,0,0,0.4); clip-path: circle(40% at 50% 50%); display:block;"></div>
+    
+    <div id="yt-mini-${videoId}" style="flex:1; background:black; position:relative; z-index:1; opacity:0;"></div>
+    
+    <div class="mini-control-bar" style="position:absolute; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:space-between; padding:0; background:transparent; border-top:none; backdrop-filter: none; z-index:999; pointer-events:auto; transition: all 0.4s ease;">
+        <button id="mini-playpause" class="music-dial-center" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:38px; height:38px; border-radius:50% !important; border:none; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; margin:0; text-shadow:none; z-index:1020;"><i class="fas fa-pause"></i></button>
         
-        <div id="yt-mini-${videoId}" style="position:absolute; top:0; left:0; width:100%; height:100%; background:black; z-index:1; opacity:0; pointer-events:none;"></div>
+        <button id="mini-mode-toggle" style="position:absolute; bottom:12px; left:25px; margin:0; border:none; background:none; cursor:pointer; font-size:14px; text-shadow:none; color:#ff3b30; z-index:1020;"><i class="fas fa-play-circle"></i></button>
         
-        <div class="top-section" style="width:100%; height:50%; position:relative; overflow:hidden; z-index:2;">
-            <div class="mini-round-thumb" style="width:100%; height:100%; background: url('https://img.youtube.com/vi/${videoId}/hqdefault.jpg') center/cover no-repeat;"></div>
-            
-            <div class="top-controls" style="position:absolute; bottom:12px; width:100%; padding:0 35px; display:flex; justify-content:space-between; align-items:center; color:#ffffff; font-size:13px; z-index:12;">
-                <div class="volume-box" style="display:flex; align-items:center; gap:6px;">
-                    <i class="fas fa-volume-up"></i>
-                    <div class="volume-bar" style="width:45px; height:4px; background:rgba(255,255,255,0.2); border-radius:2px; overflow:hidden;"><div style="width:55%; height:100%; background:#ffffff;"></div></div>
-                </div>
-                <div class="share-box" style="display:flex; align-items:center; gap:6px;">
-                    <i id="mini-mode-toggle" class="fas fa-play-circle" style="cursor:pointer; color:#ee5a5a; font-size:14px;"></i>
-                    <i id="mini-fullscreen" class="fas fa-expand" style="display:none; cursor:pointer; color:#00ffff;"></i>
-                    <i id="mini-close" class="fa fa-close" style="display:none; cursor:pointer; color:#ff4f4f;"></i>
-                </div>
-            </div>
+        <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="display:none; flex:1; margin:0 8px; -webkit-appearance:none; height:4px; border-radius:2px; background:linear-gradient(to right,#ff6a00,#ee0979); box-shadow:0 0 8px #ff6a00,0 0 12px #ee0979; cursor:pointer;">
+        
+        <button id="mini-fullscreen" style="display:none; color:#00ffff; border:none; background:none; cursor:pointer; font-size:20px; margin-right:8px; text-shadow:0 0 8px #00ffff;"><i class="fas fa-expand"></i></button>
+        <button id="mini-auto-next" style="position:absolute; bottom:14px; right:25px; margin:0; width:12px; height:12px; border-radius:50%; border:none; cursor:pointer; transition: all 0.3s; z-index:1020;"></button>
+        <button id="mini-close" style="display:none; color:#ff4f4f; border:none; background:none; cursor:pointer; font-size:22px; text-shadow:0 0 8px #ff4f4f;"><i class="fa fa-close"></i></button>
+    </div>
+
+    <div class="photo-bottom-panel" style="display:none; position:absolute; bottom:12px; left:0; width:100%; padding:0 15px; box-sizing:border-box; display:none; justify-content:space-between; align-items:center; z-index:1025; background:transparent;">
+        <div class="photo-volume-container">
+            <i class="fas fa-volume-up" id="photo-volume-icon" style="color:white; font-size:20px; cursor:pointer;"></i>
+            <input type="range" id="photo-volume-bar" min="0" max="100" value="100" class="photo-volume-slider" style="background: linear-gradient(to right, white 70%, #444 70%);">
         </div>
-
-        <div class="wave-divider" style="position:absolute; top:40%; left:50%; transform:translateX(-50%); width:130px; height:40px; background-color:#212932; border-radius:50% 50% 0 0; z-index:10;"></div>
-
-        <div class="mini-control-bar" style="width:100%; height:50%; background-color:#212932; position:relative; display:flex; flex-direction:column; align-items:center; padding-top:15px; z-index:9;">
-            
-            <div class="controls-bg" style="position:absolute; width:160px; height:48px; background:#161c23; border-radius:24px; top:4px; z-index:10;"></div>
-            
-            <div class="controls-row" style="display:flex; align-items:center; justify-content:center; gap:18px; position:relative; z-index:11; margin-top:4px;">
-                <button id="mini-prev" style="background:none; border:none; color:#6a7687; font-size:16px; cursor:pointer;"><i class="fas fa-backward"></i></button>
-                <button id="mini-playpause" class="music-dial-center"><i class="fas fa-pause"></i></button>
-                <button id="mini-next" style="background:none; border:none; color:#6a7687; font-size:16px; cursor:pointer;"><i class="fas fa-forward"></i></button>
-            </div>
-
-            <div class="time-display" style="color:#a0aec0; font-size:11px; background:#161c23; padding:3px 12px; border-radius:12px; margin-top:18px; margin-bottom:6px; z-index:11; letter-spacing:0.5px;">3:17 / 3:50</div>
-
-            <button id="mini-auto-next" style="position:absolute; bottom:14px; left:25px; margin:0; width:12px; height:12px; border-radius:50%; border:none; cursor:pointer; transition:all 0.3s; z-index:11;"></button>
-
-            <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="display:none;">
-
-            <div class="progress-handle-dot" style="position:absolute; width:12px; height:12px; background-color:#212932; border:2.5px solid #ffffff; border-radius:50%; right:24px; bottom:84px; z-index:20; box-shadow:0 0 6px rgba(255,255,255,0.7); display:block;"></div>
+        <div style="display:flex; align-items:center; gap:14px;">
+            <i class="fas fa-play" id="photo-action-play" style="color:#ff5252; font-size:22px; cursor:pointer;"></i>
+            <div id="photo-action-fullscreen" style="width:20px; height:20px; border:2.5px dashed #00f0ff; border-radius:4px; cursor:pointer; box-shadow:0 0 6px #00f0ff;"></div>
+            <i class="fas fa-times" id="photo-action-close" style="color:#ff5252; font-size:24px; cursor:pointer;"></i>
         </div>
-
     </div>
 </div>`);
 
     $("body").append(overlay);
 
     const player = $(".yt-mini-player");
-    const playerInner = $(".player-inner");
     const roundThumb = $(".mini-round-thumb");
     const controlBar = $(".mini-control-bar");
     const seekbar = $("#mini-seekbar");
+    const photoPanel = $(".photo-bottom-panel");
 
-    // Native Proportional Edge Resizer Node integration matching your pattern
-    player.append('<div class="ui-pin-tip dial-resize-handle" style="position:absolute; bottom:2px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:12px solid transparent; border-right:12px solid transparent; border-top:10px solid #454f5e; z-index:1030;"></div>');
+    // Proportional Resize Handle for small dial
+    player.append('<div class="ui-pin-tip dial-resize-handle" style="position:absolute; bottom:-2px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:10px solid transparent; border-right:10px solid transparent; border-top:8px solid #adadad; z-index:1030;"></div>');
 
-    // Auto-next button state initial setup mapping
-    const autoNextBtn = $("#mini-auto-next");
+    // Vector Arc Progress Bar adjusted for 145px layout
+    player.append(`
+        <svg id="svg-half-track" class="non-blocking-svg" viewBox="0 0 200 100" style="position:absolute; top:6px; left:5%; width:90%; height:45%; z-index:999;">
+            <path class="clickable-svg-path" d="M 15,95 A 85,85 0 0,1 185,95" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="12" stroke-linecap="round"/>
+            <path id="svg-half-progress" class="clickable-svg-path" d="M 15,95 A 85,85 0 0,1 185,95" fill="none" stroke="url(#half-glow-grad)" stroke-width="8" stroke-dasharray="267" stroke-dashoffset="267" stroke-linecap="round"/>
+            <defs>
+                <linearGradient id="half-glow-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#00ffff" />
+                    <stop offset="100%" stop-color="#ff00ff" />
+                </linearGradient>
+            </defs>
+        </svg>
+    `);
+
+    // Auto-next toggle handler
+    const autoNextBtn=$("#mini-auto-next");
     autoNextBtn.addClass(isAutoNext ? "glow-green-btn" : "dim-green-btn");
-    autoNextBtn.click((e) => { 
+    autoNextBtn.click((e)=>{ 
         e.stopPropagation(); 
-        isAutoNext = !isAutoNext; 
+        isAutoNext=!isAutoNext; 
         autoNextBtn.removeClass("glow-green-btn dim-green-btn").addClass(isAutoNext ? "glow-green-btn" : "dim-green-btn"); 
     });
 
-    // Custom backward / forward event mappings
-    $("#mini-next").click((e) => { e.stopPropagation(); playNextVideo(); });
-    $("#mini-prev").click((e) => { e.stopPropagation(); });
-
-    // Native YT Core Engine Initialization loop
+    // Native YT Core Engine Init
     ytPlayer = new YT.Player(`yt-mini-${videoId}`, {
         videoId: videoId, width: "100%", height: "100%",
         playerVars: { autoplay: 1, controls: 0, modestbranding: 1, rel: 0, showinfo: 0 },
@@ -2172,32 +2176,69 @@ let overlay = $(`
                     if (event.data === YT.PlayerState.PLAYING) roundThumb.removeClass("paused-spin");
                     else roundThumb.addClass("paused-spin");
                 }
+                // Sync photo play/pause icon status
+                if (event.data === YT.PlayerState.PLAYING) {
+                    $("#photo-action-play").removeClass("fa-play").addClass("fa-pause");
+                } else {
+                    $("#photo-action-play").removeClass("fa-pause").addClass("fa-play");
+                }
             },
             onError: event => { if (isAutoNext) playNextVideo(); }
         }
     });
 
-    // Circular mode touch mapping tracker system configuration
+    // WORKING VOLUME HANDLER (Photo UI Style)
+    $(document).on("input", "#photo-volume-bar", function(e) {
+        e.stopPropagation();
+        if(!ytPlayer) return;
+        const vol = parseInt($(this).val());
+        ytPlayer.setVolume(vol);
+        $(this).css('background', `linear-gradient(to right, white ${vol}%, #444 ${vol}%)`);
+        if(vol === 0) {
+            $("#photo-volume-icon").removeClass("fa-volume-up").addClass("fa-volume-mute");
+        } else {
+            $("#photo-volume-icon").removeClass("fa-volume-mute").addClass("fa-volume-up");
+        }
+    });
+
+    // Mute/Unmute click on icon
+    $(document).on("click", "#photo-volume-icon", function(e) {
+        e.stopPropagation();
+        if(!ytPlayer) return;
+        if(ytPlayer.isMuted()) {
+            ytPlayer.unMute();
+            const currentVol = ytPlayer.getVolume();
+            $("#photo-volume-bar").val(currentVol).css('background', `linear-gradient(to right, white ${currentVol}%, #444 ${currentVol}%)`);
+            $(this).removeClass("fa-volume-mute").addClass("fa-volume-up");
+        } else {
+            ytPlayer.mute();
+            $("#photo-volume-bar").val(0).css('background', `linear-gradient(to right, white 0%, #444 0%)`);
+            $(this).removeClass("fa-volume-up").addClass("fa-volume-mute");
+        }
+    });
+
+    // Track arc touch mapper for Circular Mode
     function bindSvgSeekEvents() {
-        $(".yt-mini-player, #svg-half-track").on("click mousedown touchstart", function(e) {
-            if(!isRoundMusicMode || !ytPlayer) return;
-            const rect = player[0].getBoundingClientRect();
+        $(".clickable-svg-path").on("click mousedown touchstart", function(e) {
+            e.stopPropagation();
+            if(!ytPlayer) return;
+            const containerRect = document.getElementById("svg-half-track").getBoundingClientRect();
             const clientX = e.clientX || (e.originalEvent.touches ? e.originalEvent.touches[0].clientX : 0);
             if(!clientX) return;
-
-            const offsetX = clientX - rect.left;
-            let pct = offsetX / rect.width;
+            
+            const offsetX = clientX - containerRect.left;
+            let pct = offsetX / containerRect.width;
             if(pct < 0) pct = 0; if(pct > 1) pct = 1;
             
             const dur = ytPlayer.getDuration();
             ytPlayer.seekTo(pct * dur, true);
-            seekbar.val(pct * 100);
+            $("#mini-seekbar").val(pct * 100);
         });
     }
     bindSvgSeekEvents();
 
-    // Video Mode Linear Input standard event mapping
-    seekbar.on("input change click", function(e) {
+    // FIXED: Video Mode Linear Slider Event Listener (Click & Drag Mapping)
+    $("#mini-seekbar").on("input change click", function(e) {
         e.stopPropagation();
         if (!ytPlayer) return;
         const pct = $(this).val() / 100;
@@ -2205,7 +2246,7 @@ let overlay = $(`
         ytPlayer.seekTo(pct * dur, true);
     });
 
-    // Dynamic Sizing handle tracking controller loops
+    // Resize tracking for dynamic scaling
     let isDialResizing = false, startSize = 0, startY = 0;
     $(document).on("mousedown touchstart", ".dial-resize-handle", function(e) {
         e.preventDefault(); e.stopPropagation();
@@ -2219,22 +2260,17 @@ let overlay = $(`
         if (!isDialResizing) return;
         const currentY = e.clientY || (e.originalEvent.touches ? e.originalEvent.touches[0].clientY : 0);
         let newSize = startSize + (currentY - startY);
-        if (newSize < 220) newSize = 220;
-        if (newSize > 450) newSize = 450;
-        
+        if (newSize < 130) newSize = 130;
+        if (newSize > 350) newSize = 350;
         player.css({ width: newSize + "px", height: newSize + "px" });
-        $("#svg-half-track").css({ width: newSize + "px", height: newSize + "px" });
-        
-        let radiusCalc = (newSize / 2) - 3;
-        $("#svg-half-track circle").attr({ cx: newSize/2, cy: newSize/2, r: radiusCalc });
     });
 
     $(document).on("mouseup touchend", function() {
         if(isDialResizing) { isDialResizing = false; player.removeClass("instant-motion"); }
     });
 	
-    // Play Pause Button Interaction Loop
-    $("#mini-playpause").click((e)=>{
+    // Play Pause Event Logic (Central Button)
+    $("#mini-playpause, #photo-action-play").click((e)=>{
         e.stopPropagation();
         if(!ytPlayer) return;
         const state=ytPlayer.getPlayerState();
@@ -2249,73 +2285,93 @@ let overlay = $(`
         }
     });
 
-    // MODE SWITCH TOGGLE (Transformation loop keeping original structure intact)
-    let isRoundMusicMode = true; 
-    $("#mini-mode-toggle").click((e) => {
-        e.stopPropagation();
-        if (isRoundMusicMode) {
-            // Transform directly into crisp Rectangular Video Layout Look
-            player.css({ width: "280px", height: "190px", borderRadius: "8px", background: "#111", padding: "0", border: "none", boxShadow: "0 12px 28px rgba(0,0,0,0.7)" });
-            playerInner.css({ borderRadius: "8px" });
-            $(".ui-pin-tip, #svg-half-track, .wave-divider, .controls-bg, .progress-handle-dot").hide();
-            
-            $(".top-section").css({ height: "calc(100% - 50px)", width: "100%" });
-            roundThumb.css({ height: "100%", width: "100%", borderRadius: "0" }).removeClass("spinning paused-spin"); 
-            $(`#yt-mini-${videoId}`).css({ opacity: "1", pointerEvents: "all" });
-            
-            controlBar.css({
-                width: "100%", height: "50px", background: "rgba(20,24,30,0.95)", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "0", justifyContent: "center", flexDirection: "row", gap: "10px"
-            });
-            $(".controls-row").css({ marginTop: "0" });
-
-            $("#mini-playpause").removeClass("music-dial-center").css({ width: "45px", height: "28px", borderRadius: "14px", background: "none", boxShadow: "none", color: "#00ffff" });
-            $(".time-display").css({ marginTop: "0", marginBottom: "0", background: "none", padding: "0" });
-            autoNextBtn.css({ position: "static", width: "14px", height: "14px" });
-            seekbar.css({ display: "inline-block", flex: "1", margin: "0 10px" }).show();
-
-            $("#mini-fullscreen, #mini-close").show();
-            isRoundMusicMode = false;
-        } else {
-            // Revert securely back into Circular Audio Mode System Frame
-            player.css({ width: "350px", height: "350px", borderRadius: "50%", background: "#19202a", padding: "6px", border: "none", boxShadow: "0 15px 40px rgba(0,0,0,0.4)" });
-            playerInner.css({ borderRadius: "50%" });
-            $(".ui-pin-tip, #svg-half-track, .wave-divider, .controls-bg, .progress-handle-dot").show();
-            
-            $(".top-section").css({ height: "50%", width: "100%" });
-            roundThumb.addClass("spinning");
-            if (ytPlayer && ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) roundThumb.addClass("paused-spin");
-            $(`#yt-mini-${videoId}`).css({ opacity: "0", pointerEvents: "none" });
-            
-            controlBar.css({ width: "100%", height: "50%", background: "#212932", paddingTop: "15px", flexDirection: "column", justifyContent: "stretch", gap: "0" });
-            $(".controls-row").css({ marginTop: "4px" }).find("#mini-playpause").addClass("music-dial-center");
-
-            $(".time-display").css({ marginTop: "18px", marginBottom: "6px", background: "#161c23", padding: "3px 12px" });
-            autoNextBtn.css({ position: "absolute", bottom: "14px", left: "25px", width: "12px", height: "12px" });
-            seekbar.hide();
-
-            $("#mini-fullscreen, #mini-close").hide();
-            isRoundMusicMode = true;
-            updateSeekBar();
-        }
-    });
-
-    $("#mini-fullscreen").click(()=>{
+    // Fullscreen and Close Event Triggers via Photo UI
+    function toggleFullscreenMode() {
+        player.addClass("instant-motion"); 
         if(!isMiniPlayerFullscreen){
-            player.css({ position:"fixed", width:"100vw", height:"100vh", top:"0", left:"0", right:"0", bottom:"0", margin:"0", borderRadius:"0", padding:"0", zIndex:"99999" });
-            playerInner.css({ borderRadius: "0" });
+            player.css({ position:"fixed", width:"100vw", height:"100vh", top:"0", left:"0", right:"0", bottom:"0", margin:"0", borderRadius:"0", zIndex:"99999" });
             isMiniPlayerFullscreen = true;
         }else{
-            if(!isRoundMusicMode) {
-                player.css({ position:"fixed", width:"280px", height:"190px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"8px", zIndex:"99999" });
-                playerInner.css({ borderRadius: "8px" });
+            if(isRoundMusicMode) {
+                player.css({ position:"fixed", width:"145px", height:"145px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"50%", zIndex:"99999" });
+            } else {
+                player.css({ position:"fixed", width:"320px", height:"195px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"12px", zIndex:"99999" });
             }
             isMiniPlayerFullscreen = false;
         }
+        setTimeout(() => player.removeClass("instant-motion"), 50);
+    }
+
+    $("#mini-fullscreen, #photo-action-fullscreen").click((e) => {
+        e.stopPropagation();
+        toggleFullscreenMode();
     });
 
-    $("#mini-close").click(()=>stopVideoIfPlaying());
+    $("#mini-close, #photo-action-close").click((e) => {
+        e.stopPropagation();
+        if(typeof stopVideoIfPlaying === "function") {
+            stopVideoIfPlaying();
+        } else {
+            player.remove();
+        }
+    });
 
-    // Clock Logic mapping Left & Right Seekbars precisely according to original screenshot directions
+    // MODE SWITCH TOGGLE (Smooth responsive transformation loop)
+    let isRoundMusicMode = true; 
+    $("#mini-mode-toggle").click(() => {
+        if (isRoundMusicMode) {
+            // Full Restoration to crisp Rectangular Video View resembling photo controls
+            player.css({ width: "320px", height: "195px", borderRadius: "12px", background: "#000000", boxShadow: "0 12px 28px rgba(0,0,0,0.7)", border: "none" });
+            $(".ui-pin-tip, #svg-half-track").remove();
+            
+            roundThumb.css({ height: "calc(100% - 45px)", width: "100%", top: "0", left: "0", borderRadius: "12px 12px 0 0", clipPath: "none" }).hide().removeClass("spinning paused-spin"); 
+            $(`#yt-mini-${videoId}`).css({ opacity: "1" });
+            
+            controlBar.css({ display: "none" }); // Hide old UI control bar
+            photoPanel.css({ display: "flex" }); // Show newly engineered photo matching interface
+
+            isRoundMusicMode = false;
+        } else {
+            // Transform Back into Perfect Compact Round Dial Shape
+            player.css({
+                width: "145px", height: "145px", borderRadius: "50%",
+                background: "radial-gradient(circle, #fcfcfc 0%, #e0e0e0 70%, #b8b8b8 100%)",
+                boxShadow: "0 10px 25px rgba(0,0,0,0.35), inset 0 2px 4px rgba(255,255,255,0.8)",
+                border: "3px solid #adadad"
+            });
+            
+            player.append('<div class="ui-pin-tip dial-resize-handle" style="position:absolute; bottom:-2px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:10px solid transparent; border-right:10px solid transparent; border-top:8px solid #adadad; z-index:1030;"></div>');
+
+            player.append(`
+                <svg id="svg-half-track" class="non-blocking-svg" viewBox="0 0 200 100" style="position:absolute; top:6px; left:5%; width:90%; height:45%; z-index:999;">
+                    <path class="clickable-svg-path" d="M 15,95 A 85,85 0 0,1 185,95" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="12" stroke-linecap="round"/>
+                    <path id="svg-half-progress" class="clickable-svg-path" d="M 15,95 A 85,85 0 0,1 185,95" fill="none" stroke="url(#half-glow-grad)" stroke-width="8" stroke-dasharray="267" stroke-dashoffset="267" stroke-linecap="round"/>
+                    <defs>
+                        <linearGradient id="half-glow-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#00ffff" />
+                            <stop offset="100%" stop-color="#ff00ff" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            `);
+
+            bindSvgSeekEvents();
+
+            roundThumb.css({
+                height: "100%", width: "100%", top: "0", left: "0", borderRadius: "50%",
+                boxShadow: "inset 0 0 15px rgba(0,0,0,0.4)", clipPath: "circle(40% at 50% 50%)"
+            }).show().addClass("spinning");
+
+            if (ytPlayer && ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) roundThumb.addClass("paused-spin");
+            $(`#yt-mini-${videoId}`).css({ opacity: "0" });
+            
+            controlBar.css({ display: "flex" });
+            photoPanel.css({ display: "none" });
+
+            isRoundMusicMode = true;
+        }
+    });
+
     function updateSeekBar(){
         if(!ytPlayer) return;
         const state=ytPlayer.getPlayerState();
@@ -2324,47 +2380,21 @@ let overlay = $(`
             const dur=ytPlayer.getDuration();
             if(dur>0) {
                 const percentage = (cur/dur)*100;
-                seekbar.val(percentage);
+                $("#mini-seekbar").val(percentage);
 
-                const formatTime = (time) => {
-                    let mins = Math.floor(time / 60);
-                    let secs = Math.floor(time % 60);
-                    return mins + ":" + (secs < 10 ? "0" : "") + secs;
-                };
-                $(".time-display").text(formatTime(cur) + " / " + formatTime(dur));
-
-                const leftCircle = document.querySelectorAll("#svg-half-track circle")[0];
-                const rightCircle = document.querySelectorAll("#svg-half-track circle")[1];
-                
-                if (leftCircle && rightCircle && isRoundMusicMode) {
-                    const totalLength = 1112; // Perimeter matching 350px scaling bound geometry
-                    
-                    let leftOffset = totalLength;
-                    let rightOffset = totalLength;
-
-                    if (percentage <= 50) {
-                        // Left cyan track fills upwards counter-clockwise
-                        let ratio = percentage / 50;
-                        leftOffset = totalLength - (ratio * (totalLength / 4));
-                    } else {
-                        leftOffset = totalLength - (totalLength / 4);
-                        // Right magenta track fills upwards clockwise from the 50% split point
-                        let ratio = (percentage - 50) / 50;
-                        rightOffset = totalLength - (ratio * (totalLength / 4));
-                    }
-
-                    leftCircle.style.strokeDashoffset = leftOffset;
-                    rightCircle.style.strokeDashoffset = rightOffset;
+                const path = document.getElementById("svg-half-progress");
+                if (path && isRoundMusicMode) {
+                    const totalLength = 267;
+                    const offset = totalLength - (percentage / 100) * totalLength;
+                    path.style.strokeDasharray = `${totalLength}`;
+                    path.style.strokeDashoffset = `${offset}`;
                 }
             }
         }
-        if (isRoundMusicMode) requestAnimationFrame(updateSeekBar);
+        requestAnimationFrame(updateSeekBar);
     }
 }
-
-            
-            
-	
+                                                
 
 
 	
