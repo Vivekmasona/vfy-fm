@@ -2003,7 +2003,8 @@ function playMiniVideoPlayer(videoId){
 
 
 
-// 1. DYNAMIC COMPACT DIAL STYLES (Glassmorphism & Photo UI Integration)
+                                
+// 1. DYNAMIC COMPACT DIAL STYLES (Seamless Video Gradient & Mode Toggle Fixed)
 if ($("#mini-player-styles").length === 0) {
     $("head").append(`
         <style id="mini-player-styles">
@@ -2055,27 +2056,34 @@ if ($("#mini-player-styles").length === 0) {
                 background: #ff3b30 !important;
             }
 
-            /* UNIQUE GLASSMORPHISM UI - For Seamless Video Blend */
-            .glass-panel {
-                background: rgba(255, 255, 255, 0.1) !important;
-                backdrop-filter: blur(10px) !important;
-                -webkit-backdrop-filter: blur(10px) !important;
-                border: 1px solid rgba(255, 255, 255, 0.15) !important;
-                border-radius: 30px;
+            /* FULLY MIXED GRADIENT INTEGRATION PANEL (No Separate Boxes) */
+            .photo-bottom-panel {
+                display: none; 
+                position: absolute; 
+                bottom: 0; 
+                left: 0; 
+                width: 100%; 
+                padding: 15px 14px 12px 14px; 
+                box-sizing: border-box; 
+                flex-direction: column; 
+                gap: 10px; 
+                z-index: 1025; 
+                /* Smoked gradient seamlessly blending with the video background */
+                background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.5) 60%, transparent 100%) !important;
+                backdrop-filter: blur(4px);
+                -webkit-backdrop-filter: blur(4px);
+            }
+            .seamless-btn-row {
                 display: flex;
                 align-items: center;
                 gap: 12px;
-            }
-            .photo-volume-container {
-                display: flex;
-                align-items: center;
-                gap: 8px;
+                color: white;
             }
             .photo-volume-slider {
                 -webkit-appearance: none;
-                width: 50px;
-                height: 4px;
-                background: #444;
+                width: 45px;
+                height: 3px;
+                background: rgba(255,255,255,0.2);
                 border-radius: 2px;
                 outline: none;
             }
@@ -2084,7 +2092,7 @@ if ($("#mini-player-styles").length === 0) {
                 -webkit-appearance: none;
                 width: 100%;
                 height: 4px;
-                background: rgba(255,255,255,0.2);
+                background: rgba(255,255,255,0.25);
                 border-radius: 2px;
                 outline: none;
                 cursor: pointer;
@@ -2098,13 +2106,14 @@ if ($("#mini-player-styles").length === 0) {
                 box-shadow: 0 0 6px #ff4747;
             }
             .icon-glow {
-                color: white;
-                text-shadow: 0 0 5px rgba(255,255,255,0.4);
+                color: rgba(255, 255, 255, 0.85);
+                text-shadow: 0 1px 3px rgba(0,0,0,0.5);
                 cursor: pointer;
-                transition: color 0.2s;
+                transition: color 0.2s, transform 0.2s;
             }
             .icon-glow:hover {
                 color: #ff4747;
+                transform: scale(1.1);
             }
         </style>
     `);
@@ -2119,7 +2128,6 @@ let overlay=$(`
     
     <div id="yt-mini-${videoId}" style="flex:1; background:black; position:relative; z-index:1; opacity:0;"></div>
     
-    <!-- ORIGINAL COMPACT DIAL CONTROLS -->
     <div class="mini-control-bar" style="position:absolute; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:space-between; padding:0; background:transparent; border-top:none; backdrop-filter: none; z-index:999; pointer-events:auto; transition: all 0.4s ease;">
         <button id="mini-playpause" class="music-dial-center" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:38px; height:38px; border-radius:50% !important; border:none; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; margin:0; text-shadow:none; z-index:1020;"><i class="fas fa-pause"></i></button>
         
@@ -2132,31 +2140,25 @@ let overlay=$(`
         <button id="mini-close" style="display:none; color:#ff4f4f; border:none; background:none; cursor:pointer; font-size:22px; text-shadow:0 0 8px #ff4f4f;"><i class="fa fa-close"></i></button>
     </div>
 
-    <!-- NEW UNIQUE GLASSMORPHISM CONTROLS (Mixes Seamlessly with Rectangular Video) -->
-    <div class="photo-bottom-panel" style="display:none; position:absolute; bottom:0; left:0; width:100%; padding:12px 14px; box-sizing:border-box; flex-direction:column; gap:8px; z-index:1025; background: linear-gradient(transparent, rgba(0,0,0,0.85));">
+    <div class="photo-bottom-panel">
         
-        <!-- Seamless Linear Seekbar -->
         <div style="width:100%; display:flex; align-items:center;">
             <input type="range" id="photo-linear-seekbar" min="0" max="100" value="0" class="photo-linear-seekbar">
         </div>
 
-        <!-- Glass Overlay Buttons Row -->
         <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-            <!-- Left Group: Mute, Volume Slider & Auto-Next Green Dot (Inside Glass Panel) -->
-            <div class="glass-panel photo-volume-container" style="padding:6px 12px !important;">
-                <i class="fas fa-volume-up icon-glow" id="photo-volume-icon" style="font-size:15px;"></i>
-                <input type="range" id="photo-volume-bar" min="0" max="100" value="100" class="photo-volume-slider" style="background: linear-gradient(to right, white 100%, #444 100%);">
-                
-                <!-- Auto-Next Button synchronized inside -->
-                <button id="photo-auto-next" style="width:10px; height:10px; border-radius:50%; border:none; cursor:pointer; margin-left:4px; transition: 0.3s;"></button>
+            <div class="seamless-btn-row">
+                <i class="fas fa-volume-up icon-glow" id="photo-volume-icon" style="font-size:14px;"></i>
+                <input type="range" id="photo-volume-bar" min="0" max="100" value="100" class="photo-volume-slider" style="background: linear-gradient(to right, white 100%, rgba(255,255,255,0.2) 100%);">
+                <button id="photo-auto-next" style="width:9px; height:9px; border-radius:50%; border:none; cursor:pointer; margin-left:2px; transition: 0.3s;"></button>
             </div>
             
-            <!-- Right Group: Play/Pause, Fullscreen Target & Close Cancel Cross -->
-            <div class="glass-panel" style="padding:6px 14px !important;">
-                <i class="fas fa-pause icon-glow" id="photo-action-play" style="font-size:15px;"></i>
-                <!-- Custom Target Style Fullscreen Border matching photo -->
-                <div id="photo-action-fullscreen" style="width:13px; height:13px; border:1.8px solid white; border-radius:3px; cursor:pointer; transition: transform 0.2s;" onmouseover="this.style.borderColor='#ff4747'" onmouseout="this.style.borderColor='white'"></div>
-                <i class="fas fa-times icon-glow" id="photo-action-close" style="font-size:17px;"></i>
+            <div class="seamless-btn-row" style="gap:15px;">
+                <i class="fas fa-music icon-glow" id="photo-mode-toggle" title="Switch Mode" style="font-size:13px; color: #00ffff; text-shadow: 0 0 4px #00ffff;"></i>
+                
+                <i class="fas fa-pause icon-glow" id="photo-action-play" style="font-size:14px;"></i>
+                <div id="photo-action-fullscreen" class="icon-glow" style="width:12px; height:12px; border:1.8px solid rgba(255,255,255,0.85); border-radius:2px; cursor:pointer;"></div>
+                <i class="fas fa-times icon-glow" id="photo-action-close" style="font-size:16px; color:#ff4747;"></i>
             </div>
         </div>
     </div>
@@ -2241,7 +2243,7 @@ let overlay=$(`
         if(!ytPlayer) return;
         const vol = parseInt($(this).val());
         ytPlayer.setVolume(vol);
-        $(this).css('background', `linear-gradient(to right, white ${vol}%, #444 ${vol}%)`);
+        $(this).css('background', `linear-gradient(to right, white ${vol}%, rgba(255,255,255,0.2) ${vol}%)`);
         if(vol === 0) {
             $("#photo-volume-icon").removeClass("fa-volume-up").addClass("fa-volume-mute");
         } else {
@@ -2255,11 +2257,11 @@ let overlay=$(`
         if(ytPlayer.isMuted()) {
             ytPlayer.unMute();
             const currentVol = ytPlayer.getVolume();
-            $("#photo-volume-bar").val(currentVol).css('background', `linear-gradient(to right, white ${currentVol}%, #444 ${currentVol}%)`);
+            $("#photo-volume-bar").val(currentVol).css('background', `linear-gradient(to right, white ${currentVol}%, rgba(255,255,255,0.2) ${currentVol}%)`);
             $(this).removeClass("fa-volume-mute").addClass("fa-volume-up");
         } else {
             ytPlayer.mute();
-            $("#photo-volume-bar").val(0).css('background', `linear-gradient(to right, white 0%, #444 0%)`);
+            $("#photo-volume-bar").val(0).css('background', `linear-gradient(to right, white 0%, rgba(255,255,255,0.2) 0%)`);
             $(this).removeClass("fa-volume-up").addClass("fa-volume-mute");
         }
     });
@@ -2283,7 +2285,7 @@ let overlay=$(`
     }
     bindSvgSeekEvents();
 
-    // WORKING LINEAR SEEKBAR FOR SEAMLESS VIDEO UI (Click & Slide Map)
+    // WORKING LINEAR SEEKBAR FOR SEAMLESS VIDEO UI
     $(document).on("input change", "#photo-linear-seekbar", function(e) {
         e.stopPropagation();
         if (!ytPlayer) return;
@@ -2359,15 +2361,15 @@ let overlay=$(`
         else player.remove();
     });
 
-    // INTEGRATED SMOOTH MODE SWITCH TRANSFORMATION LOOP
+    // MODE SWITCH FUNCTIONALITY FOR BOTH BUTTONS
     let isRoundMusicMode = true; 
-    $("#mini-mode-toggle").click(() => {
+    function handleModeSwitch() {
         if (isRoundMusicMode) {
-            // Morph into Glassmorphic Smooth Video Layout
+            // Morph into Seamless Mixed Video Layout
             player.css({ width: "300px", height: "195px", borderRadius: "12px", background: "#000000", boxShadow: "0 12px 32px rgba(0,0,0,0.6)", border: "none" });
             $(".ui-pin-tip, #svg-half-track").remove();
             
-            roundThumb.css({ height: "calc(100% - 65px)", width: "100%", top: "0", left: "0", borderRadius: "12px 12px 0 0", clipPath: "none" }).hide().removeClass("spinning paused-spin"); 
+            roundThumb.css({ height: "calc(100% - 55px)", width: "100%", top: "0", left: "0", borderRadius: "12px 12px 0 0", clipPath: "none" }).hide().removeClass("spinning paused-spin"); 
             $(`#yt-mini-${videoId}`).css({ opacity: "1" });
             
             controlBar.css({ display: "none" }); 
@@ -2376,7 +2378,7 @@ let overlay=$(`
 
             isRoundMusicMode = false;
         } else {
-            // Morph Back into Perfect Round Music Dial Structure
+            // Morph Back into Round Music Dial Structure
             player.css({
                 width: "145px", height: "145px", borderRadius: "50%",
                 background: "radial-gradient(circle, #fcfcfc 0%, #e0e0e0 70%, #b8b8b8 100%)",
@@ -2415,6 +2417,11 @@ let overlay=$(`
 
             isRoundMusicMode = true;
         }
+    }
+
+    $(document).on("click", "#mini-mode-toggle, #photo-mode-toggle", function(e) {
+        e.stopPropagation();
+        handleModeSwitch();
     });
 
     function updateSeekBar(){
@@ -2426,7 +2433,6 @@ let overlay=$(`
             if(dur>0) {
                 const percentage = (cur/dur)*100;
                 
-                // Keep both seekbars synchronized flawlessly
                 $("#mini-seekbar").val(percentage);
                 $("#photo-linear-seekbar").val(percentage);
 
@@ -2450,11 +2456,7 @@ let overlay=$(`
 
 
 
-	        
-                        
-                                        
-    
-                                            
+	
 
 	
 
