@@ -2004,7 +2004,8 @@ function playMiniVideoPlayer(videoId){
 
 
                                 
-// 1. DYNAMIC COMPACT DIAL STYLES (Seamless Video Gradient & Mode Toggle Fixed)
+
+// 1. DYNAMIC COMPACT DIAL STYLES (Custom Yellow Thumb & Perfect Gradient Mix)
 if ($("#mini-player-styles").length === 0) {
     $("head").append(`
         <style id="mini-player-styles">
@@ -2021,7 +2022,7 @@ if ($("#mini-player-styles").length === 0) {
             .is-dragging, .instant-motion {
                 transition: none !important;
             }
-            /* STRICTLY CIRCULAR Center Play Button for Audio Mode */
+            /* Circular Mode Play Button */
             .music-dial-center {
                 background: linear-gradient(135deg, #a832ff 0%, #6a1b9a 100%) !important;
                 box-shadow: 0 3px 10px rgba(106, 27, 154, 0.8), 0 0 8px rgba(168, 50, 255, 0.6) !important;
@@ -2056,22 +2057,20 @@ if ($("#mini-player-styles").length === 0) {
                 background: #ff3b30 !important;
             }
 
-            /* FULLY MIXED GRADIENT INTEGRATION PANEL (No Separate Boxes) */
+            /* PERFECT SMOOTH MIX PANEL (Blur 0 on top area) */
             .photo-bottom-panel {
                 display: none; 
                 position: absolute; 
                 bottom: 0; 
                 left: 0; 
                 width: 100%; 
-                padding: 15px 14px 12px 14px; 
+                padding: 20px 14px 12px 14px; 
                 box-sizing: border-box; 
                 flex-direction: column; 
                 gap: 10px; 
                 z-index: 1025; 
-                /* Smoked gradient seamlessly blending with the video background */
-                background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.5) 60%, transparent 100%) !important;
-                backdrop-filter: blur(4px);
-                -webkit-backdrop-filter: blur(4px);
+                /* Strict gradient transition to avoid top blur artifacts */
+                background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.6) 65%, rgba(0,0,0,0) 100%) !important;
             }
             .seamless-btn-row {
                 display: flex;
@@ -2079,14 +2078,26 @@ if ($("#mini-player-styles").length === 0) {
                 gap: 12px;
                 color: white;
             }
+            
+            /* CUSTOM YELLOW THUMB VOLUME SLIDER */
             .photo-volume-slider {
                 -webkit-appearance: none;
-                width: 45px;
-                height: 3px;
-                background: rgba(255,255,255,0.2);
+                width: 50px;
+                height: 4px;
+                background: rgba(255,255,255,0.25);
                 border-radius: 2px;
                 outline: none;
             }
+            .photo-volume-slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background: #ffcc00 !important; /* Yellow Thumb */
+                box-shadow: 0 0 5px #ffcc00;
+                cursor: pointer;
+            }
+
             /* Minimal Linear Seekbar */
             .photo-linear-seekbar {
                 -webkit-appearance: none;
@@ -2106,8 +2117,8 @@ if ($("#mini-player-styles").length === 0) {
                 box-shadow: 0 0 6px #ff4747;
             }
             .icon-glow {
-                color: rgba(255, 255, 255, 0.85);
-                text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+                color: rgba(255, 255, 255, 0.9);
+                text-shadow: 0 1px 3px rgba(0,0,0,0.6);
                 cursor: pointer;
                 transition: color 0.2s, transform 0.2s;
             }
@@ -2149,7 +2160,7 @@ let overlay=$(`
         <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
             <div class="seamless-btn-row">
                 <i class="fas fa-volume-up icon-glow" id="photo-volume-icon" style="font-size:14px;"></i>
-                <input type="range" id="photo-volume-bar" min="0" max="100" value="100" class="photo-volume-slider" style="background: linear-gradient(to right, white 100%, rgba(255,255,255,0.2) 100%);">
+                <input type="range" id="photo-volume-bar" min="0" max="100" value="100" class="photo-volume-slider" style="background: linear-gradient(to right, #ffcc00 100%, rgba(255,255,255,0.2) 100%);">
                 <button id="photo-auto-next" style="width:9px; height:9px; border-radius:50%; border:none; cursor:pointer; margin-left:2px; transition: 0.3s;"></button>
             </div>
             
@@ -2237,13 +2248,13 @@ let overlay=$(`
         }
     });
 
-    // WORKING SEAMLESS VOLUME CONTROLS
+    // WORKING SEAMLESS VOLUME CONTROLS (With Yellow Progress Gradient)
     $(document).on("input", "#photo-volume-bar", function(e) {
         e.stopPropagation();
         if(!ytPlayer) return;
         const vol = parseInt($(this).val());
         ytPlayer.setVolume(vol);
-        $(this).css('background', `linear-gradient(to right, white ${vol}%, rgba(255,255,255,0.2) ${vol}%)`);
+        $(this).css('background', `linear-gradient(to right, #ffcc00 ${vol}%, rgba(255,255,255,0.2) ${vol}%)`);
         if(vol === 0) {
             $("#photo-volume-icon").removeClass("fa-volume-up").addClass("fa-volume-mute");
         } else {
@@ -2257,11 +2268,11 @@ let overlay=$(`
         if(ytPlayer.isMuted()) {
             ytPlayer.unMute();
             const currentVol = ytPlayer.getVolume();
-            $("#photo-volume-bar").val(currentVol).css('background', `linear-gradient(to right, white ${currentVol}%, rgba(255,255,255,0.2) ${currentVol}%)`);
+            $("#photo-volume-bar").val(currentVol).css('background', `linear-gradient(to right, #ffcc00 ${currentVol}%, rgba(255,255,255,0.2) ${currentVol}%)`);
             $(this).removeClass("fa-volume-mute").addClass("fa-volume-up");
         } else {
             ytPlayer.mute();
-            $("#photo-volume-bar").val(0).css('background', `linear-gradient(to right, white 0%, rgba(255,255,255,0.2) 0%)`);
+            $("#photo-volume-bar").val(0).css('background', `linear-gradient(to right, #ffcc00 0%, rgba(255,255,255,0.2) 0%)`);
             $(this).removeClass("fa-volume-up").addClass("fa-volume-mute");
         }
     });
@@ -2448,8 +2459,8 @@ let overlay=$(`
         requestAnimationFrame(updateSeekBar);
     }
 }
-
-
+                
+                    
 
 
 
