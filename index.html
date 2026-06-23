@@ -2007,11 +2007,7 @@ function playMiniVideoPlayer(videoId){
 
                                  
 
-                
-                    
-
-
-// 1. DYNAMIC COMPACT DIAL STYLES (Custom Yellow Thumb & Perfect Gradient Mix)
+// 1. DYNAMIC COMPACT DIAL STYLES (Colorful Neon Cyan & Orange Mix Theme)
 if ($("#mini-player-styles").length === 0) {
     $("head").append(`
         <style id="mini-player-styles">
@@ -2028,14 +2024,18 @@ if ($("#mini-player-styles").length === 0) {
             .is-dragging, .instant-motion {
                 transition: none !important;
             }
-            /* Circular Mode Play Button */
+            
+            /* CIRCULAR AUDIO MODE - CYAN & ORANGE MIX CENTER BUTTON */
             .music-dial-center {
-                background: linear-gradient(135deg, #a832ff 0%, #6a1b9a 100%) !important;
-                box-shadow: 0 3px 10px rgba(106, 27, 154, 0.8), 0 0 8px rgba(168, 50, 255, 0.6) !important;
+                background: linear-gradient(135deg, #00ffff 0%, #ff6a00 100%) !important;
+                box-shadow: 0 0 12px rgba(0, 255, 255, 0.6), 0 0 20px rgba(255, 106, 0, 0.4) !important;
                 color: #ffffff !important;
-                border: 2px solid rgba(255, 255, 255, 0.4) !important;
+                border: 2px solid rgba(255, 255, 255, 0.6) !important;
                 border-radius: 50% !important;
+                text-shadow: 0 1px 4px rgba(0,0,0,0.5) !important;
             }
+            
+            /* Auto-Next Indicators */
             .glow-green-btn {
                 background: #34c759 !important;
                 box-shadow: 0 0 8px #34c759, 0 1px 3px rgba(0,0,0,0.3) !important;
@@ -2118,21 +2118,46 @@ if ($("#mini-player-styles").length === 0) {
                 width: 10px;
                 height: 10px;
                 border-radius: 50%;
-                background: #ff4747;
-                box-shadow: 0 0 6px #ff4747;
+                background: #00ffff;
+                box-shadow: 0 0 8px #00ffff, 0 0 12px #ff6a00;
             }
-            .icon-glow {
-                color: rgba(255, 255, 255, 0.9);
-                text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+            
+            /* COLORFUL ICON UI (Cyan & Orange Hybrid Glow) */
+            .icon-glow-mix {
+                background: linear-gradient(135deg, #00ffff 0%, #ff6a00 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                filter: drop-shadow(0px 1px 3px rgba(0,0,0,0.8)) drop-shadow(0px 0px 4px rgba(0,255,255,0.5));
                 cursor: pointer;
-                transition: color 0.2s, transform 0.2s;
+                transition: filter 0.2s, transform 0.2s;
             }
-            .icon-glow:hover {
-                color: #ff4747;
-                transform: scale(1.1);
+            .icon-glow-mix:hover {
+                filter: drop-shadow(0px 0px 8px #00ffff) drop-shadow(0px 0px 12px #ff6a00);
+                transform: scale(1.15);
+            }
+            
+            /* Fullscreen Custom Border Glow */
+            .fullscreen-glow-box {
+                width: 12px; 
+                height: 12px; 
+                border: 2px solid #00ffff; 
+                border-image: linear-gradient(135deg, #00ffff 0%, #ff6a00 100%) 1;
+                border-radius: 2px; 
+                cursor: pointer;
+                box-shadow: 0 0 5px rgba(0,255,255,0.6);
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+            .fullscreen-glow-box:hover {
+                transform: scale(1.15);
+                box-shadow: 0 0 10px #00ffff, 0 0 14px #ff6a00;
             }
         </style>
     `);
+}
+
+// GLOBAL STATE FLAGS FOR TRACKING FULLSCREEN & MODES
+if (typeof isMiniPlayerFullscreen === 'undefined') {
+    window.isMiniPlayerFullscreen = false;
 }
 
 // Mini Player Base Shell Structure (Starts as Default 145px Compact Circular Dial)
@@ -2147,9 +2172,9 @@ let overlay=$(`
     <div class="mini-control-bar" style="position:absolute; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:space-between; padding:0; background:transparent; border-top:none; backdrop-filter: none; z-index:999; pointer-events:auto; transition: all 0.4s ease;">
         <button id="mini-playpause" class="music-dial-center" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:38px; height:38px; border-radius:50% !important; border:none; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; margin:0; text-shadow:none; z-index:1020;"><i class="fas fa-pause"></i></button>
         
-        <button id="mini-mode-toggle" style="position:absolute; bottom:12px; left:25px; margin:0; border:none; background:none; cursor:pointer; font-size:14px; text-shadow:none; color:#ff3b30; z-index:1020;"><i class="fas fa-play-circle"></i></button>
+        <button id="mini-mode-toggle" style="position:absolute; bottom:12px; left:25px; margin:0; border:none; background:none; cursor:pointer; font-size:14px; text-shadow:none; color:#ff6a00; filter: drop-shadow(0 0 4px #ff6a00); z-index:1020;"><i class="fas fa-play-circle" style="color: #00ffff;"></i></button>
         
-        <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="display:none; flex:1; margin:0 8px; -webkit-appearance:none; height:4px; border-radius:2px; background:linear-gradient(to right,#ff6a00,#ee0979); box-shadow:0 0 8px #ff6a00,0 0 12px #ee0979; cursor:pointer;">
+        <input id="mini-seekbar" type="range" min="0" max="100" value="0" style="display:none; flex:1; margin:0 8px; -webkit-appearance:none; height:4px; border-radius:2px; background:linear-gradient(to right,#00ffff,#ff6a00); box-shadow:0 0 8px #00ffff,0 0 12px #ff6a00; cursor:pointer;">
         
         <button id="mini-fullscreen" style="display:none; color:#00ffff; border:none; background:none; cursor:pointer; font-size:20px; margin-right:8px; text-shadow:0 0 8px #00ffff;"><i class="fas fa-expand"></i></button>
         <button id="mini-auto-next" style="position:absolute; bottom:14px; right:25px; margin:0; width:12px; height:12px; border-radius:50%; border:none; cursor:pointer; transition: all 0.3s; z-index:1020;"></button>
@@ -2159,22 +2184,22 @@ let overlay=$(`
     <div class="photo-bottom-panel">
         
         <div style="width:100%; display:flex; align-items:center;">
-            <input type="range" id="photo-linear-seekbar" min="0" max="100" value="0" class="photo-linear-seekbar">
+            <input type="range" id="photo-linear-seekbar" min="0" max="100" value="0" class="photo-linear-seekbar" style="background: linear-gradient(to right, #00ffff 0%, #ff6a00 0%, rgba(255,255,255,0.2) 0%);">
         </div>
 
         <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
             <div class="seamless-btn-row">
-                <i class="fas fa-volume-up icon-glow" id="photo-volume-icon" style="font-size:14px;"></i>
+                <i class="fas fa-volume-up icon-glow-mix" id="photo-volume-icon" style="font-size:14px;"></i>
                 <input type="range" id="photo-volume-bar" min="0" max="100" value="100" class="photo-volume-slider" style="background: linear-gradient(to right, #ffcc00 100%, rgba(255,255,255,0.2) 100%);">
                 <button id="photo-auto-next" style="width:9px; height:9px; border-radius:50%; border:none; cursor:pointer; margin-left:2px; transition: 0.3s;"></button>
             </div>
             
             <div class="seamless-btn-row" style="gap:15px;">
-                <i class="fas fa-music icon-glow" id="photo-mode-toggle" title="Switch Mode" style="font-size:13px; color: #00ffff; text-shadow: 0 0 4px #00ffff;"></i>
+                <i class="fas fa-music icon-glow-mix" id="photo-mode-toggle" title="Switch Mode" style="font-size:13px;"></i>
                 
-                <i class="fas fa-pause icon-glow" id="photo-action-play" style="font-size:14px;"></i>
-                <div id="photo-action-fullscreen" class="icon-glow" style="width:12px; height:12px; border:1.8px solid rgba(255,255,255,0.85); border-radius:2px; cursor:pointer;"></div>
-                <i class="fas fa-times icon-glow" id="photo-action-close" style="font-size:16px; color:#ff4747;"></i>
+                <i class="fas fa-pause icon-glow-mix" id="photo-action-play" style="font-size:14px;"></i>
+                <div id="photo-action-fullscreen" class="fullscreen-glow-box"></div>
+                <i class="fas fa-times icon-glow-mix" id="photo-action-close" style="font-size:16px;"></i>
             </div>
         </div>
     </div>
@@ -2191,7 +2216,7 @@ let overlay=$(`
     // Proportional Resize Handle for small dial
     player.append('<div class="ui-pin-tip dial-resize-handle" style="position:absolute; bottom:-2px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:10px solid transparent; border-right:10px solid transparent; border-top:8px solid #adadad; z-index:1030;"></div>');
 
-    // Vector Arc Progress Bar for Circular Layout
+    // Vector Arc Progress Bar for Circular Layout (Updated to Cyan & Orange Mix Track)
     player.append(`
         <svg id="svg-half-track" class="non-blocking-svg" viewBox="0 0 200 100" style="position:absolute; top:6px; left:5%; width:90%; height:45%; z-index:999;">
             <path class="clickable-svg-path" d="M 15,95 A 85,85 0 0,1 185,95" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="12" stroke-linecap="round"/>
@@ -2199,13 +2224,13 @@ let overlay=$(`
             <defs>
                 <linearGradient id="half-glow-grad" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stop-color="#00ffff" />
-                    <stop offset="100%" stop-color="#ff00ff" />
+                    <stop offset="100%" stop-color="#ff6a00" />
                 </linearGradient>
             </defs>
         </svg>
     `);
 
-    // Dual-Button Synchronized Auto-next toggler FIXED FOR GLOBAL CONTEXT
+    // Dual-Button Synchronized Auto-next toggler
     const autoNextBtn = $("#mini-auto-next");
     const photoAutoNextBtn = $("#photo-auto-next");
     
@@ -2215,7 +2240,6 @@ let overlay=$(`
     }
     updateAutoNextUI();
 
-    // Directly bind click with local toggle propagation fixed
     autoNextBtn.on("click", function(e) {
         e.stopPropagation();
         isAutoNext = !isAutoNext;
@@ -2249,7 +2273,6 @@ let overlay=$(`
                     if (event.data === YT.PlayerState.PLAYING) roundThumb.removeClass("paused-spin");
                     else roundThumb.addClass("paused-spin");
                 }
-                // Synchronize Icon state in Video Control Bar
                 if (event.data === YT.PlayerState.PLAYING) {
                     $("#photo-action-play").removeClass("fa-play").addClass("fa-pause");
                 } else {
@@ -2308,13 +2331,14 @@ let overlay=$(`
     }
     bindSvgSeekEvents();
 
-    // WORKING LINEAR SEEKBAR FOR SEAMLESS VIDEO UI
+    // WORKING LINEAR SEEKBAR FOR SEAMLESS VIDEO UI (With Custom Colorful Fill Gradient Sync)
     $(document).on("input change", "#photo-linear-seekbar", function(e) {
         e.stopPropagation();
         if (!ytPlayer) return;
-        const pct = $(this).val() / 100;
+        const pct = $(this).val();
         const dur = ytPlayer.getDuration();
-        ytPlayer.seekTo(pct * dur, true);
+        ytPlayer.seekTo((pct / 100) * dur, true);
+        $(this).css('background', `linear-gradient(to right, #00ffff 0%, #ff6a00 ${pct}%, rgba(255,255,255,0.2) ${pct}%)`);
     });
 
     // Proportional Resize Handler
@@ -2356,19 +2380,19 @@ let overlay=$(`
         }
     });
 
-    // Fullscreen and Cancel Cross Actions
+    // FIXED 100% WORKING FULLSCREEN MODE FUNCTIONALITY
     function toggleFullscreenMode() {
         player.addClass("instant-motion"); 
-        if(!isMiniPlayerFullscreen){
+        if(!window.isMiniPlayerFullscreen){
             player.css({ position:"fixed", width:"100vw", height:"100vh", top:"0", left:"0", right:"0", bottom:"0", margin:"0", borderRadius:"0", zIndex:"99999" });
-            isMiniPlayerFullscreen = true;
+            window.isMiniPlayerFullscreen = true;
         }else{
             if(isRoundMusicMode) {
                 player.css({ position:"fixed", width:"145px", height:"145px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"50%", zIndex:"99999" });
             } else {
                 player.css({ position:"fixed", width:"300px", height:"195px", top:"", left:"", right:"10px", bottom:"110px", margin:"", borderRadius:"12px", zIndex:"99999" });
             }
-            isMiniPlayerFullscreen = false;
+            window.isMiniPlayerFullscreen = false;
         }
         setTimeout(() => player.removeClass("instant-motion"), 50);
     }
@@ -2388,7 +2412,6 @@ let overlay=$(`
     let isRoundMusicMode = true; 
     function handleModeSwitch() {
         if (isRoundMusicMode) {
-            // Morph into Seamless Mixed Video Layout
             player.css({ width: "300px", height: "195px", borderRadius: "12px", background: "#000000", boxShadow: "0 12px 32px rgba(0,0,0,0.6)", border: "none" });
             $(".ui-pin-tip, #svg-half-track").remove();
             
@@ -2401,7 +2424,6 @@ let overlay=$(`
 
             isRoundMusicMode = false;
         } else {
-            // Morph Back into Round Music Dial Structure
             player.css({
                 width: "145px", height: "145px", borderRadius: "50%",
                 background: "radial-gradient(circle, #fcfcfc 0%, #e0e0e0 70%, #b8b8b8 100%)",
@@ -2418,7 +2440,7 @@ let overlay=$(`
                     <defs>
                         <linearGradient id="half-glow-grad" x1="0%" y1="0%" x2="100%" y2="0%">
                             <stop offset="0%" stop-color="#00ffff" />
-                            <stop offset="100%" stop-color="#ff00ff" />
+                            <stop offset="100%" stop-color="#ff6a00" />
                         </linearGradient>
                     </defs>
                 </svg>
@@ -2458,6 +2480,7 @@ let overlay=$(`
                 
                 $("#mini-seekbar").val(percentage);
                 $("#photo-linear-seekbar").val(percentage);
+                $("#photo-linear-seekbar").css('background', `linear-gradient(to right, #00ffff 0%, #ff6a00 ${percentage}%, rgba(255,255,255,0.2) ${percentage}%)`);
 
                 const path = document.getElementById("svg-half-progress");
                 if (path && isRoundMusicMode) {
@@ -2472,7 +2495,6 @@ let overlay=$(`
     }
 }
 
-// FULLY RESTORED NEXT VIDEO ENGINE
 function playNextVideo(){
     if(!currentVideoListItem) return;
     let nextDiv=currentVideoListItem.parentElement.nextElementSibling;
@@ -2484,6 +2506,12 @@ function playNextVideo(){
         }
     }
 }
+                
+                    
+
+
+                            
+
 
 
 
