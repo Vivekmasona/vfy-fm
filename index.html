@@ -2005,6 +2005,12 @@ function playMiniVideoPlayer(videoId){
 
                                 
 
+                                 
+
+                
+                    
+
+
 // 1. DYNAMIC COMPACT DIAL STYLES (Custom Yellow Thumb & Perfect Gradient Mix)
 if ($("#mini-player-styles").length === 0) {
     $("head").append(`
@@ -2069,7 +2075,6 @@ if ($("#mini-player-styles").length === 0) {
                 flex-direction: column; 
                 gap: 10px; 
                 z-index: 1025; 
-                /* Strict gradient transition to avoid top blur artifacts */
                 background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.6) 65%, rgba(0,0,0,0) 100%) !important;
             }
             .seamless-btn-row {
@@ -2093,7 +2098,7 @@ if ($("#mini-player-styles").length === 0) {
                 width: 10px;
                 height: 10px;
                 border-radius: 50%;
-                background: #ffcc00 !important; /* Yellow Thumb */
+                background: #ffcc00 !important;
                 box-shadow: 0 0 5px #ffcc00;
                 cursor: pointer;
             }
@@ -2200,7 +2205,7 @@ let overlay=$(`
         </svg>
     `);
 
-    // Dual-Button Synchronized Auto-next toggler
+    // Dual-Button Synchronized Auto-next toggler FIXED FOR GLOBAL CONTEXT
     const autoNextBtn = $("#mini-auto-next");
     const photoAutoNextBtn = $("#photo-auto-next");
     
@@ -2210,7 +2215,14 @@ let overlay=$(`
     }
     updateAutoNextUI();
 
-    $(document).on("click", "#mini-auto-next, #photo-auto-next", function(e) {
+    // Directly bind click with local toggle propagation fixed
+    autoNextBtn.on("click", function(e) {
+        e.stopPropagation();
+        isAutoNext = !isAutoNext;
+        updateAutoNextUI();
+    });
+
+    photoAutoNextBtn.on("click", function(e) {
         e.stopPropagation();
         isAutoNext = !isAutoNext;
         updateAutoNextUI();
@@ -2459,10 +2471,19 @@ let overlay=$(`
         requestAnimationFrame(updateSeekBar);
     }
 }
-                
-                    
 
-
+// FULLY RESTORED NEXT VIDEO ENGINE
+function playNextVideo(){
+    if(!currentVideoListItem) return;
+    let nextDiv=currentVideoListItem.parentElement.nextElementSibling;
+    if(nextDiv){
+        let nextItem=nextDiv.querySelector(".music-item");
+        if(nextItem){
+            setCurrentVideo(nextItem);
+            playMiniVideoPlayer($(nextItem).attr("vid"));
+        }
+    }
+}
 
 
 
