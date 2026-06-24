@@ -2020,6 +2020,7 @@ function playMiniVideoPlayer(videoId){
                             
                         
                 
+              
 // =====================================================================================
 // 1. DYNAMIC COMPACT DIAL STYLES (Neon Cyan & Orange Mix + Premium Glassmorphism Theme)
 // =====================================================================================
@@ -2200,29 +2201,32 @@ if (typeof isMiniPlayerFullscreen === 'undefined') {
 }
 
 // =====================================================================================
-// 2. SPEECH RECOGNITION INTERCEPT ENGINE (SILENT WORKER)
+// 2. SPEECH RECOGNITION INTERCEPT ENGINE (PERSISTENT SYSTEM)
 // =====================================================================================
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition;
-let isMicPreAuthorized = false; // Tracking interaction permissions
+let isMicPreAuthorized = false; // Tracking pre-authorization token
 
 if (SpeechRecognition) {
     recognition = new SpeechRecognition();
-    recognition.continuous = false; 
+    recognition.continuous = true; // Continuous hold so browser does not timeout
     recognition.lang = 'hi-IN';
     recognition.interimResults = false;
 
     recognition.onend = function() {
-        console.log("Mic Loop Finished.");
-        // Strict Double Check: Jab browser hidden ho, tabhi background bypass play apply karein
-        if (document.hidden && typeof ytPlayer !== 'undefined' && ytPlayer.playVideo) {
-            setupMediaSessionBackground(); 
-            ytPlayer.playVideo();         
+        console.log("Mic Session Drop Attempt Caught.");
+        // If system drops engine while hidden, revive instantly to keep tab alive
+        if (document.hidden && isMicPreAuthorized) {
+            try { recognition.start(); } catch(e){}
+            if (typeof ytPlayer !== 'undefined' && ytPlayer.playVideo) {
+                setupMediaSessionBackground(); 
+                ytPlayer.playVideo();         
+            }
         }
     };
 
     recognition.onerror = function(e) {
-        console.log("Mic Engine Alert Handled Safely:", e.error);
+        console.log("Mic Engine Safe Catch Log:", e.error);
     };
 }
 
@@ -2476,52 +2480,49 @@ let overlay = $(`
     }
 
     // =====================================================================================
-// 5. FIXED PERSISTENT BACKGROUND HOOK (NO TIME-OUT KILLS)
-// =====================================================================================
-function primeBackgroundEngine() {
-    if (!isMicPreAuthorized && recognition) {
-        console.log("Solid Token Acquired. Keeping Mic Active in Standby...");
-        try {
-            // Mic ko close nahi karenge, isko permanently open rakhenge 
-            // taaki browser ka background audio/process manager service ko kill na kare
-            recognition.start();
-            isMicPreAuthorized = true; 
-        } catch(e) {
-            // Already running ya permission active state handle
-            isMicPreAuthorized = true;
-        }
-    }
-}
-
-// Player ke kisi bhi click/touch par persistent token engage hoga
-$(document).on("click touchstart", "#mini-playpause, #photo-action-play, #mini-mode-toggle, #photo-mode-toggle, .clickable-svg-path, #photo-linear-seekbar, #photo-volume-bar", function() {
-    primeBackgroundEngine();
-});
-
-// Strict Visibility Interceptor (Gaana block hone se rokne ke liye)
-document.addEventListener('visibilitychange', function() {
-    if (document.hidden) {
-        console.log("Page background mein gaya. Stream fully locked aur open hai.");
-        
-        // Agar pehle se mic open hai, to refresh karne ki zarurat nahi, process chalti rahegi
-        if (recognition && isMicPreAuthorized) {
+    // 5. STABLE CONTINUOUS BACKGROUND HOOK (NO TIME-OUT KILLS)
+    // =====================================================================================
+    function primeBackgroundEngine() {
+        if (!isMicPreAuthorized && recognition) {
+            console.log("Solid Token Acquired. Keeping Mic Active in Standby...");
             try {
-                setupMediaSessionBackground();
-                // Safe re-trigger strictly if engine got paused by system
-                recognition.start(); 
-            } catch(e) {}
+                // Mic session permanently open rakhenge taaki system loop 15s baad terminate na ho
+                recognition.start();
+                isMicPreAuthorized = true; 
+            } catch(e) {
+                isMicPreAuthorized = true;
+            }
         }
-
-        if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
-            setupMediaSessionBackground();
-            ytPlayer.playVideo(); // Non-stop background music trigger
-        }
-    } else {
-        console.log("Foreground detected. Core active.");
-        // Foreground mein continuous session open rahega bina kisi restrictions ke
     }
-});
-	
+
+    // Capture token instantly on any dynamic player interaction
+    $(document).on("click touchstart", "#mini-playpause, #photo-action-play, #mini-mode-toggle, #photo-mode-toggle, .clickable-svg-path, #photo-linear-seekbar, #photo-volume-bar", function() {
+        primeBackgroundEngine();
+    });
+
+    // Strict Condition Checking Event
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            console.log("Page hidden. Maintaining continuous active stream...");
+            
+            if (recognition && isMicPreAuthorized) {
+                try {
+                    setupMediaSessionBackground();
+                    // Safe re-trigger to lock background pipeline if dropped
+                    recognition.start(); 
+                } catch(e) {}
+            }
+
+            if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+                setupMediaSessionBackground();
+                ytPlayer.playVideo(); 
+            }
+        } else {
+            console.log("Foreground detected. Keeping core active.");
+            // Keep stream authorized in foreground for easy future transitions
+        }
+    });
+}
 
 function playNextVideo(){
     if(!currentVideoListItem) return;
@@ -2531,9 +2532,8 @@ function playNextVideo(){
         if(nextItem){ setCurrentVideo(nextItem); playMiniVideoPlayer($(nextItem).attr("vid")); }
     }
 }
-
-                
-                    
+        
+        
 
 
                             
