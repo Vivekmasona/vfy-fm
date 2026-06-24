@@ -86,26 +86,21 @@
 
 
 
-<script>
-document.getElementById('customHomeBtn').addEventListener('click', () => {
-    console.log("Home screen par bheja ja raha hai...");
+    <script>
+        // Is script tag ke andar ye code aayega
+        document.getElementById('customHomeBtn').addEventListener('click', () => {
+            console.log("Android ko minimize ka signal bhej rahe hain...");
+            
+            if (window.AndroidInterface && window.AndroidInterface.minimizeApp) {
+                window.AndroidInterface.minimizeApp();
+            } else {
+                window.close();
+            }
+        });
+    </script>
+</body>
+</html>
 
-    // 1. Pehle window.close() try karein (kuch devices me support ke liye)
-    window.close();
-
-    // 2. Agar PWA me hai aur window.close() block ho gaya, 
-    // toh ye line user ko app se bahar fenk degi (Home Screen par)
-    setTimeout(() => {
-        // App se exit karne ke liye history clear karke exit karein
-        window.history.go(-(window.history.length - 1)); 
-        
-        // Ya fir seedhe phone ke default exit trigger ko call karein
-        window.location.replace("about:blank");
-    }, 100);
-});
-
-
-</script>	
 
 
 
