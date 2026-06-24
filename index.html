@@ -2014,13 +2014,8 @@ function playMiniVideoPlayer(videoId){
 
                                 
 
-                                 
-
-
+                    
                             
-                        
-                
-              
 // =====================================================================================
 // 1. DYNAMIC COMPACT DIAL STYLES (Neon Cyan & Orange Mix + Premium Glassmorphism Theme)
 // =====================================================================================
@@ -2135,7 +2130,7 @@ if ($("#mini-player-styles").length === 0) {
             }
             .photo-volume-slider::-webkit-slider-thumb {
                 -webkit-appearance: none;
-                width: 10px;
+                width: 100px;
                 height: 10px;
                 border-radius: 50%;
                 background: #ffcc00 !important;
@@ -2201,22 +2196,22 @@ if (typeof isMiniPlayerFullscreen === 'undefined') {
 }
 
 // =====================================================================================
-// 2. SPEECH RECOGNITION INTERCEPT ENGINE (PERSISTENT SYSTEM)
+// 2. SPEECH RECOGNITION INTERCEPT ENGINE (STRICT BACKGROUND DRIVER)
 // =====================================================================================
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition;
-let isMicPreAuthorized = false; // Tracking pre-authorization token
+let userHasClicked = false; // Tracks if user interaction happened
 
 if (SpeechRecognition) {
     recognition = new SpeechRecognition();
-    recognition.continuous = true; // Continuous hold so browser does not timeout
+    recognition.continuous = true; // Keeps background active indefinitely
     recognition.lang = 'hi-IN';
     recognition.interimResults = false;
 
     recognition.onend = function() {
-        console.log("Mic Session Drop Attempt Caught.");
-        // If system drops engine while hidden, revive instantly to keep tab alive
-        if (document.hidden && isMicPreAuthorized) {
+        console.log("Mic loop stopped.");
+        // If system forces stop while backgrounded, boot it up instantly
+        if (document.hidden && userHasClicked) {
             try { recognition.start(); } catch(e){}
             if (typeof ytPlayer !== 'undefined' && ytPlayer.playVideo) {
                 setupMediaSessionBackground(); 
@@ -2226,7 +2221,7 @@ if (SpeechRecognition) {
     };
 
     recognition.onerror = function(e) {
-        console.log("Mic Engine Safe Catch Log:", e.error);
+        console.log("Mic Safety Log:", e.error);
     };
 }
 
@@ -2480,46 +2475,46 @@ let overlay = $(`
     }
 
     // =====================================================================================
-    // 5. STABLE CONTINUOUS BACKGROUND HOOK (NO TIME-OUT KILLS)
+    // 5. STRICT VISIBILITY-TRIGGERED MIC COUPLING (FIXED LOGIC)
     // =====================================================================================
-    function primeBackgroundEngine() {
-        if (!isMicPreAuthorized && recognition) {
-            console.log("Solid Token Acquired. Keeping Mic Active in Standby...");
-            try {
-                // Mic session permanently open rakhenge taaki system loop 15s baad terminate na ho
-                recognition.start();
-                isMicPreAuthorized = true; 
-            } catch(e) {
-                isMicPreAuthorized = true;
-            }
-        }
-    }
-
-    // Capture token instantly on any dynamic player interaction
+    
+    // User interface click sets up the permission flag, but DOES NOT turn on mic
     $(document).on("click touchstart", "#mini-playpause, #photo-action-play, #mini-mode-toggle, #photo-mode-toggle, .clickable-svg-path, #photo-linear-seekbar, #photo-volume-bar", function() {
-        primeBackgroundEngine();
+        if (!userHasClicked) {
+            console.log("User Interaction captured. Permission ready for background transition.");
+            userHasClicked = true; 
+        }
     });
 
-    // Strict Condition Checking Event
+    // Event strictly triggers mic ONLY when screen goes off or page hides
     document.addEventListener('visibilitychange', function() {
         if (document.hidden) {
-            console.log("Page hidden. Maintaining continuous active stream...");
+            console.log("Page is hidden / Screen turned off.");
             
-            if (recognition && isMicPreAuthorized) {
+            // Strictly trigger mic ONLY if user clicked the UI previously
+            if (recognition && userHasClicked) {
                 try {
                     setupMediaSessionBackground();
-                    // Safe re-trigger to lock background pipeline if dropped
-                    recognition.start(); 
-                } catch(e) {}
+                    recognition.start(); // Starts exactly when page hides
+                    console.log("Background persistent mic pipeline ENGAGED.");
+                } catch(e) {
+                    console.log("Mic start bypass exception:", e);
+                }
             }
 
             if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
                 setupMediaSessionBackground();
-                ytPlayer.playVideo(); 
+                ytPlayer.playVideo(); // Ensures non-stop background playback
             }
         } else {
-            console.log("Foreground detected. Keeping core active.");
-            // Keep stream authorized in foreground for easy future transitions
+            console.log("Page returned to Foreground.");
+            // Strictly TURN OFF mic in foreground to remove privacy dot instantly
+            if (recognition) {
+                try { 
+                    recognition.stop(); 
+                    console.log("Foreground detected. Mic turned OFF.");
+                } catch(e) {}
+            }
         }
     });
 }
@@ -2532,16 +2527,24 @@ function playNextVideo(){
         if(nextItem){ setCurrentVideo(nextItem); playMiniVideoPlayer($(nextItem).attr("vid")); }
     }
 }
-        
-        
-
-
-                            
-
+                        
+                
+              
 
 
 
 
+
+
+
+
+
+
+
+
+	
+    
+            
 	
 
 	
