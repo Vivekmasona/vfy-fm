@@ -2020,7 +2020,9 @@ function playMiniVideoPlayer(videoId){
                             
                         
                 
-// 1. DYNAMIC COMPACT DIAL STYLES (Colorful Neon Cyan & Orange Mix + Premium Glossy Glassmorphism Theme)
+                
+                
+    // 1. DYNAMIC COMPACT DIAL STYLES (Colorful Neon Cyan & Orange Mix + Premium Glossy Glassmorphism Theme)
 if ($("#mini-player-styles").length === 0) {
     $("head").append(`
         <style id="mini-player-styles">
@@ -2056,7 +2058,7 @@ if ($("#mini-player-styles").length === 0) {
                 box-shadow: 0 12px 32px rgba(0,0,0,0.6) !important;
             }
             
-            /* GLOSSY AUDIO CENTER BUTTON - NEON CYAN & ORANGE MIX */
+            /* GLOSY AUDIO CENTER BUTTON - NEON CYAN & ORANGE MIX */
             .music-dial-center {
                 background: linear-gradient(135deg, rgba(0, 255, 255, 0.8) 0%, rgba(255, 106, 0, 0.8) 100%) !important;
                 backdrop-filter: blur(4px) !important;
@@ -2318,8 +2320,10 @@ let overlay=$(`
                 }
                 if (event.data === YT.PlayerState.PLAYING) {
                     $("#photo-action-play").removeClass("fa-play").addClass("fa-pause");
+                    $("#mini-playpause i").removeClass("fa-play").addClass("fa-pause");
                 } else {
                     $("#photo-action-play").removeClass("fa-pause").addClass("fa-play");
+                    $("#mini-playpause i").removeClass("fa-pause").addClass("fa-play");
                 }
             },
             onError: event => { if (isAutoNext) playNextVideo(); }
@@ -2411,18 +2415,33 @@ let overlay=$(`
     // Linked Unified Play/Pause logic
     $(document).on("click", "#mini-playpause, #photo-action-play", function(e) {
         e.stopPropagation();
-        if(!ytPlayer) return;
-        const state=ytPlayer.getPlayerState();
-        if(state===YT.PlayerState.PLAYING){ 
-            ytPlayer.pauseVideo(); 
-            $("#mini-playpause i").removeClass("fa-pause").addClass("fa-play"); 
-            if(isRoundMusicMode) roundThumb.addClass("paused-spin");
-        } else { 
-            ytPlayer.playVideo(); 
-            $("#mini-playpause i").removeClass("fa-play").addClass("fa-pause"); 
-            if(isRoundMusicMode) roundThumb.removeClass("paused-spin");
-        }
+        triggerUnifiedPlayPause();
     });
+
+    function triggerUnifiedPlayPause() {
+        if(!ytPlayer) return;
+        const state = ytPlayer.getPlayerState();
+        if(state === YT.PlayerState.PLAYING){ 
+            ytPlayer.pauseVideo(); 
+        } else { 
+            setupMediaSessionBackground();
+            ytPlayer.playVideo(); 
+        }
+    }
+
+    // CRITICAL CORE SYNC: MediaSession registration keeps Chrome from freezing background tab
+    function setupMediaSessionBackground() {
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: 'Premium Mini-Player Active',
+                artist: 'Sonavk Continuous Media',
+                album: 'Glitched System Service',
+                artwork: [{ src: 'https://img.youtube.com/vi/' + videoId + '/hqdefault.jpg', sizes: '512x512', type: 'image/jpeg' }]
+            });
+            navigator.mediaSession.setActionHandler('play', () => { if(ytPlayer) ytPlayer.playVideo(); });
+            navigator.mediaSession.setActionHandler('pause', () => { if(ytPlayer) ytPlayer.pauseVideo(); });
+        }
+    }
 
     // WORKING FULLSCREEN MODE FUNCTIONALITY
     function toggleFullscreenMode() {
@@ -2460,11 +2479,9 @@ let overlay=$(`
         player.addClass("instant-motion");
         
         if (isRoundMusicMode) {
-            // Morph into Rectangular Layout & Switch to Solid Backdrop for clear video viewing
             player.removeClass("yt-mini-player-glossy").addClass("yt-mini-player-video-solid");
             player.css({ width: "300px", height: "195px", borderRadius: "12px" });
             
-            // Toggle visibility smoothly without shifting/destroying DOM trees
             $(".ui-pin-tip, #svg-half-track").css({ opacity: 0, visibility: "hidden", pointerEvents: "none" });
             
             roundThumb.css({ opacity: 0, height: "calc(100% - 55px)", borderRadius: "12px 12px 0 0", clipPath: "none" }).removeClass("spinning paused-spin"); 
@@ -2476,7 +2493,6 @@ let overlay=$(`
 
             isRoundMusicMode = false;
         } else {
-            // Morph Back into Round Music Glass Dial Layout
             player.removeClass("yt-mini-player-video-solid").addClass("yt-mini-player-glossy");
             player.css({ width: "145px", height: "145px", borderRadius: "50%" });
             
@@ -2528,6 +2544,50 @@ let overlay=$(`
         }
         requestAnimationFrame(updateSeekBar);
     }
+
+    // =====================================================================================
+    // HARDWARE LOCK SCREEN INTERCEPT LOOP: AUTOMATIC VIRTUAL CLICK PLAY TRIGGER
+    // =====================================================================================
+    let lockScreenGlitchLoop = null;
+
+    function executeInstantVirtualPlay() {
+        if (!ytPlayer) return;
+        
+        // 1. Android/Chrome core hardware driver wake-up sequence
+        setupMediaSessionBackground();
+        
+        // 2. DOM Virtual programmatic click dispatch inside thread frame
+        const currentActiveBtn = isRoundMusicMode ? document.getElementById("mini-playpause") : document.getElementById("photo-action-play");
+        if (currentActiveBtn) {
+            const clickEvent = new MouseEvent('click', {
+                view: window, bubbles: true, cancelable: true
+            });
+            currentActiveBtn.dispatchEvent(clickEvent); // Play switch auto trigger
+        }
+
+        // 3. Fallback direct native player engine reinforcement
+        if (typeof ytPlayer.playVideo === 'function') {
+            ytPlayer.playVideo();
+        }
+    }
+
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            // Jaise hi phone lock hoga ya page background me jayega - Instant 0ms trigger
+            executeInstantVirtualPlay();
+            
+            // Background thread ko alive rakhne ke liye aggressive verification interval lock
+            clearInterval(lockScreenGlitchLoop);
+            lockScreenGlitchLoop = setInterval(function() {
+                if (ytPlayer && ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) {
+                    executeInstantVirtualPlay();
+                }
+            }, 250); // Har 250ms me running status maintain rakhega
+        } else {
+            // Screen On hone par loop automatically clear ho jayega
+            clearInterval(lockScreenGlitchLoop);
+        }
+    });
 }
 
 function playNextVideo(){
@@ -2541,6 +2601,7 @@ function playNextVideo(){
         }
     }
 }
+
                     
                                  
                 
