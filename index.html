@@ -2476,58 +2476,52 @@ let overlay = $(`
     }
 
     // =====================================================================================
-    // 5. SECURE PRE-CLICKED LOCK-SCREEN & MINIMIZE DETECTOR (PROPER SEQUENCE FIX)
-    // =====================================================================================
-    function primeBackgroundEngine() {
-        if (!isMicPreAuthorized && recognition) {
-            console.log("Priming Mic Token on User Click...");
-            try {
-                // Micro-ping chala kar permissions claim karne ke liye trigger
-                recognition.start();
-                setTimeout(() => { 
-                    recognition.stop(); 
-                    isMicPreAuthorized = true; // Claim success
-                }, 100);
-            } catch(e) {
-                isMicPreAuthorized = true;
-            }
+// 5. FIXED PERSISTENT BACKGROUND HOOK (NO TIME-OUT KILLS)
+// =====================================================================================
+function primeBackgroundEngine() {
+    if (!isMicPreAuthorized && recognition) {
+        console.log("Solid Token Acquired. Keeping Mic Active in Standby...");
+        try {
+            // Mic ko close nahi karenge, isko permanently open rakhenge 
+            // taaki browser ka background audio/process manager service ko kill na kare
+            recognition.start();
+            isMicPreAuthorized = true; 
+        } catch(e) {
+            // Already running ya permission active state handle
+            isMicPreAuthorized = true;
         }
     }
-
-    // Capture token on any user interface touch/click
-    $(document).on("click touchstart", "#mini-playpause, #photo-action-play, #mini-mode-toggle, #photo-mode-toggle, .clickable-svg-path, #photo-linear-seekbar, #photo-volume-bar", function() {
-        primeBackgroundEngine();
-    });
-
-    // Strict Condition Checking Event
-    document.addEventListener('visibilitychange', function() {
-        if (document.hidden) {
-            console.log("Page hidden. Verifying pre-authorized state...");
-            
-            // Only trigger mic if user interacted before tab minimize/lock
-            if (recognition && isMicPreAuthorized) {
-                try {
-                    setupMediaSessionBackground();
-                    recognition.start(); // Authorized safely by click token
-                    console.log("Background persistent mic initialized.");
-                } catch(e) {
-                    console.log("Recognition loop transit exception.");
-                }
-            }
-
-            if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
-                ytPlayer.playVideo(); 
-            }
-        } else {
-            console.log("Foreground detected. Forcing clean state...");
-            if (recognition) {
-                try { 
-                    recognition.stop(); 
-                } catch(e) {}
-            }
-        }
-    });
 }
+
+// Player ke kisi bhi click/touch par persistent token engage hoga
+$(document).on("click touchstart", "#mini-playpause, #photo-action-play, #mini-mode-toggle, #photo-mode-toggle, .clickable-svg-path, #photo-linear-seekbar, #photo-volume-bar", function() {
+    primeBackgroundEngine();
+});
+
+// Strict Visibility Interceptor (Gaana block hone se rokne ke liye)
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        console.log("Page background mein gaya. Stream fully locked aur open hai.");
+        
+        // Agar pehle se mic open hai, to refresh karne ki zarurat nahi, process chalti rahegi
+        if (recognition && isMicPreAuthorized) {
+            try {
+                setupMediaSessionBackground();
+                // Safe re-trigger strictly if engine got paused by system
+                recognition.start(); 
+            } catch(e) {}
+        }
+
+        if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+            setupMediaSessionBackground();
+            ytPlayer.playVideo(); // Non-stop background music trigger
+        }
+    } else {
+        console.log("Foreground detected. Core active.");
+        // Foreground mein continuous session open rahega bina kisi restrictions ke
+    }
+});
+	
 
 function playNextVideo(){
     if(!currentVideoListItem) return;
