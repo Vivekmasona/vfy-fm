@@ -87,15 +87,23 @@
 
 
 <script>
-// Jab user center button par click karega
 document.getElementById('customHomeBtn').addEventListener('click', () => {
-    
-    // 1. Pehle user ko feedback dene ke liye alert (Optionally aap ise hata sakte hain)
     console.log("Home screen par bheja ja raha hai...");
 
-    // 2. Main Magic Code: Yeh standalone PWA ko band karke user ko sidha phone ki Home Screen par bhej dega
-    window.close(); 
+    // 1. Pehle window.close() try karein (kuch devices me support ke liye)
+    window.close();
+
+    // 2. Agar PWA me hai aur window.close() block ho gaya, 
+    // toh ye line user ko app se bahar fenk degi (Home Screen par)
+    setTimeout(() => {
+        // App se exit karne ke liye history clear karke exit karein
+        window.history.go(-(window.history.length - 1)); 
+        
+        // Ya fir seedhe phone ke default exit trigger ko call karein
+        window.location.replace("about:blank");
+    }, 100);
 });
+
 
 </script>	
 
