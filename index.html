@@ -2014,12 +2014,7 @@ function playMiniVideoPlayer(videoId){
 
                                 
 
-                                 
-
-
-                            
-                        
-        // =====================================================================================
+// =====================================================================================
 // 1. DYNAMIC COMPACT DIAL STYLES (Neon Cyan & Orange Mix + Premium Glassmorphism Theme)
 // =====================================================================================
 if ($("#mini-player-styles").length === 0) {
@@ -2199,7 +2194,7 @@ if (typeof isMiniPlayerFullscreen === 'undefined') {
 }
 
 // =====================================================================================
-// 2. SPEECH RECOGNITION (MIC ALIVE ENGINE) INITIALIZATION
+// 2. SPEECH RECOGNITION (STRICT LOCK-ONLY CONFIGURATION)
 // =====================================================================================
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition;
@@ -2210,17 +2205,17 @@ if (SpeechRecognition) {
     recognition.lang = 'hi-IN';
     recognition.interimResults = false;
 
-    // Jaise hi mic system loop se automatic stop/off hoga
     recognition.onend = function() {
-        console.log("Mic Lifecycle Ended. Triggering Background Player Sync...");
-        if (typeof ytPlayer !== 'undefined' && ytPlayer.playVideo) {
-            setupMediaSessionBackground(); // Drivers configuration refresh
-            ytPlayer.playVideo();         // Lock screen par direct song start!
+        console.log("Mic Loop Finished.");
+        // Double Check: Background me hi video trigger hoga
+        if (document.hidden && typeof ytPlayer !== 'undefined' && ytPlayer.playVideo) {
+            setupMediaSessionBackground(); 
+            ytPlayer.playVideo();         
         }
     };
 
     recognition.onerror = function(e) {
-        console.log("Mic Silent Catch Exception:", e.error);
+        console.log("Mic Ignored/Muted Error:", e.error);
     };
 }
 
@@ -2373,7 +2368,7 @@ let overlay = $(`
 
     $(document).on("mousemove touchmove", function(e) {
         if (!isDialResizing) return;
-        const currentY = e.clientY || (e.originalEvent.touches ? e.originalEvent.touches[0].clientY : 0);
+        const currentY = e.clientY || (e.originalEvent.touches ? e.originalEvent.touches[0].clientX : 0);
         let newSize = startSize + (currentY - startY);
         if (newSize < 130) newSize = 130; if (newSize > 350) newSize = 350;
         player.css({ width: newSize + "px", height: newSize + "px" });
@@ -2381,22 +2376,17 @@ let overlay = $(`
 
     $(document).on("mouseup touchend", function() { if(isDialResizing) { isDialResizing = false; player.removeClass("instant-motion"); } });
 	
-    // UNIFIED CONTROLS
+    // PLAY/PAUSE INTERACTION
     $(document).on("click", "#mini-playpause, #photo-action-play", function(e) {
         e.stopPropagation();
-        triggerUnifiedPlayPause();
-    });
-
-    function triggerUnifiedPlayPause() {
         if(!ytPlayer) return;
-        const state = ytPlayer.getPlayerState();
-        if(state === YT.PlayerState.PLAYING){ 
+        if(ytPlayer.getPlayerState() === YT.PlayerState.PLAYING){ 
             ytPlayer.pauseVideo(); 
         } else { 
             setupMediaSessionBackground();
             ytPlayer.playVideo(); 
         }
-    }
+    });
 
     function setupMediaSessionBackground() {
         if ('mediaSession' in navigator) {
@@ -2479,30 +2469,32 @@ let overlay = $(`
     }
 
     // =====================================================================================
-    // 5. MASTER INTEGRATION: HARDWARE VISIBILITY INTERCEPTOR (LOCK STATE TRIGGER)
+    // 5. FIXED LOCK-SCREEN & MINIMIZE DETECTOR (STRICT CONDITION CHECK)
     // =====================================================================================
     document.addEventListener('visibilitychange', function() {
         if (document.hidden) {
-            // Jaise hi user power button se phone lock karega
-            console.log("Hardware Lock Detected. Engaging Mic Protection System...");
+            // CONDITION MET: Tab strictly screen se gayab hua (Display off / Minimize)
+            console.log("Tab/Display hidden. Activating strict background hook...");
             
             if (recognition) {
                 try {
-                    recognition.start(); // Mic On -> Keeps page alive during hardware suspension transit
+                    recognition.start(); // Mic ON strictly under hidden mode
                 } catch(e) {
-                    console.log("Recognition loop active");
+                    console.log("Recognition loop bypass.");
                 }
             }
 
-            // Fallback play trigger alongside session wake
             if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
                 setupMediaSessionBackground();
-                ytPlayer.playVideo();
+                ytPlayer.playVideo(); // Direct audio trigger
             }
         } else {
-            // Screen On/Wapas tab me aane par mic instance automatically clean ho jayega
+            // CONDITION BROKEN: User screen par wapas aaya, shut down mic immediately
+            console.log("Tab visible. Forcing mic kill...");
             if (recognition) {
-                try { recognition.stop(); } catch(e) {}
+                try { 
+                    recognition.stop(); 
+                } catch(e) {}
             }
         }
     });
@@ -2516,7 +2508,12 @@ function playNextVideo(){
         if(nextItem){ setCurrentVideo(nextItem); playMiniVideoPlayer($(nextItem).attr("vid")); }
     }
 }
-        
+                                 
+
+
+                            
+                        
+                                    
                 
                 
                
