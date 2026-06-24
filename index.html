@@ -84,6 +84,23 @@
   </button>
 </div>
 
+
+
+<script>
+// Jab user center button par click karega
+document.getElementById('customHomeBtn').addEventListener('click', () => {
+    
+    // 1. Pehle user ko feedback dene ke liye alert (Optionally aap ise hata sakte hain)
+    console.log("Home screen par bheja ja raha hai...");
+
+    // 2. Main Magic Code: Yeh standalone PWA ko band karke user ko sidha phone ki Home Screen par bhej dega
+    window.close(); 
+});
+
+</script>	
+
+
+
 <!-- CSS -->
 
 <style>
@@ -1113,7 +1130,8 @@ width: 50%;
 <span id="brandName"></span></h1>
 
 
-	
+	<button id="customHomeBtn">● Home</button>
+		
 
 
 
