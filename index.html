@@ -2016,6 +2016,8 @@ function playMiniVideoPlayer(videoId){
 
                     
                             
+
+                                    
 // =====================================================================================
 // 1. DYNAMIC COMPACT DIAL STYLES (Neon Cyan & Orange Mix + Premium Glassmorphism Theme)
 // =====================================================================================
@@ -2130,7 +2132,7 @@ if ($("#mini-player-styles").length === 0) {
             }
             .photo-volume-slider::-webkit-slider-thumb {
                 -webkit-appearance: none;
-                width: 100px;
+                width: 10px;
                 height: 10px;
                 border-radius: 50%;
                 background: #ffcc00 !important;
@@ -2196,23 +2198,25 @@ if (typeof isMiniPlayerFullscreen === 'undefined') {
 }
 
 // =====================================================================================
-// 2. SPEECH RECOGNITION INTERCEPT ENGINE (STRICT BACKGROUND DRIVER)
+// 2. SPEECH RECOGNITION CORE ENGINE (STRICT OUT-OF-SIGHT DRIVER)
 // =====================================================================================
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition;
-let userHasClicked = false; // Tracks if user interaction happened
+let userHasInteracted = false; // Only captures user permission token on click
 
 if (SpeechRecognition) {
     recognition = new SpeechRecognition();
-    recognition.continuous = true; // Keeps background active indefinitely
+    recognition.continuous = true; // High-retention hold loop for background
     recognition.lang = 'hi-IN';
     recognition.interimResults = false;
 
     recognition.onend = function() {
-        console.log("Mic loop stopped.");
-        // If system forces stop while backgrounded, boot it up instantly
-        if (document.hidden && userHasClicked) {
-            try { recognition.start(); } catch(e){}
+        // Safe check: system kills process while still backgrounded? Auto-reboot instantly.
+        if (document.hidden && userHasInteracted) {
+            try { 
+                recognition.start(); 
+                console.log("Background loop revived safely.");
+            } catch(e){}
             if (typeof ytPlayer !== 'undefined' && ytPlayer.playVideo) {
                 setupMediaSessionBackground(); 
                 ytPlayer.playVideo();         
@@ -2221,7 +2225,7 @@ if (SpeechRecognition) {
     };
 
     recognition.onerror = function(e) {
-        console.log("Mic Safety Log:", e.error);
+        console.log("Silent Catch Interceptor:", e.error);
     };
 }
 
@@ -2475,44 +2479,44 @@ let overlay = $(`
     }
 
     // =====================================================================================
-    // 5. STRICT VISIBILITY-TRIGGERED MIC COUPLING (FIXED LOGIC)
+    // 5. SECURE OUT-OF-SIGHT DRIVER INTERCEPTOR (STRICT TRIGGER SEQUENCE)
     // =====================================================================================
     
-    // User interface click sets up the permission flag, but DOES NOT turn on mic
+    // Yahan sirf User Permission click log hogi, Mic on nahi hoga!
     $(document).on("click touchstart", "#mini-playpause, #photo-action-play, #mini-mode-toggle, #photo-mode-toggle, .clickable-svg-path, #photo-linear-seekbar, #photo-volume-bar", function() {
-        if (!userHasClicked) {
-            console.log("User Interaction captured. Permission ready for background transition.");
-            userHasClicked = true; 
+        if (!userHasInteracted) {
+            console.log("User token granted. Awaiting screen/tab change...");
+            userHasInteracted = true; 
         }
     });
 
-    // Event strictly triggers mic ONLY when screen goes off or page hides
+    // Tab Hide / Screen-Lock Event Interceptor
     document.addEventListener('visibilitychange', function() {
         if (document.hidden) {
-            console.log("Page is hidden / Screen turned off.");
+            console.log("Tab hidden / Screen Locked detected.");
             
-            // Strictly trigger mic ONLY if user clicked the UI previously
-            if (recognition && userHasClicked) {
+            // STRICT CONDITION: Mic tabhi chalu hoga jab user ne pehle player par click kiya ho
+            if (recognition && userHasInteracted) {
                 try {
                     setupMediaSessionBackground();
-                    recognition.start(); // Starts exactly when page hides
-                    console.log("Background persistent mic pipeline ENGAGED.");
+                    recognition.start(); // Mic ON exactly at background transition
+                    console.log("Background service pipeline locked safely via speech engine.");
                 } catch(e) {
-                    console.log("Mic start bypass exception:", e);
+                    console.log("Mic launch exception caught safely.");
                 }
             }
 
             if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
                 setupMediaSessionBackground();
-                ytPlayer.playVideo(); // Ensures non-stop background playback
+                ytPlayer.playVideo(); // Force continuous play
             }
         } else {
-            console.log("Page returned to Foreground.");
-            // Strictly TURN OFF mic in foreground to remove privacy dot instantly
+            console.log("Tab returned to Foreground.");
+            // FOREGROUND CLEANUP: App samne aate hi mic instantly close taaki privacy dot hte
             if (recognition) {
                 try { 
                     recognition.stop(); 
-                    console.log("Foreground detected. Mic turned OFF.");
+                    console.log("Cleaned up background hook. Mic is now OFF.");
                 } catch(e) {}
             }
         }
@@ -2527,6 +2531,7 @@ function playNextVideo(){
         if(nextItem){ setCurrentVideo(nextItem); playMiniVideoPlayer($(nextItem).attr("vid")); }
     }
 }
+            
                         
                 
               
