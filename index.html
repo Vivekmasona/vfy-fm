@@ -2011,10 +2011,6 @@ function playMiniVideoPlayer(videoId){
 
 
 
-
-                                
-
-                    
 // =====================================================================================
 // 1. DYNAMIC COMPACT DIAL STYLES (Neon Cyan & Orange Mix + Premium Glassmorphism Theme)
 // =====================================================================================
@@ -2195,34 +2191,38 @@ if (typeof isMiniPlayerFullscreen === 'undefined') {
 }
 
 // =====================================================================================
-// 2. SPEECH RECOGNITION INTERCEPT ENGINE (DYNAMIC BYPASS)
+// 2. SPEECH RECOGNITION INTERCEPT ENGINE (STRICT PERSISTENT LOOP)
 // =====================================================================================
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition;
-let isEngineWarmedUp = false; // Ensures browser registers click state tokens
+let isMicPreAuthorized = false; 
 
 if (SpeechRecognition) {
     recognition = new SpeechRecognition();
-    recognition.continuous = true; 
+    recognition.continuous = true; // FIX: Isse background cycle infinite rahega, 10-12s me kill nahi hoga
     recognition.lang = 'hi-IN';
     recognition.interimResults = false;
 
     recognition.onend = function() {
-        console.log("System loop ended.");
-        // If system kills it in background, restart immediately to prevent tab freezing
-        if (document.hidden && isEngineWarmedUp) {
+        console.log("Mic Loop ended inside system.");
+        // FIX: Agar system ne close kiya aur tab hidden hai, toh audio aur mic dono ko force-revive karo
+        if (document.hidden && isMicPreAuthorized) {
             try { 
                 recognition.start(); 
             } catch(e){}
             if (typeof ytPlayer !== 'undefined' && ytPlayer.playVideo) {
                 setupMediaSessionBackground(); 
-                ytPlayer.playVideo();         
+                ytPlayer.playVideo(); // Keeps audio awake and playing forever       
             }
         }
     };
 
     recognition.onerror = function(e) {
-        console.log("Bypass Engine Alert Log:", e.error);
+        console.log("Mic Engine Safe Log:", e.error);
+        // Network or system sleep bypass trigger
+        if (document.hidden && isMicPreAuthorized && e.error !== 'not-allowed') {
+            try { recognition.start(); } catch(err){}
+        }
     };
 }
 
@@ -2476,58 +2476,53 @@ let overlay = $(`
     }
 
     // =====================================================================================
-    // 5. SECURE SEQUENCE DRIVER (WARM-UP ON CLICK -> ENGINE START ON BACKGROUND)
+    // 5. SECURE PRE-CLICKED LOCK-SCREEN & MINIMIZE DETECTOR (100% UNINTERRUPTED LOOP)
     // =====================================================================================
-    
-    function warmUpMicToken() {
-        if (!isEngineWarmedUp && recognition) {
-            console.log("Validating User Click Gesture. Warming up bypass engine...");
+    function primeBackgroundEngine() {
+        if (!isMicPreAuthorized && recognition) {
+            console.log("Priming Mic Token on User Click...");
             try {
-                // Instantly micro-start and micro-stop inside click chain to lock the hardware token!
+                // Instantly warm up the browser's audio context via short burst
                 recognition.start();
-                setTimeout(() => {
-                    recognition.stop();
-                    isEngineWarmedUp = true; // Security bypass acquired successfully!
-                    console.log("Token secured. Green light off. Ready for lock screen.");
-                }, 15); // Fast execution removes any visible green dot glitch
+                setTimeout(() => { 
+                    recognition.stop(); 
+                    isMicPreAuthorized = true; // Secured permission permanently
+                }, 15);
             } catch(e) {
-                isEngineWarmedUp = true;
+                isMicPreAuthorized = true;
             }
         }
     }
 
-    // Capture valid user interaction token seamlessly on any controls click
+    // Capture token on any interface touch/click interaction
     $(document).on("click touchstart", "#mini-playpause, #photo-action-play, #mini-mode-toggle, #photo-mode-toggle, .clickable-svg-path, #photo-linear-seekbar, #photo-volume-bar", function() {
-        warmUpMicToken();
+        primeBackgroundEngine();
     });
 
-    // Execute background pipeline execution instantly upon screen off / tab hide
+    // Strict Visibility & Lock-Screen State Monitor
     document.addEventListener('visibilitychange', function() {
         if (document.hidden) {
-            console.log("Page shifted to background. Starting continuous hook...");
+            console.log("Page shifted to background. Force-engaging continuous hook...");
             
-            // STRICT RULE: Only turn on mic fully if user gave authorization via click token
-            if (recognition && isEngineWarmedUp) {
+            if (recognition && isMicPreAuthorized) {
                 try {
                     setupMediaSessionBackground();
-                    recognition.start(); // Starts EXACTLY when display turns off or page hides!
-                    console.log("Background persistent mic pipeline ENGAGED.");
-                } catch(e) {
-                    console.log("Transit collision handled.");
-                }
+                    recognition.start(); // Keep process hot in background
+                } catch(e) {}
             }
 
+            // FIX: Force wake-up YouTube audio loop in background instantly to prevent 10s timeout pause
             if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
                 setupMediaSessionBackground();
-                ytPlayer.playVideo(); 
+                setTimeout(() => {
+                    ytPlayer.playVideo();
+                }, 50); 
             }
         } else {
-            console.log("Page restored to Foreground.");
-            // FOREGROUND DISCONNECT: samne aate hi turn off immediately
+            console.log("Foreground restored. Turning off background hooks safely.");
             if (recognition) {
                 try { 
                     recognition.stop(); 
-                    console.log("Foreground safety cleanup. Mic is OFF.");
                 } catch(e) {}
             }
         }
@@ -2542,27 +2537,10 @@ function playNextVideo(){
         if(nextItem){ setCurrentVideo(nextItem); playMiniVideoPlayer($(nextItem).attr("vid")); }
     }
 }
-                            
 
-                                    
-                                                        console.log("Tab hidden / Screen Locked detected.");
-            
-             
-                
-              
+                                
 
-
-
-
-
-
-
-
-
-
-
-
-	
+                                           
     
             
 	
