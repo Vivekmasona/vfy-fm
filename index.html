@@ -2014,7 +2014,8 @@ function playMiniVideoPlayer(videoId){
                                                 
 
 
-
+    
+        
 // =====================================================================================
 // 1. DYNAMIC COMPACT DIAL STYLES (Neon Cyan & Orange Mix + Premium Glassmorphism Theme)
 // =====================================================================================
@@ -2195,43 +2196,31 @@ if (typeof isMiniPlayerFullscreen === 'undefined') {
 }
 
 // =====================================================================================
-// 2. SPEECH RECOGNITION INTERCEPT ENGINE (INFINITE BACKGROUND FORCED LOOP)
+// 2. SPEECH RECOGNITION INTERCEPT ENGINE (CLEAN SINGLE-TRIGGER SYSTEM)
 // =====================================================================================
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition;
 let isMicPreAuthorized = false; 
-let forceMicActive = false; // स्क्रीन ऑफ होने पर लूप को लॉक करने के लिए
 
 if (SpeechRecognition) {
     recognition = new SpeechRecognition();
-    recognition.continuous = true; // ब्राउज़र को लगातार सुनने के लिए विवश करें
+    recognition.continuous = false; // लगातार रीस्टार्ट का बखेड़ा बंद
     recognition.lang = 'hi-IN';
     recognition.interimResults = false;
 
-    // INFINITE RESTART MECHANISM: माइक बंद होते ही तुरंत दोबारा चालू होगा
     recognition.onend = function() {
-        console.log("Mic Loop Attempted to End.");
-        if (forceMicActive || document.hidden) {
-            try {
-                recognition.start(); // बिना किसी देरी के रीस्टार्ट
-                console.log("Mic Loop Auto-Restarted successfully.");
-            } catch(e) {}
-        }
-        
-        // ग्लिच बाईपास प्लेबैक ट्रिगर
-        if (typeof ytPlayer !== 'undefined' && ytPlayer.playVideo) {
+        console.log("Mic Engine Intercept Done. Resuming Video in Background...");
+        // जैसे ही माइक एक बार शांत होगा, यह तुरंत यूट्यूब प्लेयर को बैकग्राउंड कमांड भेज देगा
+        if (document.hidden && typeof ytPlayer !== 'undefined' && ytPlayer.playVideo) {
             setupMediaSessionBackground(); 
             ytPlayer.playVideo();         
         }
     };
 
     recognition.onerror = function(e) {
-        console.log("Mic Engine Error Bypassed:", e.error);
-        // नेटवर्क या एबॉर्शन एरर आने पर भी लूप को टूटने न दें
-        if (forceMicActive || document.hidden) {
-            setTimeout(() => {
-                try { recognition.start(); } catch(err) {}
-            }, 50);
+        console.log("Mic Intercept Safely Managed:", e.error);
+        if (document.hidden && typeof ytPlayer !== 'undefined' && ytPlayer.playVideo) {
+            ytPlayer.playVideo();
         }
     };
 }
@@ -2486,53 +2475,51 @@ let overlay = $(`
     }
 
     // =====================================================================================
-    // 5. SECURE AUTOMATIC GLITCH DETECTOR (PERFECT TIMING TRIGGER)
+    // 5. SECURE SINGLE-SHOT TIMING MECHANISM (ANTI-FREEZE FIX)
     // =====================================================================================
     function primeBackgroundEngine() {
         if (!isMicPreAuthorized && recognition) {
-            console.log("Priming Mic Token Automating via Interaction...");
+            console.log("Priming Mic Token...");
             try {
                 recognition.start();
                 setTimeout(() => { 
-                    if (!forceMicActive) recognition.stop(); 
+                    recognition.stop(); 
                     isMicPreAuthorized = true; 
-                }, 150);
+                }, 100);
             } catch(e) {
                 isMicPreAuthorized = true;
             }
         }
     }
 
-    // यूजर प्लेयर पर कहीं भी छुएगा, टोकन ऑथराइज हो जाएगा
+    // प्लेयर पर यूज़र की किसी भी पहली एक्टिविटी से टोकन अप्रूव होगा
     $(document).on("click touchstart", "#mini-playpause, #photo-action-play, #mini-mode-toggle, #photo-mode-toggle, .clickable-svg-path, #photo-linear-seekbar, #photo-volume-bar", function() {
         primeBackgroundEngine();
     });
 
-    // AUTOMATIC SCREEN DETECTOR: डिस्प्ले बंद/लॉक होते ही ग्लिच को ऑटो-होल्ड पर डाल देगा
+    // AUTOMATIC SCREEN DETECTOR: लॉक होने पर केवल एक बार माइक फायर करेगा ताकि ऑडियो फ्रीज न हो
     document.addEventListener('visibilitychange', function() {
         if (document.hidden) {
-            console.log("Screen Lock Detected! Activating Automatic Glitch Loop...");
-            forceMicActive = true; 
+            console.log("Screen Locked. Triggering Single-Shot Glitch Intercept...");
             
             if (recognition && isMicPreAuthorized) {
                 try {
                     setupMediaSessionBackground();
-                    recognition.start(); // ऑटोमैटिक माइक स्टार्ट करके ऑडियो थ्रेड फ्रीज करेगा
+                    // केवल एक बार माइक शुरू होगा, जिससे ग्लिच एक्टिव हो जाए लेकिन वीडियो न रुके
+                    recognition.start(); 
                 } catch(e) {
-                    // अगर पहले से चल रहा है तो कैच हैंडल करेगा
+                    console.log("Mic transit skip.");
                 }
             }
 
-            // यूट्यूब वीडियो को बैकग्राउंड में जबरन प्ले मोड पर धकेलना
+            // ब्राउज़र के पॉज़ कमांड को ओवरराइड करने के लिए प्लेबैक पुश
             setTimeout(() => {
                 if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
                     ytPlayer.playVideo(); 
                 }
-            }, 100);
-            
+            }, 150);
         } else {
-            console.log("Foreground detected. Resetting Glitch State...");
-            forceMicActive = false;
+            console.log("Foreground detected. Resetting Engine...");
             if (recognition) {
                 try { 
                     recognition.stop(); 
