@@ -1,125 +1,113 @@
-/* --- Global Reset for Pure Control --- */
+/* --- Global Reset --- */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* --- The Cosmic Canvas (Body) --- */
+/* --- App Balanced Canvas --- */
 body {
-  background: radial-gradient(circle at center, #1a1a2e 0%, #0f0f1c 70%, #08080c 100%);
-  font-family: 'Poppins', sans-serif;
+  /* Aapke app ke screenshot jaisa exact dark-grey/black futuristic theme */
+  background: radial-gradient(circle at top, #1c1c24 0%, #121217 60%, #0a0a0d 100%);
+  font-family: 'Arial', sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
   color: #fff;
   overflow-x: hidden;
+  padding: 10px;
 }
 
-/* --- The Quantum Stage (Slider Container) --- */
+/* --- Ultimate App Slider Frame --- */
 #slider {
-  width: 95%; /* Responsive width */
-  max-width: 1100px;
-  margin: 40px auto;
-  perspective: 2000px;
+  width: 96%; 
+  max-width: 500px; /* Mobile layout ke liye perfect scale */
+  margin: 15px auto;
+  perspective: 1500px;
   position: relative;
   overflow: hidden;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(0, 255, 255, 0.15);
+  border-radius: 20px; /* Screenshot ke elements jaisa smooth round corners */
+  background: #15151c;
+  
+  /* Ekdum patla neon border jo screenshot ke top bar se match karega */
+  border: 1px solid rgba(0, 255, 255, 0.2); 
+  
+  /* Subtle glow taaki app ke baaki buttons ke sath set baithe */
   box-shadow: 
-    0 20px 60px rgba(0, 0, 0, 0.5),
-    0 0 40px rgba(0, 255, 255, 0.15);
+    0 10px 30px rgba(0, 0, 0, 0.7),
+    0 0 25px rgba(0, 255, 255, 0.1);
   transform: translateZ(0);
   
-  /* YAHAN SE CHANGES HAIN: Charo taraf se 2px ka gap */
+  /* Aapka manga hua 2px uniform gap charo taraf se */
   padding: 2px; 
 }
 
-/* --- The Quantum Slides (Image Wrapper) --- */
+/* --- Container for Image --- */
 .slides {
   width: 100%;
   height: 100%;
   display: flex;
   transform-style: preserve-3d;
-  border-radius: 14px; /* Container se 2px kam taaki perfect blend ho */
-  overflow: hidden; /* Shine animation ko bahar jaane se rokega */
+  border-radius: 18px; /* Inner radius adjustment */
+  overflow: hidden;
 }
 
-/* --- The Dimension Images --- */
+/* --- Perfect Fit Image --- */
 .slides img {
   width: 100%;
-  height: 100%; /* Image poori height cover karegi */
+  height: 100%;
   display: block;
-  border-radius: 14px; /* Soft edges padding ke andar */
-  object-fit: cover; /* Image full stretch hogi bina quality kharab hue */
+  border-radius: 18px;
+  
+  /* CRITICAL FIX: Image ko stretch hone se rokega aur use perfect natural layout dega */
+  object-fit: cover; 
+  object-position: center top; /* Mukhy face ya focus area center me rakhne ke liye */
+  
   will-change: transform, box-shadow;
-  transition: 
-    transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1),
-    box-shadow 0.6s ease;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.6s ease;
 }
 
-/* --- Holographic 3D Hover & Glow --- */
+/* --- Smooth Lag-free 3D Hover --- */
 .slides img:hover {
-  transform: scale(1.03) rotateY(10deg) rotateX(3deg); /* Balanced 3D */
-  box-shadow: 0 15px 40px rgba(0, 255, 255, 0.3);
+  /* Desktop par subtle rotation, mobile par touch smooth rahega */
+  transform: scale(1.02) rotateY(6deg) rotateX(2deg);
+  box-shadow: 0 10px 30px rgba(0, 255, 255, 0.3);
 }
 
-/* --- Dynamic Quantum Shine Overlay --- */
+/* --- Sleek Premium Shine Overlay --- */
 .slides::before {
   content: '';
   position: absolute;
-  /* Padding area (2px) ko chhod kar sirf image ke upar chalega */
   top: 2px;
   left: 2px;
   width: calc(100% - 4px);
   height: calc(100% - 4px);
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0) 100%);
-  transform: skewX(-25deg) translateX(-150%);
+  /* Ekdum thin white/neon shine stream */
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(0, 255, 255, 0.15) 30%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+  transform: skewX(-30deg) translateX(-150%);
   will-change: transform;
-  animation: quantumShine 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: appShine 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   pointer-events: none;
   z-index: 5;
-  border-radius: 14px;
+  border-radius: 18px;
 }
 
-@keyframes quantumShine {
-  0% { transform: skewX(-25deg) translateX(-150%); }
-  35%, 100% { transform: skewX(-25deg) translateX(150%); }
+@keyframes appShine {
+  0% { transform: skewX(-30deg) translateX(-150%); }
+  25%, 100% { transform: skewX(-30deg) translateX(150%); } /* Quick pass then delay */
 }
 
-/* --- Neon Quantum Heading --- */
+/* --- Title Styling Matching 'SR lofi 2.0' Vibes --- */
 #heading1 {
   display: block;
   text-align: center;
-  font-size: 3em;
-  font-weight: 800;
-  margin: 30px 0;
-  color: #fff;
+  font-size: 1.8em;
+  font-weight: 700;
+  margin: 15px 0 5px 0;
+  color: #00ffff;
   text-transform: uppercase;
-  letter-spacing: 4px;
-  background: linear-gradient(90deg, #fff, #00ffff, #fff);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: neonFlow 4s linear infinite, headingPulse 2s ease-in-out infinite alternate;
-}
-
-@keyframes neonFlow {
-  to { background-position: 200% center; }
-}
-
-@keyframes headingPulse {
-  from { transform: scale(1); text-shadow: 0 0 10px rgba(0, 255, 255, 0.5); }
-  to { transform: scale(1.02); text-shadow: 0 0 25px rgba(0, 255, 255, 0.7); }
-}
-
-/* --- Mobile Responsiveness --- */
-@media (max-width: 768px) {
-  #slider { width: 95%; margin: 20px auto; }
-  #heading1 { font-size: 2em; letter-spacing: 2px; }
-  .slides img:hover { transform: scale(1.02) rotateY(6deg) rotateX(2deg); }
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
 }
 
