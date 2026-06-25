@@ -2011,13 +2011,10 @@ function playMiniVideoPlayer(videoId){
 
 
 
-                                                
 
 
-    
-        
-                                
-        
+
+
 // =====================================================================================
 // 1. DYNAMIC COMPACT DIAL STYLES (Neon Cyan & Orange Mix + Premium Glassmorphism Theme)
 // =====================================================================================
@@ -2049,6 +2046,7 @@ if ($("#mini-player-styles").length === 0) {
             .non-blocking-svg { pointer-events: none !important; }
             .clickable-svg-path { pointer-events: stroke !important; cursor: pointer; }
             .dial-resize-handle { cursor: nwse-resize !important; background: rgba(255,255,255,0.5) !important; }
+            
             .photo-bottom-panel {
                 display: none; position: absolute; bottom: 0; left: 0; width: 100%; padding: 20px 14px 12px 14px; 
                 box-sizing: border-box; flex-direction: column; gap: 10px; z-index: 1025; 
@@ -2070,59 +2068,66 @@ if ($("#mini-player-styles").length === 0) {
 if (typeof isMiniPlayerFullscreen === 'undefined') window.isMiniPlayerFullscreen = false;
 
 // =====================================================================================
-// 2. HARDCORE BACKGROUND BACKGROUND GLITCH ENGINE (NO MIC, NO THIRD-PARTY API)
+// 2. WEB AUDIO API PERSISTENCE ENGINE (AUTOMATIC BACKGROUND KEEP-ALIVE)
 // =====================================================================================
-let bgForceInterval = null;
-let userWantsPause = false; // ट्रैक करेगा कि यूजर ने खुद पॉज़ किया है या ब्राउज़र ने
+let audioCtx = null;
+let silenceOscillator = null;
 
-function startBackgroundGlitchLoop() {
-    if (bgForceInterval) clearInterval(bgForceInterval);
+function initWebAudioKeepAlive() {
+    if (!audioCtx) {
+        // ब्राउज़र के ऑडियो कॉन्टेक्स्ट को जगाएं
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
     
-    // हर 10 मिलीसेकंड में प्लेयर की स्टेट चेक करके उसे प्ले मोड में धकेलना
-    bgForceInterval = setInterval(() => {
-        if (!userWantsPause && ytPlayer && typeof ytPlayer.getPlayerState === 'function') {
-            const state = ytPlayer.getPlayerState();
-            // अगर ब्राउज़र ने वीडियो को बैकग्राउंड में रोक दिया (PAUSED = 2 या BUFFERING = 3)
-            if (state === 2 || state === 3 || state === 0) {
-                if (state !== 0 || (state === 0 && !isAutoNext)) { // अगर खत्म नहीं हुआ है तो जबरन प्ले करो
-                    try {
-                        ytPlayer.playVideo();
-                    } catch(e) {}
-                }
-            }
-        }
-    }, 10);
-}
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
 
-function stopBackgroundGlitchLoop() {
-    if (bgForceInterval) {
-        clearInterval(bgForceInterval);
-        bgForceInterval = null;
+    // एक हिडन साइलेंट फ़्रीक्वेंसी लूप चलाएं जो ब्राउज़र के ऑडियो थ्रेड को कभी सोने नहीं देगा
+    if (!silenceOscillator) {
+        silenceOscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        
+        silenceOscillator.type = 'sine';
+        silenceOscillator.frequency.value = 440; // नॉर्मल फ़्रीक्वेंसी
+        gainNode.gain.value = 0.001; // वॉल्यूम लगभग जीरो (म्यूट) ताकि कान में आवाज़ न आए
+        
+        silenceOscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        silenceOscillator.start();
+        console.log("Web Audio Keep-Alive Connected Successfully.");
     }
 }
 
-// VISIBILITY DETECTOR LOOPOVER
+// जैसे ही यूजर प्लेयर पर कहीं भी पहला क्लिक करेगा, वेब ऑडियो एक्टिव हो जाएगा
+$(document).on("click touchstart", ".yt-mini-player", function() {
+    initWebAudioKeepAlive();
+});
+
+// ऑटो-वेकअप लूप जब स्क्रीन ऑफ हो
 document.addEventListener('visibilitychange', function() {
     if (document.hidden) {
-        // जैसे ही पेज बैकग्राउंड में जाए या स्क्रीन ऑफ हो, मीडिया सेशन को जगाएं और एग्रेसिव लूप शुरू करें
-        setupMediaSessionBackground();
-        startBackgroundGlitchLoop();
-    } else {
-        // फ्रंटएंड में आने पर नॉर्मल मोड
-        stopBackgroundGlitchLoop();
+        if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        // बैकग्राउंड में जाते ही यूट्यूब प्लेयर को एक बार पुश करें
+        setTimeout(() => {
+            if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+                ytPlayer.playVideo();
+            }
+        }, 100);
     }
 });
 
-function setupMediaSessionBackground() {
+function setupMediaSession() {
     if ('mediaSession' in navigator && ytPlayer) {
         navigator.mediaSession.metadata = new MediaMetadata({
-            title: 'Continuous Player',
-            artist: 'YouTube Native Glitch',
-            album: 'Background Guard Active',
+            title: 'Sonavk Continuous System',
+            artist: 'AudioContext Active',
             artwork: [{ src: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`, sizes: '512x512', type: 'image/jpeg' }]
         });
-        navigator.mediaSession.setActionHandler('play', () => { userWantsPause = false; if(ytPlayer) ytPlayer.playVideo(); });
-        navigator.mediaSession.setActionHandler('pause', () => { userWantsPause = true; if(ytPlayer) ytPlayer.pauseVideo(); });
+        navigator.mediaSession.setActionHandler('play', () => { if(ytPlayer) ytPlayer.playVideo(); });
+        navigator.mediaSession.setActionHandler('pause', () => { if(ytPlayer) ytPlayer.pauseVideo(); });
     }
 }
 
@@ -2149,7 +2154,7 @@ let overlay = $(`
             <div class="seamless-btn-row">
                 <i class="fas fa-volume-up icon-glow-mix" id="photo-volume-icon" style="font-size:14px;"></i>
                 <input type="range" id="photo-volume-bar" min="0" max="100" value="100" class="photo-volume-slider" style="background: linear-gradient(to right, #ffcc00 100%, rgba(255,255,255,0.2) 100%);">
-                <button id="photo-auto-next" style="width:9px; height:9px; border-radius:50%; border:none; cursor:pointer; transition: 0.3s;"></button>
+                <button id="photo-auto-next" style="width:9px; height:9px; border-radius:50%; border:none; cursor:pointer; margin-left:2px; transition: 0.3s;"></button>
             </div>
             <div class="seamless-btn-row" style="gap:15px;">
                 <i class="fas fa-music icon-glow-mix" id="photo-mode-toggle" title="Switch Mode" style="font-size:13px;"></i>
@@ -2204,7 +2209,7 @@ let overlay = $(`
         events: {
             onReady: e => {
                 e.target.playVideo();
-                userWantsPause = false;
+                setupMediaSession();
                 updateSeekBar();
                 makeMiniPlayerLongPressDraggable(".yt-mini-player");
                 if (isRoundMusicMode) roundThumb.addClass("spinning");
@@ -2216,6 +2221,7 @@ let overlay = $(`
                     else roundThumb.addClass("paused-spin");
                 }
                 if (event.data === YT.PlayerState.PLAYING) {
+                    setupMediaSession();
                     $("#photo-action-play, #mini-playpause i").removeClass("fa-play").addClass("fa-pause");
                 } else {
                     $("#photo-action-play, #mini-playpause i").removeClass("fa-pause").addClass("fa-play");
@@ -2226,14 +2232,12 @@ let overlay = $(`
 
     $(document).on("click", "#mini-playpause, #photo-action-play", function(e) {
         e.stopPropagation();
+        initWebAudioKeepAlive(); // हर क्लिक पर स्टेट वैलिडेट करें
         if(!ytPlayer) return;
         if(ytPlayer.getPlayerState() === YT.PlayerState.PLAYING){ 
-            userWantsPause = true;
             ytPlayer.pauseVideo(); 
-            stopBackgroundGlitchLoop();
         } else { 
-            userWantsPause = false;
-            setupMediaSessionBackground();
+            setupMediaSession();
             ytPlayer.playVideo(); 
         }
     });
@@ -2289,7 +2293,12 @@ let overlay = $(`
     }
 
     $(document).on("click", "#mini-mode-toggle, #photo-mode-toggle", function(e) { e.stopPropagation(); handleModeSwitch(); });
-    $(document).on("click", "#photo-action-close", function(e) { e.stopPropagation(); stopBackgroundGlitchLoop(); if(ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo(); player.remove(); });
+    $(document).on("click", "#photo-action-close", function(e) { 
+        e.stopPropagation(); 
+        if(silenceOscillator) { try { silenceOscillator.stop(); } catch(e){} }
+        if(ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo(); 
+        player.remove(); 
+    });
 }
 
 function playNextVideo(){
@@ -2301,24 +2310,22 @@ function playNextVideo(){
     }
 }
 
-            
 
 
 
 
 
 
-                                        
-                                
 
-                                           
+	
+                                                
+
+
     
-            
-	
-
-	
-
-	
+        
+                                
+        
+                    	
 // Prevent Audio play during video
 document.addEventListener("play",e=>{
     if(isVideoMode && ytPlayer && isPlaying && e.target.id==="SAudio") e.target.pause();
