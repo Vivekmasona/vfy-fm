@@ -4,39 +4,38 @@ const dots = document.querySelectorAll(".dot");
 let slideTimer;
 
 function changeSlide(nextIndex) {
-  // Agar manual click se index aaya hai toh wo use karein, nahi toh current index
+  // Agar user ne niche kisi dot par click kiya ho
   if (typeof nextIndex === 'number') {
     index = nextIndex;
   }
 
-  // Boundary checks (Looping slider)
+  // Loop limits
   if (index < 0) index = slides.length - 1;
   if (index >= slides.length) index = 0;
 
-  // Saare slides aur dots se active class hatana (Bina display none use kiye)
+  // Saare slides ko chhupana aur dots se active hatana
   slides.forEach((slide, i) => {
-    slide.classList.remove("active");
+    slide.style.display = "none";
     if (dots[i]) dots[i].classList.remove("active");
   });
 
-  // Sirf current slide aur dot ko active karna
-  slides[index].classList.add("active");
+  // Sirf current slide ko show karna aur dot active karna
+  slides[index].style.display = "block";
   if (dots[index]) dots[index].classList.add("active");
 
-  // Agle slide ke liye index ready karna
+  // Agle slide ka index update
   index++;
 
-  // Timer ko clear karke naya lagana taaki clicks ke waqt glitch na ho
+  // Timer reset taaki clicks par glitch na ho
   clearTimeout(slideTimer);
   slideTimer = setTimeout(changeSlide, 5000);
 }
 
-// Dots par click karne ke liye setup (Professional UX)
+// Dots clicking handler (Professional apps ki tarah)
 dots.forEach((dot, i) => {
-  dot.addEventListener("click", () => {
-    changeSlide(i);
-  });
+  dot.addEventListener("click", () => changeSlide(i));
 });
 
-// Slider ko start karein
+// Start Slider
 changeSlide();
+
