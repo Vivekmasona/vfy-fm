@@ -1,91 +1,78 @@
-/* --- Global Reset --- */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* --- Dark Cosmic App Background --- */
-body {
-  background: #0d0d12; /* Premium flat dark app background */
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
-  color: #ffffff;
-  overflow-x: hidden;
-  padding: 10px 0;
-}
-
 /* --- Seamless Borderless 99% Slider --- */
 #slider {
-  width: 99%; /* Max width on screen */
+  width: 99%; 
   max-width: 500px; 
+  height: 250px; /* Responsive height jisme images stack hongi */
   margin: 15px auto;
   perspective: 1200px;
   position: relative;
   overflow: hidden;
-  
-  /* Sharp professional card look */
-  border-radius: 8px; 
-  
-  /* Completely transparent to mix with body background */
+  border-radius: 8px; /* Sharp modern corners */
   background: transparent;
   border: none; 
-  
-  /* Charo taraf se manga hua 2px gap via padding */
   padding: 2px; 
-  
-  /* Halka sa soft dark shadow jo body ke sath mix rahega */
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   transform: translateZ(0);
 }
 
-/* --- Image Master Wrapper --- */
+/* --- Base Wrapper for Absolute Stacking --- */
 .slides {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  transform-style: preserve-3d;
-  border-radius: 6px; /* Inner radius adjusted for 2px padding (8px - 2px) */
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: calc(100% - 4px);
+  height: calc(100% - 4px);
+  opacity: 0;
+  visibility: hidden;
+  border-radius: 6px;
   overflow: hidden;
-  position: relative;
+  transform-style: preserve-3d;
 }
 
-/* --- Ultra-Fluid Cinematic Image --- */
 .slides img {
   width: 100%;
   height: 100%;
   display: block;
-  border-radius: 6px; /* Matching sharp corners */
+  border-radius: 6px;
   object-fit: cover;
   object-position: center;
-  
-  /* Performance Optimization & Fade In Effect */
-  will-change: transform, opacity;
-  animation: fadeIn 0.4s ease-in-out forwards;
-  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1); 
 }
 
-/* --- Smooth Display Block Transition --- */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.99);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+/* =======================================================
+   THE RANDOM ANIMATION ENGINE (GPU Accelerated & Smooth)
+   ======================================================= */
+
+/* --- 1. Cinematic Zoom & Slide Style --- */
+.slides.style-cinematic {
+  transform: scale(1.08) translateX(30px);
+  transition: opacity 0.6s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
 }
 
-/* --- Clean Professional Hover --- */
-#slider:hover .slides img {
-  transform: scale(1.01); /* Super micro zoom, looks highly professional */
+/* --- 2. Holographic Glass Blur Style --- */
+.slides.style-blur {
+  filter: blur(15px);
+  transform: scale(0.95);
+  transition: opacity 0.5s ease, filter 0.5s ease, transform 0.5s ease, visibility 0.5s;
 }
 
-/* --- Premium Tiranga (Indian Flag) Liquid Shine Overlay --- */
+/* --- 3. Classic Clean Push Style --- */
+.slides.style-slide {
+  transform: translateX(-100%);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.6s;
+}
+
+/* --- Common Active State (Nayi image ko screen par lane ke liye) --- */
+.slides.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1) translateX(0);
+  filter: blur(0px);
+  z-index: 2;
+}
+
+/* =======================================================
+   TIRANGA LIQUID OVERLAY (Always running on top smoothly)
+   ======================================================= */
 .slides::before {
   content: '';
   position: absolute;
@@ -93,17 +80,14 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  
-  /* YAHAN TABDEELI HAI: Indian Flag Colors Transition (Saffron -> White -> Green) */
   background: linear-gradient(
     120deg, 
     rgba(255, 153, 51, 0) 25%, 
-    rgba(255, 153, 51, 0.25) 35%,  /* Saffron (Kesari) */
-    rgba(255, 255, 255, 0.4) 50%,  /* Pure White */
-    rgba(19, 136, 8, 0.25) 65%,   /* India Green */
-    rgba(19, 136, 8, 0) 75%
+    rgba(255, 153, 51, 0.22) 35%, 
+    rgba(255, 255, 255, 0.35) 50%, 
+    rgba(19, 136, 8, 0.22) 65%, 
+    rgba(19, 136, 8, 0) 75
   );
-  
   background-size: 250% 100%;
   background-position: 200% 0;
   will-change: background-position;
@@ -115,17 +99,5 @@ body {
 
 @keyframes liquidSweep {
   0% { background-position: 200% 0; }
-  25%, 100% { background-position: -150% 0; } /* Fast wave with elegant delay */
-}
-
-/* --- Minimalist Studio Text Header --- */
-#heading1 {
-  display: block;
-  text-align: center;
-  font-size: 1.3em;
-  font-weight: 600;
-  letter-spacing: 2px;
-  margin: 15px 0 5px 0;
-  color: #ffffff;
-  text-transform: uppercase;
+  25%, 100% { background-position: -150% 0; }
 }
