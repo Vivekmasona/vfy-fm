@@ -14,71 +14,83 @@ body{
 }
 
 #slider{
-  width:99%;
+  width:95%; /* Thoda margin badhaya taaki 3D rotation cut na ho */
+  max-width: 1200px; /* Large screens par control rakhne ke liye */
   margin:20px auto;
   perspective:1500px;
   position: relative;
   overflow:hidden;
-  border-radius:5px;
-  box-shadow:0 15px 50px rgba(0,255,255,0.2), inset 0 0 30px rgba(0,255,255,0.1);
+  border-radius:12px; /* Smooth corners */
+  box-shadow:0 15px 50px rgba(0,255,255,0.2);
+  transform: translateZ(0); /* GPU acceleration trick */
 }
 
 .slides{
   width:100%;
-  border-radius:5px;
-  display:block; /* images visible */
-  transition: transform 1s ease, filter 1s ease, box-shadow 1s ease;
+  border-radius:12px;
+  display:block;
   transform-style: preserve-3d;
   margin-bottom: 2px;
 }
 
 .slides img{
   width:100%;
-  border-radius:5px;
+  border-radius:12px;
   display:block;
-  transition: transform 0.5s ease, filter 0.5s ease, box-shadow 0.5s ease;
+  /* 'will-change' browser ko pehle se prepare rakhta hai lag-free smooth transition ke liye */
+  will-change: transform, box-shadow; 
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.6s ease;
   box-shadow:0 10px 30px rgba(0,255,255,0.2);
 }
 
-/* Hover 3D effect on images */
+/* Mast 3D Hover Effect bina lag ke */
 .slides img:hover{
-  transform: scale(1.05) rotateY(15deg) rotateX(5deg);
-  filter: brightness(1.2) contrast(1.1);
-  box-shadow:0 20px 60px rgba(0,255,255,0.5);
+  transform: scale(1.03) rotateY(10deg) rotateX(4deg);
+  box-shadow: 0 20px 60px rgba(0,255,255,0.5);
 }
 
-/* Shine overlay */
+/* Shine Overlay (Optimized with translateX) */
 .slides::before{
   content:'';
   position:absolute;
   top:0;
-  left:-50%;
-  width:200%;
+  left:0;
+  width:100%;
   height:100%;
-  background: linear-gradient(120deg, rgba(255,255,255,0.2), rgba(255,255,255,0));
-  transform: skewX(-25deg);
-  animation: shine 3s infinite;
-  border-radius:20px;
+  /* Filter ki jagah shine image par overlay generate karega jo soft lagta hai */
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+  transform: skewX(-25deg) translateX(-150%);
+  will-change: transform;
+  animation: shine 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   pointer-events:none;
+  z-index: 2;
 }
 
+/* Left/Right properties change karne se lag hota tha, isliye ab Translate use kiya hai */
 @keyframes shine{
-  0%{ left:-200%; }
-  50%{ left:100%; }
-  100%{ left:200%; }
+  0%{ transform: skewX(-25deg) translateX(-150%); }
+  30%, 100%{ transform: skewX(-25deg) translateX(150%); } /* 30% ke baad pause lega jo natural lagta hai */
 }
 
-/* Heading */
+/* Heading with Pulsing Glow */
 #heading1{
   display:block;
   text-align:center;
-  font-size:2em;
-  margin:10px 0px;
+  font-size:2.5em;
+  margin:20px 0px;
   color:#00ffff;
-  text-shadow:0 0 10px #0ff, 0 0 20px #0ff;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-shadow:0 0 10px rgba(0,255,255,0.5), 0 0 20px rgba(0,255,255,0.3);
+  animation: pulseGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes pulseGlow {
+  from { text-shadow: 0 0 10px #0ff, 0 0 20px #0ff; }
+  to { text-shadow: 0 0 15px #0ff, 0 0 30px #0ff, 0 0 40px #0ff; }
 }
 
 @media (max-width:567px){
-  #slider{ width:99%; }
-  #heading1{ font-size:1.5em; }
+  #slider{ width:95%; }
+  #heading1{ font-size:1.8em; }
 }	
