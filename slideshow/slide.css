@@ -1,21 +1,19 @@
-/* --- Seamless Borderless 99% Slider --- */
+/* --- Slider Base Setup for Layout Stacking --- */
 #slider {
-  width: 99%; 
-  max-width: 500px; 
-  height: 250px; /* Responsive height jisme images stack hongi */
-  margin: 15px auto;
-  perspective: 1200px;
   position: relative;
+  height: 260px; /* Mobile screen UI ratio ke hisab se ek fixed height zaroori hai */
+  width: 99%;
+  max-width: 500px;
+  margin: 15px auto;
   overflow: hidden;
-  border-radius: 8px; /* Sharp modern corners */
+  border-radius: 8px;
   background: transparent;
-  border: none; 
-  padding: 2px; 
+  border: none;
+  padding: 2px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-  transform: translateZ(0);
 }
 
-/* --- Base Wrapper for Absolute Stacking --- */
+/* --- Slides Wrapper (Ek ke upar ek positions layer banane ke liye) --- */
 .slides {
   position: absolute;
   top: 2px;
@@ -26,78 +24,46 @@
   visibility: hidden;
   border-radius: 6px;
   overflow: hidden;
-  transform-style: preserve-3d;
+  will-change: transform, opacity, filter;
 }
 
 .slides img {
   width: 100%;
   height: 100%;
   display: block;
-  border-radius: 6px;
   object-fit: cover;
   object-position: center;
 }
 
 /* =======================================================
-   THE RANDOM ANIMATION ENGINE (GPU Accelerated & Smooth)
+   ANIMATION LIBRARY (JS dynamically switches between these)
    ======================================================= */
 
-/* --- 1. Cinematic Zoom & Slide Style --- */
+/* Style 1: Cinematic Smooth Zoom Out & Fade */
 .slides.style-cinematic {
-  transform: scale(1.08) translateX(30px);
+  transform: scale(1.08) translateX(20px);
   transition: opacity 0.6s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
 }
 
-/* --- 2. Holographic Glass Blur Style --- */
+/* Style 2: Holographic Glass Blur Dissolve */
 .slides.style-blur {
   filter: blur(15px);
-  transform: scale(0.95);
+  transform: scale(0.96);
   transition: opacity 0.5s ease, filter 0.5s ease, transform 0.5s ease, visibility 0.5s;
 }
 
-/* --- 3. Classic Clean Push Style --- */
+/* Style 3: Clean Fluid Left-Push Slide */
 .slides.style-slide {
   transform: translateX(-100%);
-  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.6s;
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), visibility 0.6s;
 }
 
-/* --- Common Active State (Nayi image ko screen par lane ke liye) --- */
+/* --- Golden Rule: ACTIVE STATE --- */
+/* Jab image active hogi toh wo kisi bhi state se normal layout par smoothly aayegi */
 .slides.active {
   opacity: 1;
   visibility: visible;
   transform: scale(1) translateX(0);
   filter: blur(0px);
-  z-index: 2;
-}
-
-/* =======================================================
-   TIRANGA LIQUID OVERLAY (Always running on top smoothly)
-   ======================================================= */
-.slides::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    120deg, 
-    rgba(255, 153, 51, 0) 25%, 
-    rgba(255, 153, 51, 0.22) 35%, 
-    rgba(255, 255, 255, 0.35) 50%, 
-    rgba(19, 136, 8, 0.22) 65%, 
-    rgba(19, 136, 8, 0) 75
-  );
-  background-size: 250% 100%;
-  background-position: 200% 0;
-  will-change: background-position;
-  animation: liquidSweep 6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
-  pointer-events: none;
-  z-index: 3;
-  border-radius: 6px;
-}
-
-@keyframes liquidSweep {
-  0% { background-position: 200% 0; }
-  25%, 100% { background-position: -150% 0; }
+  z-index: 2; /* Active slide humesha upar dikhegi */
 }
