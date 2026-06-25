@@ -94,7 +94,7 @@ body {
   width: 100%;
   height: 100%;
   
-  /* YAHAN TABDEELI HAI: High-End VFX Laser Beam (Indigo -> Neon Cyan -> Glare White -> Cyan -> Indigo) */
+  /* High-End VFX Laser Beam (Indigo -> Neon Cyan -> Glare White -> Cyan -> Indigo) */
   background: linear-gradient(
     135deg, 
     rgba(15, 12, 41, 0) 30%, 
@@ -109,8 +109,8 @@ body {
   background-position: 200% 0;
   will-change: background-position;
   
-  /* Curve ko fast aur sharp sweep diya hai taaki solid reflection effect lage */
-  animation: liquidSweep 8s cubic-bezier(0.3, 1, 0.2, 1) infinite;
+  /* SPEED DECREASED: Duration ko 5s se badhakar 9s kiya hai, taaki animation ekdum dhere aur liquid smooth chale */
+  animation: liquidSweep 9s cubic-bezier(0.25, 1, 0.4, 1) infinite;
   pointer-events: none;
   z-index: 3;
   border-radius: 6px;
@@ -118,7 +118,7 @@ body {
 
 @keyframes liquidSweep {
   0% { background-position: 200% 0; }
-  20%, 100% { background-position: -150% 0; } /* Fast swift motion + resting premium pause */
+  35%, 100% { background-position: -150% 0; } /* 35% tak elegant dhere se sweep karega, baaki time premium rest lega */
 }
 
 /* --- Minimalist Studio Text Header --- */
