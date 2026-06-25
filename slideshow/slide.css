@@ -27,7 +27,7 @@ body {
   position: relative;
   overflow: hidden;
   
-  /* BORDER RADIUS KAM KIYA: 24px se seedhe 8px sharp professional card look */
+  /* Sharp professional card look */
   border-radius: 8px; 
   
   /* Completely transparent to mix with body background */
@@ -85,7 +85,7 @@ body {
   transform: scale(1.01); /* Super micro zoom, looks highly professional */
 }
 
-/* --- Premium Organic Liquid Shine Overlay --- */
+/* --- Premium Tiranga (Indian Flag) Liquid Shine Overlay --- */
 .slides::before {
   content: '';
   position: absolute;
@@ -93,13 +93,17 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  /* Ultra-soft reflection that swipes seamlessly across the image */
+  
+  /* YAHAN TABDEELI HAI: Indian Flag Colors Transition (Saffron -> White -> Green) */
   background: linear-gradient(
     120deg, 
-    rgba(255, 255, 255, 0) 35%, 
-    rgba(255, 255, 255, 0.15) 50%, 
-    rgba(255, 255, 255, 0) 65%
+    rgba(255, 153, 51, 0) 25%, 
+    rgba(255, 153, 51, 0.25) 35%,  /* Saffron (Kesari) */
+    rgba(255, 255, 255, 0.4) 50%,  /* Pure White */
+    rgba(19, 136, 8, 0.25) 65%,   /* India Green */
+    rgba(19, 136, 8, 0) 75%
   );
+  
   background-size: 250% 100%;
   background-position: 200% 0;
   will-change: background-position;
@@ -111,7 +115,7 @@ body {
 
 @keyframes liquidSweep {
   0% { background-position: 200% 0; }
-  25%, 100% { background-position: -150% 0; }
+  25%, 100% { background-position: -150% 0; } /* Fast wave with elegant delay */
 }
 
 /* --- Minimalist Studio Text Header --- */
