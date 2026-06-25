@@ -1,96 +1,138 @@
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+/* --- Global Reset for Pure Control --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-body{
-  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-  font-family: 'Arial', sans-serif;
+/* --- The Cosmic Canvas (Body) --- */
+body {
+  background: radial-gradient(circle at center, #1a1a2e 0%, #0f0f1c 70%, #08080c 100%);
+  font-family: 'Poppins', sans-serif; /* Modern, sleek font */
   display: flex;
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
+  color: #fff;
+  overflow-x: hidden; /* Prevent horizontal scroll from effects */
 }
 
-#slider{
-  width:95%; /* Thoda margin badhaya taaki 3D rotation cut na ho */
-  max-width: 1200px; /* Large screens par control rakhne ke liye */
-  margin:20px auto;
-  perspective:1500px;
+/* --- The Quantum Stage (Slider Container) --- */
+#slider {
+  width: 90%; /* Responsive width */
+  max-width: 1100px; /* Max size for large screens */
+  margin: 40px auto;
+  perspective: 2000px; /* Enhanced 3D depth */
   position: relative;
-  overflow:hidden;
-  border-radius:12px; /* Smooth corners */
-  box-shadow:0 15px 50px rgba(0,255,255,0.2);
-  transform: translateZ(0); /* GPU acceleration trick */
+  overflow: hidden;
+  border-radius: 16px; /* Smooth, modern corners */
+  background: rgba(255, 255, 255, 0.03); /* Subtle backdrop */
+  border: 1px solid rgba(0, 255, 255, 0.1); /* Faint cyan border */
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.5), /* Deep shadow for pop */
+    0 0 40px rgba(0, 255, 255, 0.15), /* Inner cyan glow */
+    inset 0 0 15px rgba(255, 255, 255, 0.05); /* Inner sheen */
+  transform: translateZ(0); /* Force GPU render */
+  transition: box-shadow 0.5s ease;
 }
 
-.slides{
-  width:100%;
-  border-radius:12px;
-  display:block;
+#slider:hover {
+  box-shadow: 
+    0 25px 70px rgba(0, 0, 0, 0.6),
+    0 0 50px rgba(0, 255, 255, 0.25);
+}
+
+/* --- The Quantum Slides (Image Wrapper) --- */
+.slides {
+  width: 100%;
+  display: flex; /* Flex for potentially multiple slides later */
+  transition: transform 1s cubic-bezier(0.23, 1, 0.32, 1); /* Ultra-smooth curve */
   transform-style: preserve-3d;
-  margin-bottom: 2px;
 }
 
-.slides img{
-  width:100%;
-  border-radius:12px;
-  display:block;
-  /* 'will-change' browser ko pehle se prepare rakhta hai lag-free smooth transition ke liye */
-  will-change: transform, box-shadow; 
-  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.6s ease;
-  box-shadow:0 10px 30px rgba(0,255,255,0.2);
+/* --- The Dimension Images --- */
+.slides img {
+  width: 100%; /* Fill container width */
+  height: auto; /* Maintain aspect ratio */
+  display: block;
+  border-radius: 16px;
+  will-change: transform, box-shadow, filter; /* Pre-render for speed */
+  transition: 
+    transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1), /* Smooth 3D ease-out */
+    box-shadow 0.6s ease,
+    filter 0.6s ease;
+  object-fit: cover; /* Important: Fill space without stretching */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-/* Mast 3D Hover Effect bina lag ke */
-.slides img:hover{
-  transform: scale(1.03) rotateY(10deg) rotateX(4deg);
-  box-shadow: 0 20px 60px rgba(0,255,255,0.5);
+/* --- Holographic 3D Hover & Glow --- */
+.slides img:hover {
+  transform: scale(1.04) rotateY(12deg) rotateX(4deg) translateZ(30px); /* Enhanced 3D pop */
+  filter: brightness(1.1) contrast(1.05) saturate(1.1); /* Vibrant glow */
+  box-shadow: 
+    0 25px 70px rgba(0, 0, 0, 0.5),
+    0 0 50px rgba(0, 255, 255, 0.4); /* Intense cyan hover glow */
 }
 
-/* Shine Overlay (Optimized with translateX) */
-.slides::before{
-  content:'';
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  /* Filter ki jagah shine image par overlay generate karega jo soft lagta hai */
-  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
-  transform: skewX(-25deg) translateX(-150%);
+/* --- Dynamic Quantum Shine Overlay --- */
+.slides::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  /* Multiple gradients for a richer effect */
+  background: 
+    linear-gradient(135deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 60%),
+    linear-gradient(80deg, rgba(0, 255, 255, 0) 45%, rgba(0, 255, 255, 0.15) 50%, rgba(0, 255, 255, 0) 55%);
+  transform: skewX(-20deg) translateX(-150%);
   will-change: transform;
-  animation: shine 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  pointer-events:none;
-  z-index: 2;
+  animation: quantumShine 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+  z-index: 5; /* Above image */
 }
 
-/* Left/Right properties change karne se lag hota tha, isliye ab Translate use kiya hai */
-@keyframes shine{
-  0%{ transform: skewX(-25deg) translateX(-150%); }
-  30%, 100%{ transform: skewX(-25deg) translateX(150%); } /* 30% ke baad pause lega jo natural lagta hai */
+@keyframes quantumShine {
+  0% { transform: skewX(-20deg) translateX(-150%); opacity: 0; }
+  10% { opacity: 1; }
+  30%, 100% { transform: skewX(-20deg) translateX(150%); opacity: 0; }
 }
 
-/* Heading with Pulsing Glow */
-#heading1{
-  display:block;
-  text-align:center;
-  font-size:2.5em;
-  margin:20px 0px;
-  color:#00ffff;
-  font-weight: bold;
-  letter-spacing: 2px;
-  text-shadow:0 0 10px rgba(0,255,255,0.5), 0 0 20px rgba(0,255,255,0.3);
-  animation: pulseGlow 2s ease-in-out infinite alternate;
+/* --- Neon Quantum Heading --- */
+#heading1 {
+  display: block;
+  text-align: center;
+  font-size: 3em;
+  font-weight: 800;
+  margin: 30px 0;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  background: linear-gradient(90deg, #fff, #00ffff, #fff);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: neonFlow 4s linear infinite, headingPulse 2s ease-in-out infinite alternate;
+  text-shadow: 
+    0 0 10px rgba(0, 255, 255, 0.6),
+    0 0 20px rgba(0, 255, 255, 0.4),
+    0 0 40px rgba(0, 255, 255, 0.2);
 }
 
-@keyframes pulseGlow {
-  from { text-shadow: 0 0 10px #0ff, 0 0 20px #0ff; }
-  to { text-shadow: 0 0 15px #0ff, 0 0 30px #0ff, 0 0 40px #0ff; }
+@keyframes neonFlow {
+  to { background-position: 200% center; }
 }
 
-@media (max-width:567px){
-  #slider{ width:95%; }
-  #heading1{ font-size:1.8em; }
-}	
+@keyframes headingPulse {
+  from { transform: scale(1); text-shadow: 0 0 10px rgba(0, 255, 255, 0.6), 0 0 20px rgba(0, 255, 255, 0.4); }
+  to { transform: scale(1.02); text-shadow: 0 0 15px rgba(0, 255, 255, 0.8), 0 0 30px rgba(0, 255, 255, 0.6), 0 0 50px rgba(0, 255, 255, 0.4); }
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 768px) {
+  #slider { width: 95%; margin: 20px auto; }
+  #heading1 { font-size: 2em; letter-spacing: 2px; }
+  .slides img:hover { transform: scale(1.02) rotateY(5deg) rotateX(2deg); } /* Subtle mobile 3D */
+}
