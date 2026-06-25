@@ -2015,10 +2015,6 @@ function playMiniVideoPlayer(videoId){
 
 
 
-
-
-
-
 // =====================================================================================
 // 1. DYNAMIC COMPACT DIAL STYLES (Neon Cyan & Orange Mix + Premium Glassmorphism Theme)
 // =====================================================================================
@@ -2199,30 +2195,24 @@ if (typeof isMiniPlayerFullscreen === 'undefined') {
 }
 
 // =====================================================================================
-// 2. SPEECH RECOGNITION INTERCEPT ENGINE (SILENT WORKER)
+// 2. SILENT AUDIO BACKGROUND KEEPALIVE ENGINE (REPLACED MIC LOOP)
 // =====================================================================================
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recognition;
-let isMicPreAuthorized = false; // Tracking interaction permissions
+let bgAudioLoop = null;
 
-if (SpeechRecognition) {
-    recognition = new SpeechRecognition();
-    recognition.continuous = false; 
-    recognition.lang = 'hi-IN';
-    recognition.interimResults = false;
-
-    recognition.onend = function() {
-        console.log("Mic Loop Finished.");
-        // Strict Double Check: Jab browser hidden ho, tabhi background bypass play apply karein
-        if (document.hidden && typeof ytPlayer !== 'undefined' && ytPlayer.playVideo) {
-            setupMediaSessionBackground(); 
-            ytPlayer.playVideo();         
-        }
-    };
-
-    recognition.onerror = function(e) {
-        console.log("Mic Engine Alert Handled Safely:", e.error);
-    };
+function initBackgroundAudioEngine() {
+    if (!bgAudioLoop) {
+        bgAudioLoop = document.createElement("audio");
+        bgAudioLoop.id = "bg-silent-keepalive";
+        bgAudioLoop.loop = true;
+        bgAudioLoop.muted = false; // System focus के लिए अनम्यूटेड बेस ट्रैक
+        bgAudioLoop.volume = 0.01; // बिल्कुल मौन (ना के बराबर आवाज)
+        // 1 सेकंड का बेस64 साइलेंट एमपी3 ट्रैक ताकि ब्राउज़र ऑडियो थ्रेड एक्टिव रहे
+        bgAudioLoop.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAAD";
+        document.body.appendChild(bgAudioLoop);
+    }
+    
+    // User interaction पर प्ले को ट्रिगर करें ताकि पॉलिसी पास हो जाए
+    bgAudioLoop.play().catch(e => console.log("Silent audio wake-up system ready."));
 }
 
 // =====================================================================================
@@ -2325,6 +2315,7 @@ let overlay = $(`
                 if (event.data === YT.PlayerState.PLAYING) {
                     $("#photo-action-play").removeClass("fa-play").addClass("fa-pause");
                     $("#mini-playpause i").removeClass("fa-play").addClass("fa-pause");
+                    setupMediaSessionBackground(); // प्ले होने पर मीडिया सेशन रिन्यू करें
                 } else {
                     $("#photo-action-play").removeClass("fa-pause").addClass("fa-play");
                     $("#mini-playpause i").removeClass("fa-pause").addClass("fa-play");
@@ -2386,22 +2377,31 @@ let overlay = $(`
     $(document).on("click", "#mini-playpause, #photo-action-play", function(e) {
         e.stopPropagation();
         if(!ytPlayer) return;
+        initBackgroundAudioEngine(); // यूज़र क्लिक पर कीप-अलाइव वेक अप करें
         if(ytPlayer.getPlayerState() === YT.PlayerState.PLAYING){ 
             ytPlayer.pauseVideo(); 
+            if (bgAudioLoop) bgAudioLoop.pause();
         } else { 
             setupMediaSessionBackground();
             ytPlayer.playVideo(); 
+            if (bgAudioLoop) bgAudioLoop.play().catch(e=>{});
         }
     });
 
     function setupMediaSessionBackground() {
         if ('mediaSession' in navigator) {
             navigator.mediaSession.metadata = new MediaMetadata({
-                title: 'Premium Mini-Player', artist: 'Sonavk Continuous System', album: 'Mic Guard Engaged',
+                title: 'Premium Mini-Player', artist: 'Sonavk Continuous System', album: 'Background Mode Active',
                 artwork: [{ src: 'https://img.youtube.com/vi/' + videoId + '/hqdefault.jpg', sizes: '512x512', type: 'image/jpeg' }]
             });
-            navigator.mediaSession.setActionHandler('play', () => { if(ytPlayer) ytPlayer.playVideo(); });
-            navigator.mediaSession.setActionHandler('pause', () => { if(ytPlayer) ytPlayer.pauseVideo(); });
+            navigator.mediaSession.setActionHandler('play', () => { 
+                if(ytPlayer) ytPlayer.playVideo(); 
+                if(bgAudioLoop) bgAudioLoop.play().catch(e=>{});
+            });
+            navigator.mediaSession.setActionHandler('pause', () => { 
+                if(ytPlayer) ytPlayer.pauseVideo(); 
+                if(bgAudioLoop) bgAudioLoop.pause();
+            });
         }
     }
 
@@ -2425,7 +2425,7 @@ let overlay = $(`
     }
 
     $(document).on("click", "#mini-fullscreen, #photo-action-fullscreen", function(e) { e.stopPropagation(); toggleFullscreenMode(); });
-    $(document).on("click", "#mini-close, #photo-action-close", function(e) { e.stopPropagation(); if(typeof stopVideoIfPlaying === "function") stopVideoIfPlaying(); else player.remove(); });
+    $(document).on("click", "#mini-close, #photo-action-close", function(e) { e.stopPropagation(); if(typeof stopVideoIfPlaying === "function") stopVideoIfPlaying(); else player.remove(); if(bgAudioLoop) bgAudioLoop.remove(); });
 
     // LAYOUT SWITCH
     let isRoundMusicMode = true; 
@@ -2475,55 +2475,29 @@ let overlay = $(`
     }
 
     // =====================================================================================
-    // 5. SECURE PRE-CLICKED LOCK-SCREEN & MINIMIZE DETECTOR (PROPER SEQUENCE FIX)
+    // 5. SECURE LOCK-SCREEN & VISIBILITY DETECTOR (INFINITE LOOP ENFORCER)
     // =====================================================================================
-    function primeBackgroundEngine() {
-        if (!isMicPreAuthorized && recognition) {
-            console.log("Priming Mic Token on User Click...");
-            try {
-                // Micro-ping chala kar permissions claim karne ke liye trigger
-                recognition.start();
-                setTimeout(() => { 
-                    recognition.stop(); 
-                    isMicPreAuthorized = true; // Claim success
-                }, 100);
-            } catch(e) {
-                isMicPreAuthorized = true;
-            }
-        }
-    }
-
-    // Capture token on any user interface touch/click
+    // किसी भी इंटरैक्शन पर कीप-अलाइव ऑडियो इंजन रेडी करें
     $(document).on("click touchstart", "#mini-playpause, #photo-action-play, #mini-mode-toggle, #photo-mode-toggle, .clickable-svg-path, #photo-linear-seekbar, #photo-volume-bar", function() {
-        primeBackgroundEngine();
+        initBackgroundAudioEngine();
     });
 
-    // Strict Condition Checking Event
     document.addEventListener('visibilitychange', function() {
         if (document.hidden) {
-            console.log("Page hidden. Verifying pre-authorized state...");
+            console.log("Screen locked or tab backgrounded. Forcing focus...");
+            setupMediaSessionBackground();
             
-            // Only trigger mic if user interacted before tab minimize/lock
-            if (recognition && isMicPreAuthorized) {
-                try {
-                    setupMediaSessionBackground();
-                    recognition.start(); // Authorized safely by click token
-                    console.log("Background persistent mic initialized.");
-                } catch(e) {
-                    console.log("Recognition loop transit exception.");
+            // साइलेंट ऑडियो ट्रैक को जबरन प्ले करें ताकि ब्राउज़र बैकग्राउंड थ्रेड सस्पेंड ना हो
+            if (bgAudioLoop && ytPlayer && ytPlayer.getPlayerState() === YT.PlayerState.PLAYING) {
+                bgAudioLoop.play().catch(e=>{});
+            }
+            
+            // यूट्यूब प्लेयर को 200ms बाद री-ट्रिगर करें ताकि पॉज कमांड बाईपास हो जाए
+            setTimeout(() => {
+                if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+                    ytPlayer.playVideo(); 
                 }
-            }
-
-            if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
-                ytPlayer.playVideo(); 
-            }
-        } else {
-            console.log("Foreground detected. Forcing clean state...");
-            if (recognition) {
-                try { 
-                    recognition.stop(); 
-                } catch(e) {}
-            }
+            }, 200);
         }
     });
 }
@@ -2538,7 +2512,9 @@ function playNextVideo(){
 }
 
 
-	
+
+
+                                        
                                 
 
                                            
