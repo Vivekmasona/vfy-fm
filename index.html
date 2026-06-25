@@ -5473,18 +5473,347 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 	
+<div id="lockOverlay">
+<!-- Big Clock -->
+<div class="big-clock">
+  <div id="clockTime"></div>
+  <div id="clockDate"></div>
+</div>
+
+<!-- Music Item -->
+<div class="music-item">
+  <!-- Left Thumbnail -->
+  <div class="thumb-wrap">
+    <img id="overlayThumb" src="https://via.placeholder.com/100" alt="Thumbnail">
+    <div id="overlayTime" class="time"></div>
+  </div>
+
+  <!-- Middle Title -->
+  <div id="overlayTitle" class="title">
+    VIVEKFY Ai
+  </div>
+
+  <!-- Lock Button -->
+<button id="unlockBtn" class="arrow-btn" aria-label="Unlock">
+  <svg viewBox="0 0 24 24" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17 8V6a5 5 0 0 0-10 0v2H5v14h14V8h-2zm-6 0V6a3 3 0 0 1 6 0v2h-6z" 
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</button>
+</div>
+</div>
+
+ 
   
+	
+<style>
+/* Big Clock */
+.big-clock {
+  width: 90%;
+  margin: 20px auto;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.big-clock #clockTime {
+  font-size: 48px;
+  font-weight: 700;
+  background: linear-gradient(90deg, #ffff00, #00ffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.big-clock #clockDate {
+  font-size: 18px;
+  font-weight: 500;
   
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+	}
 
 
+.thumb-wrap::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+   background: #28130D;
+background: linear-gradient(90deg, rgba(40, 19, 13, 0) 10%, rgba(40, 19, 13, 0.48) 65%, rgba(40, 19, 13, 0.86) 85%, rgba(40, 19, 13, 1) 95%);
+  pointer-events: none;
+	}
 
+/* Time bottom of thumbnail */
+.time {
+  position: absolute;
+  bottom: 1px;
+  left: 7px;
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  font-size: 12px;
+  padding: 2px 7px;
+  border-radius: 6px;
+}
 
+/* Title multi-line */
+.title {
+  flex: 1;
+  font-size: 15px;
+	opacity:0.5;
+  latter-spacing:2px;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
 
+/* Arrow button with round gradient */
+.arrow-btn {
+  background: #fa3e67;
+background: radial-gradient(circle, rgba(250, 62, 103, 1) 0%, rgba(28, 199, 65, 0.09) 40%, rgba(40, 224, 27, 0.05) 60%, rgba(77, 191, 214, 0.88) 69%, rgba(0, 0, 0, 1) 100%);
+	border: 2px #fff;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  color: #333;
+}
 
+.arrow-btn svg {
+  display: block;
+}
 
+@media (prefers-color-scheme: dark) {
+  .music-item { background: linear-gradient(90deg, rgba(255,120,80,0.25), rgba(255,120,80,0)); color: #fff; }
+  .arrow-btn { color: #fff; }
+}
 
+/* Overlay CSS */  
+#lockOverlay {  
+  position: fixed;  
+  top: 0;  
+  left: 0;  
+  width: 100%;  
+  height: 100%;  
+  background: black;  
+  display: none; /* initially hidden */  
+  align-items: center;  
+  justify-content: center;  
+  flex-direction: column;  
+  z-index: 99999; /* sabse upar */  
+  color: white;  
+  font-family: sans-serif;  
+/* Agar aap chahte ho ki overlay active hote hi body scroll bhi block ho jaye */
+body:has(#lockOverlay:visible) {
+  overflow: hidden;
+}  
 
 	
+	
+</style>
+	
+	
+
+<script>
+// Live Clock
+function updateClock(){
+  const now = new Date();
+  const time = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+  const date = now.toLocaleDateString([], {weekday:'short', day:'numeric', month:'short', year:'numeric'});
+  document.getElementById('clockTime').textContent = time;
+  document.getElementById('clockDate').textContent = date;
+}
+setInterval(updateClock, 1000);
+updateClock();
+</script>
+
+    
+
+
+
+<script>
+
+/* ---------------- GLOBAL ELEMENTS ---------------- */
+const footer = document.querySelector('.fixed-footer');
+const progressBar = document.getElementById('progressBarContainer');
+const audioPlayerContainer = document.getElementById('audioPlayerContainer');
+const lockOverlay = document.getElementById("lockOverlay");
+const overlayThumb = document.getElementById("overlayThumb");
+const overlayTitle = document.getElementById("overlayTitle");
+const overlayTime = document.getElementById("overlayTime");
+const audioPlayer = document.getElementById("SAudio");
+const themeMeta = document.getElementById("themeColorMeta");
+const modeToggleBtn = document.getElementById("modeToggleBtn");
+const sideMenu = document.getElementById('sideMenu');
+
+let lastScrollTop = 0;
+let overlayTimer;
+let sideMenuTimer;
+let wakeLock = null;
+let isScrollTicking = false; // Scroll performance optimization ke liye
+
+/* ---------------- OVERLAY FUNCTIONS ---------------- */
+function setStatusBarColor(color) {
+    if (themeMeta) themeMeta.setAttribute("content", color);
+}
+
+function showOverlay() {
+    if (modeToggleBtn.checked) return; // Video mode me overlay nahi dikhega
+    lockOverlay.style.display = "flex";
+    setStatusBarColor("#000000");
+}
+
+function hideOverlay() {
+    lockOverlay.style.display = "none";
+    setStatusBarColor("#00ffff");
+    resetOverlayTimer();
+}
+
+document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
+
+/* ---------------- SIDE MENU FUNCTIONS ---------------- */
+function hideMenu() { sideMenu.classList.add('hidden'); }
+function showMenu() { sideMenu.classList.remove('hidden'); }
+
+/* ---------------- TIMERS ---------------- */
+function resetOverlayTimer(e) {
+    if (e && e.type === "scroll") return;
+    if (overlayTimer) clearTimeout(overlayTimer);
+    
+    if (!modeToggleBtn.checked) {
+        overlayTimer = setTimeout(showOverlay, 12000); // 12 sec inactivity
+    }
+}
+
+function resetSideMenuTimer() {
+    showMenu();
+    if (sideMenuTimer) clearTimeout(sideMenuTimer);
+    sideMenuTimer = setTimeout(hideMenu, 2000); // 2 sec inactivity
+}
+
+/* ---------------- USER ACTIVITY ---------------- */
+['mousemove', 'keydown', 'touchstart', 'click'].forEach(evt => {
+    document.addEventListener(evt, e => {
+        resetOverlayTimer(e);
+        resetSideMenuTimer();
+    }, { passive: true });
+});
+
+// Initial start
+resetOverlayTimer();
+resetSideMenuTimer();
+
+/* ---------------- EVENT-DRIVEN OVERLAY UPDATER ---------------- */
+// Hata diya 500ms ka setInterval! Ab data sirf tab badlega jab actual me change hoga.
+function updateOverlayContent() {
+    const thumbSrc = document.getElementById("Fimg")?.src;
+    if (thumbSrc) overlayThumb.src = thumbSrc;
+
+    const songTitle = document.getElementById("vfytitle")?.textContent;
+    overlayTitle.textContent = songTitle || "";
+
+    const curr = document.getElementById("current-time")?.textContent || "0:00";
+    const total = document.getElementById("total-time")?.textContent || "0:00";
+    overlayTime.textContent = `${curr} / ${total}`;
+}
+
+// Audio progress aur details change hone par overlay update karein
+if (audioPlayer) {
+    audioPlayer.addEventListener('timeupdate', updateOverlayContent);
+    audioPlayer.addEventListener('loadedmetadata', updateOverlayContent);
+}
+
+/* -------- MODE TOGGLE HANDLER -------- */
+function toggleFooterVisibility(hide) {
+    const action = hide ? 'add' : 'remove';
+    footer.classList[action]("hide");
+    progressBar.classList[action]("hide");
+    audioPlayerContainer.classList[action]("hide");
+}
+
+modeToggleBtn.addEventListener("change", () => {
+    if (modeToggleBtn.checked) {
+        toggleFooterVisibility(true); // Video mode -> Hide hamesha
+        if (overlayTimer) clearTimeout(overlayTimer);
+    } else {
+        toggleFooterVisibility(false); // Audio mode -> Show footer
+        resetOverlayTimer();
+    }
+});
+
+/* ---------------- SCROLL HANDLER (OPTIMIZED) ---------------- */
+window.addEventListener("scroll", () => {
+    if (modeToggleBtn.checked) return;
+
+    // requestAnimationFrame scroll lag ko khatam karta hai
+    if (!isScrollTicking) {
+        window.requestAnimationFrame(() => {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            if (scrollTop > lastScrollTop) {
+                toggleFooterVisibility(true);  // Scroll DOWN -> HIDE
+            } else {
+                toggleFooterVisibility(false); // Scroll UP -> SHOW
+            }
+
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+            isScrollTicking = false;
+        });
+        isScrollTicking = true;
+    }
+}, { passive: true });
+
+/* ---------------- WAKE LOCK (REFINED) ---------------- */
+async function keepScreenOn() {
+    if ('wakeLock' in navigator && audioPlayer && !audioPlayer.paused) {
+        try {
+            if (!wakeLock) {
+                wakeLock = await navigator.wakeLock.request('screen');
+                wakeLock.addEventListener('release', () => { wakeLock = null; });
+            }
+        } catch (err) { 
+            console.error("Wake Lock error:", err); 
+        }
+    }
+}
+
+async function releaseWakeLock() {
+    if (wakeLock) {
+        try {
+            await wakeLock.release();
+            wakeLock = null;
+        } catch (err) {
+            console.error("Wake lock release error:", err);
+        }
+    }
+}
+
+// `setInterval` hata kar seedhe audio events par bind kiya
+if (audioPlayer) {
+    audioPlayer.addEventListener('play', keepScreenOn);
+    audioPlayer.addEventListener('pause', releaseWakeLock);
+    audioPlayer.addEventListener('ended', releaseWakeLock);
+}
+
+// Agar user tab badal kar wapas aaye toh wake lock re-acquire karein
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        keepScreenOn();
+    }
+});
+	
+</script>	
+	            
+
+
 
 
     <style>
@@ -5631,402 +5960,4 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-
-
-
-
-
-
-	<div id="lockOverlay">
-  <div class="big-clock">
-    <div id="clockTime"></div>
-    <div id="clockDate"></div>
-  </div>
-
-  <div class="music-card">
-    <div class="thumb-wrap">
-      <img id="overlayThumb" src="https://via.placeholder.com/100" alt="Thumbnail">
-      <div id="overlayTime" class="time">0:00 / 0:00</div>
-    </div>
-
-    <div class="track-info">
-      <div class="sub-title">NOW PLAYING</div>
-      <div id="overlayTitle" class="title">VIVEKFY Ai</div>
-    </div>
-
-    <button id="unlockBtn" class="glow-unlock-btn" aria-label="Unlock">
-      <svg viewBox="0 0 24 24" width="28" height="28" xmlns="http://www.w3.org/2000/svg">
-        <path d="M17 8V6a5 5 0 0 0-10 0v2H5v14h14V8h-2zm-6 0V6a3 3 0 0 1 6 0v2h-6z" 
-              fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
-  </div>
-</div>
-
-
-<style>
-/* --- AMOLED LOCK OVERLAY BASE --- */  
-#lockOverlay {  
-  position: fixed;  
-  top: 0;  
-  left: 0;  
-  width: 100%;  
-  height: 100%;  
-  background: #000000; /* Pure Black AMOLED */  
-  display: none; /* Controlled via JS */  
-  align-items: center;  
-  justify-content: space-between;  
-  flex-direction: column;  
-  padding: 60px 24px 80px 24px;
-  box-sizing: border-box;
-  z-index: 99999;  
-  color: #ffffff;  
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;  
-}
-
-/* Body Scroll Control Feature */
-body:has(#lockOverlay:not([style*="display: none"])) {
-  overflow: hidden;
-}  
-
-/* --- CYBERPUNK BIG CLOCK --- */
-.big-clock {
-  width: 100%;
-  text-align: center;
-  margin-top: 20px;
-}
-
-.big-clock #clockTime {
-  font-size: 68px;
-  font-weight: 800;
-  letter-spacing: -1.5px;
-  line-height: 1.1;
-  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 35px rgba(79, 172, 254, 0.3);
-}
-
-.big-clock #clockDate {
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  color: #8e8e93;
-  margin-top: 12px;
-}
-
-/* --- PREMIUM MUSIC CARD --- */
-.music-card {
-  width: 100%;
-  max-width: 420px;
-  background: rgba(18, 18, 18, 0.75);
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  box-sizing: border-box;
-}
-
-/* Thumbnail Wrapper */
-.thumb-wrap {
-  position: relative;
-  width: 76px;
-  height: 76px;
-  flex-shrink: 0;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-}
-
-.thumb-wrap img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.thumb-wrap::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(0deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0) 60%);
-  pointer-events: none;
-}
-
-/* Timestamp overlay style */
-.time {
-  position: absolute;
-  bottom: 5px;
-  left: 0;
-  right: 0;
-  text-align: center;
-  color: #ffffff;
-  font-size: 10px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.3px;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
-}
-
-/* Metadata Text Stack */
-.track-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0; /* Prevents overflow issues */
-}
-
-.sub-title {
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  color: #00f2fe;
-  text-transform: uppercase;
-}
-
-.title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #ffffff;
-  line-height: 1.3;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* --- PULSING LIGHT GLOW BUTTON --- */
-.glow-unlock-btn {
-  background: #ffffff;
-  border: none;
-  border-radius: 50%;
-  width: 54px;
-  height: 54px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  color: #000000;
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease;
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-  animation: amoledBreathe 3s infinite alternate;
-}
-
-.glow-unlock-btn:active {
-  transform: scale(0.9);
-  background: #d1d1d6;
-}
-
-.glow-unlock-btn svg {
-  display: block;
-}
-
-/* Responsive dark scheme integration fallback styling */
-@media (prefers-color-scheme: dark) {
-  .glow-unlock-btn { color: #000000; background: #ffffff; }
-}
-
-/* Smooth Premium Breathing Ambient Pulse */
-@keyframes amoledBreathe {
-  0% {
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
-    transform: scale(1);
-  }
-  100% {
-    box-shadow: 0 0 25px rgba(0, 242, 254, 0.35);
-    transform: scale(1.04);
-  }
-}
-</style>
-
-
-<script>
-/* ---------------- GLOBAL ELEMENTS ---------------- */
-const footer = document.querySelector('.fixed-footer');
-const progressBar = document.getElementById('progressBarContainer');
-const audioPlayerContainer = document.getElementById('audioPlayerContainer');
-const lockOverlay = document.getElementById("lockOverlay");
-const overlayThumb = document.getElementById("overlayThumb");
-const overlayTitle = document.getElementById("overlayTitle");
-const overlayTime = document.getElementById("overlayTime");
-const audioPlayer = document.getElementById("SAudio");
-const themeMeta = document.getElementById("themeColorMeta");
-const modeToggleBtn = document.getElementById("modeToggleBtn");
-const sideMenu = document.getElementById('sideMenu');
-
-let lastScrollTop = 0;
-let overlayTimer;
-let sideMenuTimer;
-let wakeLock = null;
-let isScrollTicking = false; // Scroll Performance optimization flag
-
-/* ---------------- LIVE CLOCK METRICS ---------------- */
-function updateClock(){
-  const now = new Date();
-  // 24 Hour elegant minimalist presentation format
-  const time = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false});
-  
-  // High-end localized uppercase layout date structure
-  const options = { weekday: 'short', day: 'numeric', month: 'short' };
-  const date = now.toLocaleDateString('en-US', options).toUpperCase();
-  
-  document.getElementById('clockTime').textContent = time;
-  document.getElementById('clockDate').textContent = date;
-}
-setInterval(updateClock, 1000);
-updateClock();
-
-/* ---------------- OVERLAY CONTROLS ---------------- */
-function setStatusBarColor(color) {
-    if (themeMeta) themeMeta.setAttribute("content", color);
-}
-
-function showOverlay() {
-    if (modeToggleBtn && modeToggleBtn.checked) return; // Video mode checks
-    lockOverlay.style.display = "flex";
-    setStatusBarColor("#000000");
-}
-
-function hideOverlay() {
-    lockOverlay.style.display = "none";
-    setStatusBarColor("#00ffff");
-    resetOverlayTimer();
-}
-
-document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
-
-/* ---------------- SIDE MENU SYSTEM ---------------- */
-function hideMenu() { if(sideMenu) sideMenu.classList.add('hidden'); }
-function showMenu() { if(sideMenu) sideMenu.classList.remove('hidden'); }
-
-/* ---------------- IDLE TIMERS ---------------- */
-function resetOverlayTimer(e) {
-    if (e && e.type === "scroll") return;
-    if (overlayTimer) clearTimeout(overlayTimer);
-    
-    if (modeToggleBtn && !modeToggleBtn.checked) {
-        overlayTimer = setTimeout(showOverlay, 12000); // 12 seconds inactivity timeout
-    }
-}
-
-function resetSideMenuTimer() {
-    showMenu();
-    if (sideMenuTimer) clearTimeout(sideMenuTimer);
-    sideMenuTimer = setTimeout(hideMenu, 2000); // 2 seconds UI fade timeout
-}
-
-/* ---------------- GLOBAL DOM ACTIVITY LIFECYCLES ---------------- */
-['mousemove', 'keydown', 'touchstart', 'click'].forEach(evt => {
-    document.addEventListener(evt, e => {
-        resetOverlayTimer(e);
-        resetSideMenuTimer();
-    }, { passive: true });
-});
-
-// Primary Initialize executions
-resetOverlayTimer();
-resetSideMenuTimer();
-
-/* ---------------- EVENT-DRIVEN AUTOMATIC STATE CORRELATIONS ---------------- */
-function updateOverlayContent() {
-    const thumbSrc = document.getElementById("Fimg")?.src;
-    if (thumbSrc && overlayThumb) overlayThumb.src = thumbSrc;
-
-    const songTitle = document.getElementById("vfytitle")?.textContent;
-    if (overlayTitle) overlayTitle.textContent = songTitle || "Unknown Track";
-
-    const curr = document.getElementById("current-time")?.textContent || "0:00";
-    const total = document.getElementById("total-time")?.textContent || "0:00";
-    if (overlayTime) overlayTime.textContent = `${curr} / ${total}`;
-}
-
-// Media state tracking observers bind hook rules
-if (audioPlayer) {
-    audioPlayer.addEventListener('timeupdate', updateOverlayContent);
-    audioPlayer.addEventListener('loadedmetadata', updateOverlayContent);
-}
-
-/* -------- FOOTER CONTROLLER STATES -------- */
-function toggleFooterVisibility(hide) {
-    const action = hide ? 'add' : 'remove';
-    if(footer) footer.classList[action]("hide");
-    if(progressBar) progressBar.classList[action]("hide");
-    if(audioPlayerContainer) audioPlayerContainer.classList[action]("hide");
-}
-
-if(modeToggleBtn) {
-    modeToggleBtn.addEventListener("change", () => {
-        if (modeToggleBtn.checked) {
-            toggleFooterVisibility(true); // Video mode active -> locks down controls 
-            if (overlayTimer) clearTimeout(overlayTimer);
-        } else {
-            toggleFooterVisibility(false); // Fallback standard mode
-            resetOverlayTimer();
-        }
-    });
-}
-
-/* ---------------- SCROLL TICK EVENT CONTROLLERS ---------------- */
-window.addEventListener("scroll", () => {
-    if (modeToggleBtn && modeToggleBtn.checked) return;
-
-    if (!isScrollTicking) {
-        window.requestAnimationFrame(() => {
-            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-            if (scrollTop > lastScrollTop) {
-                toggleFooterVisibility(true);  // Direction DOWN -> Hide view elements
-            } else {
-                toggleFooterVisibility(false); // Direction UP -> Restore components
-            }
-
-            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-            isScrollTicking = false;
-        });
-        isScrollTicking = true;
-    }
-}, { passive: true });
-
-/* ---------------- WAKE LOCK APIS ---------------- */
-async function keepScreenOn() {
-    if ('wakeLock' in navigator && audioPlayer && !audioPlayer.paused) {
-        try {
-            if (!wakeLock) {
-                wakeLock = await navigator.wakeLock.request('screen');
-                wakeLock.addEventListener('release', () => { wakeLock = null; });
-            }
-        } catch (err) { 
-            console.error("Wake Lock system reservation error:", err); 
-        }
-    }
-}
-
-async function releaseWakeLock() {
-    if (wakeLock) {
-        try {
-            await wakeLock.release();
-            wakeLock = null;
-        } catch (err) {
-            console.error("Wake lock execution clearance error:", err);
-        }
-    }
-}
-
-if (audioPlayer) {
-    audioPlayer.addEventListener('play', keepScreenOn);
-    audioPlayer.addEventListener('pause', releaseWakeLock);
-    audioPlayer.addEventListener('ended', releaseWakeLock);
-}
-
-document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
-        keepScreenOn();
-    }
-});
-</script>
+	
