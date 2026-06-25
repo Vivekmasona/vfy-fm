@@ -110,7 +110,7 @@ body {
   will-change: background-position;
   
   /* Curve ko fast aur sharp sweep diya hai taaki solid reflection effect lage */
-  animation: liquidSweep 5s cubic-bezier(0.3, 1, 0.2, 1) infinite;
+  animation: liquidSweep 8s cubic-bezier(0.3, 1, 0.2, 1) infinite;
   pointer-events: none;
   z-index: 3;
   border-radius: 6px;
