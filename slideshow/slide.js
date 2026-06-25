@@ -1,29 +1,42 @@
-var index = 0;
-var slides = document.querySelectorAll(".slides");
-var dot = document.querySelectorAll(".dot");
+let index = 0;
+const slides = document.querySelectorAll(".slides");
+const dots = document.querySelectorAll(".dot");
+let slideTimer;
 
-function changeSlide(){
+function changeSlide(nextIndex) {
+  // Agar manual click se index aaya hai toh wo use karein, nahi toh current index
+  if (typeof nextIndex === 'number') {
+    index = nextIndex;
+  }
 
-  if(index<0){
-    index = slides.length-1;
-  }
-  
-  if(index>slides.length-1){
-    index = 0;
-  }
-  
-  for(let i=0;i<slides.length;i++){
-    slides[i].style.display = "none";
-    dot[i].classList.remove("active");
-  }
-  
-  slides[index].style.display= "block";
-  dot[index].classList.add("active");
-  
+  // Boundary checks (Looping slider)
+  if (index < 0) index = slides.length - 1;
+  if (index >= slides.length) index = 0;
+
+  // Saare slides aur dots se active class hatana (Bina display none use kiye)
+  slides.forEach((slide, i) => {
+    slide.classList.remove("active");
+    if (dots[i]) dots[i].classList.remove("active");
+  });
+
+  // Sirf current slide aur dot ko active karna
+  slides[index].classList.add("active");
+  if (dots[index]) dots[index].classList.add("active");
+
+  // Agle slide ke liye index ready karna
   index++;
-  
-  setTimeout(changeSlide,5000);
-  
+
+  // Timer ko clear karke naya lagana taaki clicks ke waqt glitch na ho
+  clearTimeout(slideTimer);
+  slideTimer = setTimeout(changeSlide, 5000);
 }
 
+// Dots par click karne ke liye setup (Professional UX)
+dots.forEach((dot, i) => {
+  dot.addEventListener("click", () => {
+    changeSlide(i);
+  });
+});
+
+// Slider ko start karein
 changeSlide();
