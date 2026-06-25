@@ -2195,24 +2195,45 @@ if (typeof isMiniPlayerFullscreen === 'undefined') {
 }
 
 // =====================================================================================
-// 2. SILENT AUDIO BACKGROUND KEEPALIVE ENGINE (REPLACED MIC LOOP)
+// 2. SPEECH RECOGNITION INTERCEPT ENGINE (INFINITE BACKGROUND FORCED LOOP)
 // =====================================================================================
-let bgAudioLoop = null;
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition;
+let isMicPreAuthorized = false; 
+let forceMicActive = false; // स्क्रीन ऑफ होने पर लूप को लॉक करने के लिए
 
-function initBackgroundAudioEngine() {
-    if (!bgAudioLoop) {
-        bgAudioLoop = document.createElement("audio");
-        bgAudioLoop.id = "bg-silent-keepalive";
-        bgAudioLoop.loop = true;
-        bgAudioLoop.muted = false; // System focus के लिए अनम्यूटेड बेस ट्रैक
-        bgAudioLoop.volume = 0.01; // बिल्कुल मौन (ना के बराबर आवाज)
-        // 1 सेकंड का बेस64 साइलेंट एमपी3 ट्रैक ताकि ब्राउज़र ऑडियो थ्रेड एक्टिव रहे
-        bgAudioLoop.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAAAD";
-        document.body.appendChild(bgAudioLoop);
-    }
-    
-    // User interaction पर प्ले को ट्रिगर करें ताकि पॉलिसी पास हो जाए
-    bgAudioLoop.play().catch(e => console.log("Silent audio wake-up system ready."));
+if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.continuous = true; // ब्राउज़र को लगातार सुनने के लिए विवश करें
+    recognition.lang = 'hi-IN';
+    recognition.interimResults = false;
+
+    // INFINITE RESTART MECHANISM: माइक बंद होते ही तुरंत दोबारा चालू होगा
+    recognition.onend = function() {
+        console.log("Mic Loop Attempted to End.");
+        if (forceMicActive || document.hidden) {
+            try {
+                recognition.start(); // बिना किसी देरी के रीस्टार्ट
+                console.log("Mic Loop Auto-Restarted successfully.");
+            } catch(e) {}
+        }
+        
+        // ग्लिच बाईपास प्लेबैक ट्रिगर
+        if (typeof ytPlayer !== 'undefined' && ytPlayer.playVideo) {
+            setupMediaSessionBackground(); 
+            ytPlayer.playVideo();         
+        }
+    };
+
+    recognition.onerror = function(e) {
+        console.log("Mic Engine Error Bypassed:", e.error);
+        // नेटवर्क या एबॉर्शन एरर आने पर भी लूप को टूटने न दें
+        if (forceMicActive || document.hidden) {
+            setTimeout(() => {
+                try { recognition.start(); } catch(err) {}
+            }, 50);
+        }
+    };
 }
 
 // =====================================================================================
@@ -2315,7 +2336,6 @@ let overlay = $(`
                 if (event.data === YT.PlayerState.PLAYING) {
                     $("#photo-action-play").removeClass("fa-play").addClass("fa-pause");
                     $("#mini-playpause i").removeClass("fa-play").addClass("fa-pause");
-                    setupMediaSessionBackground(); // प्ले होने पर मीडिया सेशन रिन्यू करें
                 } else {
                     $("#photo-action-play").removeClass("fa-pause").addClass("fa-play");
                     $("#mini-playpause i").removeClass("fa-pause").addClass("fa-play");
@@ -2377,31 +2397,22 @@ let overlay = $(`
     $(document).on("click", "#mini-playpause, #photo-action-play", function(e) {
         e.stopPropagation();
         if(!ytPlayer) return;
-        initBackgroundAudioEngine(); // यूज़र क्लिक पर कीप-अलाइव वेक अप करें
         if(ytPlayer.getPlayerState() === YT.PlayerState.PLAYING){ 
             ytPlayer.pauseVideo(); 
-            if (bgAudioLoop) bgAudioLoop.pause();
         } else { 
             setupMediaSessionBackground();
             ytPlayer.playVideo(); 
-            if (bgAudioLoop) bgAudioLoop.play().catch(e=>{});
         }
     });
 
     function setupMediaSessionBackground() {
         if ('mediaSession' in navigator) {
             navigator.mediaSession.metadata = new MediaMetadata({
-                title: 'Premium Mini-Player', artist: 'Sonavk Continuous System', album: 'Background Mode Active',
+                title: 'Premium Mini-Player', artist: 'Sonavk Continuous System', album: 'Mic Guard Engaged',
                 artwork: [{ src: 'https://img.youtube.com/vi/' + videoId + '/hqdefault.jpg', sizes: '512x512', type: 'image/jpeg' }]
             });
-            navigator.mediaSession.setActionHandler('play', () => { 
-                if(ytPlayer) ytPlayer.playVideo(); 
-                if(bgAudioLoop) bgAudioLoop.play().catch(e=>{});
-            });
-            navigator.mediaSession.setActionHandler('pause', () => { 
-                if(ytPlayer) ytPlayer.pauseVideo(); 
-                if(bgAudioLoop) bgAudioLoop.pause();
-            });
+            navigator.mediaSession.setActionHandler('play', () => { if(ytPlayer) ytPlayer.playVideo(); });
+            navigator.mediaSession.setActionHandler('pause', () => { if(ytPlayer) ytPlayer.pauseVideo(); });
         }
     }
 
@@ -2425,7 +2436,7 @@ let overlay = $(`
     }
 
     $(document).on("click", "#mini-fullscreen, #photo-action-fullscreen", function(e) { e.stopPropagation(); toggleFullscreenMode(); });
-    $(document).on("click", "#mini-close, #photo-action-close", function(e) { e.stopPropagation(); if(typeof stopVideoIfPlaying === "function") stopVideoIfPlaying(); else player.remove(); if(bgAudioLoop) bgAudioLoop.remove(); });
+    $(document).on("click", "#mini-close, #photo-action-close", function(e) { e.stopPropagation(); if(typeof stopVideoIfPlaying === "function") stopVideoIfPlaying(); else player.remove(); });
 
     // LAYOUT SWITCH
     let isRoundMusicMode = true; 
@@ -2475,29 +2486,58 @@ let overlay = $(`
     }
 
     // =====================================================================================
-    // 5. SECURE LOCK-SCREEN & VISIBILITY DETECTOR (INFINITE LOOP ENFORCER)
+    // 5. SECURE AUTOMATIC GLITCH DETECTOR (PERFECT TIMING TRIGGER)
     // =====================================================================================
-    // किसी भी इंटरैक्शन पर कीप-अलाइव ऑडियो इंजन रेडी करें
+    function primeBackgroundEngine() {
+        if (!isMicPreAuthorized && recognition) {
+            console.log("Priming Mic Token Automating via Interaction...");
+            try {
+                recognition.start();
+                setTimeout(() => { 
+                    if (!forceMicActive) recognition.stop(); 
+                    isMicPreAuthorized = true; 
+                }, 150);
+            } catch(e) {
+                isMicPreAuthorized = true;
+            }
+        }
+    }
+
+    // यूजर प्लेयर पर कहीं भी छुएगा, टोकन ऑथराइज हो जाएगा
     $(document).on("click touchstart", "#mini-playpause, #photo-action-play, #mini-mode-toggle, #photo-mode-toggle, .clickable-svg-path, #photo-linear-seekbar, #photo-volume-bar", function() {
-        initBackgroundAudioEngine();
+        primeBackgroundEngine();
     });
 
+    // AUTOMATIC SCREEN DETECTOR: डिस्प्ले बंद/लॉक होते ही ग्लिच को ऑटो-होल्ड पर डाल देगा
     document.addEventListener('visibilitychange', function() {
         if (document.hidden) {
-            console.log("Screen locked or tab backgrounded. Forcing focus...");
-            setupMediaSessionBackground();
+            console.log("Screen Lock Detected! Activating Automatic Glitch Loop...");
+            forceMicActive = true; 
             
-            // साइलेंट ऑडियो ट्रैक को जबरन प्ले करें ताकि ब्राउज़र बैकग्राउंड थ्रेड सस्पेंड ना हो
-            if (bgAudioLoop && ytPlayer && ytPlayer.getPlayerState() === YT.PlayerState.PLAYING) {
-                bgAudioLoop.play().catch(e=>{});
+            if (recognition && isMicPreAuthorized) {
+                try {
+                    setupMediaSessionBackground();
+                    recognition.start(); // ऑटोमैटिक माइक स्टार्ट करके ऑडियो थ्रेड फ्रीज करेगा
+                } catch(e) {
+                    // अगर पहले से चल रहा है तो कैच हैंडल करेगा
+                }
             }
-            
-            // यूट्यूब प्लेयर को 200ms बाद री-ट्रिगर करें ताकि पॉज कमांड बाईपास हो जाए
+
+            // यूट्यूब वीडियो को बैकग्राउंड में जबरन प्ले मोड पर धकेलना
             setTimeout(() => {
                 if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
                     ytPlayer.playVideo(); 
                 }
-            }, 200);
+            }, 100);
+            
+        } else {
+            console.log("Foreground detected. Resetting Glitch State...");
+            forceMicActive = false;
+            if (recognition) {
+                try { 
+                    recognition.stop(); 
+                } catch(e) {}
+            }
         }
     });
 }
@@ -2510,6 +2550,9 @@ function playNextVideo(){
         if(nextItem){ setCurrentVideo(nextItem); playMiniVideoPlayer($(nextItem).attr("vid")); }
     }
 }
+            
+
+
 
 
 
