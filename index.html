@@ -2011,6 +2011,14 @@ function playMiniVideoPlayer(videoId){
 
 
 
+                                                
+
+
+
+
+
+
+
 // =====================================================================================
 // 1. DYNAMIC COMPACT DIAL STYLES (Neon Cyan & Orange Mix + Premium Glassmorphism Theme)
 // =====================================================================================
@@ -2191,38 +2199,29 @@ if (typeof isMiniPlayerFullscreen === 'undefined') {
 }
 
 // =====================================================================================
-// 2. SPEECH RECOGNITION INTERCEPT ENGINE (STRICT PERSISTENT LOOP)
+// 2. SPEECH RECOGNITION INTERCEPT ENGINE (SILENT WORKER)
 // =====================================================================================
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition;
-let isMicPreAuthorized = false; 
+let isMicPreAuthorized = false; // Tracking interaction permissions
 
 if (SpeechRecognition) {
     recognition = new SpeechRecognition();
-    recognition.continuous = true; // FIX: Isse background cycle infinite rahega, 10-12s me kill nahi hoga
+    recognition.continuous = false; 
     recognition.lang = 'hi-IN';
     recognition.interimResults = false;
 
     recognition.onend = function() {
-        console.log("Mic Loop ended inside system.");
-        // FIX: Agar system ne close kiya aur tab hidden hai, toh audio aur mic dono ko force-revive karo
-        if (document.hidden && isMicPreAuthorized) {
-            try { 
-                recognition.start(); 
-            } catch(e){}
-            if (typeof ytPlayer !== 'undefined' && ytPlayer.playVideo) {
-                setupMediaSessionBackground(); 
-                ytPlayer.playVideo(); // Keeps audio awake and playing forever       
-            }
+        console.log("Mic Loop Finished.");
+        // Strict Double Check: Jab browser hidden ho, tabhi background bypass play apply karein
+        if (document.hidden && typeof ytPlayer !== 'undefined' && ytPlayer.playVideo) {
+            setupMediaSessionBackground(); 
+            ytPlayer.playVideo();         
         }
     };
 
     recognition.onerror = function(e) {
-        console.log("Mic Engine Safe Log:", e.error);
-        // Network or system sleep bypass trigger
-        if (document.hidden && isMicPreAuthorized && e.error !== 'not-allowed') {
-            try { recognition.start(); } catch(err){}
-        }
+        console.log("Mic Engine Alert Handled Safely:", e.error);
     };
 }
 
@@ -2476,50 +2475,50 @@ let overlay = $(`
     }
 
     // =====================================================================================
-    // 5. SECURE PRE-CLICKED LOCK-SCREEN & MINIMIZE DETECTOR (100% UNINTERRUPTED LOOP)
+    // 5. SECURE PRE-CLICKED LOCK-SCREEN & MINIMIZE DETECTOR (PROPER SEQUENCE FIX)
     // =====================================================================================
     function primeBackgroundEngine() {
         if (!isMicPreAuthorized && recognition) {
             console.log("Priming Mic Token on User Click...");
             try {
-                // Instantly warm up the browser's audio context via short burst
+                // Micro-ping chala kar permissions claim karne ke liye trigger
                 recognition.start();
                 setTimeout(() => { 
                     recognition.stop(); 
-                    isMicPreAuthorized = true; // Secured permission permanently
-                }, 15);
+                    isMicPreAuthorized = true; // Claim success
+                }, 100);
             } catch(e) {
                 isMicPreAuthorized = true;
             }
         }
     }
 
-    // Capture token on any interface touch/click interaction
+    // Capture token on any user interface touch/click
     $(document).on("click touchstart", "#mini-playpause, #photo-action-play, #mini-mode-toggle, #photo-mode-toggle, .clickable-svg-path, #photo-linear-seekbar, #photo-volume-bar", function() {
         primeBackgroundEngine();
     });
 
-    // Strict Visibility & Lock-Screen State Monitor
+    // Strict Condition Checking Event
     document.addEventListener('visibilitychange', function() {
         if (document.hidden) {
-            console.log("Page shifted to background. Force-engaging continuous hook...");
+            console.log("Page hidden. Verifying pre-authorized state...");
             
+            // Only trigger mic if user interacted before tab minimize/lock
             if (recognition && isMicPreAuthorized) {
                 try {
                     setupMediaSessionBackground();
-                    recognition.start(); // Keep process hot in background
-                } catch(e) {}
+                    recognition.start(); // Authorized safely by click token
+                    console.log("Background persistent mic initialized.");
+                } catch(e) {
+                    console.log("Recognition loop transit exception.");
+                }
             }
 
-            // FIX: Force wake-up YouTube audio loop in background instantly to prevent 10s timeout pause
             if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
-                setupMediaSessionBackground();
-                setTimeout(() => {
-                    ytPlayer.playVideo();
-                }, 50); 
+                ytPlayer.playVideo(); 
             }
         } else {
-            console.log("Foreground restored. Turning off background hooks safely.");
+            console.log("Foreground detected. Forcing clean state...");
             if (recognition) {
                 try { 
                     recognition.stop(); 
@@ -2538,6 +2537,8 @@ function playNextVideo(){
     }
 }
 
+
+	
                                 
 
                                            
