@@ -85,7 +85,7 @@ body {
   transform: scale(1.01); /* Super micro zoom, looks highly professional */
 }
 
-/* --- Premium Tiranga (Indian Flag) Liquid Shine Overlay --- */
+/* --- Premium Holographic Cyber-Neon VFX Overlay --- */
 .slides::before {
   content: '';
   position: absolute;
@@ -94,20 +94,23 @@ body {
   width: 100%;
   height: 100%;
   
-  /* YAHAN TABDEELI HAI: Indian Flag Colors Transition (Saffron -> White -> Green) */
+  /* YAHAN TABDEELI HAI: High-End VFX Laser Beam (Indigo -> Neon Cyan -> Glare White -> Cyan -> Indigo) */
   background: linear-gradient(
-    120deg, 
-    rgba(255, 153, 51, 0) 25%, 
-    rgba(255, 153, 51, 0.25) 35%,  /* Saffron (Kesari) */
-    rgba(255, 255, 255, 0.4) 50%,  /* Pure White */
-    rgba(19, 136, 8, 0.25) 65%,   /* India Green */
-    rgba(19, 136, 8, 0) 75%
+    135deg, 
+    rgba(15, 12, 41, 0) 30%, 
+    rgba(48, 43, 99, 0.15) 40%,    /* Deep Premium Indigo */
+    rgba(0, 255, 255, 0.35) 48%,   /* Hyper Neon Cyan Flare */
+    rgba(255, 255, 255, 0.6) 52%,  /* Pure Core VFX White Light */
+    rgba(0, 255, 255, 0.35) 56%,   /* Back Glow Cyan */
+    rgba(15, 12, 41, 0) 65%
   );
   
   background-size: 250% 100%;
   background-position: 200% 0;
   will-change: background-position;
-  animation: liquidSweep 6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  
+  /* Curve ko fast aur sharp sweep diya hai taaki solid reflection effect lage */
+  animation: liquidSweep 5s cubic-bezier(0.3, 1, 0.2, 1) infinite;
   pointer-events: none;
   z-index: 3;
   border-radius: 6px;
@@ -115,7 +118,7 @@ body {
 
 @keyframes liquidSweep {
   0% { background-position: 200% 0; }
-  25%, 100% { background-position: -150% 0; } /* Fast wave with elegant delay */
+  20%, 100% { background-position: -150% 0; } /* Fast swift motion + resting premium pause */
 }
 
 /* --- Minimalist Studio Text Header --- */
@@ -129,4 +132,3 @@ body {
   color: #ffffff;
   text-transform: uppercase;
 }
-
