@@ -8,95 +8,85 @@
 /* --- The Cosmic Canvas (Body) --- */
 body {
   background: radial-gradient(circle at center, #1a1a2e 0%, #0f0f1c 70%, #08080c 100%);
-  font-family: 'Poppins', sans-serif; /* Modern, sleek font */
+  font-family: 'Poppins', sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
   color: #fff;
-  overflow-x: hidden; /* Prevent horizontal scroll from effects */
+  overflow-x: hidden;
 }
 
 /* --- The Quantum Stage (Slider Container) --- */
 #slider {
-  width: 90%; /* Responsive width */
-  max-width: 1100px; /* Max size for large screens */
+  width: 95%; /* Responsive width */
+  max-width: 1100px;
   margin: 40px auto;
-  perspective: 2000px; /* Enhanced 3D depth */
+  perspective: 2000px;
   position: relative;
   overflow: hidden;
-  border-radius: 16px; /* Smooth, modern corners */
-  background: rgba(255, 255, 255, 0.03); /* Subtle backdrop */
-  border: 1px solid rgba(0, 255, 255, 0.1); /* Faint cyan border */
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(0, 255, 255, 0.15);
   box-shadow: 
-    0 20px 60px rgba(0, 0, 0, 0.5), /* Deep shadow for pop */
-    0 0 40px rgba(0, 255, 255, 0.15), /* Inner cyan glow */
-    inset 0 0 15px rgba(255, 255, 255, 0.05); /* Inner sheen */
-  transform: translateZ(0); /* Force GPU render */
-  transition: box-shadow 0.5s ease;
-}
-
-#slider:hover {
-  box-shadow: 
-    0 25px 70px rgba(0, 0, 0, 0.6),
-    0 0 50px rgba(0, 255, 255, 0.25);
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(0, 255, 255, 0.15);
+  transform: translateZ(0);
+  
+  /* YAHAN SE CHANGES HAIN: Charo taraf se 2px ka gap */
+  padding: 2px; 
 }
 
 /* --- The Quantum Slides (Image Wrapper) --- */
 .slides {
   width: 100%;
-  display: flex; /* Flex for potentially multiple slides later */
-  transition: transform 1s cubic-bezier(0.23, 1, 0.32, 1); /* Ultra-smooth curve */
+  height: 100%;
+  display: flex;
   transform-style: preserve-3d;
+  border-radius: 14px; /* Container se 2px kam taaki perfect blend ho */
+  overflow: hidden; /* Shine animation ko bahar jaane se rokega */
 }
 
 /* --- The Dimension Images --- */
 .slides img {
-  width: 100%; /* Fill container width */
-  height: auto; /* Maintain aspect ratio */
+  width: 100%;
+  height: 100%; /* Image poori height cover karegi */
   display: block;
-  border-radius: 16px;
-  will-change: transform, box-shadow, filter; /* Pre-render for speed */
+  border-radius: 14px; /* Soft edges padding ke andar */
+  object-fit: cover; /* Image full stretch hogi bina quality kharab hue */
+  will-change: transform, box-shadow;
   transition: 
-    transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1), /* Smooth 3D ease-out */
-    box-shadow 0.6s ease,
-    filter 0.6s ease;
-  object-fit: cover; /* Important: Fill space without stretching */
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1),
+    box-shadow 0.6s ease;
 }
 
 /* --- Holographic 3D Hover & Glow --- */
 .slides img:hover {
-  transform: scale(1.04) rotateY(12deg) rotateX(4deg) translateZ(30px); /* Enhanced 3D pop */
-  filter: brightness(1.1) contrast(1.05) saturate(1.1); /* Vibrant glow */
-  box-shadow: 
-    0 25px 70px rgba(0, 0, 0, 0.5),
-    0 0 50px rgba(0, 255, 255, 0.4); /* Intense cyan hover glow */
+  transform: scale(1.03) rotateY(10deg) rotateX(3deg); /* Balanced 3D */
+  box-shadow: 0 15px 40px rgba(0, 255, 255, 0.3);
 }
 
 /* --- Dynamic Quantum Shine Overlay --- */
 .slides::before {
   content: '';
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  /* Multiple gradients for a richer effect */
-  background: 
-    linear-gradient(135deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 60%),
-    linear-gradient(80deg, rgba(0, 255, 255, 0) 45%, rgba(0, 255, 255, 0.15) 50%, rgba(0, 255, 255, 0) 55%);
-  transform: skewX(-20deg) translateX(-150%);
+  /* Padding area (2px) ko chhod kar sirf image ke upar chalega */
+  top: 2px;
+  left: 2px;
+  width: calc(100% - 4px);
+  height: calc(100% - 4px);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0) 100%);
+  transform: skewX(-25deg) translateX(-150%);
   will-change: transform;
-  animation: quantumShine 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: quantumShine 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   pointer-events: none;
-  z-index: 5; /* Above image */
+  z-index: 5;
+  border-radius: 14px;
 }
 
 @keyframes quantumShine {
-  0% { transform: skewX(-20deg) translateX(-150%); opacity: 0; }
-  10% { opacity: 1; }
-  30%, 100% { transform: skewX(-20deg) translateX(150%); opacity: 0; }
+  0% { transform: skewX(-25deg) translateX(-150%); }
+  35%, 100% { transform: skewX(-25deg) translateX(150%); }
 }
 
 /* --- Neon Quantum Heading --- */
@@ -115,10 +105,6 @@ body {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: neonFlow 4s linear infinite, headingPulse 2s ease-in-out infinite alternate;
-  text-shadow: 
-    0 0 10px rgba(0, 255, 255, 0.6),
-    0 0 20px rgba(0, 255, 255, 0.4),
-    0 0 40px rgba(0, 255, 255, 0.2);
 }
 
 @keyframes neonFlow {
@@ -126,13 +112,14 @@ body {
 }
 
 @keyframes headingPulse {
-  from { transform: scale(1); text-shadow: 0 0 10px rgba(0, 255, 255, 0.6), 0 0 20px rgba(0, 255, 255, 0.4); }
-  to { transform: scale(1.02); text-shadow: 0 0 15px rgba(0, 255, 255, 0.8), 0 0 30px rgba(0, 255, 255, 0.6), 0 0 50px rgba(0, 255, 255, 0.4); }
+  from { transform: scale(1); text-shadow: 0 0 10px rgba(0, 255, 255, 0.5); }
+  to { transform: scale(1.02); text-shadow: 0 0 25px rgba(0, 255, 255, 0.7); }
 }
 
 /* --- Mobile Responsiveness --- */
 @media (max-width: 768px) {
   #slider { width: 95%; margin: 20px auto; }
   #heading1 { font-size: 2em; letter-spacing: 2px; }
-  .slides img:hover { transform: scale(1.02) rotateY(5deg) rotateX(2deg); } /* Subtle mobile 3D */
+  .slides img:hover { transform: scale(1.02) rotateY(6deg) rotateX(2deg); }
 }
+
