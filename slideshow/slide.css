@@ -22,11 +22,11 @@ body {
 #slider {
   width: 99%; /* Aapke demand ke mutabik 99% width lock */
   max-width: 500px; /* Mobile UI limits */
-  margin: 15px auto;
+  margin: 10px auto;
   perspective: 1200px;
   position: relative;
   overflow: hidden;
-  border-radius: 20px; /* Perfectly round elegant corners */
+  border-radius: 2px; /* Perfectly round elegant corners */
   
   /* BORDER AUR SHARP GLOWS REMOVED: No background or borders to blend completely with body */
   background: transparent;
