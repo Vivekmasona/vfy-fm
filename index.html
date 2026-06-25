@@ -1240,55 +1240,76 @@ width: 50%;
     }
 
     /* Box effect */
-.box {
-  position: relative;
-  width: 100px;
-  height: 100px;
-  background: #2d2d39;
-  border-radius: 50%; /* Circular Look */
-  border: 2px solid #45f3ff;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+    .box {
+      position: relative;
+      flex: 0 0 auto;
+      width: 100px;
+      height: 100px;
+      background: repeating-conic-gradient(
+        from var(--a),
+        #ff2770 0%,
+        #ff2770 5%,
+        transparent 5%,
+        transparent 40%,
+        #ff2770 50%
+      );
+      border-radius: 20px;
+      animation: animate 4s linear infinite;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
 
-/* Pulse Rings */
-.box::before, .box::after {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border: 2px solid #ff2770;
-  border-radius: 50%;
-  opacity: 0;
-  transition: transform 0.6s ease-out, opacity 0.6s ease-out;
-  pointer-events: none;
-}
+    .box:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 15px 30px rgba(255, 0, 150, 0.6);
+    }
 
-.box::after {
-  border-color: #45f3ff;
-}
+    .box::before,
+    .box::after {
+      content: "";
+      position: absolute;
+    }
+    .box::before {
+      width: 100%;
+      height: 100%;
+      background: repeating-conic-gradient(
+        from var(--a),
+        #45f3ff 0%,
+        #45f3ff 5%,
+        transparent 5%,
+        transparent 40%,
+        #45f3ff 50%
+      );
+      border-radius: 20px;
+      animation: animate 4s linear infinite;
+      animation-delay: -1s;
+    }
+    .box::after {
+      inset: 2px;
+      background: #2d2d39;
+      border-radius: 12px;
+    }
 
-/* Hover par rings trigger hongi */
-.box:hover::before {
-  transform: scale(1.4);
-  opacity: 1;
-}
-.box:hover::after {
-  transform: scale(1.6);
-  opacity: 0.5;
-  transition-delay: 0.1s;
-}
+    /* Profile image inside box */
+    .box img {
+      position: absolute;
+      inset: 2px;
+      width: calc(100% - 4px);
+      height: calc(100% - 4px);
+      object-fit: cover;
+      border-radius: 12px;
+      z-index: 2;
+    }
 
-.box img {
-  width: 90%;
-  height: 90%;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 2px solid #2d2d39;
-  z-index: 2;
-}
-	
+    @property --a {
+      syntax: "<angle>";
+      inherits: false;
+      initial-value: 0deg;
+    }
+    @keyframes animate {
+      0% { --a: 0deg; }
+      100% { --a: 360deg; }
+    }
 
       
   </style>
