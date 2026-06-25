@@ -15,34 +15,31 @@ body {
   min-height: 100vh;
   color: #ffffff;
   overflow-x: hidden;
-  padding: 10px 0; /* Horizontal padding 0 ki taaki width poori mile */
+  padding: 10px 0;
 }
 
-/* --- Borderless Seamless Slider Frame --- */
+/* --- Seamless Borderless 99% Slider --- */
 #slider {
-  width: 99%; /* Aapke demand ke mutabik 99% width lock */
-  max-width: 500px; /* Mobile UI limits */
-  margin: 10px auto;
+  width: 99%; /* Max width on screen */
+  max-width: 500px; 
+  margin: 15px auto;
   perspective: 1200px;
   position: relative;
   overflow: hidden;
-  border-radius: 2px; /* Perfectly round elegant corners */
   
-  /* BORDER AUR SHARP GLOWS REMOVED: No background or borders to blend completely with body */
+  /* BORDER RADIUS KAM KIYA: 24px se seedhe 8px sharp professional card look */
+  border-radius: 8px; 
+  
+  /* Completely transparent to mix with body background */
   background: transparent;
   border: none; 
   
-  /* Charo taraf se manga hua perfect 2px gap */
+  /* Charo taraf se manga hua 2px gap via padding */
   padding: 2px; 
   
-  /* Ultra-soft shadow taaki background me smooth mix rahe aur lag free chale */
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  /* Halka sa soft dark shadow jo body ke sath mix rahega */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   transform: translateZ(0);
-}
-
-/* --- Slider container aur ring borders completely clean kar diye hain --- */
-#slider::after {
-  display: none; /* Border ring removed completely */
 }
 
 /* --- Image Master Wrapper --- */
@@ -51,7 +48,7 @@ body {
   height: 100%;
   display: flex;
   transform-style: preserve-3d;
-  border-radius: 10px; /* Inner radius balanced with 2px padding */
+  border-radius: 6px; /* Inner radius adjusted for 2px padding (8px - 2px) */
   overflow: hidden;
   position: relative;
 }
@@ -61,17 +58,17 @@ body {
   width: 100%;
   height: 100%;
   display: block;
-  border-radius: 10px;
+  border-radius: 6px; /* Matching sharp corners */
   object-fit: cover;
   object-position: center;
   
-  /* Performance & Smoothness setup */
+  /* Performance Optimization & Fade In Effect */
   will-change: transform, opacity;
   animation: fadeIn 0.4s ease-in-out forwards;
-  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); 
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1); 
 }
 
-/* --- Smooth Display Block Fade In --- */
+/* --- Smooth Display Block Transition --- */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -83,9 +80,9 @@ body {
   }
 }
 
-/* --- Subtle Micro-Interactive Hover (Zero Lag) --- */
+/* --- Clean Professional Hover --- */
 #slider:hover .slides img {
-  transform: scale(1.015); /* Halka premium zoom without weird 3D twists */
+  transform: scale(1.01); /* Super micro zoom, looks highly professional */
 }
 
 /* --- Premium Organic Liquid Shine Overlay --- */
@@ -96,13 +93,11 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  /* Soft white/cyan stream - sharp neon brightness kam kar di hai taaki premium lage */
+  /* Ultra-soft reflection that swipes seamlessly across the image */
   background: linear-gradient(
     120deg, 
     rgba(255, 255, 255, 0) 35%, 
-    rgba(0, 255, 255, 0.08) 45%, 
-    rgba(255, 255, 255, 0.2) 50%, 
-    rgba(0, 255, 255, 0.08) 55%, 
+    rgba(255, 255, 255, 0.15) 50%, 
     rgba(255, 255, 255, 0) 65%
   );
   background-size: 250% 100%;
@@ -111,7 +106,7 @@ body {
   animation: liquidSweep 6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
   pointer-events: none;
   z-index: 3;
-  border-radius: 10px;
+  border-radius: 6px;
 }
 
 @keyframes liquidSweep {
@@ -123,11 +118,10 @@ body {
 #heading1 {
   display: block;
   text-align: center;
-  font-size: 1.4em;
+  font-size: 1.3em;
   font-weight: 600;
   letter-spacing: 2px;
-  margin: 20px 0 5px 0;
+  margin: 15px 0 5px 0;
   color: #ffffff;
   text-transform: uppercase;
-  text-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
 }
