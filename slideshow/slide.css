@@ -1,69 +1,132 @@
-/* --- Slider Base Setup for Layout Stacking --- */
+/* --- Global Reset --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* --- Dark Cosmic App Background --- */
+body {
+  background: #0d0d12; /* Premium flat dark app background */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  color: #ffffff;
+  overflow-x: hidden;
+  padding: 10px 0;
+}
+
+/* --- Seamless Borderless 99% Slider --- */
 #slider {
-  position: relative;
-  height: 260px; /* Mobile screen UI ratio ke hisab se ek fixed height zaroori hai */
-  width: 99%;
-  max-width: 500px;
+  width: 99%; /* Max width on screen */
+  max-width: 500px; 
   margin: 15px auto;
+  perspective: 1200px;
+  position: relative;
   overflow: hidden;
-  border-radius: 8px;
+  
+  /* Sharp professional card look */
+  border-radius: 8px; 
+  
+  /* Completely transparent to mix with body background */
   background: transparent;
-  border: none;
-  padding: 2px;
+  border: none; 
+  
+  /* Charo taraf se manga hua 2px gap via padding */
+  padding: 2px; 
+  
+  /* Halka sa soft dark shadow jo body ke sath mix rahega */
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  transform: translateZ(0);
 }
 
-/* --- Slides Wrapper (Ek ke upar ek positions layer banane ke liye) --- */
+/* --- Image Master Wrapper --- */
 .slides {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: calc(100% - 4px);
-  height: calc(100% - 4px);
-  opacity: 0;
-  visibility: hidden;
-  border-radius: 6px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  transform-style: preserve-3d;
+  border-radius: 6px; /* Inner radius adjusted for 2px padding (8px - 2px) */
   overflow: hidden;
-  will-change: transform, opacity, filter;
+  position: relative;
 }
 
+/* --- Ultra-Fluid Cinematic Image --- */
 .slides img {
   width: 100%;
   height: 100%;
   display: block;
+  border-radius: 6px; /* Matching sharp corners */
   object-fit: cover;
   object-position: center;
+  
+  /* Performance Optimization & Fade In Effect */
+  will-change: transform, opacity;
+  animation: fadeIn 0.4s ease-in-out forwards;
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1); 
 }
 
-/* =======================================================
-   ANIMATION LIBRARY (JS dynamically switches between these)
-   ======================================================= */
-
-/* Style 1: Cinematic Smooth Zoom Out & Fade */
-.slides.style-cinematic {
-  transform: scale(1.08) translateX(20px);
-  transition: opacity 0.6s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
+/* --- Smooth Display Block Transition --- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-/* Style 2: Holographic Glass Blur Dissolve */
-.slides.style-blur {
-  filter: blur(15px);
-  transform: scale(0.96);
-  transition: opacity 0.5s ease, filter 0.5s ease, transform 0.5s ease, visibility 0.5s;
+/* --- Clean Professional Hover --- */
+#slider:hover .slides img {
+  transform: scale(1.01); /* Super micro zoom, looks highly professional */
 }
 
-/* Style 3: Clean Fluid Left-Push Slide */
-.slides.style-slide {
-  transform: translateX(-100%);
-  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), visibility 0.6s;
+/* --- Premium Tiranga (Indian Flag) Liquid Shine Overlay --- */
+.slides::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  
+  /* YAHAN TABDEELI HAI: Indian Flag Colors Transition (Saffron -> White -> Green) */
+  background: linear-gradient(
+    120deg, 
+    rgba(255, 153, 51, 0) 25%, 
+    rgba(255, 153, 51, 0.25) 35%,  /* Saffron (Kesari) */
+    rgba(255, 255, 255, 0.4) 50%,  /* Pure White */
+    rgba(19, 136, 8, 0.25) 65%,   /* India Green */
+    rgba(19, 136, 8, 0) 75%
+  );
+  
+  background-size: 250% 100%;
+  background-position: 200% 0;
+  will-change: background-position;
+  animation: liquidSweep 6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  pointer-events: none;
+  z-index: 3;
+  border-radius: 6px;
 }
 
-/* --- Golden Rule: ACTIVE STATE --- */
-/* Jab image active hogi toh wo kisi bhi state se normal layout par smoothly aayegi */
-.slides.active {
-  opacity: 1;
-  visibility: visible;
-  transform: scale(1) translateX(0);
-  filter: blur(0px);
-  z-index: 2; /* Active slide humesha upar dikhegi */
+@keyframes liquidSweep {
+  0% { background-position: 200% 0; }
+  25%, 100% { background-position: -150% 0; } /* Fast wave with elegant delay */
 }
+
+/* --- Minimalist Studio Text Header --- */
+#heading1 {
+  display: block;
+  text-align: center;
+  font-size: 1.3em;
+  font-weight: 600;
+  letter-spacing: 2px;
+  margin: 15px 0 5px 0;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
