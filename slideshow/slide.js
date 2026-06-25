@@ -1,41 +1,29 @@
-let index = 0;
-const slides = document.querySelectorAll(".slides");
-const dots = document.querySelectorAll(".dot");
-let slideTimer;
+var index = 0;
+var slides = document.querySelectorAll(".slides");
+var dot = document.querySelectorAll(".dot");
 
-function changeSlide(nextIndex) {
-  // Agar user ne niche kisi dot par click kiya ho
-  if (typeof nextIndex === 'number') {
-    index = nextIndex;
+function changeSlide(){
+
+  if(index<0){
+    index = slides.length-1;
   }
-
-  // Loop limits
-  if (index < 0) index = slides.length - 1;
-  if (index >= slides.length) index = 0;
-
-  // Saare slides ko chhupana aur dots se active hatana
-  slides.forEach((slide, i) => {
-    slide.style.display = "none";
-    if (dots[i]) dots[i].classList.remove("active");
-  });
-
-  // Sirf current slide ko show karna aur dot active karna
-  slides[index].style.display = "block";
-  if (dots[index]) dots[index].classList.add("active");
-
-  // Agle slide ka index update
+  
+  if(index>slides.length-1){
+    index = 0;
+  }
+  
+  for(let i=0;i<slides.length;i++){
+    slides[i].style.display = "none";
+    dot[i].classList.remove("active");
+  }
+  
+  slides[index].style.display= "block";
+  dot[index].classList.add("active");
+  
   index++;
-
-  // Timer reset taaki clicks par glitch na ho
-  clearTimeout(slideTimer);
-  slideTimer = setTimeout(changeSlide, 5000);
+  
+  setTimeout(changeSlide,5000);
+  
 }
 
-// Dots clicking handler (Professional apps ki tarah)
-dots.forEach((dot, i) => {
-  dot.addEventListener("click", () => changeSlide(i));
-});
-
-// Start Slider
 changeSlide();
-
