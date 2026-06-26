@@ -111,7 +111,7 @@ async function loadTrendingSongs() {
 
     const userQuery =
         localStorage.getItem("songQuery") ||
-        "hindi x Bhojpuri songs";
+        "Beatz Bomber song";
 
    // document.getElementById("songs").innerHTML = `
      // <div class="loading-dots">
