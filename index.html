@@ -5611,9 +5611,10 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-<div id="lockOverlay">
+        <div id="lockOverlay">
   <canvas id="lockCanvas"></canvas>
 
+  <!-- Image 1000244672.jpg App Theme Inspired Vertical Minimal Clock -->
   <div class="big-clock">
     <div id="clockTime" class="minimal-vertical-time">
       <span id="hourTens">0</span><span id="hourOnes" class="cyan-accent">0</span>
@@ -5622,13 +5623,15 @@ document.getElementById('search-btn').addEventListener('click', function() {
     <div id="clockDate">Loading Matrix...</div>
   </div>
 
+  <!-- Center Visualizer Core (Floating Thumbnail) -->
   <div class="music-core-container">
     <div class="visualizer-core-wrap">
       <div class="neon-ring-glow"></div>
-      <img id="overlayThumb" src="https://via.placeholder.com/150" alt="Core Signal" style="cursor: pointer; user-select: none;">
+      <img id="overlayThumb" src="https://via.placeholder.com/150" alt="Core Signal">
     </div>
   </div>
 
+  <!-- Bottom Control Box (Auto-Hidden if Video/Dynamic state requested) -->
   <div class="bottom-controls-wrapper" id="lockFooterBlock">
     <div class="cyber-metadata-box">
       <span class="cyber-badge" id="visualizerStyleBadge">STYLE: INITIALIZING</span>
@@ -5885,7 +5888,7 @@ async function requestWakeLock() {
         try {
             if (!wakeLock) {
                 wakeLock = await navigator.wakeLock.request('screen');
-                console.log("Wake lock engine active.");
+                console.log("Wake lock engine processing active structural lock state.");
             }
         } catch (err) {
             console.warn("Wake lock active acquisition suspended: ", err.message);
@@ -5904,6 +5907,7 @@ function releaseWakeLock() {
 /* ---------------- AUTOMATIC AUTO-TRIGGER TIMERS ---------------- */
 function start8SecLockTimer() {
     if (lockTimer) clearTimeout(lockTimer);
+    // [OLD RULE RESTORED] Checked structural dynamic video state prevents normal lock overlays
     if (modeToggleBtn && modeToggleBtn.checked) return;
 
     if (audioPlayer && !audioPlayer.paused) {
@@ -6074,6 +6078,7 @@ function renderLockVisuals() {
 /* ---------------- INTERFACES & PLUGINS ---------------- */
 function showOverlay() {
     if (audioPlayer && !audioPlayer.paused) {
+        // [OLD FUNCTION RESTORED] Dynamic Mode Active -> Strict Lock Inhibitor
         if (modeToggleBtn && modeToggleBtn.checked) {
              if(lockFooterBlock) {
                  lockFooterBlock.style.opacity = "0";
@@ -6082,6 +6087,7 @@ function showOverlay() {
              return; 
         } 
         
+        // Ensure regular visibility structural values
         if(lockFooterBlock) {
              lockFooterBlock.style.opacity = "1";
              lockFooterBlock.style.visibility = "visible";
@@ -6106,14 +6112,6 @@ function hideOverlay() {
 }
 
 document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
-
-// [NEW FEATURE] Double Click / Double Tap Event Listener on Floating Poster to swap styles instantly
-if(overlayThumb) {
-    overlayThumb.addEventListener("dblclick", (e) => {
-        e.stopPropagation(); // Stops any click leakage to general screen tracking
-        selectRandomStyle();
-    });
-}
 
 function updateOverlayContent() {
     const thumbSrc = document.getElementById("Fimg")?.src;
@@ -6149,4 +6147,4 @@ if(modeToggleBtn) {
     });
 }
 </script>
-                  
+               
