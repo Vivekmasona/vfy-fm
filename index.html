@@ -5789,7 +5789,12 @@ setInterval(updateClock, 1000);
 updateClock();
 </script>
 
-<script>
+
+
+
+
+
+	<script>
 /* ---------------- GLOBAL ELEMENTS & VISUALIZER CONFIG ---------------- */
 const footer = document.querySelector('.fixed-footer');
 const progressBar = document.getElementById('progressBarContainer');
@@ -5806,10 +5811,10 @@ const sideMenu = document.getElementById('sideMenu');
 // Lockscreen Canvas Engine Config
 const lCanvas = document.getElementById("lockCanvas");
 const lCtx = lCanvas.getContext("2d");
-let lCtxAudio, lAnalyser, lSrcNode, lFreqData;
 let lAnimationId;
 let lSmoothZoom = 75;
 let lDynamicHue = 200;
+let waveSeed = 0; // Fake calculations ke liye seed counter
 
 let lastScrollTop = 0;
 let overlayTimer;
@@ -5825,29 +5830,9 @@ function resizeLockCanvas() {
 }
 window.addEventListener('resize', resizeLockCanvas);
 
-/* Initialize Lock Web Audio Engine explicitly from playing context */
+/* 🪐 CRITICAL FIX: Fake Audio Engine (AudioContext Removed Completely) */
 function initLockAudioEngine() {
-  if (!lCtxAudio && audioPlayer) {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    if(!AudioContext) return;
-    
-    lCtxAudio = new AudioContext();
-    lAnalyser = lCtxAudio.createAnalyser();
-    lAnalyser.fftSize = 256;
-    lAnalyser.smoothingTimeConstant = 0.7;
-    
-    try {
-      lSrcNode = lCtxAudio.createMediaElementSource(audioPlayer);
-      lSrcNode.connect(lAnalyser);
-      lAnalyser.connect(lCtxAudio.destination);
-      lFreqData = new Uint8Array(lAnalyser.frequencyBinCount);
-    } catch(err) {
-      console.log("Audio node setup linked successfully.");
-    }
-  }
-  if (lCtxAudio && lCtxAudio.state === 'suspended') {
-    lCtxAudio.resume();
-  }
+  console.log("Fake Math Visualizer Active. No Audio Nodes used, Sound is 100% Safe.");
 }
 
 /* ---------------- OVERLAY MATRIX RENDERER ---------------- */
@@ -5863,12 +5848,16 @@ function renderLockVisuals() {
   const h = window.innerHeight;
   
   let bassPower = 0;
-  if (lAnalyser && lFreqData && audioPlayer && !audioPlayer.paused) {
-    lAnalyser.getByteFrequencyData(lFreqData);
-    // Track core punch bass lines 
-    let bassSum = 0;
-    for(let i=0; i<6; i++) bassSum += lFreqData[i];
-    bassPower = bassSum / 6;
+  let isPlaying = audioPlayer && !audioPlayer.paused;
+
+  // 🪐 Fake Dynamic Data Calculations (Jab song chalega tabhi random wave amplitude banega)
+  if (isPlaying) {
+    waveSeed += 0.15;
+    // Math logic real dynamic bass feel generate karne ke liye
+    bassPower = 40 + Math.sin(waveSeed * 0.8) * 25 + Math.cos(waveSeed * 1.5) * 15;
+  } else {
+    // Song pause hone par visualizer dheere se smooth zero/idle ho jayega
+    bassPower = 0;
   }
 
   // Adaptive Zoom and Color engine
@@ -5879,26 +5868,29 @@ function renderLockVisuals() {
   if (targetZoom > maxR) targetZoom = maxR;
   lSmoothZoom += (targetZoom - lSmoothZoom) * 0.2;
 
-  // Sync scale directly with the HTML Image Document
-  overlayThumb.style.transform = `scale(${lSmoothZoom / minR})`;
+  if(overlayThumb) {
+     overlayThumb.style.transform = `scale(${lSmoothZoom / minR})`;
+  }
 
-  // Smooth trail rendering
+  // Clear frame matrix trail
   lCtx.fillStyle = "rgba(2, 2, 4, 0.2)";
   lCtx.fillRect(0, 0, w, h);
 
-  // Core center anchor coordinates (Calculated dynamically matching HTML container placement)
-  const coreBounds = document.querySelector('.visualizer-core-wrap').getBoundingClientRect();
+  const coreWrap = document.querySelector('.visualizer-core-wrap');
+  if(!coreWrap) return;
+  
+  const coreBounds = coreWrap.getBoundingClientRect();
   const cx = coreBounds.left + (coreBounds.width / 2);
   const cy = coreBounds.top + (coreBounds.height / 2);
 
-  // Ambient back-glow
+  // Radial Background Glow
   let glowGrd = lCtx.createRadialGradient(cx, cy, lSmoothZoom, cx, cy, lSmoothZoom + (bassPower * 1.5));
   glowGrd.addColorStop(0, `hsla(${lDynamicHue}, 100%, 50%, 0.12)`);
   glowGrd.addColorStop(1, 'rgba(0,0,0,0)');
   lCtx.fillStyle = glowGrd;
   lCtx.fillRect(0, 0, w, h);
 
-  // Draw premium adaptive neon round ring borders
+  // Neon Round Ring
   lCtx.save();
   lCtx.beginPath();
   lCtx.arc(cx, cy, lSmoothZoom + 2, 0, Math.PI * 2);
@@ -5909,12 +5901,19 @@ function renderLockVisuals() {
   lCtx.stroke();
   lCtx.restore();
 
-  // Draw Laser Wave Spikes surrounding the image
+  // Wave Spikes Generation Loop
   const totalRays = 75;
   lCtx.save();
   for (let i = 0; i < totalRays; i++) {
     let angle = (i / totalRays) * Math.PI * 2 + (lDynamicHue * 0.002);
-    let audioVal = (lFreqData) ? lFreqData[i % lFreqData.length] : 0;
+    
+    // 🪐 Fake Frequency Wave Spikes generation based on Sine/Cosine
+    let audioVal = 0;
+    if (isPlaying) {
+      audioVal = 30 + Math.sin(i * 0.5 + waveSeed) * 50 + Math.cos(i * 0.2 - waveSeed) * 40;
+      if(audioVal < 0) audioVal = 0;
+    }
+    
     let waveHeight = (audioVal * 0.45) + Math.sin(i * 0.3) * (bassPower * 0.1);
 
     let cos = Math.cos(angle);
@@ -5931,7 +5930,7 @@ function renderLockVisuals() {
     lCtx.lineWidth = 2.5;
     lCtx.lineCap = "round";
     
-    let alpha = 0.3 + (audioVal / 255) * 0.7;
+    let alpha = 0.3 + (audioVal / 180) * 0.7;
     lCtx.strokeStyle = `hsla(${lDynamicHue + (i * 2)}, 100%, 65%, ${alpha})`;
     lCtx.stroke();
   }
@@ -5945,10 +5944,12 @@ function setStatusBarColor(color) {
 
 function showOverlay() {
     if (modeToggleBtn && modeToggleBtn.checked) return; 
+    
     initLockAudioEngine();
     resizeLockCanvas();
     lockOverlay.style.display = "flex";
     setStatusBarColor("#000000");
+    
     renderLockVisuals();
 }
 
@@ -5989,7 +5990,6 @@ function resetSideMenuTimer() {
     }, { passive: true });
 });
 
-// Initial boot configurations
 resetOverlayTimer();
 resetSideMenuTimer();
 
@@ -6009,7 +6009,6 @@ function updateOverlayContent() {
 if (audioPlayer) {
     audioPlayer.addEventListener('timeupdate', updateOverlayContent);
     audioPlayer.addEventListener('loadedmetadata', updateOverlayContent);
-    audioPlayer.addEventListener('play', () => { if(lockOverlay.style.display === "flex") initLockAudioEngine(); });
 }
 
 /* -------- MODE TOGGLE HANDLER -------- */
@@ -6088,5 +6087,3 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 </script>
-
-	
