@@ -3345,12 +3345,12 @@ var alternativeAudioSources = [
 
 var currentAlternativeIndex = 0;
 
-// 🪐 [SAFE TRIGGER]: Gana change ya error hone par lockscreen sound refresh karega
 audio.addEventListener("error", function () {
     setTimeout(function () {
         audio.src = alternativeAudioSources[currentAlternativeIndex];
         audio.load();
         
+        // 🪐 [SAFE TRIGGER]: Agar alternate link load ho toh bina duplicate node error ke visualizer re-hook ho jaye
         if (window.globalAudioInitialized && typeof initLockAudioEngine === "function") {
              initLockAudioEngine(); 
         }
@@ -3360,12 +3360,6 @@ audio.addEventListener("error", function () {
     }, 1000);
 });
 
-// 🔥 [LOCKSCREEN FORCE START]: Jaise hi gana bajna shuru ho, audio stream ko unlock karo
-audio.addEventListener("play", function () {
-    if (window.globalAudioInitialized && typeof initLockAudioEngine === "function") {
-        initLockAudioEngine();
-    }
-});
 
 
     
