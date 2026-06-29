@@ -5613,7 +5613,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
     
-                 <div id="lockOverlay">
+           <div id="lockOverlay">
   <canvas id="lockCanvas"></canvas>
 
   <!-- Image 1000244672.jpg App Theme Inspired Vertical Minimal Clock -->
@@ -5625,7 +5625,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
     <div id="clockDate">Loading Matrix...</div>
   </div>
 
-  <!-- Center Visualizer Core (Floating Thumbnail) -->
+  <!-- Center Visualizer Core (Floating Thumbnail with App Theme Aura) -->
   <div class="music-core-container">
     <div class="visualizer-core-wrap">
       <div class="neon-ring-glow"></div>
@@ -5633,10 +5633,11 @@ document.getElementById('search-btn').addEventListener('click', function() {
     </div>
   </div>
 
-  <!-- Bottom Section -->
+  <!-- Bottom Section: Title locked above the unlock trigger button -->
   <div class="bottom-controls-wrapper">
+    <!-- Unique Cyber Premium UI Titles (Lock Button ke upar) -->
     <div class="cyber-metadata-box">
-      <span class="cyber-badge" id="visualizerStyleBadge">STYLE: MATRIX ORBIT</span>
+      <span class="cyber-badge">VIVEKFY AI INFINITY ENGINE</span>
       <div id="overlayTitle" class="cyber-title">VIVEKFY Ai SYSTEM</div>
       <div id="overlayTime" class="cyber-time-stamp">0:00 / 0:00</div>
     </div>
@@ -5658,7 +5659,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
   left: 0;  
   width: 100%;  
   height: 100%;  
-  background: #000000 !important; 
+  background: #000000 !important; /* Pure solid pitch black layout */  
   display: none; 
   flex-direction: column;  
   justify-content: space-between;
@@ -5671,6 +5672,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
   overflow: hidden;
 }  
 
+/* Status bar protection overlay shield */
 #lockOverlay::before {
   content: "";
   position: absolute;
@@ -5697,6 +5699,7 @@ body:has(#lockOverlay:visible) {
   pointer-events: none;
 }
 
+/* Minimalistic Split Clock Geometry matching App Theme */
 .big-clock {
   width: 100%;
   text-align: center;
@@ -5709,6 +5712,7 @@ body:has(#lockOverlay:visible) {
   line-height: 0.85;
   letter-spacing: -2px;
   display: inline-block;
+  font-family: system-ui, -apple-system, sans-serif;
 }
 .minimal-vertical-time #minuteContainer {
   font-size: 76px;
@@ -5716,8 +5720,29 @@ body:has(#lockOverlay:visible) {
   color: #ffffff;
   letter-spacing: -2px;
 }
+.cyber-unlock-btn {
+  background: rgba(0, 255, 204, 0.02);
+  border: 1px solid rgba(0, 255, 204, 0.35);
+  color: #00ffcc;
+  border-radius: 50%;
+  width: 66px;
+  height: 66px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.05);
+}
+
+.cyber-unlock-btn:hover, .cyber-unlock-btn:active {
+  background: #00ffcc;
+  color: #000;
+  box-shadow: 0 0 35px rgba(0, 255, 204, 0.6);
+  transform: scale(1.06);
+}
 .cyan-accent {
-  color: #00ffcc !important; 
+  color: #00ffcc !important; /* Premium Cyan accent from 1000244672.jpg */
   text-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
 }
 .big-clock #clockDate {
@@ -5729,6 +5754,7 @@ body:has(#lockOverlay:visible) {
   margin-top: 12px;
 }
 
+/* Center Core Grid Container */
 .music-core-container {
   display: flex;
   flex-direction: column;
@@ -5749,10 +5775,11 @@ body:has(#lockOverlay:visible) {
   position: absolute;
   top: -4px; left: -4px; right: -4px; bottom: -4px;
   border-radius: 50%;
-  background: linear-gradient(45deg, #00ffcc, #ff3300);
+  background: linear-gradient(45deg, #00ffcc, #ff3300); /* Cyan to Vivo Red gradient profile */
   z-index: -1;
-  opacity: 0.3;
+  opacity: 0.4;
   filter: blur(10px);
+  animation: pulseGlow 4s infinite alternate ease-in-out;
 }
 
 #overlayThumb {
@@ -5765,6 +5792,7 @@ body:has(#lockOverlay:visible) {
   will-change: transform;
 }
 
+/* Bottom Controls Wrapper (Title Locked above Button) */
 .bottom-controls-wrapper {
   width: 100%;
   display: flex;
@@ -5775,6 +5803,7 @@ body:has(#lockOverlay:visible) {
   margin-bottom: 5px;
 }
 
+/* Cyber Metallic UI Title Box */
 .cyber-metadata-box {
   background: rgba(10, 10, 12, 0.9);
   padding: 14px 25px;
@@ -5784,12 +5813,13 @@ body:has(#lockOverlay:visible) {
   width: 85%;
   max-width: 340px;
   text-align: center;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.8);
 }
 
 .cyber-badge {
   font-size: 8px;
   font-weight: 900;
-  color: #ff3300; 
+  color: #ff3300; /* Matching the deep red/orange badge highlights */
   letter-spacing: 2px;
   text-transform: uppercase;
   display: inline-block;
@@ -5803,316 +5833,351 @@ body:has(#lockOverlay:visible) {
   font-size: 17px;
   font-weight: 700;
   color: #ffffff;
-  margin-bottom: 4px;
+  letter-spacing: 0.5px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-bottom: 4px;
 }
 
 .cyber-time-stamp {
   font-size: 12px;
   font-family: monospace;
   color: #8a8e9b;
+  letter-spacing: 1px;
 }
 
-.cyber-unlock-btn {
-  background: rgba(0, 255, 204, 0.02);
-  border: 1px solid rgba(0, 255, 204, 0.35);
-  color: #00ffcc;
-  border-radius: 50%;
-  width: 66px;
-  height: 66px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.4s ease;
+@keyframes pulseGlow {
+  0% { transform: scale(0.98); opacity: 0.25; }
+  100% { transform: scale(1.02); opacity: 0.5; }
 }
 </style>
 
 <script>
+// Live Vertical Clock Tracker (Splits Hours & Minutes like image 1000244669.png)
 function updateClock(){
   const now = new Date();
   const hoursStr = now.getHours().toString().padStart(2, '0');
   const minutesStr = now.getMinutes().toString().padStart(2, '0');
-  document.getElementById('hourTens').textContent = hoursStr[0];
-  document.getElementById('hourOnes').textContent = hoursStr[1];
-  document.getElementById('minuteContainer').textContent = minutesStr;
-  document.getElementById('clockDate').textContent = now.toLocaleDateString([], {weekday:'short', day:'numeric', month:'short'});
+  
+  const hourTensEl = document.getElementById('hourTens');
+  const hourOnesEl = document.getElementById('hourOnes');
+  const minuteContainerEl = document.getElementById('minuteContainer');
+  
+  if(hourTensEl) hourTensEl.textContent = hoursStr[0];
+  if(hourOnesEl) hourOnesEl.textContent = hoursStr[1];
+  if(minuteContainerEl) minuteContainerEl.textContent = minutesStr;
+
+  const date = now.toLocaleDateString([], {weekday:'short', day:'numeric', month:'short'});
+  const clockDateEl = document.getElementById('clockDate');
+  if(clockDateEl) clockDateEl.textContent = date;
 }
-setInterval(updateClock, 1000); updateClock();
+setInterval(updateClock, 1000);
+updateClock();
 </script>
 
-
-
 <script>
-/* ---------------- ENGINE CONFIG & MULTI-STYLE OBJECT VARIABLES ---------------- */
+/* ---------------- GLOBAL ELEMENTS & VISUALIZER CONFIG ---------------- */
+const footer = document.querySelector('.fixed-footer');
+const progressBar = document.getElementById('progressBarContainer');
+const audioPlayerContainer = document.getElementById('audioPlayerContainer');
 const lockOverlay = document.getElementById("lockOverlay");
 const overlayThumb = document.getElementById("overlayThumb");
 const overlayTitle = document.getElementById("overlayTitle");
 const overlayTime = document.getElementById("overlayTime");
 const audioPlayer = document.getElementById("SAudio");
-const styleBadge = document.getElementById("visualizerStyleBadge");
+const themeMeta = document.getElementById("themeColorMeta");
 const modeToggleBtn = document.getElementById("modeToggleBtn");
+const sideMenu = document.getElementById('sideMenu');
 
+// HD Fullscreen Lockscreen Canvas Engine Config
 const lCanvas = document.getElementById("lockCanvas");
 const lCtx = lCanvas.getContext("2d");
 let lAnimationId;
 let lSmoothZoom = 75;
-let globalMutationTracker = 0;
-let lockTimer = null; // Smart 8-second structural tracking timer
+let lDynamicHue = 175; // Initialized to theme cyan color spectrum range
+let globalMutationTracker = 0; 
 
-// List of our 10 Distinct Object Styles
-const VISUALIZER_STYLES = [
-  "HYPER_LASER_BURST", "CYBER_MATRIX_ORBIT", "PLASMA_WAVE_SHIFTER", 
-  "NEON_PARTICLE_CLOUD", "HEX_VECTOR_RADAR", "DNA_STRAND_HELIX", 
-  "QUANTUM_RING_DECAY", "SOUND_GEOMETRIC_CUBE", "ASTRO_PULSE_FLARE", "DIGITAL_RAIN_SHOCK"
-];
-let currentActiveStyle = "HYPER_LASER_BURST"; 
+let lastScrollTop = 0;
+let overlayTimer;
+let sideMenuTimer;
+let wakeLock = null;
+let isScrollTicking = false; 
 
 function resizeLockCanvas() {
   const dpr = window.devicePixelRatio || 1;
-  lCanvas.width = window.innerWidth * dpr; lCanvas.height = window.innerHeight * dpr;
+  lCanvas.width = window.innerWidth * dpr;
+  lCanvas.height = window.innerHeight * dpr;
   lCtx.scale(dpr, dpr);
 }
 window.addEventListener('resize', resizeLockCanvas);
 
-// Selects unique style only on clean initialization spawns
-function selectRandomStyle() {
-  const availableStyles = VISUALIZER_STYLES.filter(s => s !== currentActiveStyle);
-  const randomIndex = Math.floor(Math.random() * availableStyles.length);
-  currentActiveStyle = availableStyles[randomIndex];
-  if(styleBadge) styleBadge.textContent = "STYLE: " + currentActiveStyle.replace(/_/g, " ");
-}
-
-/* ---------------- SMART TIMERS & EVENT RE-ARM SYSTEM ---------------- */
-function start8SecLockTimer() {
-    if (lockTimer) clearTimeout(lockTimer);
-    
-    // Lock tabhi lagega jab audio player manually play ho rha ho aur dynamic mode toggled off ho
-    if (audioPlayer && !audioPlayer.paused && (!modeToggleBtn || !modeToggleBtn.checked)) {
-        lockTimer = setTimeout(() => {
-            if (lockOverlay.style.display !== "flex") {
-                showOverlay();
-            }
-        }, 8000); // Strict 8 Seconds Auto-Trigger Matrix
-    }
-}
-
-function resetUserActivity(e) {
-    if (e && e.type === "scroll") return;
-    
-    // Agar user screen touch kar rha h to 8 sec timer fir se shuru se reset hoga
-    if (lockOverlay.style.display !== "flex") {
-        start8SecLockTimer();
-    }
-}
-
-/* ---------------- 10 UNIQUE GENERATIVE RENDER OBJECTS ---------------- */
-function drawStyleObject(cx, cy, r, bass, colorHue) {
-  lCtx.save();
-  switch(currentActiveStyle) {
-    case "HYPER_LASER_BURST": 
-      for (let i = 0; i < 120; i++) {
-        let angle = (i / 120) * Math.PI * 2 + globalMutationTracker * 0.1;
-        let len = 20 + Math.sin(i * 0.5 + globalMutationTracker * 2) * (bass * 0.8);
-        lCtx.strokeStyle = `hsla(${colorHue + i}, 100%, 60%, 0.7)`;
-        lCtx.lineWidth = 1.5; lCtx.beginPath();
-        lCtx.moveTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
-        lCtx.lineTo(cx + (r + len) * Math.cos(angle), cy + (r + len) * Math.sin(angle));
-        lCtx.stroke();
-      }
-      break;
-
-    case "CYBER_MATRIX_ORBIT": 
-      for(let j = 1; j <= 4; j++) {
-        lCtx.strokeStyle = `hsla(${colorHue - j*20}, 100%, 55%, ${0.9 - j*0.2})`;
-        lCtx.lineWidth = 2 / j; lCtx.setLineDash([10 * j, 15 * j]); lCtx.beginPath();
-        lCtx.arc(cx, cy, r + (j * 15) + (bass * (0.1 * j)), globalMutationTracker * j * 0.2, (Math.PI * 2) + globalMutationTracker * j * 0.2);
-        lCtx.stroke();
-      }
-      break;
-
-    case "PLASMA_WAVE_SHIFTER": 
-      lCtx.setLineDash([]);
-      for (let w = 0; w < 3; w++) {
-        lCtx.beginPath(); lCtx.strokeStyle = `hsla(${colorHue + (w*40)}, 100%, 50%, 0.4)`; lCtx.lineWidth = 3;
-        for (let a = 0; a <= Math.PI * 2; a += 0.05) {
-          let offset = Math.sin(a * 8 + globalMutationTracker * 3 + w) * (bass * 0.3);
-          let rx = cx + (r + 10 + offset) * Math.cos(a); let ry = cy + (r + 10 + offset) * Math.sin(a);
-          if (a === 0) lCtx.moveTo(rx, ry); else lCtx.lineTo(rx, ry);
-        }
-        lCtx.closePath(); lCtx.stroke();
-      }
-      break;
-
-    case "NEON_PARTICLE_CLOUD": 
-      for (let p = 0; p < 60; p++) {
-        let pAngle = p * 0.15 + globalMutationTracker * 0.5;
-        let pDist = r + 15 + (Math.abs(Math.sin(p + globalMutationTracker)) * (bass * 1.2));
-        lCtx.fillStyle = `hsla(${colorHue + p*2}, 100%, 65%, 0.8)`; lCtx.beginPath();
-        lCtx.arc(cx + pDist * Math.cos(pAngle), cy + pDist * Math.sin(pAngle), 2.5, 0, Math.PI*2); lCtx.fill();
-      }
-      break;
-
-    case "HEX_VECTOR_RADAR": 
-      lCtx.strokeStyle = `hsla(${colorHue}, 100%, 55%, 0.6)`; lCtx.lineWidth = 2;
-      for(let s = 0; s < 3; s++) {
-        lCtx.beginPath(); let hr = r + 5 + (s * 20) + (bass * 0.2);
-        for(let side = 0; side <= 6; side++) {
-          let hAngle = (side / 6) * Math.PI * 2 + (globalMutationTracker * 0.05);
-          let hx = cx + hr * Math.cos(hAngle); let hy = cy + hr * Math.sin(hAngle);
-          if(side === 0) lCtx.moveTo(hx, hy); else lCtx.lineTo(hx, hy);
-        }
-        lCtx.stroke();
-      }
-      break;
-
-    case "DNA_STRAND_HELIX": 
-      let pairs = 24;
-      for(let d=0; d<pairs; d++) {
-        let dAngle = (d/pairs) * Math.PI * 2 + globalMutationTracker * 0.2;
-        let ext = Math.sin(globalMutationTracker*2 + d)*bass*0.5;
-        let x1 = cx + (r + ext) * Math.cos(dAngle); let y1 = cy + (r + ext) * Math.sin(dAngle);
-        let x2 = cx + (r + 25 + ext*0.5) * Math.cos(dAngle); let y2 = cy + (r + 25 + ext*0.5) * Math.sin(dAngle);
-        lCtx.strokeStyle = `hsla(${colorHue}, 100%, 60%, 0.5)`; lCtx.lineWidth = 1.5;
-        lCtx.beginPath(); lCtx.moveTo(x1, y1); lCtx.lineTo(x2, y2); lCtx.stroke();
-        lCtx.fillStyle = "#fff"; lCtx.beginPath(); lCtx.arc(x1, y1, 2, 0, Math.PI*2); lCtx.fill();
-        lCtx.fillStyle = `hsla(${colorHue+120}, 100%, 50%, 0.9)`; lCtx.beginPath(); lCtx.arc(x2, y2, 3, 0, Math.PI*2); lCtx.fill();
-      }
-      break;
-
-    case "QUANTUM_RING_DECAY": 
-      for(let q=0; q<40; q++) {
-        let qAngle = (q/40)*Math.PI*2 - globalMutationTracker*0.3;
-        let qLen = r + 5 + (Math.cos(q * 4 + globalMutationTracker) * bass * 0.4);
-        lCtx.strokeStyle = `hsla(${colorHue - 50}, 100%, 55%, 0.7)`; lCtx.lineWidth = 4; lCtx.lineCap = "round";
-        lCtx.beginPath(); lCtx.arc(cx, cy, qLen, qAngle, qAngle + 0.04); lCtx.stroke();
-      }
-      break;
-
-    case "SOUND_GEOMETRIC_CUBE": 
-      lCtx.strokeStyle = `hsla(${colorHue}, 100%, 50%, 0.4)`; lCtx.lineWidth = 1.5;
-      let boxSize = r + 10 + bass * 0.3; lCtx.strokeRect(cx - boxSize, cy - boxSize, boxSize*2, boxSize*2);
-      lCtx.save(); lCtx.translate(cx, cy); lCtx.rotate(Math.PI/4 + globalMutationTracker*0.1);
-      lCtx.strokeRect(-boxSize*0.7, -boxSize*0.7, boxSize*1.4, boxSize*1.4); lCtx.restore();
-      break;
-
-    case "ASTRO_PULSE_FLARE": 
-      for(let f=0; f<80; f++) {
-        let fAngle = (f/80)*Math.PI*2; let flareIdx = Math.floor(Math.abs(Math.sin(f*0.1)) * bass);
-        lCtx.fillStyle = `hsla(${colorHue + (f*0.5)}, 100%, 50%, 0.3)`;
-        let fx = cx + (r + 2 + flareIdx*0.6) * Math.cos(fAngle); let fy = cy + (r + 2 + flareIdx*0.6) * Math.sin(fAngle);
-        lCtx.beginPath(); lCtx.arc(fx, fy, 1 + flareIdx*0.1, 0, Math.PI*2); lCtx.fill();
-      }
-      break;
-
-    case "DIGITAL_RAIN_SHOCK": 
-      for(let m=0; m<32; m++) {
-        let mAngle = (m/32)*Math.PI*2 + globalMutationTracker*0.05;
-        let mLen = 5 + ((m + Math.floor(globalMutationTracker*5)) % 5) * (bass*0.2);
-        lCtx.strokeStyle = `hsla(${colorHue + 60}, 100%, 60%, 0.6)`; lCtx.lineWidth = 2;
-        lCtx.beginPath(); lCtx.moveTo(cx + (r + mLen) * Math.cos(mAngle), cy + (r + mLen) * Math.sin(mAngle));
-        lCtx.lineTo(cx + (r + mLen + 8) * Math.cos(mAngle), cy + (r + mLen + 8) * Math.sin(mAngle));
-        lCtx.stroke();
-      }
-      break;
-  }
-  lCtx.restore();
-}
-
-/* ---------------- CORE ENGINE LOOP ---------------- */
+/* ---------------- UNLIMITED RANDOMIZED REPEAT-LESS APP-THEMED VISUALIZER ---------------- */
 function renderLockVisuals() {
   if (lockOverlay.style.display !== "flex") {
-    cancelAnimationFrame(lAnimationId); return;
+    cancelAnimationFrame(lAnimationId);
+    return;
   }
+  
   lAnimationId = requestAnimationFrame(renderLockVisuals);
   
-  const w = window.innerWidth; const h = window.innerHeight;
-  if (!(audioPlayer && !audioPlayer.paused)) { hideOverlay(); return; }
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  let isPlaying = audioPlayer && !audioPlayer.paused;
 
-  globalMutationTracker += 0.035;
-  let bassPulse = 30 + Math.sin(globalMutationTracker * 1.6) * 15 + Math.cos(globalMutationTracker * 0.85) * 15;
-  let dynamicHue = (Math.floor(globalMutationTracker * 0.2) % 2 === 0) 
-                   ? (175 + Math.sin(globalMutationTracker * 0.1) * 20) % 360  
-                   : (0 + Math.sin(globalMutationTracker * 0.1) * 15 + 360) % 360; 
+  if (!isPlaying) {
+    hideOverlay();
+    return;
+  }
 
-  let minR = 75; let targetZoom = minR + (bassPulse * 0.2);
+  globalMutationTracker += 0.035; 
+
+  // Chaos math algorithms preventing recurring loop mirroring
+  let chaosMultiplierX = Math.sin(globalMutationTracker * 0.45) * 2.8;
+  let chaosMultiplierY = Math.cos(globalMutationTracker * 0.22) * 2.0;
+  
+  let dynamicBassPulse = 30 + Math.sin(globalMutationTracker * 1.6 + chaosMultiplierX) * 15 
+                            + Math.cos(globalMutationTracker * 0.85 - chaosMultiplierY) * 15;
+
+  // 🪐 Theme-Sync Shifting Loop (Morphs smoothly between Electric Cyan and Vivo Deep Crimson Red)
+  if (Math.floor(globalMutationTracker * 0.2) % 2 === 0) {
+      lDynamicHue = (175 + Math.sin(globalMutationTracker * 0.1) * 35) % 360; // Cyan Domain
+  } else {
+      lDynamicHue = (0 + Math.sin(globalMutationTracker * 0.1) * 25); // Crimson Red/Orange Domain
+      if(lDynamicHue < 0) lDynamicHue += 360;
+  }
+
+  let minR = 75;
+  let targetZoom = minR + (dynamicBassPulse * 0.2);
   lSmoothZoom += (targetZoom - lSmoothZoom) * 0.15;
 
-  if(overlayThumb) overlayThumb.style.transform = `scale(${lSmoothZoom / minR})`;
-  lCtx.fillStyle = "#000000"; lCtx.fillRect(0, 0, w, h);
+  if(overlayThumb) {
+     overlayThumb.style.transform = `scale(${lSmoothZoom / minR})`;
+  }
+
+  // Pure Solid Pitch Black Reset to preserve deep UI contrasts
+  lCtx.fillStyle = "#000000";
+  lCtx.fillRect(0, 0, w, h);
 
   const coreWrap = document.querySelector('.visualizer-core-wrap');
   if(!coreWrap) return;
   const coreBounds = coreWrap.getBoundingClientRect();
-  const cx = coreBounds.left + (coreBounds.width / 2); const cy = coreBounds.top + (coreBounds.height / 2);
+  const cx = coreBounds.left + (coreBounds.width / 2);
+  const cy = coreBounds.top + (coreBounds.height / 2);
 
-  let glowGrd = lCtx.createRadialGradient(cx, cy, lSmoothZoom, cx, cy, Math.max(w, h) * 0.5);
-  glowGrd.addColorStop(0, `hsla(${dynamicHue}, 100%, 50%, 0.05)`); glowGrd.addColorStop(1, 'rgba(0,0,0,0)');
-  lCtx.fillStyle = glowGrd; lCtx.fillRect(0, 0, w, h);
+  // Soft Neon Ambient backdrop behind core thumbnail
+  let glowGrd = lCtx.createRadialGradient(cx, cy, lSmoothZoom, cx, cy, Math.max(w, h) * 0.55);
+  glowGrd.addColorStop(0, `hsla(${lDynamicHue}, 100%, 50%, 0.06)`);
+  glowGrd.addColorStop(0.7, `hsla(${lDynamicHue + 120}, 100%, 45%, 0.0)`);
+  lCtx.fillStyle = glowGrd;
+  lCtx.fillRect(0, 0, w, h);
 
-  lCtx.beginPath(); lCtx.arc(cx, cy, lSmoothZoom + 1, 0, Math.PI * 2);
-  lCtx.lineWidth = 2; lCtx.strokeStyle = `hsla(${dynamicHue}, 100%, 55%, 0.7)`; lCtx.stroke();
+  // App Theme Central Ring Orbit
+  lCtx.save();
+  lCtx.beginPath();
+  lCtx.arc(cx, cy, lSmoothZoom + 1, 0, Math.PI * 2);
+  lCtx.lineWidth = 2.5;
+  lCtx.strokeStyle = `hsla(${lDynamicHue}, 100%, 55%, 0.75)`;
+  lCtx.shadowBlur = 12;
+  lCtx.shadowColor = `hsla(${lDynamicHue}, 100%, 50%, 0.5)`;
+  lCtx.stroke();
+  lCtx.restore();
 
-  drawStyleObject(cx, cy, lSmoothZoom, bassPulse, dynamicHue);
+  // 🪐 REPEAT-LESS HIGH COHERENCE GENERATIVE WAVE RAYS
+  const totalRays = 140; 
+  const maxScreenReach = Math.max(w, h);
+  
+  lCtx.save();
+  for (let i = 0; i < totalRays; i++) {
+    let rotationSpeedModifier = Math.sin(globalMutationTracker * 0.04) * 0.25;
+    let angle = (i / totalRays) * Math.PI * 2 + (globalMutationTracker * 0.06) + rotationSpeedModifier;
+    
+    // Core structural formulas generating randomized continuous noise spikes
+    let waveLayer1 = Math.sin(i * 0.18 + globalMutationTracker * 2.9) * 38;
+    let waveLayer2 = Math.cos(i * 0.32 - globalMutationTracker * 2.1) * 28;
+    let waveLayer3 = Math.sin(i * 0.07 + (globalMutationTracker * 0.7) + chaosMultiplierX) * 45;
+    let waveLayer4 = Math.cos(i * 0.45 + chaosMultiplierY) * 22;
+    
+    let combinedSpikeValue = 35 + waveLayer1 + waveLayer2 + waveLayer3 + waveLayer4;
+    if (combinedSpikeValue < 0) combinedSpikeValue = 0;
+    
+    let rayLength = (combinedSpikeValue * 0.7) + Math.sin(i * 0.35) * (dynamicBassPulse * 0.35);
+    if(rayLength > maxScreenReach * 0.45) rayLength = maxScreenReach * 0.45; 
+
+    let cos = Math.cos(angle);
+    let sin = Math.sin(angle);
+
+    let startX = cx + (lSmoothZoom + 3) * cos;
+    let startY = cy + (lSmoothZoom + 3) * sin;
+    let endX = cx + (lSmoothZoom + 3 + rayLength) * cos;
+    let endY = cy + (lSmoothZoom + 3 + rayLength) * sin;
+
+    // Laser gradient rendering with matching app aesthetics
+    let rayGrd = lCtx.createLinearGradient(startX, startY, endX, endY);
+    let currentAlpha = 0.18 + (combinedSpikeValue / 190) * 0.82;
+    rayGrd.addColorStop(0, `hsla(${lDynamicHue + (i * 0.8)}, 100%, 60%, ${currentAlpha})`);
+    rayGrd.addColorStop(0.5, `hsla(${lDynamicHue + 60}, 100%, 50%, ${currentAlpha * 0.35})`);
+    rayGrd.addColorStop(1, 'rgba(0,0,0,0)');
+
+    lCtx.beginPath();
+    lCtx.moveTo(startX, startY);
+    lCtx.lineTo(endX, endY);
+    lCtx.lineWidth = 1.8;
+    lCtx.lineCap = "round";
+    lCtx.strokeStyle = rayGrd;
+    lCtx.stroke();
+  }
+  lCtx.restore();
 }
 
-/* ---------------- INTERFACES & PLUGINS ---------------- */
+/* ---------------- OVERLAY MANAGEMENT FUNCTIONS ---------------- */
+function setStatusBarColor(color) {
+    if (themeMeta) themeMeta.setAttribute("content", color);
+}
+
 function showOverlay() {
     if (audioPlayer && !audioPlayer.paused) {
         if (modeToggleBtn && modeToggleBtn.checked) return; 
-        
-        selectRandomStyle(); 
         resizeLockCanvas();
         lockOverlay.style.display = "flex";
-        if(document.getElementById("themeColorMeta")) document.getElementById("themeColorMeta").setAttribute("content", "#000000");
-        if (lockTimer) clearTimeout(lockTimer); // Kill background monitoring once active
+        setStatusBarColor("#000000");
         renderLockVisuals();
     }
 }
 
 function hideOverlay() {
     lockOverlay.style.display = "none";
-    if(document.getElementById("themeColorMeta")) document.getElementById("themeColorMeta").setAttribute("content", "#00ffff");
+    setStatusBarColor("#00ffff");
     cancelAnimationFrame(lAnimationId);
-    
-    // [CRITICAL FIX] Lock screen hatne par automatic 8 seconds loop ko fir se re-arm krna
-    start8SecLockTimer(); 
+    resetOverlayTimer();
 }
 
 document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
 
+/* ---------------- SIDE MENU FUNCTIONS ---------------- */
+function hideMenu() { if(sideMenu) sideMenu.classList.add('hidden'); }
+function showMenu() { if(sideMenu) sideMenu.classList.remove('hidden'); }
+
+/* ---------------- TIMERS ---------------- */
+function resetOverlayTimer(e) {
+    if (e && e.type === "scroll") return;
+    if (overlayTimer) clearTimeout(overlayTimer);
+    
+    if (audioPlayer && !audioPlayer.paused && modeToggleBtn && !modeToggleBtn.checked) {
+        overlayTimer = setTimeout(showOverlay, 12000); 
+    }
+}
+
+function resetSideMenuTimer() {
+    showMenu();
+    if (sideMenuTimer) clearTimeout(sideMenuTimer);
+    sideMenuTimer = setTimeout(hideMenu, 2000); 
+}
+
+/* ---------------- USER ACTIVITY MONITOR ---------------- */
+['mousemove', 'keydown', 'touchstart', 'click'].forEach(evt => {
+    document.addEventListener(evt, e => {
+        resetOverlayTimer(e);
+        resetSideMenuTimer();
+    }, { passive: true });
+});
+
+resetSideMenuTimer();
+
+/* ---------------- UPDATE CONTENT IN REAL-TIME ---------------- */
 function updateOverlayContent() {
     const thumbSrc = document.getElementById("Fimg")?.src;
     if (thumbSrc) overlayThumb.src = thumbSrc;
+
     const songTitle = document.getElementById("vfytitle")?.textContent;
     overlayTitle.textContent = songTitle || "VIVEKFY Ai ACTIVE";
+
     const curr = document.getElementById("current-time")?.textContent || "0:00";
     const total = document.getElementById("total-time")?.textContent || "0:00";
     if(overlayTime) overlayTime.textContent = `${curr} / ${total}`;
 }
 
-// Global Activity Event Trackers
-['mousemove', 'keydown', 'touchstart', 'click'].forEach(evt => {
-    document.addEventListener(evt, resetUserActivity, { passive: true });
-});
-
 if (audioPlayer) {
     audioPlayer.addEventListener('timeupdate', updateOverlayContent);
     audioPlayer.addEventListener('loadedmetadata', updateOverlayContent);
-    audioPlayer.addEventListener('play', () => { start8SecLockTimer(); });
+    audioPlayer.addEventListener('play', () => { resetOverlayTimer(); });
     audioPlayer.addEventListener('pause', hideOverlay);
     audioPlayer.addEventListener('ended', hideOverlay);
 }
 
+/* -------- MODE TOGGLE HANDLER -------- */
+function toggleFooterVisibility(hide) {
+    const action = hide ? 'add' : 'remove';
+    if(footer) footer.classList[action]("hide");
+    if(progressBar) progressBar.classList[action]("hide");
+    if(audioPlayerContainer) audioPlayerContainer.classList[action]("hide");
+}
+
 if(modeToggleBtn) {
     modeToggleBtn.addEventListener("change", () => {
-        if (!modeToggleBtn.checked) start8SecLockTimer();
-        else if (lockTimer) clearTimeout(lockTimer);
+        if (modeToggleBtn.checked) {
+            toggleFooterVisibility(true);
+            if (overlayTimer) clearTimeout(overlayTimer);
+        } else {
+            toggleFooterVisibility(false);
+            resetOverlayTimer();
+        }
     });
 }
+
+/* ---------------- SCROLL HANDLER ---------------- */
+window.addEventListener("scroll", () => {
+    if (modeToggleBtn && modeToggleBtn.checked) return;
+
+    if (!isScrollTicking) {
+        window.requestAnimationFrame(() => {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > lastScrollTop) {
+                toggleFooterVisibility(true); 
+            } else {
+                toggleFooterVisibility(false); 
+            }
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+            isScrollTicking = false;
+        });
+        isScrollTicking = true;
+    }
+}, { passive: true });
+
+/* ---------------- WAKE LOCK CONFIG ---------------- */
+async function keepScreenOn() {
+    if ('wakeLock' in navigator && audioPlayer && !audioPlayer.paused) {
+        try {
+            if (!wakeLock) {
+                wakeLock = await navigator.wakeLock.request('screen');
+                wakeLock.addEventListener('release', () => { wakeLock = null; });
+            }
+        } catch (err) { 
+            console.error("Wake Lock error:", err); 
+        }
+    }
+}
+
+async function releaseWakeLock() {
+    if (wakeLock) {
+        try {
+            await wakeLock.release();
+            wakeLock = null;
+        } catch (err) {
+            console.error("Wake lock release error:", err);
+        }
+    }
+}
+
+if (audioPlayer) {
+    audioPlayer.addEventListener('play', keepScreenOn);
+    audioPlayer.addEventListener('pause', releaseWakeLock);
+    audioPlayer.addEventListener('ended', releaseWakeLock);
+}
+
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        keepScreenOn();
+    }
+});
 </script>
-
-
-	
