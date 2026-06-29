@@ -5612,6 +5612,8 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
+    
+  
 <div id="lockOverlay">
   <canvas id="lockCanvas"></canvas>
 
@@ -5622,11 +5624,15 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
   <div class="music-core-container">
     <div class="visualizer-core-wrap">
+      <div class="neon-ring-glow"></div>
       <img id="overlayThumb" src="https://via.placeholder.com/150" alt="Core Signal">
     </div>
     
-    <div id="overlayTitle" class="cyber-title">VIVEKFY Ai SYSTEM</div>
-    <div id="overlayTime" class="cyber-time-stamp">0:00 / 0:00</div>
+    <div class="cyber-metadata-box">
+      <span class="cyber-badge">VIVEKFY AI ENGINE</span>
+      <div id="overlayTitle" class="cyber-title">VIVEKFY Ai SYSTEM</div>
+      <div id="overlayTime" class="cyber-time-stamp">0:00 / 0:00</div>
+    </div>
   </div>
 
   <button id="unlockBtn" class="cyber-unlock-btn" aria-label="Unlock Terminal">
@@ -5645,7 +5651,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
   left: 0;  
   width: 100%;  
   height: 100%;  
-  background: #020204;  
+  background: radial-gradient(circle at center, #06050a 0%, #010102 100%);  
   display: none; 
   flex-direction: column;  
   justify-content: space-between;
@@ -5658,7 +5664,6 @@ document.getElementById('search-btn').addEventListener('click', function() {
   overflow: hidden;
 }  
 
-/* Global layout lock when screen overlay is open */
 body:has(#lockOverlay:visible) {
   overflow: hidden;
 }
@@ -5678,24 +5683,24 @@ body:has(#lockOverlay:visible) {
   width: 100%;
   text-align: center;
   z-index: 5;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 .big-clock #clockTime {
-  font-size: 56px;
-  font-weight: 800;
-  letter-spacing: -1px;
-  background: linear-gradient(135deg, #00ffcc, #ff2a74);
+  font-size: 64px;
+  font-weight: 900;
+  letter-spacing: -2px;
+  background: linear-gradient(135deg, #00ffcc 30%, #ff2a74 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 30px rgba(0, 255, 204, 0.2);
+  filter: drop-shadow(0 0 20px rgba(0, 255, 204, 0.3));
 }
 .big-clock #clockDate {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 3px;
-  color: #a0a5b5;
-  margin-top: 5px;
+  letter-spacing: 4px;
+  color: #7e8599;
+  margin-top: 2px;
 }
 
 /* Center Core Grid Container */
@@ -5709,12 +5714,22 @@ body:has(#lockOverlay:visible) {
   text-align: center;
 }
 
-/* Image Core Wrapper styling to sync perfectly with canvas laser spikes */
 .visualizer-core-wrap {
   position: relative;
-  width: 150px;
-  height: 150px;
+  width: 160px;
+  height: 160px;
   margin-bottom: 25px;
+}
+
+.neon-ring-glow {
+  position: absolute;
+  top: -5px; left: -5px; right: -5px; bottom: -5px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #ff2a74, #00ffcc);
+  z-index: -1;
+  opacity: 0.6;
+  filter: blur(15px);
+  animation: pulseGlow 4s infinite alternate ease-in-out;
 }
 
 #overlayThumb {
@@ -5722,39 +5737,60 @@ body:has(#lockOverlay:visible) {
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: none;
-  box-shadow: 0 0 40px rgba(0,0,0,0.8);
-  transform: scale(1);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 50px rgba(0,0,0,0.9);
   will-change: transform;
 }
 
-/* Responsive Digital UI texts */
-.cyber-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #ffffff;
-  letter-spacing: 1px;
+/* Unique Cyber Metallic UI Text Styling */
+.cyber-metadata-box {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 15px 25px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
   max-width: 85%;
+}
+
+.cyber-badge {
+  font-size: 9px;
+  font-weight: 900;
+  color: #ff2a74;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  display: inline-block;
+  margin-bottom: 8px;
+  border: 1px solid rgba(255, 42, 116, 0.3);
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: rgba(255, 42, 116, 0.05);
+}
+
+.cyber-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.5px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   margin-bottom: 6px;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  text-shadow: 0 0 10px rgba(255,255,255,0.2);
 }
 
 .cyber-time-stamp {
-  font-size: 12px;
+  font-size: 13px;
   font-family: monospace;
   color: #00ffcc;
   letter-spacing: 2px;
-  opacity: 0.8;
+  text-shadow: 0 0 8px rgba(0, 255, 204, 0.4);
 }
 
-/* Sleek Cyber Button instead of old messy radial code */
+/* Premium Cyber Unlock Trigger */
 .cyber-unlock-btn {
-  background: rgba(255, 42, 116, 0.1);
-  border: 1px solid rgba(255, 42, 116, 0.4);
-  color: #ff2a74;
+  background: rgba(0, 255, 204, 0.05);
+  border: 1px solid rgba(0, 255, 204, 0.3);
+  color: #00ffcc;
   border-radius: 50%;
   width: 70px;
   height: 70px;
@@ -5763,38 +5799,40 @@ body:has(#lockOverlay:visible) {
   justify-content: center;
   cursor: pointer;
   z-index: 5;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 0 15px rgba(255, 42, 116, 0.1);
-  margin-bottom: 20px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
+  margin-bottom: 10px;
 }
 
 .cyber-unlock-btn:hover, .cyber-unlock-btn:active {
-  background: #ff2a74;
+  background: #00ffcc;
   color: #000;
-  box-shadow: 0 0 30px rgba(255, 42, 116, 0.6);
-  transform: scale(1.05);
+  box-shadow: 0 0 40px rgba(0, 255, 204, 0.7);
+  transform: scale(1.1) rotate(-10deg);
+}
+
+@keyframes pulseGlow {
+  0% { transform: scale(0.98); opacity: 0.4; filter: blur(10px); }
+  100% { transform: scale(1.03); opacity: 0.8; filter: blur(18px); }
 }
 </style>
 
 <script>
-// Live Clock
+// Live Clock Handler
 function updateClock(){
   const now = new Date();
   const time = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
   const date = now.toLocaleDateString([], {weekday:'short', day:'numeric', month:'short', year:'numeric'});
-  document.getElementById('clockTime').textContent = time;
-  document.getElementById('clockDate').textContent = date;
+  const clockTimeEl = document.getElementById('clockTime');
+  const clockDateEl = document.getElementById('clockDate');
+  if(clockTimeEl) clockTimeEl.textContent = time;
+  if(clockDateEl) clockDateEl.textContent = date;
 }
 setInterval(updateClock, 1000);
 updateClock();
 </script>
 
-
-
-
-
-
-	<script>
+<script>
 /* ---------------- GLOBAL ELEMENTS & VISUALIZER CONFIG ---------------- */
 const footer = document.querySelector('.fixed-footer');
 const progressBar = document.getElementById('progressBarContainer');
@@ -5808,13 +5846,13 @@ const themeMeta = document.getElementById("themeColorMeta");
 const modeToggleBtn = document.getElementById("modeToggleBtn");
 const sideMenu = document.getElementById('sideMenu');
 
-// Lockscreen Canvas Engine Config
+// HD Fullscreen Lockscreen Canvas Engine Config
 const lCanvas = document.getElementById("lockCanvas");
 const lCtx = lCanvas.getContext("2d");
 let lAnimationId;
-let lSmoothZoom = 75;
-let lDynamicHue = 200;
-let waveSeed = 0; // Fake calculations ke liye seed counter
+let lSmoothZoom = 80;
+let lDynamicHue = 180;
+let waveMutationSeed = 0; // Infinite unique patterns algorithm tracker
 
 let lastScrollTop = 0;
 let overlayTimer;
@@ -5830,12 +5868,7 @@ function resizeLockCanvas() {
 }
 window.addEventListener('resize', resizeLockCanvas);
 
-/* 🪐 CRITICAL FIX: Fake Audio Engine (AudioContext Removed Completely) */
-function initLockAudioEngine() {
-  console.log("Fake Math Visualizer Active. No Audio Nodes used, Sound is 100% Safe.");
-}
-
-/* ---------------- OVERLAY MATRIX RENDERER ---------------- */
+/* ---------------- MATHEMATICAL HD FULL-SCREEN VISUALIZER ---------------- */
 function renderLockVisuals() {
   if (lockOverlay.style.display !== "flex") {
     cancelAnimationFrame(lAnimationId);
@@ -5847,91 +5880,103 @@ function renderLockVisuals() {
   const w = window.innerWidth;
   const h = window.innerHeight;
   
-  let bassPower = 0;
+  let basePulse = 0;
   let isPlaying = audioPlayer && !audioPlayer.paused;
 
-  // 🪐 Fake Dynamic Data Calculations (Jab song chalega tabhi random wave amplitude banega)
+  // 🪐 Endless Variant Formula (Gana chalega toh dynamic algorithms switch hote rahenge)
   if (isPlaying) {
-    waveSeed += 0.15;
-    // Math logic real dynamic bass feel generate karne ke liye
-    bassPower = 40 + Math.sin(waveSeed * 0.8) * 25 + Math.cos(waveSeed * 1.5) * 15;
+    waveMutationSeed += 0.04;
+    basePulse = 35 + Math.sin(waveMutationSeed * 1.2) * 20 + Math.cos(waveMutationSeed * 0.7) * 15;
   } else {
-    // Song pause hone par visualizer dheere se smooth zero/idle ho jayega
-    bassPower = 0;
+    basePulse = 0;
+    // Safe-guard: Agar gana play nahi hai, toh lockscreen band ho jaye
+    hideOverlay();
+    return;
   }
 
-  // Adaptive Zoom and Color engine
-  lDynamicHue += 0.5 + (bassPower * 0.05);
-  let minR = 75;
-  let maxR = 105;
-  let targetZoom = minR + (bassPower * 0.16);
-  if (targetZoom > maxR) targetZoom = maxR;
-  lSmoothZoom += (targetZoom - lSmoothZoom) * 0.2;
+  // Smooth Radius Breathing Loop
+  lDynamicHue += 0.3 + (basePulse * 0.03);
+  let minR = 80;
+  let targetZoom = minR + (basePulse * 0.2);
+  lSmoothZoom += (targetZoom - lSmoothZoom) * 0.15;
 
   if(overlayThumb) {
      overlayThumb.style.transform = `scale(${lSmoothZoom / minR})`;
   }
 
-  // Clear frame matrix trail
-  lCtx.fillStyle = "rgba(2, 2, 4, 0.2)";
+  // Clean frames trail fluid cinematic look
+  lCtx.fillStyle = "rgba(4, 3, 7, 0.18)";
   lCtx.fillRect(0, 0, w, h);
 
+  // Center alignment bounds calculation
   const coreWrap = document.querySelector('.visualizer-core-wrap');
   if(!coreWrap) return;
-  
   const coreBounds = coreWrap.getBoundingClientRect();
   const cx = coreBounds.left + (coreBounds.width / 2);
   const cy = coreBounds.top + (coreBounds.height / 2);
 
-  // Radial Background Glow
-  let glowGrd = lCtx.createRadialGradient(cx, cy, lSmoothZoom, cx, cy, lSmoothZoom + (bassPower * 1.5));
-  glowGrd.addColorStop(0, `hsla(${lDynamicHue}, 100%, 50%, 0.12)`);
+  // Full Screen Ambient Glow Backplate
+  let glowGrd = lCtx.createRadialGradient(cx, cy, lSmoothZoom, cx, cy, Math.max(w, h) * 0.6);
+  glowGrd.addColorStop(0, `hsla(${lDynamicHue}, 100%, 50%, 0.08)`);
+  glowGrd.addColorStop(0.5, `hsla(${lDynamicHue - 60}, 100%, 50%, 0.02)`);
   glowGrd.addColorStop(1, 'rgba(0,0,0,0)');
   lCtx.fillStyle = glowGrd;
   lCtx.fillRect(0, 0, w, h);
 
-  // Neon Round Ring
+  // Neon Central Border Orbit
   lCtx.save();
   lCtx.beginPath();
-  lCtx.arc(cx, cy, lSmoothZoom + 2, 0, Math.PI * 2);
-  lCtx.lineWidth = 3.5;
-  lCtx.strokeStyle = `hsla(${lDynamicHue}, 100%, 60%, 0.95)`;
-  lCtx.shadowBlur = 20;
+  lCtx.arc(cx, cy, lSmoothZoom + 1, 0, Math.PI * 2);
+  lCtx.lineWidth = 3;
+  lCtx.strokeStyle = `hsla(${lDynamicHue}, 100%, 55%, 0.9)`;
+  lCtx.shadowBlur = 25;
   lCtx.shadowColor = `hsla(${lDynamicHue}, 100%, 50%, 0.8)`;
   lCtx.stroke();
   lCtx.restore();
 
-  // Wave Spikes Generation Loop
-  const totalRays = 75;
+  // 🪐 ULTRA HD FULL SCREEN INFINITE RAYS ALGORITHM
+  const totalRays = 120; // Massive laser spikes density
+  const maxScreenReach = Math.max(w, h); 
+  
   lCtx.save();
   for (let i = 0; i < totalRays; i++) {
-    let angle = (i / totalRays) * Math.PI * 2 + (lDynamicHue * 0.002);
+    // Unique Mutation Pattern Logic (Har ek loop me dynamic algorithm update hota hai)
+    let angle = (i / totalRays) * Math.PI * 2 + (waveMutationSeed * 0.1);
     
-    // 🪐 Fake Frequency Wave Spikes generation based on Sine/Cosine
-    let audioVal = 0;
-    if (isPlaying) {
-      audioVal = 30 + Math.sin(i * 0.5 + waveSeed) * 50 + Math.cos(i * 0.2 - waveSeed) * 40;
-      if(audioVal < 0) audioVal = 0;
-    }
+    // Complex sound harmonic simulation equations (Never looks repeated)
+    let harmonic1 = Math.sin(i * 0.15 + waveMutationSeed * 2.5) * 45;
+    let harmonic2 = Math.cos(i * 0.4 - waveMutationSeed * 1.8) * 35;
+    let harmonic3 = Math.sin(i * 0.05 + waveMutationSeed * 0.5) * 55;
     
-    let waveHeight = (audioVal * 0.45) + Math.sin(i * 0.3) * (bassPower * 0.1);
+    let simulatedValue = 40 + harmonic1 + harmonic2 + harmonic3;
+    if (simulatedValue < 0) simulatedValue = 0;
+    
+    // Scale vectors so waves expand directly toward the screen edges
+    let spikeLength = (simulatedValue * 0.6) + Math.sin(i * 0.5) * (basePulse * 0.5);
+    // Limit to safe full screen dimensions
+    if(spikeLength > maxScreenReach * 0.45) spikeLength = maxScreenReach * 0.45;
 
     let cos = Math.cos(angle);
     let sin = Math.sin(angle);
 
     let startX = cx + (lSmoothZoom + 4) * cos;
     let startY = cy + (lSmoothZoom + 4) * sin;
-    let endX = cx + (lSmoothZoom + 4 + waveHeight) * cos;
-    let endY = cy + (lSmoothZoom + 4 + waveHeight) * sin;
+    let endX = cx + (lSmoothZoom + 4 + spikeLength) * cos;
+    let endY = cy + (lSmoothZoom + 4 + spikeLength) * sin;
+
+    // Linear fading laser rendering
+    let rayGrd = lCtx.createLinearGradient(startX, startY, endX, endY);
+    let currentAlpha = 0.2 + (simulatedValue / 180) * 0.8;
+    rayGrd.addColorStop(0, `hsla(${lDynamicHue + (i * 1.5)}, 100%, 65%, ${currentAlpha})`);
+    rayGrd.addColorStop(0.5, `hsla(${lDynamicHue + (i * 1.5) + 40}, 100%, 50%, ${currentAlpha * 0.5})`);
+    rayGrd.addColorStop(1, 'rgba(0,0,0,0)');
 
     lCtx.beginPath();
     lCtx.moveTo(startX, startY);
     lCtx.lineTo(endX, endY);
-    lCtx.lineWidth = 2.5;
+    lCtx.lineWidth = 2.2;
     lCtx.lineCap = "round";
-    
-    let alpha = 0.3 + (audioVal / 180) * 0.7;
-    lCtx.strokeStyle = `hsla(${lDynamicHue + (i * 2)}, 100%, 65%, ${alpha})`;
+    lCtx.strokeStyle = rayGrd;
     lCtx.stroke();
   }
   lCtx.restore();
@@ -5943,14 +5988,14 @@ function setStatusBarColor(color) {
 }
 
 function showOverlay() {
-    if (modeToggleBtn && modeToggleBtn.checked) return; 
-    
-    initLockAudioEngine();
-    resizeLockCanvas();
-    lockOverlay.style.display = "flex";
-    setStatusBarColor("#000000");
-    
-    renderLockVisuals();
+    // 🪐 [CRITICAL RULE]: Lockscreen TABHI khulegi jab song PLAY chal raha ho
+    if (audioPlayer && !audioPlayer.paused) {
+        if (modeToggleBtn && modeToggleBtn.checked) return; 
+        resizeLockCanvas();
+        lockOverlay.style.display = "flex";
+        setStatusBarColor("#000000");
+        renderLockVisuals();
+    }
 }
 
 function hideOverlay() {
@@ -5971,8 +6016,9 @@ function resetOverlayTimer(e) {
     if (e && e.type === "scroll") return;
     if (overlayTimer) clearTimeout(overlayTimer);
     
-    if (modeToggleBtn && !modeToggleBtn.checked) {
-        overlayTimer = setTimeout(showOverlay, 12000); 
+    // Timer tabhi set hoga jab music chalu ho
+    if (audioPlayer && !audioPlayer.paused && modeToggleBtn && !modeToggleBtn.checked) {
+        overlayTimer = setTimeout(showOverlay, 12000); // 12 Seconds IDLE Trigger
     }
 }
 
@@ -5990,7 +6036,7 @@ function resetSideMenuTimer() {
     }, { passive: true });
 });
 
-resetOverlayTimer();
+// Init timers
 resetSideMenuTimer();
 
 /* ---------------- UPDATE CONTENT IN REAL-TIME ---------------- */
@@ -6003,12 +6049,21 @@ function updateOverlayContent() {
 
     const curr = document.getElementById("current-time")?.textContent || "0:00";
     const total = document.getElementById("total-time")?.textContent || "0:00";
-    overlayTime.textContent = `${curr} / ${total}`;
+    if(overlayTime) overlayTime.textContent = `${curr} / ${total}`;
 }
 
 if (audioPlayer) {
     audioPlayer.addEventListener('timeupdate', updateOverlayContent);
     audioPlayer.addEventListener('loadedmetadata', updateOverlayContent);
+    
+    // Song PLAY hote hi immediate 12-sec countdown shuru hoga
+    audioPlayer.addEventListener('play', () => {
+        resetOverlayTimer();
+    });
+    
+    // Song PAUSE/END hote hi lockscreen automatic fade out ho jayegi
+    audioPlayer.addEventListener('pause', hideOverlay);
+    audioPlayer.addEventListener('ended', hideOverlay);
 }
 
 /* -------- MODE TOGGLE HANDLER -------- */
