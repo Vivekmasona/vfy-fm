@@ -3345,12 +3345,12 @@ var alternativeAudioSources = [
 
 var currentAlternativeIndex = 0;
 
+// 🪐 [SAFE TRIGGER]: Gana change ya error hone par lockscreen sound refresh karega
 audio.addEventListener("error", function () {
     setTimeout(function () {
         audio.src = alternativeAudioSources[currentAlternativeIndex];
         audio.load();
         
-        // 🪐 [SAFE TRIGGER]: Gana change ya error hone par lockscreen sound refresh karega
         if (window.globalAudioInitialized && typeof initLockAudioEngine === "function") {
              initLockAudioEngine(); 
         }
@@ -3359,7 +3359,15 @@ audio.addEventListener("error", function () {
         currentAlternativeIndex = (currentAlternativeIndex + 1) % alternativeAudioSources.length;
     }, 1000);
 });
-//} // <-- Yeh play function ka closing bracket waise hi rahega
+
+// 🔥 [LOCKSCREEN FORCE START]: Jaise hi gana bajna shuru ho, audio stream ko unlock karo
+audio.addEventListener("play", function () {
+    if (window.globalAudioInitialized && typeof initLockAudioEngine === "function") {
+        initLockAudioEngine();
+    }
+});
+
+} // <-- Is bracket se aapka 'function play' yahan bilkul perfect band ho gaya!
 
 
     
