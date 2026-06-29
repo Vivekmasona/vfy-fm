@@ -3189,172 +3189,180 @@ function play(videoId, index) {
     
 
 
-	
-    
-
-    
-
-
-
-    
-
-
-
-
 
 function play(id,Sid){
-     // --- SOURCE CONFIG ---
+  // data = "https://distinctive-netta-vivekfy-608ee81c.koyeb.app/play?url=https://youtu.be/"+id;
+    //data = "https://vivekfy.vercel.app/hack?url=https://vkrdownloader.xyz/download.php?vkr=https://youtu.be/"+id+"&redirect=1";
+      //data = "https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/"+id;
+      //data = "https://vivekfy.vercel.app/api-play?url=https://youtu.be/"+id;
+    //data = "https://vivekfy.vercel.app/inv?id="+id;
+      //data = "https://vivekfy.vercel.app/mp3?url=https://vkrdownloader.xyz/download.php?vkr=https://youtu.be/"+id;
      data = "https://invidious.nerdvpn.de/companion/latest_version?id="+id+"&itag=140&local=true&check=";
-     
-     var audio = document.getElementById("SAudio");  
-     
-     // Naya source assign karne se pehle source load karein
-     audio.src = data;
-
-     // 🪐 [CRITICAL FIX]: Lockscreen visualizer ko naye source ke sath sync karne ka trigger
-     if (window.globalAudioInitialized && typeof initLockAudioEngine === "function") {
-         initLockAudioEngine(); 
-     }
-
-     document.getElementById("SThumb").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
-     document.getElementById("Fimg").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
-     
+     //data = "https://myserver-dev-atmq.2.ie-1.fl0.io/audio?url=https://youtu.be/"+id;
+     //data = "https://audioserver-dev-cgen.2.sg-1.fl0.io/"+id;
+    document.getElementById("SThumb").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
+    document.getElementById("Fimg").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
      document.getElementById("pahilagana").onclick = ()=>{
-         location.href= "https://vivekfy.vercel.app/dl?url=https://youtu.be/"+id;
-     };
-     document.getElementById("VFYmp3").onclick = ()=>{
-         location.href= "https://vivekfy.vercel.app/stream?url=https://youtu.be/"+id;
-     };
+       location.href= "https://vivekfy.vercel.app/dl?url=https://youtu.be/"+id;
+        //location.href= "https://vivekfy.vercel.app/download/audio?url=https://youtu.be/"+id;
+        //location.href= "https://vivekfy-server.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
+    };
+	document.getElementById("VFYmp3").onclick = ()=>{
+        //location.href= "https://vivekfy-server.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
+        location.href= "https://vivekfy.vercel.app/stream?url=https://youtu.be/"+id;
+        //location.href= "https://vivekdl.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
+    };
 
-     document.getElementById("VFYshare").onclick = () => {
-         let shareUrl = "https://vidofy.vercel.app?q=" + id;
-         if (navigator.share) {
-             navigator.share({
-                 title: typeof title !== 'undefined' ? title : "VIVEKFY Audio",  
-                 text: `Check out: ${typeof title !== 'undefined' ? title : "Song"}`,
-                 url: shareUrl
-             }).then(() => {
-                 console.log("✅ Shared successfully");
-             }).catch(err => {
-                 console.log("❌ Share failed:", err);
-             });
-         } else {
-             location.href = shareUrl;
-         }
-     };
+document.getElementById("VFYshare").onclick = () => {
+    let shareUrl = "https://vidofy.vercel.app?q=" + id;
+
+    if (navigator.share) {
+        navigator.share({
+            title: title,  // yaha video ka title jayega
+            text: `Check out: ${title}`,
+            url: shareUrl
+        }).then(() => {
+            console.log("✅ Shared successfully");
+        }).catch(err => {
+            console.log("❌ Share failed:", err);
+        });
+    } else {
+        // Agar browser support nahi karta toh sidha link open
+        location.href = shareUrl;
+    }
+};
 	
-     document.getElementById("VFYmp3v2").onclick = ()=>{
-         location.href= "https://vivekfy.vercel.app/stream?url=https://youtu.be/"+id;
-     };
-     document.getElementById("vivekmasona").onclick = ()=>{
-         location.href= "https://vivekfy.vercel.app/api?url=https://youtu.be/"+id;
-     };
+	document.getElementById("VFYmp3v2").onclick = ()=>{
+        location.href= "https://vivekfy.vercel.app/stream?url=https://youtu.be/"+id;
+        //location.href= "https://vivekfy.fanclub.rocks/audio?url=https://youtu.be/"+id;
+        //location.href= "https://vivekdl.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
+    };
+document.getElementById("vivekmasona").onclick = ()=>{
+        location.href= "https://vivekfy.vercel.app/api?url=https://youtu.be/"+id;
+        //location.href= "https://myserver-dev-akkd.2.sg-1.fl0.io/mp4?url=https://youtu.be/"+id;
+        //location.href= "https://vivekfy-api-v2.onrender.com/video?url=https://youtu.be/"+id;
+     //location.href= "https://vivekfy-obg6.onrender.com/download/video?url=https://youtu.be/"+id;
+        };
 
-     var isRepeat = false; // repeat flag
+    
+var audio = document.getElementById("SAudio");  
+var isRepeat = false; // repeat flag
 
-     // Function to play the next song  
-     function playNextSong() {  
-         var nextSongIndex = Sid + 1; 
-         var playlistItems = document.getElementsByClassName("list");  
+// Function to play the next song  
+function playNextSong() {  
+    var nextSongIndex = Sid + 1; // Calculate the index of the next song  
+    var playlistItems = document.getElementsByClassName("list");  
 
-         if (nextSongIndex < playlistItems.length) {  
-             playlistItems[nextSongIndex].click(); 
-             audio.play(); 
+    if (nextSongIndex < playlistItems.length) {  
+        playlistItems[nextSongIndex].click(); // Play the next song  
+        audio.play(); // Play the audio  
 
-             var nextSong = playlistItems[nextSongIndex];  
-             var nextThumbnail = $(nextSong).children('img').attr("src");  
-             var nextVideoId = $(nextSong).attr("vid");  
-             $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');  
-             $("#profileThumbnail").data("videoId", nextVideoId);  
+        // Update the profile thumbnail and video ID for the next song  
+        var nextSong = playlistItems[nextSongIndex];  
+        var nextThumbnail = $(nextSong).children('img').attr("src");  
+        var nextVideoId = $(nextSong).attr("vid");  
+        $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');  
+        $("#profileThumbnail").data("videoId", nextVideoId);  
 
-             Sid = nextSongIndex; 
-             console.log('Automatically went to the next song and started playing.');  
-         } else {  
-             console.log('End of playlist');  
-         }  
-     }  
+        Sid = nextSongIndex; // update Sid  
+        console.log('Automatically went to the next song and started playing.');  
+    } else {  
+        console.log('End of playlist');  
+    }  
+}  
 
-     // Function to play the previous song  
-     function playPreviousSong() {  
-         var prevSongIndex = Sid - 1; 
-         var playlistItems = document.getElementsByClassName("list");  
+// Function to play the previous song  
+function playPreviousSong() {  
+    var prevSongIndex = Sid - 1; // Calculate the index of the previous song  
+    var playlistItems = document.getElementsByClassName("list");  
 
-         if (prevSongIndex >= 0) {  
-             playlistItems[prevSongIndex].click(); 
-             audio.play(); 
+    if (prevSongIndex >= 0) {  
+        playlistItems[prevSongIndex].click(); // Play the previous song  
+        audio.play(); // Play the audio  
 
-             var prevSong = playlistItems[prevSongIndex];  
-             var prevThumbnail = $(prevSong).children('img').attr("src");  
-             var prevVideoId = $(prevSong).attr("vid");  
-             $("#profileThumbnail").html('<img src="' + prevThumbnail + '" alt="Profile Thumbnail">');  
-             $("#profileThumbnail").data("videoId", prevVideoId);  
+        // Update the profile thumbnail and video ID for the previous song  
+        var prevSong = playlistItems[prevSongIndex];  
+        var prevThumbnail = $(prevSong).children('img').attr("src");  
+        var prevVideoId = $(prevSong).attr("vid");  
+        $("#profileThumbnail").html('<img src="' + prevThumbnail + '" alt="Profile Thumbnail">');  
+        $("#profileThumbnail").data("videoId", prevVideoId);  
 
-             Sid = prevSongIndex; 
-             console.log('Automatically went to the previous song and started playing.');  
-         } else {  
-             console.log('Start of playlist');  
-         }  
-     }  
-
-     // Listen for the 'ended' event  
-     audio.onended = function() {  
-         if (isRepeat) {  
-             audio.currentTime = 0;  
-             audio.play();  
-             console.log("Song repeated.");  
-         } else {  
-             playNextSong();  
-         }  
-     };  
-
-     // Pichhe button listener  
-     document.getElementById("pichhe").onclick = playPreviousSong;  
-  
-     document.getElementById("repeat").onclick = function() {  
-         isRepeat = !isRepeat; 
-         console.log("Repeat mode: " + (isRepeat ? "ON" : "OFF"));  
-     };
-
-     // Alternative Audio Sources on Error
-     var alternativeAudioSources = [
-         "https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/" + id,
-         "https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + id,
-     ];
-
-     var currentAlternativeIndex = 0;
-
-     // 🪐 [CRITICAL FIX]: Error hone par bhi lockscreen engine ko reload state dena
-     audio.onerror = function () {
-         setTimeout(function () {
-             audio.src = alternativeAudioSources[currentAlternativeIndex];
-             audio.load();
-             
-             if (window.globalAudioInitialized && typeof initLockAudioEngine === "function") {
-                 initLockAudioEngine(); 
-             }
-             
-             audio.play();
-             currentAlternativeIndex = (currentAlternativeIndex + 1) % alternativeAudioSources.length;
-         }, 1000);
-     };
-
-     // Button click events
-     document.getElementById("nextbutto").onclick = function () {
-         playNextSong();
-     };
-     document.getElementById("aage").onclick = function () {
-         playNextSong();
-     };
-}
+        Sid = prevSongIndex; // update Sid  
+        console.log('Automatically went to the previous song and started playing.');  
+    } else {  
+        console.log('Start of playlist');  
+    }  
+}  
 
 function playPause() {  
    var audio = document.getElementById("SAudio");  
+
    if (audio.paused) {  
       audio.play();  
    } else {  
       audio.pause();  
    }  
 }  
+
+// Listen for the 'ended' event  
+audio.addEventListener("ended", function() {  
+    if (isRepeat) {  
+        audio.currentTime = 0;  
+        audio.play();  
+        console.log("Song repeated.");  
+    } else {  
+        playNextSong();  
+    }  
+});  
+
+// Pichhe button listener  
+document.getElementById("pichhe").addEventListener("click", playPreviousSong);  
+  
+
+document.getElementById("repeat").addEventListener("click", function() {  
+    isRepeat = !isRepeat; // toggle repeat  
+    console.log("Repeat mode: " + (isRepeat ? "ON" : "OFF"));  
+});
+
+// Listen for the 'error' event
+var alternativeAudioSources = [
+//"https://vivekfy.vercel.app/tokyo?id=" + id,
+//"https://vivekfy.vercel.app/audio-dl?url=https://youtu.be/" + id,
+//"https://vivekfy.vercel.app/inv1?id=" + id,
+//"https://vivekfy.vercel.app/inv2?id=" + id,
+//"https://vivekfy.vercel.app/stream?url=https://youtu.be/" + id,
+//"https://vivekfy.vercel.app/tokyo?id=" + id,   
+//"https://vivekfy.vercel.app/mp3?url=https://vkrdownloader.xyz/download.php?vkr=https://youtu.be/" + id,
+//"https://vivekfy.vercel.app/mp3?url=https://vkrdownloader.xyz/download.php?vkr=https://youtu.be/" + id,
+//"https://distinctive-netta-vivekfy-608ee81c.koyeb.app/play?url=https://youtu.be/" + id,	
+//"https://distinctive-netta-vivekfy-608ee81c.koyeb.app/play?url=https://youtu.be/" + id,
+"https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/" + id,
+"https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + id,
+    
+];
+
+var currentAlternativeIndex = 0;
+
+audio.addEventListener("error", function () {
+    setTimeout(function () {
+        audio.src = alternativeAudioSources[currentAlternativeIndex];
+        audio.load();
+        audio.play();
+        currentAlternativeIndex = (currentAlternativeIndex + 1) % alternativeAudioSources.length;
+    }, 1000);
+});
+
+
+// butto click event
+var nextbutto = document.getElementById("nextbutto");
+nextbutto.addEventListener("click", function () {
+    playNextSong();
+});
+// butto click event
+var nextbutto = document.getElementById("aage");
+nextbutto.addEventListener("click", function () {
+    playNextSong();
+});
 
 
 
@@ -5781,8 +5789,7 @@ setInterval(updateClock, 1000);
 updateClock();
 </script>
 
-
-              <script>
+<script>
 /* ---------------- GLOBAL ELEMENTS & VISUALIZER CONFIG ---------------- */
 const footer = document.querySelector('.fixed-footer');
 const progressBar = document.getElementById('progressBarContainer');
@@ -5818,14 +5825,11 @@ function resizeLockCanvas() {
 }
 window.addEventListener('resize', resizeLockCanvas);
 
-/* 🪐 CRITICAL FIX: Global Safe Node Connector (Zero Mute System) */
+/* Initialize Lock Web Audio Engine explicitly from playing context */
 function initLockAudioEngine() {
-  if (!audioPlayer) return;
-
-  // Agar window level par audio context pehle se bana hai, toh naya nahi banayenge
-  if (!window.globalAudioInitialized) {
+  if (!lCtxAudio && audioPlayer) {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContext) return;
+    if(!AudioContext) return;
     
     lCtxAudio = new AudioContext();
     lAnalyser = lCtxAudio.createAnalyser();
@@ -5833,24 +5837,14 @@ function initLockAudioEngine() {
     lAnalyser.smoothingTimeConstant = 0.7;
     
     try {
-      // Source direct linking to speaker destination
       lSrcNode = lCtxAudio.createMediaElementSource(audioPlayer);
       lSrcNode.connect(lAnalyser);
       lAnalyser.connect(lCtxAudio.destination);
-      
-      // Save arrays to window scope to persist memory leak
-      window.globalAnalyser = lAnalyser;
-      window.globalFreqData = new Uint8Array(lAnalyser.frequencyBinCount);
-      window.globalAudioInitialized = true;
+      lFreqData = new Uint8Array(lAnalyser.frequencyBinCount);
     } catch(err) {
-      console.log("Stream successfully protected from duplicate nodes.");
+      console.log("Audio node setup linked successfully.");
     }
-  } else {
-    // Re-assign references from safely active global instance
-    lAnalyser = window.globalAnalyser;
-    lFreqData = window.globalFreqData;
   }
-  
   if (lCtxAudio && lCtxAudio.state === 'suspended') {
     lCtxAudio.resume();
   }
@@ -5869,15 +5863,11 @@ function renderLockVisuals() {
   const h = window.innerHeight;
   
   let bassPower = 0;
-  
-  // Use persistent arrays
-  const activeAnalyser = lAnalyser || window.globalAnalyser;
-  const activeFreqData = lFreqData || window.globalFreqData;
-
-  if (activeAnalyser && activeFreqData && audioPlayer && !audioPlayer.paused) {
-    activeAnalyser.getByteFrequencyData(activeFreqData);
+  if (lAnalyser && lFreqData && audioPlayer && !audioPlayer.paused) {
+    lAnalyser.getByteFrequencyData(lFreqData);
+    // Track core punch bass lines 
     let bassSum = 0;
-    for(let i=0; i<6; i++) bassSum += activeFreqData[i];
+    for(let i=0; i<6; i++) bassSum += lFreqData[i];
     bassPower = bassSum / 6;
   }
 
@@ -5889,28 +5879,26 @@ function renderLockVisuals() {
   if (targetZoom > maxR) targetZoom = maxR;
   lSmoothZoom += (targetZoom - lSmoothZoom) * 0.2;
 
-  if(overlayThumb) {
-     overlayThumb.style.transform = `scale(${lSmoothZoom / minR})`;
-  }
+  // Sync scale directly with the HTML Image Document
+  overlayThumb.style.transform = `scale(${lSmoothZoom / minR})`;
 
+  // Smooth trail rendering
   lCtx.fillStyle = "rgba(2, 2, 4, 0.2)";
   lCtx.fillRect(0, 0, w, h);
 
-  const coreWrap = document.querySelector('.visualizer-core-wrap');
-  if(!coreWrap) return;
-  
-  const coreBounds = coreWrap.getBoundingClientRect();
+  // Core center anchor coordinates (Calculated dynamically matching HTML container placement)
+  const coreBounds = document.querySelector('.visualizer-core-wrap').getBoundingClientRect();
   const cx = coreBounds.left + (coreBounds.width / 2);
   const cy = coreBounds.top + (coreBounds.height / 2);
 
-  // Radial Background Glow
+  // Ambient back-glow
   let glowGrd = lCtx.createRadialGradient(cx, cy, lSmoothZoom, cx, cy, lSmoothZoom + (bassPower * 1.5));
   glowGrd.addColorStop(0, `hsla(${lDynamicHue}, 100%, 50%, 0.12)`);
   glowGrd.addColorStop(1, 'rgba(0,0,0,0)');
   lCtx.fillStyle = glowGrd;
   lCtx.fillRect(0, 0, w, h);
 
-  // Neon Round Ring
+  // Draw premium adaptive neon round ring borders
   lCtx.save();
   lCtx.beginPath();
   lCtx.arc(cx, cy, lSmoothZoom + 2, 0, Math.PI * 2);
@@ -5921,12 +5909,12 @@ function renderLockVisuals() {
   lCtx.stroke();
   lCtx.restore();
 
-  // Wave Spikes
+  // Draw Laser Wave Spikes surrounding the image
   const totalRays = 75;
   lCtx.save();
   for (let i = 0; i < totalRays; i++) {
     let angle = (i / totalRays) * Math.PI * 2 + (lDynamicHue * 0.002);
-    let audioVal = (activeFreqData) ? activeFreqData[i % activeFreqData.length] : 0;
+    let audioVal = (lFreqData) ? lFreqData[i % lFreqData.length] : 0;
     let waveHeight = (audioVal * 0.45) + Math.sin(i * 0.3) * (bassPower * 0.1);
 
     let cos = Math.cos(angle);
@@ -5957,12 +5945,10 @@ function setStatusBarColor(color) {
 
 function showOverlay() {
     if (modeToggleBtn && modeToggleBtn.checked) return; 
-    
     initLockAudioEngine();
     resizeLockCanvas();
     lockOverlay.style.display = "flex";
     setStatusBarColor("#000000");
-    
     renderLockVisuals();
 }
 
@@ -6003,6 +5989,7 @@ function resetSideMenuTimer() {
     }, { passive: true });
 });
 
+// Initial boot configurations
 resetOverlayTimer();
 resetSideMenuTimer();
 
@@ -6022,6 +6009,7 @@ function updateOverlayContent() {
 if (audioPlayer) {
     audioPlayer.addEventListener('timeupdate', updateOverlayContent);
     audioPlayer.addEventListener('loadedmetadata', updateOverlayContent);
+    audioPlayer.addEventListener('play', () => { if(lockOverlay.style.display === "flex") initLockAudioEngine(); });
 }
 
 /* -------- MODE TOGGLE HANDLER -------- */
@@ -6100,3 +6088,5 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 </script>
+
+	
