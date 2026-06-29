@@ -5612,11 +5612,9 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-    
-           <div id="lockOverlay">
+ <div id="lockOverlay">
   <canvas id="lockCanvas"></canvas>
 
-  <!-- Image 1000244672.jpg App Theme Inspired Vertical Minimal Clock -->
   <div class="big-clock">
     <div id="clockTime" class="minimal-vertical-time">
       <span id="hourTens">0</span><span id="hourOnes" class="cyan-accent">0</span>
@@ -5625,7 +5623,6 @@ document.getElementById('search-btn').addEventListener('click', function() {
     <div id="clockDate">Loading Matrix...</div>
   </div>
 
-  <!-- Center Visualizer Core (Floating Thumbnail with App Theme Aura) -->
   <div class="music-core-container">
     <div class="visualizer-core-wrap">
       <div class="neon-ring-glow"></div>
@@ -5633,9 +5630,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
     </div>
   </div>
 
-  <!-- Bottom Section: Title locked above the unlock trigger button -->
   <div class="bottom-controls-wrapper">
-    <!-- Unique Cyber Premium UI Titles (Lock Button ke upar) -->
     <div class="cyber-metadata-box">
       <span class="cyber-badge">VIVEKFY AI INFINITY ENGINE</span>
       <div id="overlayTitle" class="cyber-title">VIVEKFY Ai SYSTEM</div>
@@ -5742,7 +5737,7 @@ body:has(#lockOverlay:visible) {
   transform: scale(1.06);
 }
 .cyan-accent {
-  color: #00ffcc !important; /* Premium Cyan accent from 1000244672.jpg */
+  color: #00ffcc !important; 
   text-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
 }
 .big-clock #clockDate {
@@ -5771,14 +5766,15 @@ body:has(#lockOverlay:visible) {
   height: 155px;
 }
 
+/* Subtle underlying aura - scaled down to protect AMOLED blocks */
 .neon-ring-glow {
   position: absolute;
   top: -4px; left: -4px; right: -4px; bottom: -4px;
   border-radius: 50%;
-  background: linear-gradient(45deg, #00ffcc, #ff3300); /* Cyan to Vivo Red gradient profile */
+  background: linear-gradient(45deg, #00ffcc, #ff3300); 
   z-index: -1;
-  opacity: 0.4;
-  filter: blur(10px);
+  opacity: 0.25;
+  filter: blur(8px);
   animation: pulseGlow 4s infinite alternate ease-in-out;
 }
 
@@ -5805,7 +5801,7 @@ body:has(#lockOverlay:visible) {
 
 /* Cyber Metallic UI Title Box */
 .cyber-metadata-box {
-  background: rgba(10, 10, 12, 0.9);
+  background: rgba(10, 10, 12, 0.95);
   padding: 14px 25px;
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.07);
@@ -5819,7 +5815,7 @@ body:has(#lockOverlay:visible) {
 .cyber-badge {
   font-size: 8px;
   font-weight: 900;
-  color: #ff3300; /* Matching the deep red/orange badge highlights */
+  color: #ff3300; 
   letter-spacing: 2px;
   text-transform: uppercase;
   display: inline-block;
@@ -5848,13 +5844,13 @@ body:has(#lockOverlay:visible) {
 }
 
 @keyframes pulseGlow {
-  0% { transform: scale(0.98); opacity: 0.25; }
-  100% { transform: scale(1.02); opacity: 0.5; }
+  0% { transform: scale(0.98); opacity: 0.15; }
+  100% { transform: scale(1.02); opacity: 0.35; }
 }
 </style>
 
 <script>
-// Live Vertical Clock Tracker (Splits Hours & Minutes like image 1000244669.png)
+// Live Vertical Clock Tracker
 function updateClock(){
   const now = new Date();
   const hoursStr = now.getHours().toString().padStart(2, '0');
@@ -5895,7 +5891,7 @@ const lCanvas = document.getElementById("lockCanvas");
 const lCtx = lCanvas.getContext("2d");
 let lAnimationId;
 let lSmoothZoom = 75;
-let lDynamicHue = 175; // Initialized to theme cyan color spectrum range
+let lDynamicHue = 175; 
 let globalMutationTracker = 0; 
 
 let lastScrollTop = 0;
@@ -5912,7 +5908,23 @@ function resizeLockCanvas() {
 }
 window.addEventListener('resize', resizeLockCanvas);
 
-/* ---------------- UNLIMITED RANDOMIZED REPEAT-LESS APP-THEMED VISUALIZER ---------------- */
+/* ---------------- PREMIUM HIGH-COHERENCE AMOLED NEURAL VISUALIZER ---------------- */
+const amoledParticles = [];
+const maxParticles = 65;
+
+function initAmoledParticles() {
+  for (let i = 0; i < maxParticles; i++) {
+    amoledParticles.push({
+      angle: Math.random() * Math.PI * 2,
+      distanceRatio: 0.3 + Math.random() * 0.7,
+      size: 0.8 + Math.random() * 1.5,
+      speed: 0.002 + Math.random() * 0.005,
+      seed: Math.random() * 100
+    });
+  }
+}
+initAmoledParticles();
+
 function renderLockVisuals() {
   if (lockOverlay.style.display !== "flex") {
     cancelAnimationFrame(lAnimationId);
@@ -5930,32 +5942,29 @@ function renderLockVisuals() {
     return;
   }
 
-  globalMutationTracker += 0.035; 
+  globalMutationTracker += 0.025; 
 
-  // Chaos math algorithms preventing recurring loop mirroring
-  let chaosMultiplierX = Math.sin(globalMutationTracker * 0.45) * 2.8;
-  let chaosMultiplierY = Math.cos(globalMutationTracker * 0.22) * 2.0;
-  
-  let dynamicBassPulse = 30 + Math.sin(globalMutationTracker * 1.6 + chaosMultiplierX) * 15 
-                            + Math.cos(globalMutationTracker * 0.85 - chaosMultiplierY) * 15;
+  // Realistic Responsive Pulse Math
+  let bassPulse = 25 + Math.sin(globalMutationTracker * 1.8) * 12 
+                        + Math.cos(globalMutationTracker * 0.9) * 10;
 
-  // 🪐 Theme-Sync Shifting Loop (Morphs smoothly between Electric Cyan and Vivo Deep Crimson Red)
-  if (Math.floor(globalMutationTracker * 0.2) % 2 === 0) {
-      lDynamicHue = (175 + Math.sin(globalMutationTracker * 0.1) * 35) % 360; // Cyan Domain
+  // Seamless Premium Color Profile Swapping (Electric Cyan <-> Crimson Deep Red)
+  if (Math.floor(globalMutationTracker * 0.15) % 2 === 0) {
+      lDynamicHue = (180 + Math.sin(globalMutationTracker * 0.08) * 25) % 360; 
   } else {
-      lDynamicHue = (0 + Math.sin(globalMutationTracker * 0.1) * 25); // Crimson Red/Orange Domain
-      if(lDynamicHue < 0) lDynamicHue += 360;
+      lDynamicHue = (355 + Math.sin(globalMutationTracker * 0.08) * 15) % 360; 
   }
 
   let minR = 75;
-  let targetZoom = minR + (dynamicBassPulse * 0.2);
+  let targetZoom = minR + (bassPulse * 0.25);
   lSmoothZoom += (targetZoom - lSmoothZoom) * 0.15;
 
   if(overlayThumb) {
      overlayThumb.style.transform = `scale(${lSmoothZoom / minR})`;
   }
 
-  // Pure Solid Pitch Black Reset to preserve deep UI contrasts
+  // ULTRA AMOLED CRITICAL RESET: Clear canvas path fully, retaining absolute absolute midnight darkness
+  lCtx.clearRect(0, 0, w, h);
   lCtx.fillStyle = "#000000";
   lCtx.fillRect(0, 0, w, h);
 
@@ -5965,65 +5974,88 @@ function renderLockVisuals() {
   const cx = coreBounds.left + (coreBounds.width / 2);
   const cy = coreBounds.top + (coreBounds.height / 2);
 
-  // Soft Neon Ambient backdrop behind core thumbnail
-  let glowGrd = lCtx.createRadialGradient(cx, cy, lSmoothZoom, cx, cy, Math.max(w, h) * 0.55);
-  glowGrd.addColorStop(0, `hsla(${lDynamicHue}, 100%, 50%, 0.06)`);
-  glowGrd.addColorStop(0.7, `hsla(${lDynamicHue + 120}, 100%, 45%, 0.0)`);
-  lCtx.fillStyle = glowGrd;
-  lCtx.fillRect(0, 0, w, h);
-
-  // App Theme Central Ring Orbit
+  // 1. Center Geometric Sharp Laser Orbits (No shadow blur to prevent panel illumination)
   lCtx.save();
+  lCtx.lineWidth = 1.5;
+  
   lCtx.beginPath();
-  lCtx.arc(cx, cy, lSmoothZoom + 1, 0, Math.PI * 2);
-  lCtx.lineWidth = 2.5;
-  lCtx.strokeStyle = `hsla(${lDynamicHue}, 100%, 55%, 0.75)`;
-  lCtx.shadowBlur = 12;
-  lCtx.shadowColor = `hsla(${lDynamicHue}, 100%, 50%, 0.5)`;
+  lCtx.arc(cx, cy, lSmoothZoom + 2, 0, Math.PI * 2);
+  lCtx.strokeStyle = `hsla(${lDynamicHue}, 100%, 50%, 0.85)`;
+  lCtx.stroke();
+
+  lCtx.beginPath();
+  lCtx.arc(cx, cy, lSmoothZoom + 25 + Math.sin(globalMutationTracker) * 8, 0, Math.PI * 2);
+  lCtx.setLineDash([4, 12]);
+  lCtx.strokeStyle = `hsla(${lDynamicHue - 30}, 100%, 45%, 0.4)`;
   lCtx.stroke();
   lCtx.restore();
 
-  // 🪐 REPEAT-LESS HIGH COHERENCE GENERATIVE WAVE RAYS
-  const totalRays = 140; 
-  const maxScreenReach = Math.max(w, h);
+  // 2. Cyber Particle Web Interstellar Array
+  lCtx.save();
+  const maxReach = Math.min(w, h) * 0.48;
   
+  amoledParticles.forEach((p) => {
+    p.angle += p.speed * (1 + bassPulse * 0.05);
+    
+    let pulseDist = lSmoothZoom + 5 + (maxReach * p.distanceRatio) + Math.sin(globalMutationTracker + p.seed) * 15;
+    
+    let px = cx + Math.cos(p.angle) * pulseDist;
+    let py = cy + Math.sin(p.angle) * pulseDist;
+    
+    let alpha = (1 - (p.distanceRatio)) * 0.65;
+    
+    lCtx.fillStyle = `hsla(${lDynamicHue + (p.angle * 10)}, 100%, 65%, ${alpha})`;
+    lCtx.beginPath();
+    lCtx.arc(px, py, p.size * (1 + bassPulse * 0.02), 0, Math.PI * 2);
+    lCtx.fill();
+
+    // Structural Neural Web Mapping
+    amoledParticles.forEach((p2) => {
+       let p2Dist = lSmoothZoom + 5 + (maxReach * p2.distanceRatio) + Math.sin(globalMutationTracker + p2.seed) * 15;
+       let p2x = cx + Math.cos(p2.angle) * p2Dist;
+       let p2y = cy + Math.sin(p2.angle) * p2Dist;
+       let distance = Math.hypot(px - p2x, py - p2y);
+       
+       if(distance < 55) {
+         lCtx.strokeStyle = `hsla(${lDynamicHue}, 100%, 50%, ${(1 - distance/55) * 0.12})`;
+         lCtx.lineWidth = 0.5;
+         lCtx.beginPath();
+         lCtx.moveTo(px, py);
+         lCtx.lineTo(p2x, p2y);
+         lCtx.stroke();
+       }
+    });
+  });
+  lCtx.restore();
+
+  // 3. Precision Hairline Vector Audio Wave Rays
+  const totalRays = 90; 
   lCtx.save();
   for (let i = 0; i < totalRays; i++) {
-    let rotationSpeedModifier = Math.sin(globalMutationTracker * 0.04) * 0.25;
-    let angle = (i / totalRays) * Math.PI * 2 + (globalMutationTracker * 0.06) + rotationSpeedModifier;
+    let angle = (i / totalRays) * Math.PI * 2 + (globalMutationTracker * 0.04);
     
-    // Core structural formulas generating randomized continuous noise spikes
-    let waveLayer1 = Math.sin(i * 0.18 + globalMutationTracker * 2.9) * 38;
-    let waveLayer2 = Math.cos(i * 0.32 - globalMutationTracker * 2.1) * 28;
-    let waveLayer3 = Math.sin(i * 0.07 + (globalMutationTracker * 0.7) + chaosMultiplierX) * 45;
-    let waveLayer4 = Math.cos(i * 0.45 + chaosMultiplierY) * 22;
+    let waveSpike = Math.sin(i * 0.25 + globalMutationTracker * 3.5) * 20 +
+                    Math.cos(i * 0.12 - globalMutationTracker * 1.5) * 15;
+                    
+    let rayLength = Math.max(0, (waveSpike * 0.8) + (bassPulse * 0.4));
     
-    let combinedSpikeValue = 35 + waveLayer1 + waveLayer2 + waveLayer3 + waveLayer4;
-    if (combinedSpikeValue < 0) combinedSpikeValue = 0;
-    
-    let rayLength = (combinedSpikeValue * 0.7) + Math.sin(i * 0.35) * (dynamicBassPulse * 0.35);
-    if(rayLength > maxScreenReach * 0.45) rayLength = maxScreenReach * 0.45; 
-
     let cos = Math.cos(angle);
     let sin = Math.sin(angle);
 
-    let startX = cx + (lSmoothZoom + 3) * cos;
-    let startY = cy + (lSmoothZoom + 3) * sin;
-    let endX = cx + (lSmoothZoom + 3 + rayLength) * cos;
-    let endY = cy + (lSmoothZoom + 3 + rayLength) * sin;
+    let startX = cx + (lSmoothZoom + 4) * cos;
+    let startY = cy + (lSmoothZoom + 4) * sin;
+    let endX = cx + (lSmoothZoom + 4 + rayLength) * cos;
+    let endY = cy + (lSmoothZoom + 4 + rayLength) * sin;
 
-    // Laser gradient rendering with matching app aesthetics
     let rayGrd = lCtx.createLinearGradient(startX, startY, endX, endY);
-    let currentAlpha = 0.18 + (combinedSpikeValue / 190) * 0.82;
-    rayGrd.addColorStop(0, `hsla(${lDynamicHue + (i * 0.8)}, 100%, 60%, ${currentAlpha})`);
-    rayGrd.addColorStop(0.5, `hsla(${lDynamicHue + 60}, 100%, 50%, ${currentAlpha * 0.35})`);
+    rayGrd.addColorStop(0, `hsla(${lDynamicHue}, 100%, 55%, 0.75)`);
+    rayGrd.addColorStop(0.5, `hsla(${lDynamicHue + 30}, 100%, 50%, 0.15)`);
     rayGrd.addColorStop(1, 'rgba(0,0,0,0)');
 
     lCtx.beginPath();
     lCtx.moveTo(startX, startY);
     lCtx.lineTo(endX, endY);
-    lCtx.lineWidth = 1.8;
-    lCtx.lineCap = "round";
+    lCtx.lineWidth = 1.0; // Hairline profile to stop light bleeding completely
     lCtx.strokeStyle = rayGrd;
     lCtx.stroke();
   }
@@ -6181,3 +6213,5 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 </script>
+   
+                                 
