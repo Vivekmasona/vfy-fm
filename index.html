@@ -5613,19 +5613,19 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
     
-<div id="lockOverlay">
+           <div id="lockOverlay">
   <canvas id="lockCanvas"></canvas>
 
-  <!-- Image 1000244669.png & 1000244670.jpg Inspired Vertical Cyber Clock -->
+  <!-- Image 1000244672.jpg App Theme Inspired Vertical Minimal Clock -->
   <div class="big-clock">
     <div id="clockTime" class="minimal-vertical-time">
-      <span id="hourTens">0</span><span id="hourOnes" class="red-accent">0</span>
+      <span id="hourTens">0</span><span id="hourOnes" class="cyan-accent">0</span>
       <div id="minuteContainer">00</div>
     </div>
     <div id="clockDate">Loading Matrix...</div>
   </div>
 
-  <!-- Center Visualizer Core (Pure Center me sirf Floating Thumbnail rahegi) -->
+  <!-- Center Visualizer Core (Floating Thumbnail with App Theme Aura) -->
   <div class="music-core-container">
     <div class="visualizer-core-wrap">
       <div class="neon-ring-glow"></div>
@@ -5633,7 +5633,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
     </div>
   </div>
 
-  <!-- Niche ka section: Title button ke upar set hai -->
+  <!-- Bottom Section: Title locked above the unlock trigger button -->
   <div class="bottom-controls-wrapper">
     <!-- Unique Cyber Premium UI Titles (Lock Button ke upar) -->
     <div class="cyber-metadata-box">
@@ -5659,7 +5659,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
   left: 0;  
   width: 100%;  
   height: 100%;  
-  background: #000000 !important; /* Forces absolute deep pitch black background */  
+  background: #000000 !important; /* Pure solid pitch black layout */  
   display: none; 
   flex-direction: column;  
   justify-content: space-between;
@@ -5667,12 +5667,12 @@ document.getElementById('search-btn').addEventListener('click', function() {
   z-index: 999999; 
   color: white;  
   font-family: 'Segoe UI', system-ui, sans-serif;
-  padding: 50px 20px 30px 20px; /* Top padding increased to seamlessly clear phone notches */
+  padding: 50px 20px 30px 20px; 
   box-sizing: border-box;
   overflow: hidden;
 }  
 
-/* Top Status bar blending blend patch to eliminate status bar artifact lines seen in 1000244670.jpg */
+/* Status bar protection overlay shield */
 #lockOverlay::before {
   content: "";
   position: absolute;
@@ -5680,7 +5680,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
   left: 0;
   width: 100%;
   height: 120px;
-  background: linear-gradient(to bottom, #000000 60%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(to bottom, #000000 65%, rgba(0, 0, 0, 0) 100%);
   z-index: 4;
   pointer-events: none;
 }
@@ -5699,7 +5699,7 @@ body:has(#lockOverlay:visible) {
   pointer-events: none;
 }
 
-/* Minimalistic Split Clock Geometry */
+/* Minimalistic Split Clock Geometry matching App Theme */
 .big-clock {
   width: 100%;
   text-align: center;
@@ -5720,9 +5720,30 @@ body:has(#lockOverlay:visible) {
   color: #ffffff;
   letter-spacing: -2px;
 }
-.red-accent {
-  color: #ff2a74 !important; /* Hyper-accurate vibrant red accent match */
-  text-shadow: 0 0 20px rgba(255, 42, 116, 0.5);
+.cyber-unlock-btn {
+  background: rgba(0, 255, 204, 0.02);
+  border: 1px solid rgba(0, 255, 204, 0.35);
+  color: #00ffcc;
+  border-radius: 50%;
+  width: 66px;
+  height: 66px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.05);
+}
+
+.cyber-unlock-btn:hover, .cyber-unlock-btn:active {
+  background: #00ffcc;
+  color: #000;
+  box-shadow: 0 0 35px rgba(0, 255, 204, 0.6);
+  transform: scale(1.06);
+}
+.cyan-accent {
+  color: #00ffcc !important; /* Premium Cyan accent from 1000244672.jpg */
+  text-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
 }
 .big-clock #clockDate {
   font-size: 12px;
@@ -5754,7 +5775,7 @@ body:has(#lockOverlay:visible) {
   position: absolute;
   top: -4px; left: -4px; right: -4px; bottom: -4px;
   border-radius: 50%;
-  background: linear-gradient(45deg, #ff2a74, #00ffcc);
+  background: linear-gradient(45deg, #00ffcc, #ff3300); /* Cyan to Vivo Red gradient profile */
   z-index: -1;
   opacity: 0.4;
   filter: blur(10px);
@@ -5798,12 +5819,12 @@ body:has(#lockOverlay:visible) {
 .cyber-badge {
   font-size: 8px;
   font-weight: 900;
-  color: #00ffcc;
+  color: #ff3300; /* Matching the deep red/orange badge highlights */
   letter-spacing: 2px;
   text-transform: uppercase;
   display: inline-block;
   margin-bottom: 6px;
-  border: 1px solid rgba(0, 255, 204, 0.3);
+  border: 1px solid rgba(255, 51, 0, 0.3);
   padding: 1px 6px;
   border-radius: 10px;
 }
@@ -5824,29 +5845,6 @@ body:has(#lockOverlay:visible) {
   font-family: monospace;
   color: #8a8e9b;
   letter-spacing: 1px;
-}
-
-/* Premium Cyber Unlock Trigger */
-.cyber-unlock-btn {
-  background: rgba(255, 42, 116, 0.02);
-  border: 1px solid rgba(255, 42, 116, 0.35);
-  color: #ff2a74;
-  border-radius: 50%;
-  width: 66px;
-  height: 66px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 0 15px rgba(255, 42, 116, 0.05);
-}
-
-.cyber-unlock-btn:hover, .cyber-unlock-btn:active {
-  background: #ff2a74;
-  color: #000;
-  box-shadow: 0 0 35px rgba(255, 42, 116, 0.6);
-  transform: scale(1.06);
 }
 
 @keyframes pulseGlow {
@@ -5897,7 +5895,7 @@ const lCanvas = document.getElementById("lockCanvas");
 const lCtx = lCanvas.getContext("2d");
 let lAnimationId;
 let lSmoothZoom = 75;
-let lDynamicHue = 340; 
+let lDynamicHue = 175; // Initialized to theme cyan color spectrum range
 let globalMutationTracker = 0; 
 
 let lastScrollTop = 0;
@@ -5914,7 +5912,7 @@ function resizeLockCanvas() {
 }
 window.addEventListener('resize', resizeLockCanvas);
 
-/* ---------------- UNLIMITED RANDOMIZED REPEAT-LESS VISUALIZER ---------------- */
+/* ---------------- UNLIMITED RANDOMIZED REPEAT-LESS APP-THEMED VISUALIZER ---------------- */
 function renderLockVisuals() {
   if (lockOverlay.style.display !== "flex") {
     cancelAnimationFrame(lAnimationId);
@@ -5934,14 +5932,21 @@ function renderLockVisuals() {
 
   globalMutationTracker += 0.035; 
 
-  // Chaos multipliers preventing rhythmic mirroring repeats
+  // Chaos math algorithms preventing recurring loop mirroring
   let chaosMultiplierX = Math.sin(globalMutationTracker * 0.45) * 2.8;
   let chaosMultiplierY = Math.cos(globalMutationTracker * 0.22) * 2.0;
   
   let dynamicBassPulse = 30 + Math.sin(globalMutationTracker * 1.6 + chaosMultiplierX) * 15 
                             + Math.cos(globalMutationTracker * 0.85 - chaosMultiplierY) * 15;
 
-  lDynamicHue = (340 + Math.sin(globalMutationTracker * 0.08) * 70) % 360; 
+  // 🪐 Theme-Sync Shifting Loop (Morphs smoothly between Electric Cyan and Vivo Deep Crimson Red)
+  if (Math.floor(globalMutationTracker * 0.2) % 2 === 0) {
+      lDynamicHue = (175 + Math.sin(globalMutationTracker * 0.1) * 35) % 360; // Cyan Domain
+  } else {
+      lDynamicHue = (0 + Math.sin(globalMutationTracker * 0.1) * 25); // Crimson Red/Orange Domain
+      if(lDynamicHue < 0) lDynamicHue += 360;
+  }
+
   let minR = 75;
   let targetZoom = minR + (dynamicBassPulse * 0.2);
   lSmoothZoom += (targetZoom - lSmoothZoom) * 0.15;
@@ -5950,7 +5955,7 @@ function renderLockVisuals() {
      overlayThumb.style.transform = `scale(${lSmoothZoom / minR})`;
   }
 
-  // Pure Solid Pitch Black Reset: Fixes brown/purple aura leaks over phone background
+  // Pure Solid Pitch Black Reset to preserve deep UI contrasts
   lCtx.fillStyle = "#000000";
   lCtx.fillRect(0, 0, w, h);
 
@@ -5960,14 +5965,14 @@ function renderLockVisuals() {
   const cx = coreBounds.left + (coreBounds.width / 2);
   const cy = coreBounds.top + (coreBounds.height / 2);
 
-  // Controlled Neon Aura backdrop on pure black plate
+  // Soft Neon Ambient backdrop behind core thumbnail
   let glowGrd = lCtx.createRadialGradient(cx, cy, lSmoothZoom, cx, cy, Math.max(w, h) * 0.55);
   glowGrd.addColorStop(0, `hsla(${lDynamicHue}, 100%, 50%, 0.06)`);
-  glowGrd.addColorStop(0.7, `hsla(${lDynamicHue + 100}, 100%, 45%, 0.0)`);
+  glowGrd.addColorStop(0.7, `hsla(${lDynamicHue + 120}, 100%, 45%, 0.0)`);
   lCtx.fillStyle = glowGrd;
   lCtx.fillRect(0, 0, w, h);
 
-  // Core Accent Orbit Loop
+  // App Theme Central Ring Orbit
   lCtx.save();
   lCtx.beginPath();
   lCtx.arc(cx, cy, lSmoothZoom + 1, 0, Math.PI * 2);
@@ -5987,7 +5992,7 @@ function renderLockVisuals() {
     let rotationSpeedModifier = Math.sin(globalMutationTracker * 0.04) * 0.25;
     let angle = (i / totalRays) * Math.PI * 2 + (globalMutationTracker * 0.06) + rotationSpeedModifier;
     
-    // Four distinct interconnected noise layers ensuring dynamic wave variation
+    // Core structural formulas generating randomized continuous noise spikes
     let waveLayer1 = Math.sin(i * 0.18 + globalMutationTracker * 2.9) * 38;
     let waveLayer2 = Math.cos(i * 0.32 - globalMutationTracker * 2.1) * 28;
     let waveLayer3 = Math.sin(i * 0.07 + (globalMutationTracker * 0.7) + chaosMultiplierX) * 45;
@@ -6007,11 +6012,11 @@ function renderLockVisuals() {
     let endX = cx + (lSmoothZoom + 3 + rayLength) * cos;
     let endY = cy + (lSmoothZoom + 3 + rayLength) * sin;
 
-    // Laser gradient rendering with soft decay alpha
+    // Laser gradient rendering with matching app aesthetics
     let rayGrd = lCtx.createLinearGradient(startX, startY, endX, endY);
     let currentAlpha = 0.18 + (combinedSpikeValue / 190) * 0.82;
-    rayGrd.addColorStop(0, `hsla(${lDynamicHue + (i * 1.4)}, 100%, 60%, ${currentAlpha})`);
-    rayGrd.addColorStop(0.5, `hsla(${lDynamicHue + 80}, 100%, 50%, ${currentAlpha * 0.35})`);
+    rayGrd.addColorStop(0, `hsla(${lDynamicHue + (i * 0.8)}, 100%, 60%, ${currentAlpha})`);
+    rayGrd.addColorStop(0.5, `hsla(${lDynamicHue + 60}, 100%, 50%, ${currentAlpha * 0.35})`);
     rayGrd.addColorStop(1, 'rgba(0,0,0,0)');
 
     lCtx.beginPath();
@@ -6176,5 +6181,3 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 </script>
-  
-                                  
