@@ -5610,10 +5610,10 @@ document.getElementById('search-btn').addEventListener('click', function() {
 	
 
 
+
 <div id="lockOverlay">
   <canvas id="lockCanvas"></canvas>
 
-  <!-- Image 1000244672.jpg App Theme Inspired Vertical Minimal Clock -->
   <div class="big-clock">
     <div id="clockTime" class="minimal-vertical-time">
       <span id="hourTens">0</span><span id="hourOnes" class="cyan-accent">0</span>
@@ -5622,16 +5622,14 @@ document.getElementById('search-btn').addEventListener('click', function() {
     <div id="clockDate">Loading Matrix...</div>
   </div>
 
-  <!-- Center Visualizer Core (Floating Thumbnail) -->
   <div class="music-core-container">
     <div class="visualizer-core-wrap">
       <div class="neon-ring-glow"></div>
-      <img id="overlayThumb" src="https://via.placeholder.com/150" alt="Core Signal">
+      <img id="overlayThumb" src="https://via.placeholder.com/150" alt="Core Signal" style="cursor: pointer; user-select: none;">
     </div>
   </div>
 
-  <!-- Bottom Section -->
-  <div class="bottom-controls-wrapper">
+  <div class="bottom-controls-wrapper" id="lockFooterBlock">
     <div class="cyber-metadata-box">
       <span class="cyber-badge" id="visualizerStyleBadge">STYLE: INITIALIZING</span>
       <div id="overlayTitle" class="cyber-title">VIVEKFY Ai SYSTEM</div>
@@ -5770,6 +5768,7 @@ body:has(#lockOverlay:visible) {
   z-index: 5;
   gap: 18px;
   margin-bottom: 5px;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .cyber-metadata-box {
@@ -5849,6 +5848,7 @@ const overlayTime = document.getElementById("overlayTime");
 const audioPlayer = document.getElementById("SAudio");
 const styleBadge = document.getElementById("visualizerStyleBadge");
 const modeToggleBtn = document.getElementById("modeToggleBtn");
+const lockFooterBlock = document.getElementById("lockFooterBlock");
 
 const lCanvas = document.getElementById("lockCanvas");
 const lCtx = lCanvas.getContext("2d");
@@ -5856,7 +5856,7 @@ let lAnimationId;
 let lSmoothZoom = 75;
 let globalMutationTracker = 0;
 let lockTimer = null;
-let wakeLock = null; // High priority lock mechanism
+let wakeLock = null; 
 
 // Array containing 50 Completely Unique Visualizer Modes
 const VISUALIZER_STYLES = [];
@@ -5879,16 +5879,16 @@ function selectRandomStyle() {
   if(styleBadge) styleBadge.textContent = "STYLE NODE: #" + currentActiveStyle.split('_')[3];
 }
 
-/* ---------------- SCREEN WAKE-LOCK STABLE SUBSYSTEM ---------------- */
+/* ---------------- SCREEN WAKE-LOCK SUBSYSTEM ---------------- */
 async function requestWakeLock() {
     if ('wakeLock' in navigator) {
         try {
             if (!wakeLock) {
                 wakeLock = await navigator.wakeLock.request('screen');
-                console.log("Wake Lock Engine fully secured. Screen will remain ON.");
+                console.log("Wake lock engine active.");
             }
         } catch (err) {
-            console.warn("Wake lock active acquisition failed: ", err.message);
+            console.warn("Wake lock active acquisition suspended: ", err.message);
         }
     }
 }
@@ -5897,7 +5897,6 @@ function releaseWakeLock() {
     if (wakeLock) {
         wakeLock.release().then(() => {
             wakeLock = null;
-            console.log("Wake Lock released securely.");
         });
     }
 }
@@ -5905,7 +5904,9 @@ function releaseWakeLock() {
 /* ---------------- AUTOMATIC AUTO-TRIGGER TIMERS ---------------- */
 function start8SecLockTimer() {
     if (lockTimer) clearTimeout(lockTimer);
-    if (audioPlayer && !audioPlayer.paused && (!modeToggleBtn || !modeToggleBtn.checked)) {
+    if (modeToggleBtn && modeToggleBtn.checked) return;
+
+    if (audioPlayer && !audioPlayer.paused) {
         lockTimer = setTimeout(() => {
             if (lockOverlay.style.display !== "flex") showOverlay();
         }, 8000); 
@@ -5914,7 +5915,7 @@ function start8SecLockTimer() {
 
 function resetUserActivity(e) {
     if (e && e.type === "scroll") return;
-    requestWakeLock(); // Re-arm wakelock on any touch gesture event
+    requestWakeLock(); 
     if (lockOverlay.style.display !== "flex") start8SecLockTimer();
 }
 
@@ -5922,13 +5923,9 @@ function resetUserActivity(e) {
 function drawStyleObject(cx, cy, r, bass, colorHue) {
   lCtx.save();
   let modeNum = parseInt(currentActiveStyle.split('_')[3]);
-
-  // Fallback default setup to protect geometry bounds
   if(isNaN(modeNum)) modeNum = 1;
 
-  // Universal Render Pipeline Mapping 50 Unique Mathematical Equations
   if (modeNum >= 1 && modeNum <= 5) {
-      // 1-5: Hyper Lasers & Core Burst Rings
       let count = 40 + (modeNum * 15);
       for (let i = 0; i < count; i++) {
         let angle = (i / count) * Math.PI * 2 + globalMutationTracker * 0.1;
@@ -5941,7 +5938,6 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       }
   } 
   else if (modeNum > 5 && modeNum <= 10) {
-      // 6-10: Cyber Rings & Floating Dashed Vectors
       let rings = modeNum - 4;
       for(let j = 1; j <= rings; j++) {
         lCtx.strokeStyle = `hsla(${colorHue - j*25}, 100%, 55%, ${0.9 - j*0.15})`;
@@ -5951,7 +5947,6 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       }
   } 
   else if (modeNum > 10 && modeNum <= 15) {
-      // 11-15: Sine Ribbon Fluid Oscillators
       let waves = modeNum - 9;
       lCtx.setLineDash([]);
       for (let w = 0; w < waves; w++) {
@@ -5965,7 +5960,6 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       }
   } 
   else if (modeNum > 15 && modeNum <= 20) {
-      // 16-20: High Density Floating Plasma Cloud Node Matrix
       let particles = 30 + (modeNum * 2);
       for (let p = 0; p < particles; p++) {
         let pAngle = p * 0.18 + globalMutationTracker * 0.4;
@@ -5975,7 +5969,6 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       }
   } 
   else if (modeNum > 20 && modeNum <= 25) {
-      // 21-25: Multi-Sided Vector Poly Radar Systems
       let polygons = modeNum - 18;
       lCtx.strokeStyle = `hsla(${colorHue}, 100%, 55%, 0.55)`; lCtx.lineWidth = 2;
       for(let s = 0; s < polygons; s++) {
@@ -5990,7 +5983,6 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       }
   } 
   else if (modeNum > 25 && modeNum <= 30) {
-      // 26-30: Molecular Genetic Helix Interlinks
       let pairs = modeNum - 10;
       for(let d=0; d<pairs; d++) {
         let dAngle = (d/pairs) * Math.PI * 2 + globalMutationTracker * 0.25;
@@ -6004,7 +5996,6 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       }
   } 
   else if (modeNum > 30 && modeNum <= 35) {
-      // 31-35: Quantum Angular Spline Ring Decays
       let lines = modeNum;
       for(let q=0; q<lines; q++) {
         let qAngle = (q/lines)*Math.PI*2 - globalMutationTracker * 0.25;
@@ -6014,7 +6005,6 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       }
   } 
   else if (modeNum > 35 && modeNum <= 40) {
-      // 36-40: Isometric Abstract Hypercubes
       lCtx.strokeStyle = `hsla(${colorHue}, 100%, 50%, 0.4)`; lCtx.lineWidth = 1.4;
       let boxSize = r + 8 + bass * 0.25;
       lCtx.strokeRect(cx - boxSize, cy - boxSize, boxSize*2, boxSize*2);
@@ -6022,7 +6012,6 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       lCtx.strokeRect(-boxSize*0.75, -boxSize*0.75, boxSize*1.5, boxSize*1.5); lCtx.restore();
   } 
   else if (modeNum > 40 && modeNum <= 45) {
-      // 41-45: Solar Corona Flare Pulsars
       let rays = modeNum * 1.5;
       for(let f=0; f<rays; f++) {
         let fAngle = (f/rays)*Math.PI*2; let flareIdx = Math.floor(Math.abs(Math.sin(f*0.15)) * bass);
@@ -6032,7 +6021,6 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       }
   } 
   else {
-      // 46-50: Falling Vector Matrix Digital Streams
       let streams = modeNum - 20;
       for(let m=0; m<streams; m++) {
         let mAngle = (m/streams)*Math.PI*2 + globalMutationTracker*0.06;
@@ -6086,14 +6074,25 @@ function renderLockVisuals() {
 /* ---------------- INTERFACES & PLUGINS ---------------- */
 function showOverlay() {
     if (audioPlayer && !audioPlayer.paused) {
-        if (modeToggleBtn && modeToggleBtn.checked) return; 
+        if (modeToggleBtn && modeToggleBtn.checked) {
+             if(lockFooterBlock) {
+                 lockFooterBlock.style.opacity = "0";
+                 lockFooterBlock.style.visibility = "hidden";
+             }
+             return; 
+        } 
+        
+        if(lockFooterBlock) {
+             lockFooterBlock.style.opacity = "1";
+             lockFooterBlock.style.visibility = "visible";
+        }
         
         selectRandomStyle(); 
         resizeLockCanvas();
         lockOverlay.style.display = "flex";
         if(document.getElementById("themeColorMeta")) document.getElementById("themeColorMeta").setAttribute("content", "#000000");
         if (lockTimer) clearTimeout(lockTimer); 
-        requestWakeLock(); // Force secure wake lock state immediately upon lock view creation
+        requestWakeLock(); 
         renderLockVisuals();
     }
 }
@@ -6102,11 +6101,19 @@ function hideOverlay() {
     lockOverlay.style.display = "none";
     if(document.getElementById("themeColorMeta")) document.getElementById("themeColorMeta").setAttribute("content", "#00ffff");
     cancelAnimationFrame(lAnimationId);
-    releaseWakeLock(); // Soft release wake lock upon explicit user unlock interaction
+    releaseWakeLock(); 
     start8SecLockTimer(); 
 }
 
 document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
+
+// [NEW FEATURE] Double Click / Double Tap Event Listener on Floating Poster to swap styles instantly
+if(overlayThumb) {
+    overlayThumb.addEventListener("dblclick", (e) => {
+        e.stopPropagation(); // Stops any click leakage to general screen tracking
+        selectRandomStyle();
+    });
+}
 
 function updateOverlayContent() {
     const thumbSrc = document.getElementById("Fimg")?.src;
@@ -6133,12 +6140,13 @@ if (audioPlayer) {
 
 if(modeToggleBtn) {
     modeToggleBtn.addEventListener("change", () => {
-        if (!modeToggleBtn.checked) start8SecLockTimer();
-        else if (lockTimer) clearTimeout(lockTimer);
+        if (!modeToggleBtn.checked) {
+            start8SecLockTimer();
+        } else {
+            if (lockTimer) clearTimeout(lockTimer);
+            hideOverlay();
+        }
     });
 }
 </script>
-
-
-    
-                           
+                  
