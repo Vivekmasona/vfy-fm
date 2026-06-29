@@ -5789,7 +5789,7 @@ setInterval(updateClock, 1000);
 updateClock();
 </script>
 
-<script>
+                  <script>
 /* ---------------- GLOBAL ELEMENTS & VISUALIZER CONFIG ---------------- */
 const footer = document.querySelector('.fixed-footer');
 const progressBar = document.getElementById('progressBarContainer');
@@ -5825,11 +5825,13 @@ function resizeLockCanvas() {
 }
 window.addEventListener('resize', resizeLockCanvas);
 
-/* Initialize Lock Web Audio Engine explicitly from playing context */
+/* Fixed Audio Engine: Proper Routing to Destination Speakers */
 function initLockAudioEngine() {
-  if (!lCtxAudio && audioPlayer) {
+  if (!audioPlayer) return;
+
+  if (!lCtxAudio) {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
-    if(!AudioContext) return;
+    if (!AudioContext) return;
     
     lCtxAudio = new AudioContext();
     lAnalyser = lCtxAudio.createAnalyser();
@@ -5837,14 +5839,16 @@ function initLockAudioEngine() {
     lAnalyser.smoothingTimeConstant = 0.7;
     
     try {
+      // Connecting source to analyzer AND then routing directly to speakers (destination)
       lSrcNode = lCtxAudio.createMediaElementSource(audioPlayer);
       lSrcNode.connect(lAnalyser);
-      lAnalyser.connect(lCtxAudio.destination);
+      lAnalyser.connect(lCtxAudio.destination); // <-- This restores the sound!
       lFreqData = new Uint8Array(lAnalyser.frequencyBinCount);
     } catch(err) {
-      console.log("Audio node setup linked successfully.");
+      console.log("Audio Node already connected or handling cross-origin streams.");
     }
   }
+  
   if (lCtxAudio && lCtxAudio.state === 'suspended') {
     lCtxAudio.resume();
   }
@@ -5865,7 +5869,6 @@ function renderLockVisuals() {
   let bassPower = 0;
   if (lAnalyser && lFreqData && audioPlayer && !audioPlayer.paused) {
     lAnalyser.getByteFrequencyData(lFreqData);
-    // Track core punch bass lines 
     let bassSum = 0;
     for(let i=0; i<6; i++) bassSum += lFreqData[i];
     bassPower = bassSum / 6;
@@ -5879,26 +5882,25 @@ function renderLockVisuals() {
   if (targetZoom > maxR) targetZoom = maxR;
   lSmoothZoom += (targetZoom - lSmoothZoom) * 0.2;
 
-  // Sync scale directly with the HTML Image Document
+  // Image scaling effect
   overlayThumb.style.transform = `scale(${lSmoothZoom / minR})`;
 
-  // Smooth trail rendering
+  // Smooth background clear trail
   lCtx.fillStyle = "rgba(2, 2, 4, 0.2)";
   lCtx.fillRect(0, 0, w, h);
 
-  // Core center anchor coordinates (Calculated dynamically matching HTML container placement)
   const coreBounds = document.querySelector('.visualizer-core-wrap').getBoundingClientRect();
   const cx = coreBounds.left + (coreBounds.width / 2);
   const cy = coreBounds.top + (coreBounds.height / 2);
 
-  // Ambient back-glow
+  // Center radial glow
   let glowGrd = lCtx.createRadialGradient(cx, cy, lSmoothZoom, cx, cy, lSmoothZoom + (bassPower * 1.5));
   glowGrd.addColorStop(0, `hsla(${lDynamicHue}, 100%, 50%, 0.12)`);
   glowGrd.addColorStop(1, 'rgba(0,0,0,0)');
   lCtx.fillStyle = glowGrd;
   lCtx.fillRect(0, 0, w, h);
 
-  // Draw premium adaptive neon round ring borders
+  // Border ring
   lCtx.save();
   lCtx.beginPath();
   lCtx.arc(cx, cy, lSmoothZoom + 2, 0, Math.PI * 2);
@@ -5909,7 +5911,7 @@ function renderLockVisuals() {
   lCtx.stroke();
   lCtx.restore();
 
-  // Draw Laser Wave Spikes surrounding the image
+  // Laser Spikes
   const totalRays = 75;
   lCtx.save();
   for (let i = 0; i < totalRays; i++) {
@@ -5989,7 +5991,6 @@ function resetSideMenuTimer() {
     }, { passive: true });
 });
 
-// Initial boot configurations
 resetOverlayTimer();
 resetSideMenuTimer();
 
@@ -6009,7 +6010,11 @@ function updateOverlayContent() {
 if (audioPlayer) {
     audioPlayer.addEventListener('timeupdate', updateOverlayContent);
     audioPlayer.addEventListener('loadedmetadata', updateOverlayContent);
-    audioPlayer.addEventListener('play', () => { if(lockOverlay.style.display === "flex") initLockAudioEngine(); });
+    audioPlayer.addEventListener('play', () => { 
+        if(lockOverlay.style.display === "flex") {
+            initLockAudioEngine();
+        }
+    });
 }
 
 /* -------- MODE TOGGLE HANDLER -------- */
@@ -6088,5 +6093,3 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 </script>
-
-	
