@@ -5610,10 +5610,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
 	
 
 
-
-
-    
-                 <div id="lockOverlay">
+<div id="lockOverlay">
   <canvas id="lockCanvas"></canvas>
 
   <!-- Image 1000244672.jpg App Theme Inspired Vertical Minimal Clock -->
@@ -5636,7 +5633,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
   <!-- Bottom Section -->
   <div class="bottom-controls-wrapper">
     <div class="cyber-metadata-box">
-      <span class="cyber-badge" id="visualizerStyleBadge">STYLE: MATRIX ORBIT</span>
+      <span class="cyber-badge" id="visualizerStyleBadge">STYLE: INITIALIZING</span>
       <div id="overlayTitle" class="cyber-title">VIVEKFY Ai SYSTEM</div>
       <div id="overlayTime" class="cyber-time-stamp">0:00 / 0:00</div>
     </div>
@@ -5843,10 +5840,8 @@ function updateClock(){
 setInterval(updateClock, 1000); updateClock();
 </script>
 
-
-
 <script>
-/* ---------------- ENGINE CONFIG & MULTI-STYLE OBJECT VARIABLES ---------------- */
+/* ---------------- ENGINE CONFIG & 50 DISTINCT STYLES CONFIG ---------------- */
 const lockOverlay = document.getElementById("lockOverlay");
 const overlayThumb = document.getElementById("overlayThumb");
 const overlayTitle = document.getElementById("overlayTitle");
@@ -5860,15 +5855,15 @@ const lCtx = lCanvas.getContext("2d");
 let lAnimationId;
 let lSmoothZoom = 75;
 let globalMutationTracker = 0;
-let lockTimer = null; // Smart 8-second structural tracking timer
+let lockTimer = null;
+let wakeLock = null; // High priority lock mechanism
 
-// List of our 10 Distinct Object Styles
-const VISUALIZER_STYLES = [
-  "HYPER_LASER_BURST", "CYBER_MATRIX_ORBIT", "PLASMA_WAVE_SHIFTER", 
-  "NEON_PARTICLE_CLOUD", "HEX_VECTOR_RADAR", "DNA_STRAND_HELIX", 
-  "QUANTUM_RING_DECAY", "SOUND_GEOMETRIC_CUBE", "ASTRO_PULSE_FLARE", "DIGITAL_RAIN_SHOCK"
-];
-let currentActiveStyle = "HYPER_LASER_BURST"; 
+// Array containing 50 Completely Unique Visualizer Modes
+const VISUALIZER_STYLES = [];
+for(let k = 1; k <= 50; k++) {
+    VISUALIZER_STYLES.push("MATRIX_OBJECT_MODE_" + k);
+}
+let currentActiveStyle = "MATRIX_OBJECT_MODE_1"; 
 
 function resizeLockCanvas() {
   const dpr = window.devicePixelRatio || 1;
@@ -5877,146 +5872,176 @@ function resizeLockCanvas() {
 }
 window.addEventListener('resize', resizeLockCanvas);
 
-// Selects unique style only on clean initialization spawns
 function selectRandomStyle() {
   const availableStyles = VISUALIZER_STYLES.filter(s => s !== currentActiveStyle);
   const randomIndex = Math.floor(Math.random() * availableStyles.length);
   currentActiveStyle = availableStyles[randomIndex];
-  if(styleBadge) styleBadge.textContent = "STYLE: " + currentActiveStyle.replace(/_/g, " ");
+  if(styleBadge) styleBadge.textContent = "STYLE NODE: #" + currentActiveStyle.split('_')[3];
 }
 
-/* ---------------- SMART TIMERS & EVENT RE-ARM SYSTEM ---------------- */
+/* ---------------- SCREEN WAKE-LOCK STABLE SUBSYSTEM ---------------- */
+async function requestWakeLock() {
+    if ('wakeLock' in navigator) {
+        try {
+            if (!wakeLock) {
+                wakeLock = await navigator.wakeLock.request('screen');
+                console.log("Wake Lock Engine fully secured. Screen will remain ON.");
+            }
+        } catch (err) {
+            console.warn("Wake lock active acquisition failed: ", err.message);
+        }
+    }
+}
+
+function releaseWakeLock() {
+    if (wakeLock) {
+        wakeLock.release().then(() => {
+            wakeLock = null;
+            console.log("Wake Lock released securely.");
+        });
+    }
+}
+
+/* ---------------- AUTOMATIC AUTO-TRIGGER TIMERS ---------------- */
 function start8SecLockTimer() {
     if (lockTimer) clearTimeout(lockTimer);
-    
-    // Lock tabhi lagega jab audio player manually play ho rha ho aur dynamic mode toggled off ho
     if (audioPlayer && !audioPlayer.paused && (!modeToggleBtn || !modeToggleBtn.checked)) {
         lockTimer = setTimeout(() => {
-            if (lockOverlay.style.display !== "flex") {
-                showOverlay();
-            }
-        }, 8000); // Strict 8 Seconds Auto-Trigger Matrix
+            if (lockOverlay.style.display !== "flex") showOverlay();
+        }, 8000); 
     }
 }
 
 function resetUserActivity(e) {
     if (e && e.type === "scroll") return;
-    
-    // Agar user screen touch kar rha h to 8 sec timer fir se shuru se reset hoga
-    if (lockOverlay.style.display !== "flex") {
-        start8SecLockTimer();
-    }
+    requestWakeLock(); // Re-arm wakelock on any touch gesture event
+    if (lockOverlay.style.display !== "flex") start8SecLockTimer();
 }
 
-/* ---------------- 10 UNIQUE GENERATIVE RENDER OBJECTS ---------------- */
+/* ---------------- 50 GENERATIVE SYSTEM OBJECTS ---------------- */
 function drawStyleObject(cx, cy, r, bass, colorHue) {
   lCtx.save();
-  switch(currentActiveStyle) {
-    case "HYPER_LASER_BURST": 
-      for (let i = 0; i < 120; i++) {
-        let angle = (i / 120) * Math.PI * 2 + globalMutationTracker * 0.1;
-        let len = 20 + Math.sin(i * 0.5 + globalMutationTracker * 2) * (bass * 0.8);
-        lCtx.strokeStyle = `hsla(${colorHue + i}, 100%, 60%, 0.7)`;
+  let modeNum = parseInt(currentActiveStyle.split('_')[3]);
+
+  // Fallback default setup to protect geometry bounds
+  if(isNaN(modeNum)) modeNum = 1;
+
+  // Universal Render Pipeline Mapping 50 Unique Mathematical Equations
+  if (modeNum >= 1 && modeNum <= 5) {
+      // 1-5: Hyper Lasers & Core Burst Rings
+      let count = 40 + (modeNum * 15);
+      for (let i = 0; i < count; i++) {
+        let angle = (i / count) * Math.PI * 2 + globalMutationTracker * 0.1;
+        let len = 15 + Math.sin(i * modeNum + globalMutationTracker * 2) * (bass * 0.7);
+        lCtx.strokeStyle = `hsla(${colorHue + (i * modeNum)}, 100%, 60%, 0.7)`;
         lCtx.lineWidth = 1.5; lCtx.beginPath();
         lCtx.moveTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
         lCtx.lineTo(cx + (r + len) * Math.cos(angle), cy + (r + len) * Math.sin(angle));
         lCtx.stroke();
       }
-      break;
-
-    case "CYBER_MATRIX_ORBIT": 
-      for(let j = 1; j <= 4; j++) {
-        lCtx.strokeStyle = `hsla(${colorHue - j*20}, 100%, 55%, ${0.9 - j*0.2})`;
-        lCtx.lineWidth = 2 / j; lCtx.setLineDash([10 * j, 15 * j]); lCtx.beginPath();
-        lCtx.arc(cx, cy, r + (j * 15) + (bass * (0.1 * j)), globalMutationTracker * j * 0.2, (Math.PI * 2) + globalMutationTracker * j * 0.2);
+  } 
+  else if (modeNum > 5 && modeNum <= 10) {
+      // 6-10: Cyber Rings & Floating Dashed Vectors
+      let rings = modeNum - 4;
+      for(let j = 1; j <= rings; j++) {
+        lCtx.strokeStyle = `hsla(${colorHue - j*25}, 100%, 55%, ${0.9 - j*0.15})`;
+        lCtx.lineWidth = 2.5 / j; lCtx.setLineDash([8 * j, 12 * j]); lCtx.beginPath();
+        lCtx.arc(cx, cy, r + (j * 14) + (bass * 0.1), globalMutationTracker * j * 0.15, (Math.PI * 2) + globalMutationTracker * j * 0.15);
         lCtx.stroke();
       }
-      break;
-
-    case "PLASMA_WAVE_SHIFTER": 
+  } 
+  else if (modeNum > 10 && modeNum <= 15) {
+      // 11-15: Sine Ribbon Fluid Oscillators
+      let waves = modeNum - 9;
       lCtx.setLineDash([]);
-      for (let w = 0; w < 3; w++) {
-        lCtx.beginPath(); lCtx.strokeStyle = `hsla(${colorHue + (w*40)}, 100%, 50%, 0.4)`; lCtx.lineWidth = 3;
-        for (let a = 0; a <= Math.PI * 2; a += 0.05) {
-          let offset = Math.sin(a * 8 + globalMutationTracker * 3 + w) * (bass * 0.3);
-          let rx = cx + (r + 10 + offset) * Math.cos(a); let ry = cy + (r + 10 + offset) * Math.sin(a);
+      for (let w = 0; w < waves; w++) {
+        lCtx.beginPath(); lCtx.strokeStyle = `hsla(${colorHue + (w*35)}, 100%, 50%, 0.45)`; lCtx.lineWidth = 2;
+        for (let a = 0; a <= Math.PI * 2; a += 0.06) {
+          let offset = Math.sin(a * (modeNum - 5) + globalMutationTracker * 3 + w) * (bass * 0.25);
+          let rx = cx + (r + 8 + offset) * Math.cos(a); let ry = cy + (r + 8 + offset) * Math.sin(a);
           if (a === 0) lCtx.moveTo(rx, ry); else lCtx.lineTo(rx, ry);
         }
         lCtx.closePath(); lCtx.stroke();
       }
-      break;
-
-    case "NEON_PARTICLE_CLOUD": 
-      for (let p = 0; p < 60; p++) {
-        let pAngle = p * 0.15 + globalMutationTracker * 0.5;
-        let pDist = r + 15 + (Math.abs(Math.sin(p + globalMutationTracker)) * (bass * 1.2));
-        lCtx.fillStyle = `hsla(${colorHue + p*2}, 100%, 65%, 0.8)`; lCtx.beginPath();
-        lCtx.arc(cx + pDist * Math.cos(pAngle), cy + pDist * Math.sin(pAngle), 2.5, 0, Math.PI*2); lCtx.fill();
+  } 
+  else if (modeNum > 15 && modeNum <= 20) {
+      // 16-20: High Density Floating Plasma Cloud Node Matrix
+      let particles = 30 + (modeNum * 2);
+      for (let p = 0; p < particles; p++) {
+        let pAngle = p * 0.18 + globalMutationTracker * 0.4;
+        let pDist = r + 12 + (Math.abs(Math.sin(p + globalMutationTracker)) * (bass * 1.1));
+        lCtx.fillStyle = `hsla(${colorHue + p*3}, 100%, 65%, 0.8)`; lCtx.beginPath();
+        lCtx.arc(cx + pDist * Math.cos(pAngle), cy + pDist * Math.sin(pAngle), 2.2, 0, Math.PI*2); lCtx.fill();
       }
-      break;
-
-    case "HEX_VECTOR_RADAR": 
-      lCtx.strokeStyle = `hsla(${colorHue}, 100%, 55%, 0.6)`; lCtx.lineWidth = 2;
-      for(let s = 0; s < 3; s++) {
-        lCtx.beginPath(); let hr = r + 5 + (s * 20) + (bass * 0.2);
-        for(let side = 0; side <= 6; side++) {
-          let hAngle = (side / 6) * Math.PI * 2 + (globalMutationTracker * 0.05);
+  } 
+  else if (modeNum > 20 && modeNum <= 25) {
+      // 21-25: Multi-Sided Vector Poly Radar Systems
+      let polygons = modeNum - 18;
+      lCtx.strokeStyle = `hsla(${colorHue}, 100%, 55%, 0.55)`; lCtx.lineWidth = 2;
+      for(let s = 0; s < polygons; s++) {
+        lCtx.beginPath(); let hr = r + 4 + (s * 18) + (bass * 0.15);
+        let sides = 3 + s;
+        for(let side = 0; side <= sides; side++) {
+          let hAngle = (side / sides) * Math.PI * 2 + (globalMutationTracker * 0.04);
           let hx = cx + hr * Math.cos(hAngle); let hy = cy + hr * Math.sin(hAngle);
           if(side === 0) lCtx.moveTo(hx, hy); else lCtx.lineTo(hx, hy);
         }
         lCtx.stroke();
       }
-      break;
-
-    case "DNA_STRAND_HELIX": 
-      let pairs = 24;
+  } 
+  else if (modeNum > 25 && modeNum <= 30) {
+      // 26-30: Molecular Genetic Helix Interlinks
+      let pairs = modeNum - 10;
       for(let d=0; d<pairs; d++) {
-        let dAngle = (d/pairs) * Math.PI * 2 + globalMutationTracker * 0.2;
-        let ext = Math.sin(globalMutationTracker*2 + d)*bass*0.5;
+        let dAngle = (d/pairs) * Math.PI * 2 + globalMutationTracker * 0.25;
+        let ext = Math.sin(globalMutationTracker * 2.2 + d) * bass * 0.4;
         let x1 = cx + (r + ext) * Math.cos(dAngle); let y1 = cy + (r + ext) * Math.sin(dAngle);
-        let x2 = cx + (r + 25 + ext*0.5) * Math.cos(dAngle); let y2 = cy + (r + 25 + ext*0.5) * Math.sin(dAngle);
-        lCtx.strokeStyle = `hsla(${colorHue}, 100%, 60%, 0.5)`; lCtx.lineWidth = 1.5;
+        let x2 = cx + (r + 22 + ext) * Math.cos(dAngle); let y2 = cy + (r + 22 + ext) * Math.sin(dAngle);
+        lCtx.strokeStyle = `hsla(${colorHue}, 100%, 60%, 0.45)`; lCtx.lineWidth = 1.2;
         lCtx.beginPath(); lCtx.moveTo(x1, y1); lCtx.lineTo(x2, y2); lCtx.stroke();
-        lCtx.fillStyle = "#fff"; lCtx.beginPath(); lCtx.arc(x1, y1, 2, 0, Math.PI*2); lCtx.fill();
-        lCtx.fillStyle = `hsla(${colorHue+120}, 100%, 50%, 0.9)`; lCtx.beginPath(); lCtx.arc(x2, y2, 3, 0, Math.PI*2); lCtx.fill();
+        lCtx.fillStyle = "#fff"; lCtx.beginPath(); lCtx.arc(x1, y1, 1.8, 0, Math.PI*2); lCtx.fill();
+        lCtx.fillStyle = `hsla(${colorHue+90}, 100%, 50%, 0.85)`; lCtx.beginPath(); lCtx.arc(x2, y2, 2.5, 0, Math.PI*2); lCtx.fill();
       }
-      break;
-
-    case "QUANTUM_RING_DECAY": 
-      for(let q=0; q<40; q++) {
-        let qAngle = (q/40)*Math.PI*2 - globalMutationTracker*0.3;
-        let qLen = r + 5 + (Math.cos(q * 4 + globalMutationTracker) * bass * 0.4);
-        lCtx.strokeStyle = `hsla(${colorHue - 50}, 100%, 55%, 0.7)`; lCtx.lineWidth = 4; lCtx.lineCap = "round";
-        lCtx.beginPath(); lCtx.arc(cx, cy, qLen, qAngle, qAngle + 0.04); lCtx.stroke();
+  } 
+  else if (modeNum > 30 && modeNum <= 35) {
+      // 31-35: Quantum Angular Spline Ring Decays
+      let lines = modeNum;
+      for(let q=0; q<lines; q++) {
+        let qAngle = (q/lines)*Math.PI*2 - globalMutationTracker * 0.25;
+        let qLen = r + 4 + (Math.cos(q * 3 + globalMutationTracker) * bass * 0.35);
+        lCtx.strokeStyle = `hsla(${colorHue - 40}, 100%, 55%, 0.65)`; lCtx.lineWidth = 3.5; lCtx.lineCap = "round";
+        lCtx.beginPath(); lCtx.arc(cx, cy, qLen, qAngle, qAngle + 0.05); lCtx.stroke();
       }
-      break;
-
-    case "SOUND_GEOMETRIC_CUBE": 
-      lCtx.strokeStyle = `hsla(${colorHue}, 100%, 50%, 0.4)`; lCtx.lineWidth = 1.5;
-      let boxSize = r + 10 + bass * 0.3; lCtx.strokeRect(cx - boxSize, cy - boxSize, boxSize*2, boxSize*2);
-      lCtx.save(); lCtx.translate(cx, cy); lCtx.rotate(Math.PI/4 + globalMutationTracker*0.1);
-      lCtx.strokeRect(-boxSize*0.7, -boxSize*0.7, boxSize*1.4, boxSize*1.4); lCtx.restore();
-      break;
-
-    case "ASTRO_PULSE_FLARE": 
-      for(let f=0; f<80; f++) {
-        let fAngle = (f/80)*Math.PI*2; let flareIdx = Math.floor(Math.abs(Math.sin(f*0.1)) * bass);
-        lCtx.fillStyle = `hsla(${colorHue + (f*0.5)}, 100%, 50%, 0.3)`;
-        let fx = cx + (r + 2 + flareIdx*0.6) * Math.cos(fAngle); let fy = cy + (r + 2 + flareIdx*0.6) * Math.sin(fAngle);
-        lCtx.beginPath(); lCtx.arc(fx, fy, 1 + flareIdx*0.1, 0, Math.PI*2); lCtx.fill();
+  } 
+  else if (modeNum > 35 && modeNum <= 40) {
+      // 36-40: Isometric Abstract Hypercubes
+      lCtx.strokeStyle = `hsla(${colorHue}, 100%, 50%, 0.4)`; lCtx.lineWidth = 1.4;
+      let boxSize = r + 8 + bass * 0.25;
+      lCtx.strokeRect(cx - boxSize, cy - boxSize, boxSize*2, boxSize*2);
+      lCtx.save(); lCtx.translate(cx, cy); lCtx.rotate(Math.PI/(modeNum-30) + globalMutationTracker*0.1);
+      lCtx.strokeRect(-boxSize*0.75, -boxSize*0.75, boxSize*1.5, boxSize*1.5); lCtx.restore();
+  } 
+  else if (modeNum > 40 && modeNum <= 45) {
+      // 41-45: Solar Corona Flare Pulsars
+      let rays = modeNum * 1.5;
+      for(let f=0; f<rays; f++) {
+        let fAngle = (f/rays)*Math.PI*2; let flareIdx = Math.floor(Math.abs(Math.sin(f*0.15)) * bass);
+        lCtx.fillStyle = `hsla(${colorHue + (f*0.6)}, 100%, 50%, 0.35)`;
+        let fx = cx + (r + 3 + flareIdx*0.5) * Math.cos(fAngle); let fy = cy + (r + 3 + flareIdx*0.5) * Math.sin(fAngle);
+        lCtx.beginPath(); lCtx.arc(fx, fy, 1.2 + flareIdx*0.08, 0, Math.PI*2); lCtx.fill();
       }
-      break;
-
-    case "DIGITAL_RAIN_SHOCK": 
-      for(let m=0; m<32; m++) {
-        let mAngle = (m/32)*Math.PI*2 + globalMutationTracker*0.05;
-        let mLen = 5 + ((m + Math.floor(globalMutationTracker*5)) % 5) * (bass*0.2);
-        lCtx.strokeStyle = `hsla(${colorHue + 60}, 100%, 60%, 0.6)`; lCtx.lineWidth = 2;
+  } 
+  else {
+      // 46-50: Falling Vector Matrix Digital Streams
+      let streams = modeNum - 20;
+      for(let m=0; m<streams; m++) {
+        let mAngle = (m/streams)*Math.PI*2 + globalMutationTracker*0.06;
+        let mLen = 4 + ((m + Math.floor(globalMutationTracker*4)) % 6) * (bass*0.22);
+        lCtx.strokeStyle = `hsla(${colorHue + 75}, 100%, 60%, 0.65)`; lCtx.lineWidth = 1.8;
         lCtx.beginPath(); lCtx.moveTo(cx + (r + mLen) * Math.cos(mAngle), cy + (r + mLen) * Math.sin(mAngle));
-        lCtx.lineTo(cx + (r + mLen + 8) * Math.cos(mAngle), cy + (r + mLen + 8) * Math.sin(mAngle));
+        lCtx.lineTo(cx + (r + mLen + 7) * Math.cos(mAngle), cy + (r + mLen + 7) * Math.sin(mAngle));
         lCtx.stroke();
       }
-      break;
   }
   lCtx.restore();
 }
@@ -6067,7 +6092,8 @@ function showOverlay() {
         resizeLockCanvas();
         lockOverlay.style.display = "flex";
         if(document.getElementById("themeColorMeta")) document.getElementById("themeColorMeta").setAttribute("content", "#000000");
-        if (lockTimer) clearTimeout(lockTimer); // Kill background monitoring once active
+        if (lockTimer) clearTimeout(lockTimer); 
+        requestWakeLock(); // Force secure wake lock state immediately upon lock view creation
         renderLockVisuals();
     }
 }
@@ -6076,8 +6102,7 @@ function hideOverlay() {
     lockOverlay.style.display = "none";
     if(document.getElementById("themeColorMeta")) document.getElementById("themeColorMeta").setAttribute("content", "#00ffff");
     cancelAnimationFrame(lAnimationId);
-    
-    // [CRITICAL FIX] Lock screen hatne par automatic 8 seconds loop ko fir se re-arm krna
+    releaseWakeLock(); // Soft release wake lock upon explicit user unlock interaction
     start8SecLockTimer(); 
 }
 
@@ -6093,7 +6118,7 @@ function updateOverlayContent() {
     if(overlayTime) overlayTime.textContent = `${curr} / ${total}`;
 }
 
-// Global Activity Event Trackers
+// Global Activity Observers
 ['mousemove', 'keydown', 'touchstart', 'click'].forEach(evt => {
     document.addEventListener(evt, resetUserActivity, { passive: true });
 });
@@ -6101,9 +6126,9 @@ function updateOverlayContent() {
 if (audioPlayer) {
     audioPlayer.addEventListener('timeupdate', updateOverlayContent);
     audioPlayer.addEventListener('loadedmetadata', updateOverlayContent);
-    audioPlayer.addEventListener('play', () => { start8SecLockTimer(); });
-    audioPlayer.addEventListener('pause', hideOverlay);
-    audioPlayer.addEventListener('ended', hideOverlay);
+    audioPlayer.addEventListener('play', () => { start8SecLockTimer(); requestWakeLock(); });
+    audioPlayer.addEventListener('pause', () => { hideOverlay(); releaseWakeLock(); });
+    audioPlayer.addEventListener('ended', () => { hideOverlay(); releaseWakeLock(); });
 }
 
 if(modeToggleBtn) {
@@ -6115,4 +6140,5 @@ if(modeToggleBtn) {
 </script>
 
 
-	
+    
+                           
