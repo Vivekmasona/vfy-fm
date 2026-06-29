@@ -5843,7 +5843,7 @@ function updateClock(){
 setInterval(updateClock, 1000); updateClock();
 </script>
 
-<script>
+              <script>
 /* ---------------- ENGINE CONFIG & MULTI-STYLE OBJECT VARIABLES ---------------- */
 const lockOverlay = document.getElementById("lockOverlay");
 const overlayThumb = document.getElementById("overlayThumb");
@@ -5873,9 +5873,11 @@ function resizeLockCanvas() {
 }
 window.addEventListener('resize', resizeLockCanvas);
 
+// Function to select a completely new random style (Triggered ONLY when lockscreen spawns)
 function selectRandomStyle() {
-  const randomIndex = Math.floor(Math.random() * VISUALIZER_STYLES.length);
-  currentActiveStyle = VISUALIZER_STYLES[randomIndex];
+  const availableStyles = VISUALIZER_STYLES.filter(s => s !== currentActiveStyle);
+  const randomIndex = Math.floor(Math.random() * availableStyles.length);
+  currentActiveStyle = availableStyles[randomIndex];
   if(styleBadge) styleBadge.textContent = "STYLE: " + currentActiveStyle.replace(/_/g, " ");
 }
 
@@ -5884,7 +5886,7 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
   lCtx.save();
   
   switch(currentActiveStyle) {
-    case "HYPER_LASER_BURST": // Style 1: Bursting Sharp Lasers
+    case "HYPER_LASER_BURST": 
       for (let i = 0; i < 120; i++) {
         let angle = (i / 120) * Math.PI * 2 + globalMutationTracker * 0.1;
         let len = 20 + Math.sin(i * 0.5 + globalMutationTracker * 2) * (bass * 0.8);
@@ -5897,7 +5899,7 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       }
       break;
 
-    case "CYBER_MATRIX_ORBIT": // Style 2: Concentric Tech Circles orbiting independently
+    case "CYBER_MATRIX_ORBIT": 
       for(let j = 1; j <= 4; j++) {
         lCtx.strokeStyle = `hsla(${colorHue - j*20}, 100%, 55%, ${0.9 - j*0.2})`;
         lCtx.lineWidth = 2 / j;
@@ -5908,7 +5910,7 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       }
       break;
 
-    case "PLASMA_WAVE_SHIFTER": // Style 3: Smooth Fluid Sine Ribbons flowing around center
+    case "PLASMA_WAVE_SHIFTER": 
       lCtx.setLineDash([]);
       for (let w = 0; w < 3; w++) {
         lCtx.beginPath();
@@ -5925,7 +5927,7 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       }
       break;
 
-    case "NEON_PARTICLE_CLOUD": // Style 4: Orbiting Dots floating out dynamically
+    case "NEON_PARTICLE_CLOUD": 
       for (let p = 0; p < 60; p++) {
         let pAngle = p * 0.15 + globalMutationTracker * 0.5;
         let pDist = r + 15 + (Math.abs(Math.sin(p + globalMutationTracker)) * (bass * 1.2));
@@ -5936,7 +5938,7 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       }
       break;
 
-    case "HEX_VECTOR_RADAR": // Style 5: Polygon Hexagon pulsing spikes
+    case "HEX_VECTOR_RADAR": 
       lCtx.strokeStyle = `hsla(${colorHue}, 100%, 55%, 0.6)`;
       lCtx.lineWidth = 2;
       for(let s = 0; s < 3; s++) {
@@ -5952,7 +5954,7 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       }
       break;
 
-    case "DNA_STRAND_HELIX": // Style 6: Connected node links spinning around
+    case "DNA_STRAND_HELIX": 
       let pairs = 24;
       for(let d=0; d<pairs; d++) {
         let dAngle = (d/pairs) * Math.PI * 2 + globalMutationTracker * 0.2;
@@ -5971,7 +5973,7 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       }
       break;
 
-    case "QUANTUM_RING_DECAY": // Style 7: Fading particle sparks leaving ring trails
+    case "QUANTUM_RING_DECAY": 
       for(let q=0; q<40; q++) {
         let qAngle = (q/40)*Math.PI*2 - globalMutationTracker*0.3;
         let qLen = r + 5 + (Math.cos(q * 4 + globalMutationTracker) * bass * 0.4);
@@ -5984,7 +5986,7 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       }
       break;
 
-    case "SOUND_GEOMETRIC_CUBE": // Style 8: Abstract technical crosshairs vectors
+    case "SOUND_GEOMETRIC_CUBE": 
       lCtx.strokeStyle = `hsla(${colorHue}, 100%, 50%, 0.4)`;
       lCtx.lineWidth = 1.5;
       let boxSize = r + 10 + bass * 0.3;
@@ -5996,7 +5998,7 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       lCtx.restore();
       break;
 
-    case "ASTRO_PULSE_FLARE": // Style 9: Outer blooming corona sun flare waves
+    case "ASTRO_PULSE_FLARE": 
       for(let f=0; f<80; f++) {
         let fAngle = (f/80)*Math.PI*2;
         let flareIdx = Math.floor(Math.abs(Math.sin(f*0.1)) * bass);
@@ -6007,7 +6009,7 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       }
       break;
 
-    case "DIGITAL_RAIN_SHOCK": // Style 10: Falling vector matrices shooting outward
+    case "DIGITAL_RAIN_SHOCK": 
       for(let m=0; m<32; m++) {
         let mAngle = (m/32)*Math.PI*2 + globalMutationTracker*0.05;
         let mLen = 5 + ((m + Math.floor(globalMutationTracker*5)) % 5) * (bass*0.2);
@@ -6038,15 +6040,14 @@ function renderLockVisuals() {
 
   let bassPulse = 30 + Math.sin(globalMutationTracker * 1.6) * 15 + Math.cos(globalMutationTracker * 0.85) * 15;
   let dynamicHue = (Math.floor(globalMutationTracker * 0.2) % 2 === 0) 
-                   ? (175 + Math.sin(globalMutationTracker * 0.1) * 20) % 360  // Electric Cyan
-                   : (0 + Math.sin(globalMutationTracker * 0.1) * 15 + 360) % 360; // Vivo Crimson
+                   ? (175 + Math.sin(globalMutationTracker * 0.1) * 20) % 360  
+                   : (0 + Math.sin(globalMutationTracker * 0.1) * 15 + 360) % 360; 
 
   let minR = 75; let targetZoom = minR + (bassPulse * 0.2);
   lSmoothZoom += (targetZoom - lSmoothZoom) * 0.15;
 
   if(overlayThumb) overlayThumb.style.transform = `scale(${lSmoothZoom / minR})`;
 
-  // Reset to Deep Pitch Black
   lCtx.fillStyle = "#000000"; lCtx.fillRect(0, 0, w, h);
 
   const coreWrap = document.querySelector('.visualizer-core-wrap');
@@ -6055,18 +6056,15 @@ function renderLockVisuals() {
   const cx = coreBounds.left + (coreBounds.width / 2);
   const cy = coreBounds.top + (coreBounds.height / 2);
 
-  // Background Ambient Glow Plate
   let glowGrd = lCtx.createRadialGradient(cx, cy, lSmoothZoom, cx, cy, Math.max(w, h) * 0.5);
   glowGrd.addColorStop(0, `hsla(${dynamicHue}, 100%, 50%, 0.05)`);
   glowGrd.addColorStop(1, 'rgba(0,0,0,0)');
   lCtx.fillStyle = glowGrd; lCtx.fillRect(0, 0, w, h);
 
-  // Central Accent Core Ring
   lCtx.beginPath(); lCtx.arc(cx, cy, lSmoothZoom + 1, 0, Math.PI * 2);
   lCtx.lineWidth = 2; lCtx.strokeStyle = `hsla(${dynamicHue}, 100%, 55%, 0.7)`;
   lCtx.stroke();
 
-  // Call the Generative Object Matrix Style Switcher Engine
   drawStyleObject(cx, cy, lSmoothZoom, bassPulse, dynamicHue);
 }
 
@@ -6074,7 +6072,10 @@ function renderLockVisuals() {
 function showOverlay() {
     if (audioPlayer && !audioPlayer.paused) {
         if (document.getElementById("modeToggleBtn")?.checked) return; 
-        selectRandomStyle(); // Changes Object Layout Everytime it Opens!
+        
+        // [FIXED] Nayi random style ab sirf tabhi chuni jayegi jab lockscreen fresh banegi!
+        selectRandomStyle(); 
+        
         resizeLockCanvas();
         lockOverlay.style.display = "flex";
         if(document.getElementById("themeColorMeta")) document.getElementById("themeColorMeta").setAttribute("content", "#000000");
@@ -6106,7 +6107,5 @@ if (audioPlayer) {
     audioPlayer.addEventListener('play', () => { setTimeout(showOverlay, 12000); });
     audioPlayer.addEventListener('pause', hideOverlay);
     audioPlayer.addEventListener('ended', hideOverlay);
-    // Automatically swap design profile whenever song tracks shuffle!
-    audioPlayer.addEventListener('change', selectRandomStyle); 
 }
 </script>
