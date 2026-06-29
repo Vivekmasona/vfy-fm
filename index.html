@@ -5611,259 +5611,224 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-                        <div id="lockOverlay">
+<div id="lockOverlay">
   <canvas id="lockCanvas"></canvas>
 
   <div class="big-clock">
-    <div id="clockTime" class="minimal-vertical-time">
-      <span id="hourTens">0</span><span id="hourOnes" class="cyan-accent">0</span>
-      <div id="minuteContainer">00</div>
-    </div>
-    <div id="clockDate">Loading Matrix...</div>
+    <div id="clockTime"></div>
+    <div id="clockDate"></div>
   </div>
 
-  <div class="music-core-container">
-    <div class="visualizer-core-wrap">
-      <div class="neon-ring-glow"></div>
-      <img id="overlayThumb" src="https://via.placeholder.com/150" alt="Core Signal" style="cursor: pointer; user-select: none;">
-    </div>
-  </div>
-
-  <div class="bottom-controls-wrapper" id="lockFooterBlock">
-    <div class="cyber-metadata-box">
-      <span class="cyber-badge" id="visualizerStyleBadge">STYLE: INITIALIZING</span>
-      <div id="overlayTitle" class="cyber-title">VIVEKFY Ai SYSTEM</div>
-      <div id="overlayTime" class="cyber-time-stamp">0:00 / 0:00</div>
+  <div class="music-item">
+    <div class="thumb-wrap" style="position: relative;">
+      <img id="overlayThumb" src="https://via.placeholder.com/100" alt="Thumbnail" style="cursor: pointer; user-select: none; z-index: 2; position: relative;">
+      <div id="overlayTime" class="time"></div>
     </div>
 
-    <button id="unlockBtn" class="cyber-unlock-btn" aria-label="Unlock Terminal">
-      <svg viewBox="0 0 24 24" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 15v2m-6 5h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2zm1-13V7a5 5 0 0 1 10 0v2" 
-              fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; min-width: 0;">
+      <div id="overlayTitle" class="title">VIVEKFY Ai</div>
+      <span id="visualizerStyleBadge" style="font-size: 9px; font-weight: 700; color: #00ffcc; opacity: 0.8; letter-spacing: 1px; margin-top: 4px;">STYLE: INITIALIZING</span>
+    </div>
+
+    <button id="unlockBtn" class="arrow-btn" aria-label="Unlock">
+      <svg viewBox="0 0 24 24" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17 8V6a5 5 0 0 0-10 0v2H5v14h14V8h-2zm-6 0V6a3 3 0 0 1 6 0v2-6z" 
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </button>
   </div>
 </div>
 
 <style>
-/* --- Premium Cinematic Pitch Black Lock Screen --- */
+/* --- Original App Brand Styles Preserved --- */
+.big-clock {
+  width: 90%;
+  margin: 20px auto;
+  text-align: center;
+  line-height: 1.2;
+  z-index: 5;
+  position: relative;
+}
+
+.big-clock #clockTime {
+  font-size: 48px;
+  font-weight: 700;
+  background: linear-gradient(90deg, #ffff00, #00ffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.big-clock #clockDate {
+  font-size: 18px;
+  font-weight: 500;
+  color: #8a8e9b;
+}
+
+.music-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 90%;
+  max-width: 400px;
+  background: rgba(20, 20, 25, 0.85);
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  z-index: 5;
+  position: relative;
+  margin-bottom: 40px;
+}
+
+.thumb-wrap {
+  width: 75px;
+  height: 75px;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+#overlayThumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+  will-change: transform;
+}
+
+.thumb-wrap::after {
+  content: "";
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  width: 100%;
+  background: linear-gradient(90deg, rgba(40, 19, 13, 0) 10%, rgba(40, 19, 13, 0.48) 65%, rgba(40, 19, 13, 0.86) 85%, rgba(40, 19, 13, 1) 95%);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.time {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  z-index: 4;
+}
+
+.title {
+  font-size: 15px;
+  opacity: 0.9;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.arrow-btn {
+  background: radial-gradient(circle, rgba(250, 62, 103, 1) 0%, rgba(28, 199, 65, 0.09) 40%, rgba(40, 224, 27, 0.05) 60%, rgba(77, 191, 214, 0.88) 69%, rgba(0, 0, 0, 1) 100%);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50%;
+  width: 54px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  color: #fff;
+  transition: transform 0.2s ease;
+}
+
+.arrow-btn:active {
+  transform: scale(0.92);
+}
+
+/* Original Overlay Base Setup */  
 #lockOverlay {  
   position: fixed;  
   top: 0;  
   left: 0;  
   width: 100%;  
   height: 100%;  
-  background: #000000 !important; 
-  display: none; 
+  background: #000000 !important;  
+  display: none;  
+  align-items: center;  
+  justify-content: space-between;  
   flex-direction: column;  
-  justify-content: space-between;
-  align-items: center;
-  z-index: 999999; 
+  z-index: 999999;  
   color: white;  
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  padding: 50px 20px 30px 20px; 
+  font-family: system-ui, -apple-system, sans-serif;  
+  padding: 40px 20px;
   box-sizing: border-box;
   overflow: hidden;
 }  
 
-#lockOverlay::before {
-  content: "";
+#lockCanvas {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 120px;
-  background: linear-gradient(to bottom, #000000 65%, rgba(0, 0, 0, 0) 100%);
-  z-index: 4;
+  top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 1;
   pointer-events: none;
 }
 
 body:has(#lockOverlay:visible) {
   overflow: hidden;
-}
-
-#lockCanvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.big-clock {
-  width: 100%;
-  text-align: center;
-  z-index: 5;
-  margin-top: 10px;
-}
-.minimal-vertical-time {
-  font-size: 76px;
-  font-weight: 800;
-  line-height: 0.85;
-  letter-spacing: -2px;
-  display: inline-block;
-}
-.minimal-vertical-time #minuteContainer {
-  font-size: 76px;
-  font-weight: 400;
-  color: #ffffff;
-  letter-spacing: -2px;
-}
-.cyan-accent {
-  color: #00ffcc !important; 
-  text-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
-}
-.big-clock #clockDate {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  color: #8a8e9b;
-  margin-top: 12px;
-}
-
-.music-core-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  z-index: 5;
-  flex-grow: 1;
-}
-
-.visualizer-core-wrap {
-  position: relative;
-  width: 155px;
-  height: 155px;
-}
-
-.neon-ring-glow {
-  position: absolute;
-  top: -4px; left: -4px; right: -4px; bottom: -4px;
-  border-radius: 50%;
-  background: linear-gradient(45deg, #00ffcc, #ff3300);
-  z-index: -1;
-  opacity: 0.3;
-  filter: blur(10px);
-}
-
-#overlayThumb {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 0 50px rgba(0,0,0,1);
-  will-change: transform;
-}
-
-.bottom-controls-wrapper {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 5;
-  gap: 18px;
-  margin-bottom: 5px;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-.cyber-metadata-box {
-  background: rgba(10, 10, 12, 0.9);
-  padding: 14px 25px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(15px);
-  width: 85%;
-  max-width: 340px;
-  text-align: center;
-}
-
-.cyber-badge {
-  font-size: 8px;
-  font-weight: 900;
-  color: #ff3300; 
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  display: inline-block;
-  margin-bottom: 6px;
-  border: 1px solid rgba(255, 51, 0, 0.3);
-  padding: 1px 6px;
-  border-radius: 10px;
-}
-
-.cyber-title {
-  font-size: 17px;
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.cyber-time-stamp {
-  font-size: 12px;
-  font-family: monospace;
-  color: #8a8e9b;
-}
-
-.cyber-unlock-btn {
-  background: rgba(0, 255, 204, 0.02);
-  border: 1px solid rgba(0, 255, 204, 0.35);
-  color: #00ffcc;
-  border-radius: 50%;
-  width: 66px;
-  height: 66px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.4s ease;
-}
+}  
 </style>
 
 <script>
+// Live Clock Handler (Original Engine)
 function updateClock(){
   const now = new Date();
-  const hoursStr = now.getHours().toString().padStart(2, '0');
-  const minutesStr = now.getMinutes().toString().padStart(2, '0');
-  document.getElementById('hourTens').textContent = hoursStr[0];
-  document.getElementById('hourOnes').textContent = hoursStr[1];
-  document.getElementById('minuteContainer').textContent = minutesStr;
-  document.getElementById('clockDate').textContent = now.toLocaleDateString([], {weekday:'short', day:'numeric', month:'short'});
+  const time = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+  const date = now.toLocaleDateString([], {weekday:'short', day:'numeric', month:'short', year:'numeric'});
+  document.getElementById('clockTime').textContent = time;
+  document.getElementById('clockDate').textContent = date;
 }
 setInterval(updateClock, 1000); updateClock();
 </script>
 
 <script>
-/* ---------------- ENGINE CONFIG & 50 DISTINCT STYLES CONFIG ---------------- */
+/* ---------------- GLOBAL ELEMENTS & STRUCTURAL INTEGRATION ---------------- */
+const footer = document.querySelector('.fixed-footer');
+const progressBar = document.getElementById('progressBarContainer');
+const audioPlayerContainer = document.getElementById('audioPlayerContainer');
 const lockOverlay = document.getElementById("lockOverlay");
 const overlayThumb = document.getElementById("overlayThumb");
 const overlayTitle = document.getElementById("overlayTitle");
 const overlayTime = document.getElementById("overlayTime");
 const audioPlayer = document.getElementById("SAudio");
-const styleBadge = document.getElementById("visualizerStyleBadge");
+const themeMeta = document.getElementById("themeColorMeta");
 const modeToggleBtn = document.getElementById("modeToggleBtn");
-const lockFooterBlock = document.getElementById("lockFooterBlock");
+const sideMenu = document.getElementById('sideMenu');
+const styleBadge = document.getElementById("visualizerStyleBadge");
 
 const lCanvas = document.getElementById("lockCanvas");
 const lCtx = lCanvas.getContext("2d");
-let lAnimationId;
-let lSmoothZoom = 75;
-let globalMutationTracker = 0;
-let lockTimer = null;
-let wakeLock = null; 
 
-// Array containing 50 Completely Unique Visualizer Modes
+let lastScrollTop = 0;
+let overlayTimer;
+let sideMenuTimer;
+let wakeLock = null;
+let isScrollTicking = false;
+
+let lAnimationId;
+let lSmoothZoom = 55;
+let globalMutationTracker = 0;
+
+// Gen 50 Style Vectors Array
 const VISUALIZER_STYLES = [];
 for(let k = 1; k <= 50; k++) {
     VISUALIZER_STYLES.push("MATRIX_OBJECT_MODE_" + k);
 }
-let currentActiveStyle = "MATRIX_OBJECT_MODE_1"; 
+let currentActiveStyle = "MATRIX_OBJECT_MODE_1";
 
 function resizeLockCanvas() {
   const dpr = window.devicePixelRatio || 1;
@@ -5879,53 +5844,82 @@ function selectRandomStyle() {
   if(styleBadge) styleBadge.textContent = "STYLE NODE: #" + currentActiveStyle.split('_')[3];
 }
 
-/* ---------------- SCREEN WAKE-LOCK SUBSYSTEM ---------------- */
-async function requestWakeLock() {
-    if ('wakeLock' in navigator) {
-        try {
-            if (!wakeLock) {
-                wakeLock = await navigator.wakeLock.request('screen');
-            }
-        } catch (err) {
-            console.warn("Wake lock disabled: ", err.message);
-        }
-    }
+/* ---------------- OVERLAY ACTIVE CONTROL SYSTEM ---------------- */
+function setStatusBarColor(color) {
+    if (themeMeta) themeMeta.setAttribute("content", color);
 }
 
-function releaseWakeLock() {
-    if (wakeLock) {
-        wakeLock.release().then(() => {
-            wakeLock = null;
-        });
-    }
-}
-
-/* ---------------- AUTOMATIC AUTO-TRIGGER TIMERS ---------------- */
-function start8SecLockTimer() {
-    if (lockTimer) clearTimeout(lockTimer);
-    
-    // [CRITICAL FORCE RE-ARM] If dynamic/video mode toggle exists and is checked, prevent overlay triggers entirely
+function showOverlay() {
+    // [CRITICAL CHECK] Video Mode Active? Don't break layout rules! Stop execution completely.
     if (modeToggleBtn && modeToggleBtn.checked) {
-        if (lockOverlay.style.display === "flex") hideOverlay();
-        return;
+        hideOverlay();
+        return; 
     }
+    
+    selectRandomStyle();
+    resizeLockCanvas();
+    lockOverlay.style.display = "flex";
+    setStatusBarColor("#000000");
+    if (overlayTimer) clearTimeout(overlayTimer);
+    renderLockVisuals();
+}
+
+function hideOverlay() {
+    lockOverlay.style.display = "none";
+    setStatusBarColor("#00ffff");
+    cancelAnimationFrame(lAnimationId);
+    resetOverlayTimer();
+}
+
+document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
+
+/* ---------------- DOUBLE TAP INSTANT STYLE SYSTEM ---------------- */
+if(overlayThumb) {
+    overlayThumb.addEventListener("dblclick", (e) => {
+        e.stopPropagation(); 
+        selectRandomStyle();
+    });
+}
+
+/* ---------------- SIDE MENU LOGIC ---------------- */
+function hideMenu() { if(sideMenu) sideMenu.classList.add('hidden'); }
+function showMenu() { if(sideMenu) sideMenu.classList.remove('hidden'); }
+
+/* ---------------- TIMERS & RULES ---------------- */
+function resetOverlayTimer(e) {
+    if (e && e.type === "scroll") return;
+    if (overlayTimer) clearTimeout(overlayTimer);
+    
+    // [CRITICAL BLOCK] If video mode is active, do not arm the 12s lock timer
+    if (modeToggleBtn && modeToggleBtn.checked) return;
 
     if (audioPlayer && !audioPlayer.paused) {
-        lockTimer = setTimeout(() => {
-            if (lockOverlay.style.display !== "flex") showOverlay();
-        }, 8000); 
+        overlayTimer = setTimeout(showOverlay, 12000); // 12 sec active lock
     }
 }
 
-function resetUserActivity(e) {
-    if (e && e.type === "scroll") return;
-    if (modeToggleBtn && modeToggleBtn.checked) return; // Completely mute activity handling in video mode
-    
-    requestWakeLock(); 
-    if (lockOverlay.style.display !== "flex") start8SecLockTimer();
+function resetSideMenuTimer() {
+    showMenu();
+    if (sideMenuTimer) clearTimeout(sideMenuTimer);
+    sideMenuTimer = setTimeout(hideMenu, 2000); // 2 sec active menu
 }
 
-/* ---------------- 50 GENERATIVE SYSTEM OBJECTS ---------------- */
+/* ---------------- USER INTERACTION MONITOR ---------------- */
+['mousemove', 'keydown', 'touchstart', 'click'].forEach(evt => {
+    document.addEventListener(evt, e => {
+        // [CRITICAL RULE] Video mode active state -> Bypass entirely to protect hidden footer state
+        if (modeToggleBtn && modeToggleBtn.checked) return;
+
+        resetOverlayTimer(e);
+        resetSideMenuTimer();
+    }, { passive: true });
+});
+
+// Initial Fire
+resetOverlayTimer();
+resetSideMenuTimer();
+
+/* ---------------- VISUAL ENGINE CORES (50 COMBINATIONS) ---------------- */
 function drawStyleObject(cx, cy, r, bass, colorHue) {
   lCtx.save();
   let modeNum = parseInt(currentActiveStyle.split('_')[3]);
@@ -5935,8 +5929,8 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       let count = 40 + (modeNum * 15);
       for (let i = 0; i < count; i++) {
         let angle = (i / count) * Math.PI * 2 + globalMutationTracker * 0.1;
-        let len = 15 + Math.sin(i * modeNum + globalMutationTracker * 2) * (bass * 0.7);
-        lCtx.strokeStyle = `hsla(${colorHue + (i * modeNum)}, 100%, 60%, 0.7)`;
+        let len = 12 + Math.sin(i * modeNum + globalMutationTracker * 2) * (bass * 0.6);
+        lCtx.strokeStyle = `hsla(${colorHue + (i * modeNum)}, 100%, 60%, 0.65)`;
         lCtx.lineWidth = 1.5; lCtx.beginPath();
         lCtx.moveTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
         lCtx.lineTo(cx + (r + len) * Math.cos(angle), cy + (r + len) * Math.sin(angle));
@@ -5946,42 +5940,39 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
   else if (modeNum > 5 && modeNum <= 10) {
       let rings = modeNum - 4;
       for(let j = 1; j <= rings; j++) {
-        lCtx.strokeStyle = `hsla(${colorHue - j*25}, 100%, 55%, ${0.9 - j*0.15})`;
-        lCtx.lineWidth = 2.5 / j; lCtx.setLineDash([8 * j, 12 * j]); lCtx.beginPath();
-        lCtx.arc(cx, cy, r + (j * 14) + (bass * 0.1), globalMutationTracker * j * 0.15, (Math.PI * 2) + globalMutationTracker * j * 0.15);
+        lCtx.strokeStyle = `hsla(${colorHue - j*25}, 100%, 55%, ${0.85 - j*0.15})`;
+        lCtx.lineWidth = 2 / j; lCtx.setLineDash([6 * j, 10 * j]); lCtx.beginPath();
+        lCtx.arc(cx, cy, r + (j * 12) + (bass * 0.08), globalMutationTracker * j * 0.12, (Math.PI * 2) + globalMutationTracker * j * 0.12);
         lCtx.stroke();
       }
   } 
   else if (modeNum > 10 && modeNum <= 15) {
-      let waves = modeNum - 9;
-      lCtx.setLineDash([]);
+      let waves = modeNum - 9; lCtx.setLineDash([]);
       for (let w = 0; w < waves; w++) {
-        lCtx.beginPath(); lCtx.strokeStyle = `hsla(${colorHue + (w*35)}, 100%, 50%, 0.45)`; lCtx.lineWidth = 2;
-        for (let a = 0; a <= Math.PI * 2; a += 0.06) {
-          let offset = Math.sin(a * (modeNum - 5) + globalMutationTracker * 3 + w) * (bass * 0.25);
-          let rx = cx + (r + 8 + offset) * Math.cos(a); let ry = cy + (r + 8 + offset) * Math.sin(a);
+        lCtx.beginPath(); lCtx.strokeStyle = `hsla(${colorHue + (w*30)}, 100%, 50%, 0.4)`; lCtx.lineWidth = 1.5;
+        for (let a = 0; a <= Math.PI * 2; a += 0.08) {
+          let offset = Math.sin(a * (modeNum - 5) + globalMutationTracker * 2.5 + w) * (bass * 0.2);
+          let rx = cx + (r + 6 + offset) * Math.cos(a); let ry = cy + (r + 6 + offset) * Math.sin(a);
           if (a === 0) lCtx.moveTo(rx, ry); else lCtx.lineTo(rx, ry);
         }
         lCtx.closePath(); lCtx.stroke();
       }
   } 
   else if (modeNum > 15 && modeNum <= 20) {
-      let particles = 30 + (modeNum * 2);
+      let particles = 25 + modeNum;
       for (let p = 0; p < particles; p++) {
-        let pAngle = p * 0.18 + globalMutationTracker * 0.4;
-        let pDist = r + 12 + (Math.abs(Math.sin(p + globalMutationTracker)) * (bass * 1.1));
-        lCtx.fillStyle = `hsla(${colorHue + p*3}, 100%, 65%, 0.8)`; lCtx.beginPath();
-        lCtx.arc(cx + pDist * Math.cos(pAngle), cy + pDist * Math.sin(pAngle), 2.2, 0, Math.PI*2); lCtx.fill();
+        let pAngle = p * 0.2 + globalMutationTracker * 0.3;
+        let pDist = r + 10 + (Math.abs(Math.sin(p + globalMutationTracker)) * (bass * 0.9));
+        lCtx.fillStyle = `hsla(${colorHue + p*4}, 100%, 65%, 0.8)`; lCtx.beginPath();
+        lCtx.arc(cx + pDist * Math.cos(pAngle), cy + pDist * Math.sin(pAngle), 2, 0, Math.PI*2); lCtx.fill();
       }
   } 
   else if (modeNum > 20 && modeNum <= 25) {
-      let polygons = modeNum - 18;
-      lCtx.strokeStyle = `hsla(${colorHue}, 100%, 55%, 0.55)`; lCtx.lineWidth = 2;
+      let polygons = modeNum - 18; lCtx.strokeStyle = `hsla(${colorHue}, 100%, 55%, 0.5)`; lCtx.lineWidth = 1.5;
       for(let s = 0; s < polygons; s++) {
-        lCtx.beginPath(); let hr = r + 4 + (s * 18) + (bass * 0.15);
-        let sides = 3 + s;
+        lCtx.beginPath(); let hr = r + 4 + (s * 15) + (bass * 0.1); let sides = 3 + s;
         for(let side = 0; side <= sides; side++) {
-          let hAngle = (side / sides) * Math.PI * 2 + (globalMutationTracker * 0.04);
+          let hAngle = (side / sides) * Math.PI * 2 + (globalMutationTracker * 0.03);
           let hx = cx + hr * Math.cos(hAngle); let hy = cy + hr * Math.sin(hAngle);
           if(side === 0) lCtx.moveTo(hx, hy); else lCtx.lineTo(hx, hy);
         }
@@ -5989,58 +5980,53 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       }
   } 
   else if (modeNum > 25 && modeNum <= 30) {
-      let pairs = modeNum - 10;
+      let pairs = modeNum - 12;
       for(let d=0; d<pairs; d++) {
-        let dAngle = (d/pairs) * Math.PI * 2 + globalMutationTracker * 0.25;
-        let ext = Math.sin(globalMutationTracker * 2.2 + d) * bass * 0.4;
+        let dAngle = (d/pairs) * Math.PI * 2 + globalMutationTracker * 0.2;
+        let ext = Math.sin(globalMutationTracker * 2 + d) * bass * 0.3;
         let x1 = cx + (r + ext) * Math.cos(dAngle); let y1 = cy + (r + ext) * Math.sin(dAngle);
-        let x2 = cx + (r + 22 + ext) * Math.cos(dAngle); let y2 = cy + (r + 22 + ext) * Math.sin(dAngle);
-        lCtx.strokeStyle = `hsla(${colorHue}, 100%, 60%, 0.45)`; lCtx.lineWidth = 1.2;
+        let x2 = cx + (r + 18 + ext) * Math.cos(dAngle); let y2 = cy + (r + 18 + ext) * Math.sin(dAngle);
+        lCtx.strokeStyle = `hsla(${colorHue}, 100%, 60%, 0.4)`; lCtx.lineWidth = 1;
         lCtx.beginPath(); lCtx.moveTo(x1, y1); lCtx.lineTo(x2, y2); lCtx.stroke();
-        lCtx.fillStyle = "#fff"; lCtx.beginPath(); lCtx.arc(x1, y1, 1.8, 0, Math.PI*2); lCtx.fill();
-        lCtx.fillStyle = `hsla(${colorHue+90}, 100%, 50%, 0.85)`; lCtx.beginPath(); lCtx.arc(x2, y2, 2.5, 0, Math.PI*2); lCtx.fill();
       }
   } 
   else if (modeNum > 30 && modeNum <= 35) {
-      let lines = modeNum;
+      let lines = modeNum - 10;
       for(let q=0; q<lines; q++) {
-        let qAngle = (q/lines)*Math.PI*2 - globalMutationTracker * 0.25;
-        let qLen = r + 4 + (Math.cos(q * 3 + globalMutationTracker) * bass * 0.35);
-        lCtx.strokeStyle = `hsla(${colorHue - 40}, 100%, 55%, 0.65)`; lCtx.lineWidth = 3.5; lCtx.lineCap = "round";
-        lCtx.beginPath(); lCtx.arc(cx, cy, qLen, qAngle, qAngle + 0.05); lCtx.stroke();
+        let qAngle = (q/lines)*Math.PI*2 - globalMutationTracker * 0.2;
+        let qLen = r + 4 + (Math.cos(q * 2 + globalMutationTracker) * bass * 0.3);
+        lCtx.strokeStyle = `hsla(${colorHue - 30}, 100%, 55%, 0.6)`; lCtx.lineWidth = 3; lCtx.lineCap = "round";
+        lCtx.beginPath(); lCtx.arc(cx, cy, qLen, qAngle, qAngle + 0.06); lCtx.stroke();
       }
   } 
   else if (modeNum > 35 && modeNum <= 40) {
-      lCtx.strokeStyle = `hsla(${colorHue}, 100%, 50%, 0.4)`; lCtx.lineWidth = 1.4;
-      let boxSize = r + 8 + bass * 0.25;
-      lCtx.strokeRect(cx - boxSize, cy - boxSize, boxSize*2, boxSize*2);
-      lCtx.save(); lCtx.translate(cx, cy); lCtx.rotate(Math.PI/(modeNum-30) + globalMutationTracker*0.1);
-      lCtx.strokeRect(-boxSize*0.75, -boxSize*0.75, boxSize*1.5, boxSize*1.5); lCtx.restore();
+      lCtx.strokeStyle = `hsla(${colorHue}, 100%, 50%, 0.35)`; lCtx.lineWidth = 1.2;
+      let boxSize = r + 6 + bass * 0.2; lCtx.strokeRect(cx - boxSize, cy - boxSize, boxSize*2, boxSize*2);
   } 
   else if (modeNum > 40 && modeNum <= 45) {
-      let rays = modeNum * 1.5;
+      let rays = modeNum;
       for(let f=0; f<rays; f++) {
-        let fAngle = (f/rays)*Math.PI*2; let flareIdx = Math.floor(Math.abs(Math.sin(f*0.15)) * bass);
-        lCtx.fillStyle = `hsla(${colorHue + (f*0.6)}, 100%, 50%, 0.35)`;
-        let fx = cx + (r + 3 + flareIdx*0.5) * Math.cos(fAngle); let fy = cy + (r + 3 + flareIdx*0.5) * Math.sin(fAngle);
-        lCtx.beginPath(); lCtx.arc(fx, fy, 1.2 + flareIdx*0.08, 0, Math.PI*2); lCtx.fill();
+        let fAngle = (f/rays)*Math.PI*2; let flareIdx = Math.floor(Math.abs(Math.sin(f*0.1)) * bass);
+        lCtx.fillStyle = `hsla(${colorHue + f}, 100%, 50%, 0.3)`;
+        let fx = cx + (r + 3 + flareIdx*0.4) * Math.cos(fAngle); let fy = cy + (r + 3 + flareIdx*0.4) * Math.sin(fAngle);
+        lCtx.beginPath(); lCtx.arc(fx, fy, 1.5, 0, Math.PI*2); lCtx.fill();
       }
   } 
   else {
-      let streams = modeNum - 20;
+      let streams = modeNum - 25;
       for(let m=0; m<streams; m++) {
-        let mAngle = (m/streams)*Math.PI*2 + globalMutationTracker*0.06;
-        let mLen = 4 + ((m + Math.floor(globalMutationTracker*4)) % 6) * (bass*0.22);
-        lCtx.strokeStyle = `hsla(${colorHue + 75}, 100%, 60%, 0.65)`; lCtx.lineWidth = 1.8;
+        let mAngle = (m/streams)*Math.PI*2 + globalMutationTracker*0.05;
+        let mLen = 4 + ((m + Math.floor(globalMutationTracker*3)) % 5) * (bass*0.18);
+        lCtx.strokeStyle = `hsla(${colorHue + 60}, 100%, 60%, 0.6)`; lCtx.lineWidth = 1.5;
         lCtx.beginPath(); lCtx.moveTo(cx + (r + mLen) * Math.cos(mAngle), cy + (r + mLen) * Math.sin(mAngle));
-        lCtx.lineTo(cx + (r + mLen + 7) * Math.cos(mAngle), cy + (r + mLen + 7) * Math.sin(mAngle));
+        lCtx.lineTo(cx + (r + mLen + 6) * Math.cos(mAngle), cy + (r + mLen + 6) * Math.sin(mAngle));
         lCtx.stroke();
       }
   }
   lCtx.restore();
 }
 
-/* ---------------- CORE ENGINE LOOP ---------------- */
+/* ---------------- CORE ENGINE RENDERING LOOP ---------------- */
 function renderLockVisuals() {
   if (lockOverlay.style.display !== "flex") {
     cancelAnimationFrame(lAnimationId); return;
@@ -6051,113 +6037,132 @@ function renderLockVisuals() {
   if (!(audioPlayer && !audioPlayer.paused)) { hideOverlay(); return; }
 
   globalMutationTracker += 0.035;
-  let bassPulse = 30 + Math.sin(globalMutationTracker * 1.6) * 15 + Math.cos(globalMutationTracker * 0.85) * 15;
+  let bassPulse = 25 + Math.sin(globalMutationTracker * 1.5) * 12 + Math.cos(globalMutationTracker * 0.8) * 12;
   let dynamicHue = (Math.floor(globalMutationTracker * 0.2) % 2 === 0) 
                    ? (175 + Math.sin(globalMutationTracker * 0.1) * 20) % 360  
                    : (0 + Math.sin(globalMutationTracker * 0.1) * 15 + 360) % 360; 
 
-  let minR = 75; let targetZoom = minR + (bassPulse * 0.2);
+  let minR = 52; let targetZoom = minR + (bassPulse * 0.15);
   lSmoothZoom += (targetZoom - lSmoothZoom) * 0.15;
 
   if(overlayThumb) overlayThumb.style.transform = `scale(${lSmoothZoom / minR})`;
   lCtx.fillStyle = "#000000"; lCtx.fillRect(0, 0, w, h);
 
-  const coreWrap = document.querySelector('.visualizer-core-wrap');
-  if(!coreWrap) return;
-  const coreBounds = coreWrap.getBoundingClientRect();
+  const thumbWrapElement = document.querySelector('.thumb-wrap');
+  if(!thumbWrapElement) return;
+  const coreBounds = thumbWrapElement.getBoundingClientRect();
   const cx = coreBounds.left + (coreBounds.width / 2); const cy = coreBounds.top + (coreBounds.height / 2);
 
-  let glowGrd = lCtx.createRadialGradient(cx, cy, lSmoothZoom, cx, cy, Math.max(w, h) * 0.5);
-  glowGrd.addColorStop(0, `hsla(${dynamicHue}, 100%, 50%, 0.05)`); glowGrd.addColorStop(1, 'rgba(0,0,0,0)');
+  let glowGrd = lCtx.createRadialGradient(cx, cy, lSmoothZoom, cx, cy, Math.max(w, h) * 0.4);
+  glowGrd.addColorStop(0, `hsla(${dynamicHue}, 100%, 50%, 0.04)`); glowGrd.addColorStop(1, 'rgba(0,0,0,0)');
   lCtx.fillStyle = glowGrd; lCtx.fillRect(0, 0, w, h);
 
   lCtx.beginPath(); lCtx.arc(cx, cy, lSmoothZoom + 1, 0, Math.PI * 2);
-  lCtx.lineWidth = 2; lCtx.strokeStyle = `hsla(${dynamicHue}, 100%, 55%, 0.7)`; lCtx.stroke();
+  lCtx.lineWidth = 1.5; lCtx.strokeStyle = `hsla(${dynamicHue}, 100%, 55%, 0.6)`; lCtx.stroke();
 
   drawStyleObject(cx, cy, lSmoothZoom, bassPulse, dynamicHue);
 }
 
-/* ---------------- INTERFACES & PLUGINS ---------------- */
-function showOverlay() {
-    if (audioPlayer && !audioPlayer.paused) {
-        // [FORCE SHUTDOWN ENGINE IF VIDEO MODE REQUESTED]
-        if (modeToggleBtn && modeToggleBtn.checked) {
-             hideOverlay();
-             return; 
-        } 
-        
-        if(lockFooterBlock) {
-             lockFooterBlock.style.opacity = "1";
-             lockFooterBlock.style.visibility = "visible";
-        }
-        
-        selectRandomStyle(); 
-        resizeLockCanvas();
-        lockOverlay.style.display = "flex";
-        if(document.getElementById("themeColorMeta")) document.getElementById("themeColorMeta").setAttribute("content", "#000000");
-        if (lockTimer) clearTimeout(lockTimer); 
-        requestWakeLock(); 
-        renderLockVisuals();
-    }
-}
-
-function hideOverlay() {
-    lockOverlay.style.display = "none";
-    if(document.getElementById("themeColorMeta")) document.getElementById("themeColorMeta").setAttribute("content", "#00ffff");
-    cancelAnimationFrame(lAnimationId);
-    releaseWakeLock(); 
-    
-    if (!(modeToggleBtn && modeToggleBtn.checked)) {
-        start8SecLockTimer(); 
-    }
-}
-
-document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
-
-// Double-Tap Interaction Subsystem for Dynamic Object Morphing
-if(overlayThumb) {
-    overlayThumb.addEventListener("dblclick", (e) => {
-        e.stopPropagation(); 
-        selectRandomStyle();
-    });
-}
-
+/* ---------------- DATA AND CONTENT OVERLAY REFRESH ---------------- */
 function updateOverlayContent() {
     const thumbSrc = document.getElementById("Fimg")?.src;
     if (thumbSrc) overlayThumb.src = thumbSrc;
+
     const songTitle = document.getElementById("vfytitle")?.textContent;
-    overlayTitle.textContent = songTitle || "VIVEKFY Ai ACTIVE";
+    overlayTitle.textContent = songTitle || "VIVEKFY Ai";
+
     const curr = document.getElementById("current-time")?.textContent || "0:00";
     const total = document.getElementById("total-time")?.textContent || "0:00";
-    if(overlayTime) overlayTime.textContent = `${curr} / ${total}`;
+    overlayTime.textContent = `${curr} / ${total}`;
 }
-
-// Global Activity Observers
-['mousemove', 'keydown', 'touchstart', 'click'].forEach(evt => {
-    document.addEventListener(evt, resetUserActivity, { passive: true });
-});
 
 if (audioPlayer) {
     audioPlayer.addEventListener('timeupdate', updateOverlayContent);
     audioPlayer.addEventListener('loadedmetadata', updateOverlayContent);
-    audioPlayer.addEventListener('play', () => { 
-        if (!(modeToggleBtn && modeToggleBtn.checked)) {
-            start8SecLockTimer(); 
-            requestWakeLock(); 
+}
+
+/* -------- ORIGINAL FOOTER CONTROLLER WITH OVERRIDE GUARDS -------- */
+function toggleFooterVisibility(hide) {
+    // If video mode is explicitly checked, FORCE hide execution no matter what scroll or click triggers say!
+    if (modeToggleBtn && modeToggleBtn.checked) hide = true;
+
+    const action = hide ? 'add' : 'remove';
+    if(footer) footer.classList[action]("hide");
+    if(progressBar) progressBar.classList[action]("hide");
+    if(audioPlayerContainer) audioPlayerContainer.classList[action]("hide");
+}
+
+modeToggleBtn.addEventListener("change", () => {
+    if (modeToggleBtn.checked) {
+        toggleFooterVisibility(true); // Absolute hide rules applied
+        if (overlayTimer) clearTimeout(overlayTimer);
+        hideOverlay();
+    } else {
+        toggleFooterVisibility(false); 
+        resetOverlayTimer();
+    }
+});
+
+/* ---------------- SCROLL HANDLER (PERFORMANCE OPTIMIZED) ---------------- */
+window.addEventListener("scroll", () => {
+    if (modeToggleBtn && modeToggleBtn.checked) {
+        toggleFooterVisibility(true); // Protection Guard
+        return;
+    }
+
+    if (!isScrollTicking) {
+        window.requestAnimationFrame(() => {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > lastScrollTop) {
+                toggleFooterVisibility(true);  
+            } else {
+                toggleFooterVisibility(false); 
+            }
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+            isScrollTicking = false;
+        });
+        isScrollTicking = true;
+    }
+}, { passive: true });
+
+/* ---------------- WAKE LOCK SYSTEM ---------------- */
+async function keepScreenOn() {
+    if ('wakeLock' in navigator && audioPlayer && !audioPlayer.paused) {
+        try {
+            if (!wakeLock) {
+                wakeLock = await navigator.wakeLock.request('screen');
+            }
+        } catch (err) { 
+            console.error("Wake Lock error:", err); 
         }
+    }
+}
+
+async function releaseWakeLock() {
+    if (wakeLock) {
+        try {
+            await wakeLock.release();
+            wakeLock = null;
+        } catch (err) {
+            console.error("Wake lock release error:", err);
+        }
+    }
+}
+
+if (audioPlayer) {
+    audioPlayer.addEventListener('play', () => {
+        if (!(modeToggleBtn && modeToggleBtn.checked)) {
+            resetOverlayTimer();
+        }
+        keepScreenOn();
     });
-    audioPlayer.addEventListener('pause', () => { hideOverlay(); releaseWakeLock(); });
+    audioPlayer.addEventListener('pause', () => { releaseWakeLock(); });
     audioPlayer.addEventListener('ended', () => { hideOverlay(); releaseWakeLock(); });
 }
 
-if(modeToggleBtn) {
-    modeToggleBtn.addEventListener("change", () => {
-        if (!modeToggleBtn.checked) {
-            start8SecLockTimer();
-        } else {
-            if (lockTimer) clearTimeout(lockTimer);
-            hideOverlay();
-        }
-    });
-}
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        keepScreenOn();
+    }
+});
 </script>
