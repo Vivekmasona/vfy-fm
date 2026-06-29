@@ -3350,7 +3350,7 @@ audio.addEventListener("error", function () {
         audio.src = alternativeAudioSources[currentAlternativeIndex];
         audio.load();
         
-        // 🪐 [SAFE TRIGGER]: Agar alternate link load ho toh bina duplicate node error ke visualizer re-hook ho jaye
+        // 🪐 [SAFE TRIGGER]: Gana change ya error hone par lockscreen sound refresh karega
         if (window.globalAudioInitialized && typeof initLockAudioEngine === "function") {
              initLockAudioEngine(); 
         }
@@ -3359,7 +3359,8 @@ audio.addEventListener("error", function () {
         currentAlternativeIndex = (currentAlternativeIndex + 1) % alternativeAudioSources.length;
     }, 1000);
 });
-}
+} // <-- Yeh play function ka closing bracket waise hi rahega
+
 
     
 
