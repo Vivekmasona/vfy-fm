@@ -5611,10 +5611,9 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-        <div id="lockOverlay">
+                        <div id="lockOverlay">
   <canvas id="lockCanvas"></canvas>
 
-  <!-- Image 1000244672.jpg App Theme Inspired Vertical Minimal Clock -->
   <div class="big-clock">
     <div id="clockTime" class="minimal-vertical-time">
       <span id="hourTens">0</span><span id="hourOnes" class="cyan-accent">0</span>
@@ -5623,15 +5622,13 @@ document.getElementById('search-btn').addEventListener('click', function() {
     <div id="clockDate">Loading Matrix...</div>
   </div>
 
-  <!-- Center Visualizer Core (Floating Thumbnail) -->
   <div class="music-core-container">
     <div class="visualizer-core-wrap">
       <div class="neon-ring-glow"></div>
-      <img id="overlayThumb" src="https://via.placeholder.com/150" alt="Core Signal">
+      <img id="overlayThumb" src="https://via.placeholder.com/150" alt="Core Signal" style="cursor: pointer; user-select: none;">
     </div>
   </div>
 
-  <!-- Bottom Control Box (Auto-Hidden if Video/Dynamic state requested) -->
   <div class="bottom-controls-wrapper" id="lockFooterBlock">
     <div class="cyber-metadata-box">
       <span class="cyber-badge" id="visualizerStyleBadge">STYLE: INITIALIZING</span>
@@ -5888,10 +5885,9 @@ async function requestWakeLock() {
         try {
             if (!wakeLock) {
                 wakeLock = await navigator.wakeLock.request('screen');
-                console.log("Wake lock engine processing active structural lock state.");
             }
         } catch (err) {
-            console.warn("Wake lock active acquisition suspended: ", err.message);
+            console.warn("Wake lock disabled: ", err.message);
         }
     }
 }
@@ -5907,8 +5903,12 @@ function releaseWakeLock() {
 /* ---------------- AUTOMATIC AUTO-TRIGGER TIMERS ---------------- */
 function start8SecLockTimer() {
     if (lockTimer) clearTimeout(lockTimer);
-    // [OLD RULE RESTORED] Checked structural dynamic video state prevents normal lock overlays
-    if (modeToggleBtn && modeToggleBtn.checked) return;
+    
+    // [CRITICAL FORCE RE-ARM] If dynamic/video mode toggle exists and is checked, prevent overlay triggers entirely
+    if (modeToggleBtn && modeToggleBtn.checked) {
+        if (lockOverlay.style.display === "flex") hideOverlay();
+        return;
+    }
 
     if (audioPlayer && !audioPlayer.paused) {
         lockTimer = setTimeout(() => {
@@ -5919,6 +5919,8 @@ function start8SecLockTimer() {
 
 function resetUserActivity(e) {
     if (e && e.type === "scroll") return;
+    if (modeToggleBtn && modeToggleBtn.checked) return; // Completely mute activity handling in video mode
+    
     requestWakeLock(); 
     if (lockOverlay.style.display !== "flex") start8SecLockTimer();
 }
@@ -6078,16 +6080,12 @@ function renderLockVisuals() {
 /* ---------------- INTERFACES & PLUGINS ---------------- */
 function showOverlay() {
     if (audioPlayer && !audioPlayer.paused) {
-        // [OLD FUNCTION RESTORED] Dynamic Mode Active -> Strict Lock Inhibitor
+        // [FORCE SHUTDOWN ENGINE IF VIDEO MODE REQUESTED]
         if (modeToggleBtn && modeToggleBtn.checked) {
-             if(lockFooterBlock) {
-                 lockFooterBlock.style.opacity = "0";
-                 lockFooterBlock.style.visibility = "hidden";
-             }
+             hideOverlay();
              return; 
         } 
         
-        // Ensure regular visibility structural values
         if(lockFooterBlock) {
              lockFooterBlock.style.opacity = "1";
              lockFooterBlock.style.visibility = "visible";
@@ -6108,10 +6106,21 @@ function hideOverlay() {
     if(document.getElementById("themeColorMeta")) document.getElementById("themeColorMeta").setAttribute("content", "#00ffff");
     cancelAnimationFrame(lAnimationId);
     releaseWakeLock(); 
-    start8SecLockTimer(); 
+    
+    if (!(modeToggleBtn && modeToggleBtn.checked)) {
+        start8SecLockTimer(); 
+    }
 }
 
 document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
+
+// Double-Tap Interaction Subsystem for Dynamic Object Morphing
+if(overlayThumb) {
+    overlayThumb.addEventListener("dblclick", (e) => {
+        e.stopPropagation(); 
+        selectRandomStyle();
+    });
+}
 
 function updateOverlayContent() {
     const thumbSrc = document.getElementById("Fimg")?.src;
@@ -6131,7 +6140,12 @@ function updateOverlayContent() {
 if (audioPlayer) {
     audioPlayer.addEventListener('timeupdate', updateOverlayContent);
     audioPlayer.addEventListener('loadedmetadata', updateOverlayContent);
-    audioPlayer.addEventListener('play', () => { start8SecLockTimer(); requestWakeLock(); });
+    audioPlayer.addEventListener('play', () => { 
+        if (!(modeToggleBtn && modeToggleBtn.checked)) {
+            start8SecLockTimer(); 
+            requestWakeLock(); 
+        }
+    });
     audioPlayer.addEventListener('pause', () => { hideOverlay(); releaseWakeLock(); });
     audioPlayer.addEventListener('ended', () => { hideOverlay(); releaseWakeLock(); });
 }
@@ -6147,4 +6161,3 @@ if(modeToggleBtn) {
     });
 }
 </script>
-               
