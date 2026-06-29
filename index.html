@@ -5843,7 +5843,9 @@ function updateClock(){
 setInterval(updateClock, 1000); updateClock();
 </script>
 
-              <script>
+
+
+<script>
 /* ---------------- ENGINE CONFIG & MULTI-STYLE OBJECT VARIABLES ---------------- */
 const lockOverlay = document.getElementById("lockOverlay");
 const overlayThumb = document.getElementById("overlayThumb");
@@ -5851,12 +5853,14 @@ const overlayTitle = document.getElementById("overlayTitle");
 const overlayTime = document.getElementById("overlayTime");
 const audioPlayer = document.getElementById("SAudio");
 const styleBadge = document.getElementById("visualizerStyleBadge");
+const modeToggleBtn = document.getElementById("modeToggleBtn");
 
 const lCanvas = document.getElementById("lockCanvas");
 const lCtx = lCanvas.getContext("2d");
 let lAnimationId;
 let lSmoothZoom = 75;
 let globalMutationTracker = 0;
+let lockTimer = null; // Smart 8-second structural tracking timer
 
 // List of our 10 Distinct Object Styles
 const VISUALIZER_STYLES = [
@@ -5873,7 +5877,7 @@ function resizeLockCanvas() {
 }
 window.addEventListener('resize', resizeLockCanvas);
 
-// Function to select a completely new random style (Triggered ONLY when lockscreen spawns)
+// Selects unique style only on clean initialization spawns
 function selectRandomStyle() {
   const availableStyles = VISUALIZER_STYLES.filter(s => s !== currentActiveStyle);
   const randomIndex = Math.floor(Math.random() * availableStyles.length);
@@ -5881,18 +5885,39 @@ function selectRandomStyle() {
   if(styleBadge) styleBadge.textContent = "STYLE: " + currentActiveStyle.replace(/_/g, " ");
 }
 
+/* ---------------- SMART TIMERS & EVENT RE-ARM SYSTEM ---------------- */
+function start8SecLockTimer() {
+    if (lockTimer) clearTimeout(lockTimer);
+    
+    // Lock tabhi lagega jab audio player manually play ho rha ho aur dynamic mode toggled off ho
+    if (audioPlayer && !audioPlayer.paused && (!modeToggleBtn || !modeToggleBtn.checked)) {
+        lockTimer = setTimeout(() => {
+            if (lockOverlay.style.display !== "flex") {
+                showOverlay();
+            }
+        }, 8000); // Strict 8 Seconds Auto-Trigger Matrix
+    }
+}
+
+function resetUserActivity(e) {
+    if (e && e.type === "scroll") return;
+    
+    // Agar user screen touch kar rha h to 8 sec timer fir se shuru se reset hoga
+    if (lockOverlay.style.display !== "flex") {
+        start8SecLockTimer();
+    }
+}
+
 /* ---------------- 10 UNIQUE GENERATIVE RENDER OBJECTS ---------------- */
 function drawStyleObject(cx, cy, r, bass, colorHue) {
   lCtx.save();
-  
   switch(currentActiveStyle) {
     case "HYPER_LASER_BURST": 
       for (let i = 0; i < 120; i++) {
         let angle = (i / 120) * Math.PI * 2 + globalMutationTracker * 0.1;
         let len = 20 + Math.sin(i * 0.5 + globalMutationTracker * 2) * (bass * 0.8);
         lCtx.strokeStyle = `hsla(${colorHue + i}, 100%, 60%, 0.7)`;
-        lCtx.lineWidth = 1.5;
-        lCtx.beginPath();
+        lCtx.lineWidth = 1.5; lCtx.beginPath();
         lCtx.moveTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
         lCtx.lineTo(cx + (r + len) * Math.cos(angle), cy + (r + len) * Math.sin(angle));
         lCtx.stroke();
@@ -5902,9 +5927,7 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
     case "CYBER_MATRIX_ORBIT": 
       for(let j = 1; j <= 4; j++) {
         lCtx.strokeStyle = `hsla(${colorHue - j*20}, 100%, 55%, ${0.9 - j*0.2})`;
-        lCtx.lineWidth = 2 / j;
-        lCtx.setLineDash([10 * j, 15 * j]);
-        lCtx.beginPath();
+        lCtx.lineWidth = 2 / j; lCtx.setLineDash([10 * j, 15 * j]); lCtx.beginPath();
         lCtx.arc(cx, cy, r + (j * 15) + (bass * (0.1 * j)), globalMutationTracker * j * 0.2, (Math.PI * 2) + globalMutationTracker * j * 0.2);
         lCtx.stroke();
       }
@@ -5913,17 +5936,13 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
     case "PLASMA_WAVE_SHIFTER": 
       lCtx.setLineDash([]);
       for (let w = 0; w < 3; w++) {
-        lCtx.beginPath();
-        lCtx.strokeStyle = `hsla(${colorHue + (w*40)}, 100%, 50%, 0.4)`;
-        lCtx.lineWidth = 3;
+        lCtx.beginPath(); lCtx.strokeStyle = `hsla(${colorHue + (w*40)}, 100%, 50%, 0.4)`; lCtx.lineWidth = 3;
         for (let a = 0; a <= Math.PI * 2; a += 0.05) {
           let offset = Math.sin(a * 8 + globalMutationTracker * 3 + w) * (bass * 0.3);
-          let rx = cx + (r + 10 + offset) * Math.cos(a);
-          let ry = cy + (r + 10 + offset) * Math.sin(a);
+          let rx = cx + (r + 10 + offset) * Math.cos(a); let ry = cy + (r + 10 + offset) * Math.sin(a);
           if (a === 0) lCtx.moveTo(rx, ry); else lCtx.lineTo(rx, ry);
         }
-        lCtx.closePath();
-        lCtx.stroke();
+        lCtx.closePath(); lCtx.stroke();
       }
       break;
 
@@ -5931,23 +5950,18 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       for (let p = 0; p < 60; p++) {
         let pAngle = p * 0.15 + globalMutationTracker * 0.5;
         let pDist = r + 15 + (Math.abs(Math.sin(p + globalMutationTracker)) * (bass * 1.2));
-        lCtx.fillStyle = `hsla(${colorHue + p*2}, 100%, 65%, 0.8)`;
-        lCtx.beginPath();
-        lCtx.arc(cx + pDist * Math.cos(pAngle), cy + pDist * Math.sin(pAngle), 2.5, 0, Math.PI*2);
-        lCtx.fill();
+        lCtx.fillStyle = `hsla(${colorHue + p*2}, 100%, 65%, 0.8)`; lCtx.beginPath();
+        lCtx.arc(cx + pDist * Math.cos(pAngle), cy + pDist * Math.sin(pAngle), 2.5, 0, Math.PI*2); lCtx.fill();
       }
       break;
 
     case "HEX_VECTOR_RADAR": 
-      lCtx.strokeStyle = `hsla(${colorHue}, 100%, 55%, 0.6)`;
-      lCtx.lineWidth = 2;
+      lCtx.strokeStyle = `hsla(${colorHue}, 100%, 55%, 0.6)`; lCtx.lineWidth = 2;
       for(let s = 0; s < 3; s++) {
-        lCtx.beginPath();
-        let hr = r + 5 + (s * 20) + (bass * 0.2);
+        lCtx.beginPath(); let hr = r + 5 + (s * 20) + (bass * 0.2);
         for(let side = 0; side <= 6; side++) {
           let hAngle = (side / 6) * Math.PI * 2 + (globalMutationTracker * 0.05);
-          let hx = cx + hr * Math.cos(hAngle);
-          let hy = cy + hr * Math.sin(hAngle);
+          let hx = cx + hr * Math.cos(hAngle); let hy = cy + hr * Math.sin(hAngle);
           if(side === 0) lCtx.moveTo(hx, hy); else lCtx.lineTo(hx, hy);
         }
         lCtx.stroke();
@@ -5959,15 +5973,10 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       for(let d=0; d<pairs; d++) {
         let dAngle = (d/pairs) * Math.PI * 2 + globalMutationTracker * 0.2;
         let ext = Math.sin(globalMutationTracker*2 + d)*bass*0.5;
-        let x1 = cx + (r + ext) * Math.cos(dAngle);
-        let y1 = cy + (r + ext) * Math.sin(dAngle);
-        let x2 = cx + (r + 25 + ext*0.5) * Math.cos(dAngle);
-        let y2 = cy + (r + 25 + ext*0.5) * Math.sin(dAngle);
-        
-        lCtx.strokeStyle = `hsla(${colorHue}, 100%, 60%, 0.5)`;
-        lCtx.lineWidth = 1.5;
+        let x1 = cx + (r + ext) * Math.cos(dAngle); let y1 = cy + (r + ext) * Math.sin(dAngle);
+        let x2 = cx + (r + 25 + ext*0.5) * Math.cos(dAngle); let y2 = cy + (r + 25 + ext*0.5) * Math.sin(dAngle);
+        lCtx.strokeStyle = `hsla(${colorHue}, 100%, 60%, 0.5)`; lCtx.lineWidth = 1.5;
         lCtx.beginPath(); lCtx.moveTo(x1, y1); lCtx.lineTo(x2, y2); lCtx.stroke();
-        
         lCtx.fillStyle = "#fff"; lCtx.beginPath(); lCtx.arc(x1, y1, 2, 0, Math.PI*2); lCtx.fill();
         lCtx.fillStyle = `hsla(${colorHue+120}, 100%, 50%, 0.9)`; lCtx.beginPath(); lCtx.arc(x2, y2, 3, 0, Math.PI*2); lCtx.fill();
       }
@@ -5977,34 +5986,23 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       for(let q=0; q<40; q++) {
         let qAngle = (q/40)*Math.PI*2 - globalMutationTracker*0.3;
         let qLen = r + 5 + (Math.cos(q * 4 + globalMutationTracker) * bass * 0.4);
-        lCtx.strokeStyle = `hsla(${colorHue - 50}, 100%, 55%, 0.7)`;
-        lCtx.lineWidth = 4;
-        lCtx.lineCap = "round";
-        lCtx.beginPath();
-        lCtx.arc(cx, cy, qLen, qAngle, qAngle + 0.04);
-        lCtx.stroke();
+        lCtx.strokeStyle = `hsla(${colorHue - 50}, 100%, 55%, 0.7)`; lCtx.lineWidth = 4; lCtx.lineCap = "round";
+        lCtx.beginPath(); lCtx.arc(cx, cy, qLen, qAngle, qAngle + 0.04); lCtx.stroke();
       }
       break;
 
     case "SOUND_GEOMETRIC_CUBE": 
-      lCtx.strokeStyle = `hsla(${colorHue}, 100%, 50%, 0.4)`;
-      lCtx.lineWidth = 1.5;
-      let boxSize = r + 10 + bass * 0.3;
-      lCtx.strokeRect(cx - boxSize, cy - boxSize, boxSize*2, boxSize*2);
-      lCtx.save();
-      lCtx.translate(cx, cy);
-      lCtx.rotate(Math.PI/4 + globalMutationTracker*0.1);
-      lCtx.strokeRect(-boxSize*0.7, -boxSize*0.7, boxSize*1.4, boxSize*1.4);
-      lCtx.restore();
+      lCtx.strokeStyle = `hsla(${colorHue}, 100%, 50%, 0.4)`; lCtx.lineWidth = 1.5;
+      let boxSize = r + 10 + bass * 0.3; lCtx.strokeRect(cx - boxSize, cy - boxSize, boxSize*2, boxSize*2);
+      lCtx.save(); lCtx.translate(cx, cy); lCtx.rotate(Math.PI/4 + globalMutationTracker*0.1);
+      lCtx.strokeRect(-boxSize*0.7, -boxSize*0.7, boxSize*1.4, boxSize*1.4); lCtx.restore();
       break;
 
     case "ASTRO_PULSE_FLARE": 
       for(let f=0; f<80; f++) {
-        let fAngle = (f/80)*Math.PI*2;
-        let flareIdx = Math.floor(Math.abs(Math.sin(f*0.1)) * bass);
+        let fAngle = (f/80)*Math.PI*2; let flareIdx = Math.floor(Math.abs(Math.sin(f*0.1)) * bass);
         lCtx.fillStyle = `hsla(${colorHue + (f*0.5)}, 100%, 50%, 0.3)`;
-        let fx = cx + (r + 2 + flareIdx*0.6) * Math.cos(fAngle);
-        let fy = cy + (r + 2 + flareIdx*0.6) * Math.sin(fAngle);
+        let fx = cx + (r + 2 + flareIdx*0.6) * Math.cos(fAngle); let fy = cy + (r + 2 + flareIdx*0.6) * Math.sin(fAngle);
         lCtx.beginPath(); lCtx.arc(fx, fy, 1 + flareIdx*0.1, 0, Math.PI*2); lCtx.fill();
       }
       break;
@@ -6013,16 +6011,13 @@ function drawStyleObject(cx, cy, r, bass, colorHue) {
       for(let m=0; m<32; m++) {
         let mAngle = (m/32)*Math.PI*2 + globalMutationTracker*0.05;
         let mLen = 5 + ((m + Math.floor(globalMutationTracker*5)) % 5) * (bass*0.2);
-        lCtx.strokeStyle = `hsla(${colorHue + 60}, 100%, 60%, 0.6)`;
-        lCtx.lineWidth = 2;
-        lCtx.beginPath();
-        lCtx.moveTo(cx + (r + mLen) * Math.cos(mAngle), cy + (r + mLen) * Math.sin(mAngle));
+        lCtx.strokeStyle = `hsla(${colorHue + 60}, 100%, 60%, 0.6)`; lCtx.lineWidth = 2;
+        lCtx.beginPath(); lCtx.moveTo(cx + (r + mLen) * Math.cos(mAngle), cy + (r + mLen) * Math.sin(mAngle));
         lCtx.lineTo(cx + (r + mLen + 8) * Math.cos(mAngle), cy + (r + mLen + 8) * Math.sin(mAngle));
         lCtx.stroke();
       }
       break;
   }
-  
   lCtx.restore();
 }
 
@@ -6037,7 +6032,6 @@ function renderLockVisuals() {
   if (!(audioPlayer && !audioPlayer.paused)) { hideOverlay(); return; }
 
   globalMutationTracker += 0.035;
-
   let bassPulse = 30 + Math.sin(globalMutationTracker * 1.6) * 15 + Math.cos(globalMutationTracker * 0.85) * 15;
   let dynamicHue = (Math.floor(globalMutationTracker * 0.2) % 2 === 0) 
                    ? (175 + Math.sin(globalMutationTracker * 0.1) * 20) % 360  
@@ -6047,23 +6041,19 @@ function renderLockVisuals() {
   lSmoothZoom += (targetZoom - lSmoothZoom) * 0.15;
 
   if(overlayThumb) overlayThumb.style.transform = `scale(${lSmoothZoom / minR})`;
-
   lCtx.fillStyle = "#000000"; lCtx.fillRect(0, 0, w, h);
 
   const coreWrap = document.querySelector('.visualizer-core-wrap');
   if(!coreWrap) return;
   const coreBounds = coreWrap.getBoundingClientRect();
-  const cx = coreBounds.left + (coreBounds.width / 2);
-  const cy = coreBounds.top + (coreBounds.height / 2);
+  const cx = coreBounds.left + (coreBounds.width / 2); const cy = coreBounds.top + (coreBounds.height / 2);
 
   let glowGrd = lCtx.createRadialGradient(cx, cy, lSmoothZoom, cx, cy, Math.max(w, h) * 0.5);
-  glowGrd.addColorStop(0, `hsla(${dynamicHue}, 100%, 50%, 0.05)`);
-  glowGrd.addColorStop(1, 'rgba(0,0,0,0)');
+  glowGrd.addColorStop(0, `hsla(${dynamicHue}, 100%, 50%, 0.05)`); glowGrd.addColorStop(1, 'rgba(0,0,0,0)');
   lCtx.fillStyle = glowGrd; lCtx.fillRect(0, 0, w, h);
 
   lCtx.beginPath(); lCtx.arc(cx, cy, lSmoothZoom + 1, 0, Math.PI * 2);
-  lCtx.lineWidth = 2; lCtx.strokeStyle = `hsla(${dynamicHue}, 100%, 55%, 0.7)`;
-  lCtx.stroke();
+  lCtx.lineWidth = 2; lCtx.strokeStyle = `hsla(${dynamicHue}, 100%, 55%, 0.7)`; lCtx.stroke();
 
   drawStyleObject(cx, cy, lSmoothZoom, bassPulse, dynamicHue);
 }
@@ -6071,14 +6061,13 @@ function renderLockVisuals() {
 /* ---------------- INTERFACES & PLUGINS ---------------- */
 function showOverlay() {
     if (audioPlayer && !audioPlayer.paused) {
-        if (document.getElementById("modeToggleBtn")?.checked) return; 
+        if (modeToggleBtn && modeToggleBtn.checked) return; 
         
-        // [FIXED] Nayi random style ab sirf tabhi chuni jayegi jab lockscreen fresh banegi!
         selectRandomStyle(); 
-        
         resizeLockCanvas();
         lockOverlay.style.display = "flex";
         if(document.getElementById("themeColorMeta")) document.getElementById("themeColorMeta").setAttribute("content", "#000000");
+        if (lockTimer) clearTimeout(lockTimer); // Kill background monitoring once active
         renderLockVisuals();
     }
 }
@@ -6087,6 +6076,9 @@ function hideOverlay() {
     lockOverlay.style.display = "none";
     if(document.getElementById("themeColorMeta")) document.getElementById("themeColorMeta").setAttribute("content", "#00ffff");
     cancelAnimationFrame(lAnimationId);
+    
+    // [CRITICAL FIX] Lock screen hatne par automatic 8 seconds loop ko fir se re-arm krna
+    start8SecLockTimer(); 
 }
 
 document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
@@ -6101,11 +6093,26 @@ function updateOverlayContent() {
     if(overlayTime) overlayTime.textContent = `${curr} / ${total}`;
 }
 
+// Global Activity Event Trackers
+['mousemove', 'keydown', 'touchstart', 'click'].forEach(evt => {
+    document.addEventListener(evt, resetUserActivity, { passive: true });
+});
+
 if (audioPlayer) {
     audioPlayer.addEventListener('timeupdate', updateOverlayContent);
     audioPlayer.addEventListener('loadedmetadata', updateOverlayContent);
-    audioPlayer.addEventListener('play', () => { setTimeout(showOverlay, 12000); });
+    audioPlayer.addEventListener('play', () => { start8SecLockTimer(); });
     audioPlayer.addEventListener('pause', hideOverlay);
     audioPlayer.addEventListener('ended', hideOverlay);
 }
+
+if(modeToggleBtn) {
+    modeToggleBtn.addEventListener("change", () => {
+        if (!modeToggleBtn.checked) start8SecLockTimer();
+        else if (lockTimer) clearTimeout(lockTimer);
+    });
+}
 </script>
+
+
+	
