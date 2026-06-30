@@ -3613,67 +3613,6 @@ downloadButtonElement.addEventListener('click', () => {
 
 
 
-window.addEventListener('DOMContentLoaded', () => {
-    // 1. URL params se share kiya gaya text/url nikalyein
-    const parsedUrl = new URL(window.location.href);
-    const sharedText = parsedUrl.searchParams.get('text') || '';
-    const sharedUrl = parsedUrl.searchParams.get('url') || '';
-    const sharedTitle = parsedUrl.searchParams.get('title') || 'Shared Video';
-
-    const fullContent = `${sharedText} ${sharedUrl}`;
-    
-    // 2. YouTube ID nikaalyein
-    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
-    const match = fullContent.match(regex);
-    const videoId = match ? match[1] : null;
-
-    if (videoId) {
-        // 3. Ek dummy item object banayein aapke template ke liye
-        const sharedItem = {
-            id: videoId,
-            snippet: {
-                title: sharedTitle,
-                thumbnails: {
-                    medium: { url: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` }
-                }
-            }
-        };
-
-        // 4. Maan lete hain aapke list container ki ID '#video-list' hai
-        const listContainer = document.querySelector('#video-list'); 
-        if (listContainer) {
-            // HTML generate karke list me sabse upar (prepend) daalein
-            const itemHtml = getOutput(sharedItem, 'shared-index');
-            listContainer.insertAdjacentHTML('afterbegin', itemHtml);
-
-            // 5. Video Mode ko active karein aur player ko direct load karein
-            isVideoMode = true; 
-
-            // Naye bane element ko select karein taaki use active class mil sake
-            const newElement = listContainer.querySelector(`[vid="${videoId}"]`);
-            
-            if (newElement) {
-                // Aapka existing function: Active class lagane ke liye
-                setCurrentVideo(newElement); 
-            }
-
-            // Direct aapka player call karein bina click ka wait kiye
-            playMiniVideoPlayer(videoId);
-        }
-
-        // 6. URL ko clean karein taaki refresh karne par video dobara play na ho
-        window.history.replaceState({}, document.title, window.location.pathname);
-    }
-});
-
-
-
-
-
-
-
-
-	
 
 	
 
