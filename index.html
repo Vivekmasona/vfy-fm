@@ -5590,8 +5590,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-           
-    <div id="lockOverlay">
+<div id="lockOverlay">
   <canvas id="lockCanvas"></canvas>
 
   <div class="big-clock">
@@ -5763,6 +5762,11 @@ body:has(#lockOverlay:visible) {
   animation: pulseGlow 4s infinite alternate ease-in-out;
 }
 
+/* REAL FEEL OPTIMIZATION: गाना अटकने पर बाहर की नियॉन रिंग की ऐनिमेशन को फ्रीज करने के लिए */
+.audio-buffering .neon-ring-glow {
+  animation-play-state: paused !important;
+}
+
 #overlayThumb {
   width: 100%;
   height: 100%;
@@ -5921,13 +5925,23 @@ function renderLockVisuals() {
   
   const w = window.innerWidth;
   const h = window.innerHeight;
-  let isPlaying = audioPlayer && !audioPlayer.paused;
 
-  if (!isPlaying) {
+  if (!audioPlayer || audioPlayer.paused) {
     hideOverlay();
     return;
   }
 
+  // --- REAL FEEL LOGIC: चेक करें कि क्या गाना बफर हो रहा है या अटका हुआ है ---
+  // HTML5 Audio में readyState < 3 (HAVE_FUTURE_DATA) का मतलब डेटा लोड हो रहा है
+  let isActuallyPlaying = audioPlayer.readyState >= 3;
+
+  if (!isActuallyPlaying) {
+    // अगर गाना अटक गया है, तो म्यूटेशन वैल्यू को मत बढ़ाओ और ऐनिमेशन को यहीं फ्रीज कर दो
+    if(overlayThumb) overlayThumb.style.transform = `scale(1)`;
+    return; 
+  }
+
+  // गाना स्मूथ चल रहा हो तभी ऐनिमेशन टाइमर आगे बढ़ेगा
   globalMutationTracker += 0.025; 
 
   let bassPulse = 25 + Math.sin(globalMutationTracker * 1.8) * 12 
@@ -6051,6 +6065,11 @@ function setStatusBarColor(color) {
     if (themeMeta) themeMeta.setAttribute("content", color);
 }
 
+// बफरिंग स्टेट क्लासेस रीसेट करने के लिए हेल्पर
+function clearBufferingState() {
+    document.querySelector('.visualizer-core-wrap')?.classList.remove('audio-buffering');
+}
+
 function showOverlay() {
     if (audioPlayer && !audioPlayer.paused) {
         if (modeToggleBtn && modeToggleBtn.checked) return; 
@@ -6074,6 +6093,7 @@ function hideOverlay() {
     setStatusBarColor("#00ffff");
     cancelAnimationFrame(lAnimationId);
     resetOverlayTimer();
+    clearBufferingState();
     
     // Exit Fullscreen Mode smoothly
     if (document.fullscreenElement || document.webkitFullscreenElement) {
@@ -6172,9 +6192,20 @@ function updateOverlayContent() {
 if (audioPlayer) {
     audioPlayer.addEventListener('timeupdate', updateOverlayContent);
     audioPlayer.addEventListener('loadedmetadata', updateOverlayContent);
-    audioPlayer.addEventListener('play', () => { resetOverlayTimer(); });
+    audioPlayer.addEventListener('play', () => { resetOverlayTimer(); clearBufferingState(); });
     audioPlayer.addEventListener('pause', hideOverlay);
     audioPlayer.addEventListener('ended', hideOverlay);
+
+    // --- REAL FEEL LISTENERS: गाना रुकने (Waiting) और वापस चालू होने (Playing) को कैच करना ---
+    audioPlayer.addEventListener('waiting', () => {
+        document.querySelector('.visualizer-core-wrap')?.classList.add('audio-buffering');
+    });
+    audioPlayer.addEventListener('playing', () => {
+        clearBufferingState();
+    });
+    audioPlayer.addEventListener('stalled', () => {
+        document.querySelector('.visualizer-core-wrap')?.classList.add('audio-buffering');
+    });
 }
 
 /* -------- MODE TOGGLE HANDLER -------- */
@@ -6210,9 +6241,9 @@ window.addEventListener("scroll", () => {
                 toggleFooterVisibility(false); 
             }
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-            isScrollTicking = false;
+            isScrollTicking = true;
         });
-        isScrollTicking = true;
+        isScrollTicking = false;
     }
 }, { passive: true });
 
@@ -6253,3 +6284,7 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 </script>
+           
+        
+          
+        
