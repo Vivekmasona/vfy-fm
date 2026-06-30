@@ -5612,7 +5612,8 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
- <div id="lockOverlay">
+           
+    <div id="lockOverlay">
   <canvas id="lockCanvas"></canvas>
 
   <div class="big-clock">
@@ -5632,12 +5633,12 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
   <div class="bottom-controls-wrapper">
     <div class="cyber-metadata-box">
-      <span class="cyber-badge">VIVEKFY AI INFINITY ENGINE</span>
+      <span class="cyber-badge">HOLD TO UNLOCK TERMINAL</span>
       <div id="overlayTitle" class="cyber-title">VIVEKFY Ai SYSTEM</div>
       <div id="overlayTime" class="cyber-time-stamp">0:00 / 0:00</div>
     </div>
 
-    <button id="unlockBtn" class="cyber-unlock-btn" aria-label="Unlock Terminal">
+    <button id="unlockBtn" class="cyber-unlock-btn" aria-label="Unlock Terminal" style="touch-action: none;">
       <svg viewBox="0 0 24 24" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 15v2m-6 5h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2zm1-13V7a5 5 0 0 1 10 0v2" 
               fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -5652,8 +5653,8 @@ document.getElementById('search-btn').addEventListener('click', function() {
   position: fixed;  
   top: 0;  
   left: 0;  
-  width: 100%;  
-  height: 100%;  
+  width: 100vw;  
+  height: 100vh;  
   background: #000000 !important; /* Pure solid pitch black layout */  
   display: none; 
   flex-direction: column;  
@@ -5665,6 +5666,8 @@ document.getElementById('search-btn').addEventListener('click', function() {
   padding: 50px 20px 30px 20px; 
   box-sizing: border-box;
   overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
 }  
 
 /* Status bar protection overlay shield */
@@ -5678,6 +5681,15 @@ document.getElementById('search-btn').addEventListener('click', function() {
   background: linear-gradient(to bottom, #000000 65%, rgba(0, 0, 0, 0) 100%);
   z-index: 4;
   pointer-events: none;
+}
+
+/* HARDWARE SHIELD: Touch block background application layout when active */
+body:has(#lockOverlay[style*="display: flex"]) .fixed-footer,
+body:has(#lockOverlay[style*="display: flex"]) #audioPlayerContainer,
+body:has(#lockOverlay[style*="display: flex"]) #sideMenu {
+  pointer-events: none !important;
+  user-select: none !important;
+  opacity: 0.3;
 }
 
 body:has(#lockOverlay:visible) {
@@ -5726,16 +5738,12 @@ body:has(#lockOverlay:visible) {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   box-shadow: 0 0 15px rgba(0, 255, 204, 0.05);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.cyber-unlock-btn:hover, .cyber-unlock-btn:active {
-  background: #00ffcc;
-  color: #000;
-  box-shadow: 0 0 35px rgba(0, 255, 204, 0.6);
-  transform: scale(1.06);
-}
 .cyan-accent {
   color: #00ffcc !important; 
   text-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
@@ -5766,14 +5774,13 @@ body:has(#lockOverlay:visible) {
   height: 155px;
 }
 
-/* Subtle underlying aura - scaled down to protect AMOLED blocks */
 .neon-ring-glow {
   position: absolute;
   top: -4px; left: -4px; right: -4px; bottom: -4px;
   border-radius: 50%;
   background: linear-gradient(45deg, #00ffcc, #ff3300); 
   z-index: -1;
-  opacity: 0.25;
+  opacity: 0.15;
   filter: blur(8px);
   animation: pulseGlow 4s infinite alternate ease-in-out;
 }
@@ -5788,7 +5795,7 @@ body:has(#lockOverlay:visible) {
   will-change: transform;
 }
 
-/* Bottom Controls Wrapper (Title Locked above Button) */
+/* Bottom Controls Wrapper */
 .bottom-controls-wrapper {
   width: 100%;
   display: flex;
@@ -5823,6 +5830,7 @@ body:has(#lockOverlay:visible) {
   border: 1px solid rgba(255, 51, 0, 0.3);
   padding: 1px 6px;
   border-radius: 10px;
+  transition: all 0.3s ease;
 }
 
 .cyber-title {
@@ -5844,8 +5852,8 @@ body:has(#lockOverlay:visible) {
 }
 
 @keyframes pulseGlow {
-  0% { transform: scale(0.98); opacity: 0.15; }
-  100% { transform: scale(1.02); opacity: 0.35; }
+  0% { transform: scale(0.98); opacity: 0.12; }
+  100% { transform: scale(1.02); opacity: 0.3; }
 }
 </style>
 
@@ -5944,11 +5952,9 @@ function renderLockVisuals() {
 
   globalMutationTracker += 0.025; 
 
-  // Realistic Responsive Pulse Math
   let bassPulse = 25 + Math.sin(globalMutationTracker * 1.8) * 12 
                         + Math.cos(globalMutationTracker * 0.9) * 10;
 
-  // Seamless Premium Color Profile Swapping (Electric Cyan <-> Crimson Deep Red)
   if (Math.floor(globalMutationTracker * 0.15) % 2 === 0) {
       lDynamicHue = (180 + Math.sin(globalMutationTracker * 0.08) * 25) % 360; 
   } else {
@@ -5963,7 +5969,7 @@ function renderLockVisuals() {
      overlayThumb.style.transform = `scale(${lSmoothZoom / minR})`;
   }
 
-  // ULTRA AMOLED CRITICAL RESET: Clear canvas path fully, retaining absolute absolute midnight darkness
+  // Pure clean clear rect paths ensuring true deep blacks
   lCtx.clearRect(0, 0, w, h);
   lCtx.fillStyle = "#000000";
   lCtx.fillRect(0, 0, w, h);
@@ -5974,7 +5980,7 @@ function renderLockVisuals() {
   const cx = coreBounds.left + (coreBounds.width / 2);
   const cy = coreBounds.top + (coreBounds.height / 2);
 
-  // 1. Center Geometric Sharp Laser Orbits (No shadow blur to prevent panel illumination)
+  // 1. Center Sharp Laser Orbits
   lCtx.save();
   lCtx.lineWidth = 1.5;
   
@@ -5990,7 +5996,7 @@ function renderLockVisuals() {
   lCtx.stroke();
   lCtx.restore();
 
-  // 2. Cyber Particle Web Interstellar Array
+  // 2. Cyber Particle Network Array
   lCtx.save();
   const maxReach = Math.min(w, h) * 0.48;
   
@@ -6009,7 +6015,7 @@ function renderLockVisuals() {
     lCtx.arc(px, py, p.size * (1 + bassPulse * 0.02), 0, Math.PI * 2);
     lCtx.fill();
 
-    // Structural Neural Web Mapping
+    // Neural Connective Matrix Links
     amoledParticles.forEach((p2) => {
        let p2Dist = lSmoothZoom + 5 + (maxReach * p2.distanceRatio) + Math.sin(globalMutationTracker + p2.seed) * 15;
        let p2x = cx + Math.cos(p2.angle) * p2Dist;
@@ -6028,7 +6034,7 @@ function renderLockVisuals() {
   });
   lCtx.restore();
 
-  // 3. Precision Hairline Vector Audio Wave Rays
+  // 3. Precision Line Matrix Rays
   const totalRays = 90; 
   lCtx.save();
   for (let i = 0; i < totalRays; i++) {
@@ -6055,7 +6061,7 @@ function renderLockVisuals() {
     lCtx.beginPath();
     lCtx.moveTo(startX, startY);
     lCtx.lineTo(endX, endY);
-    lCtx.lineWidth = 1.0; // Hairline profile to stop light bleeding completely
+    lCtx.lineWidth = 1.0; 
     lCtx.strokeStyle = rayGrd;
     lCtx.stroke();
   }
@@ -6070,6 +6076,14 @@ function setStatusBarColor(color) {
 function showOverlay() {
     if (audioPlayer && !audioPlayer.paused) {
         if (modeToggleBtn && modeToggleBtn.checked) return; 
+        
+        // SECURITY TWEAK: Request Fullscreen standard to cover device browser limits
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().catch(() => {});
+        } else if (document.documentElement.webkitRequestFullscreen) {
+            document.documentElement.webkitRequestFullscreen();
+        }
+
         resizeLockCanvas();
         lockOverlay.style.display = "flex";
         setStatusBarColor("#000000");
@@ -6082,9 +6096,57 @@ function hideOverlay() {
     setStatusBarColor("#00ffff");
     cancelAnimationFrame(lAnimationId);
     resetOverlayTimer();
+    
+    // Exit Fullscreen Mode smoothly
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+        if (document.exitFullscreen) {
+            document.exitFullscreen().catch(() => {});
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
+    }
 }
 
-document.getElementById("unlockBtn").addEventListener("click", hideOverlay);
+/* -------- HARDWARE EXCLUSIVE COHERENT 1-SECOND LONG-PRESS BYPASS -------- */
+const unlockBtn = document.getElementById("unlockBtn");
+const badgeText = document.querySelector(".cyber-badge");
+let holdTimer;
+
+function handleSecureLockStart(e) {
+    e.preventDefault();
+    unlockBtn.style.transform = "scale(1.15)";
+    unlockBtn.style.background = "rgba(0, 255, 204, 0.3)";
+    unlockBtn.style.boxShadow = "0 0 35px rgba(0, 255, 204, 0.6)";
+    if(badgeText) {
+       badgeText.textContent = "DECRYPTING ENGINE SIGNAL...";
+       badgeText.style.color = "#00ffcc";
+       badgeText.style.borderColor = "rgba(0, 255, 204, 0.6)";
+    }
+
+    holdTimer = setTimeout(() => {
+        hideOverlay();
+        handleSecureLockEnd();
+    }, 1000); // Exquisite 1000ms delay verification
+}
+
+function handleSecureLockEnd() {
+    clearTimeout(holdTimer);
+    unlockBtn.style.transform = "scale(1)";
+    unlockBtn.style.background = "rgba(0, 255, 204, 0.02)";
+    unlockBtn.style.boxShadow = "0 0 15px rgba(0, 255, 204, 0.05)";
+    if(badgeText) {
+       badgeText.textContent = "HOLD TO UNLOCK TERMINAL";
+       badgeText.style.color = "#ff3300";
+       badgeText.style.borderColor = "rgba(255, 51, 0, 0.3)";
+    }
+}
+
+// Multi-touch response tracking layers
+unlockBtn.addEventListener("mousedown", handleSecureLockStart);
+unlockBtn.addEventListener("mouseup", handleSecureLockEnd);
+unlockBtn.addEventListener("mouseleave", handleSecureLockEnd);
+unlockBtn.addEventListener("touchstart", handleSecureLockStart, {passive: false});
+unlockBtn.addEventListener("touchend", handleSecureLockEnd, {passive: true});
 
 /* ---------------- SIDE MENU FUNCTIONS ---------------- */
 function hideMenu() { if(sideMenu) sideMenu.classList.add('hidden'); }
@@ -6213,5 +6275,3 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 </script>
-   
-                                 
