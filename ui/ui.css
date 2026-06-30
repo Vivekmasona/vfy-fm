@@ -158,7 +158,7 @@ body {
   margin-top: 5px;
 }
 
-/* Controls */
+/* --- Matched Song Controls Section --- */
 #song-controls {
   display: flex;
   justify-content: center;
@@ -169,63 +169,52 @@ body {
   position: fixed;
   bottom: 0;
   left: 0;
-  background: rgba(25,25,25,0.95);
+  background: rgba(21, 21, 21, 0.96); /* Deep dark background to match bottom nav */
   backdrop-filter: blur(10px);
-  box-shadow: 0 -4px 12px rgba(0,0,0,0.5);
-  border-radius: 0; /* flush edges */
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.6);
+  border-radius: 0; 
+  border-top: 1px solid rgba(255, 255, 255, 0.04); /* Clean subtle border top */
 }
 
-
-/* Play Button */
-#play {
-  width: 90px;
-  height: 50px;
-  border-radius: 6px;
-  
-  color: #00ffff; /* cyan */
-  font-size: 2rem;
+/* Base style for all control buttons (Play, Home, Download, etc.) */
+.button, #play {
+  background: #252830; /* App ke screenshots wale matching buttons ka dark grey base */
+  color: #00ffff;      /* Icons ke liye clear cyan/teal look */
+  border: none;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
- /*box-shadow: 0 6px 18px rgba(0,255,255,0.6);*/
-  transition: all 2s ease;
-}
-
-#play:hover {
-  transform: scale(1.08);
-  background: rgba(0,255,255,0.1);
-}
-
-
-
-/* Buttons */
-.button {
-  width: 60px;
-  height: 60px;
-  border-radius: 12px; 
-  background: rgba(50,50,50,0.8);
-  color: #fff;
-  font-size: 1.4rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
   transition: all 0.25s ease;
 }
 
-.button:hover {
-  background: yellow;
-  color: #00ffff;
+/* Play Button specific size & shape */
+#play {
+  width: 75px;
+  height: 50px;
+  border-radius: 12px;
+  font-size: 1.8rem;
+}
+
+/* Regular Buttons */
+.button {
+  width: 55px;
+  height: 50px;
+  border-radius: 12px; 
+  font-size: 1.4rem;
+}
+
+/* Clean Hover & Active States */
+.button:hover, #play:hover {
+  background: #313541; /* Smooth grey highlight on hover */
+  color: #ffffff;      /* Icon hover hone par custom cyan se white ho jayega */
   transform: scale(1.05);
 }
 
-.button:active {
+.button:active, #play:active {
   transform: scale(0.95);
 }
-
-
 
 /* Volume container */
 .volume-container {
@@ -239,20 +228,20 @@ body {
 .speaker {
   width: 40px;
   height: 40px;
-  background: rgba(50,50,50,0.8);   
+  background: #252830;   
   border-radius: 8px;   
   display: flex;
   justify-content: center;
   align-items: center;
   color: #00ffff;
-  box-shadow: 0 3px 8px rgba(0,255,255,0.4);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.4);
   cursor: pointer;
   transition: all 0.25s ease;
 }
 
 .speaker:hover {
-  background: rgba(0,255,255,0.1);
-  color: #00ffff;
+  background: #313541;
+  color: #fff;
   transform: scale(1.1);
 }
 
@@ -265,7 +254,8 @@ body {
 @media(max-width:500px){
   .thumbnail-border { height: 50vw; width: 50vw; }
   .song-title { font-size: 1.5rem; }
-  .button { width: 50px; height: 50px; font-size: 1.2rem; }
-  #play { width: 70px; height: 70px; font-size: 1.6rem; }
+  .button { width: 52px; height: 48px; font-size: 1.2rem; }
+  #play { width: 70px; height: 48px; font-size: 1.6rem; }
   #volumeSliderContainer, .volumebar { width: 150px; }
+  #song-controls { gap: 20px; } /* Adjust spacing for mobile screens */
 }
