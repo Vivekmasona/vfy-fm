@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Khula:wght@400;600;700&family=Public+Sans:wght@100;300;400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap');
 
 html, body {
   margin: 0;
@@ -6,10 +6,9 @@ html, body {
   width: 100%;
   height: 100%;
   font-family: "Public Sans", sans-serif;
-  /* Premium Deep Dark Gradient for HD Look */
-  background: radial-gradient(circle at 50% 30%, #1a1a24 0%, #0f0f12 100%);
-  color: #f3f4f6;
-  overflow-x: hidden;
+  background-color: #0a0a0a; /* Pure matte dark */
+  color: #ffffff;
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
@@ -18,11 +17,10 @@ body {
   justify-content: space-between;
   height: 100vh;
   box-sizing: border-box;
-  padding-top: 80px; /* adjusted for premium spacing */
-  padding-bottom: 110px;
+  padding-top: 60px;
 }
 
-/* Top Menu - Premium Glassmorphism */
+/* Top Menu - Clean & Flat */
 #top-menu {
   position: fixed;
   top: 0;
@@ -31,232 +29,187 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 24px;
-  font-size: 1.1rem;
-  letter-spacing: 0.5px;
-  color: #fff;
-  background: rgba(15, 15, 18, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  padding: 14px 24px;
+  font-size: 1rem;
+  font-weight: 500;
+  background: #111111;
+  border-bottom: 1px solid #1f1f1f;
   z-index: 9999;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   box-sizing: border-box;
 }
 
-/* Top menu button (Neon Red Accent) */
+/* Top menu button - Solid Premium Crimson */
 #top-menu button {
-  background: linear-gradient(135deg, #ff2a5f 0%, #ff0040 100%);
+  background-color: #e50914;
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: 4px;
   padding: 8px 16px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 0.9rem;
-  letter-spacing: 0.5px;
-  box-shadow: 0 4px 15px rgba(255, 0, 64, 0.3);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.85rem;
+  transition: background-color 0.2s ease;
 }
 
 #top-menu button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(255, 0, 64, 0.5);
-  filter: brightness(1.1);
+  background-color: #b80710;
 }
 
-/* Thumbnail - Premium HD Frame */
+/* Thumbnail - Clean Borderless Studio Look */
 .thumbnail-border {
-  height: 48vw;
-  width: 48vw;
-  max-width: 300px;
-  max-height: 300px;
+  height: 50vw;
+  width: 50vw;
+  max-width: 280px;
+  max-height: 280px;
   min-width: 200px;
   min-height: 200px;
-  margin: 30px auto;
-  border-radius: 24px;
-  padding: 8px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.03) 100%);
-  border: 1px solid rgba(255,255,255,0.08);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 30px rgba(0, 255, 255, 0.05);
+  margin: 40px auto;
+  border-radius: 12px;
+  padding: 0; /* Removed bulky inner padding */
+  background: none;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.7);
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  transition: transform 0.3s ease;
 }
 
 .thumbnail-border img {
   height: 100%;
   width: 100%;
-  border-radius: 18px;
+  border-radius: 12px;
   object-fit: cover;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.3s ease;
 }
 
 .thumbnail-border:hover {
-  transform: translateY(-5px);
-  border-color: rgba(0, 255, 255, 0.3);
-  box-shadow: 0 25px 50px rgba(0,0,0,0.7), 0 0 30px rgba(0, 255, 255, 0.15);
-}
-
-.thumbnail-border img:hover {
   transform: scale(1.02);
 }
 
 /* Song Details */
 #song-details {
   text-align: center;
-  margin: 10px 20px 20px 20px;
+  margin: 20px;
 }
 
 .song-title {
-  font-size: 2rem;
-  font-weight: 800;
+  font-size: 1.6rem;
+  font-weight: 700;
   color: #ffffff;
-  /* Elegant Cyber Cyan Text Glow */
-  text-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
-  margin-bottom: 8px;
-  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+  letter-spacing: -0.3px;
 }
 
 .artist {
-  font-size: 1.05rem;
-  color: #9ca3af;
+  font-size: 0.95rem;
+  color: #888888;
   font-weight: 400;
-  letter-spacing: 0.3px;
 }
 
-/* Sliders & Tracks */
+/* Sliders - Elegant Minimalist Rail */
 #time-slider, #volumeSliderContainer {
-  width: 88%;
-  max-width: 500px;
-  margin: 15px auto;
+  width: 85%;
+  max-width: 450px;
+  margin: 20px auto;
 }
 
 .slider, #volumeSlider {
   -webkit-appearance: none;
   width: 100%;
-  height: 6px; /* Sleeker, thinner line */
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.1);
+  height: 4px; /* Super thin & clean */
+  border-radius: 2px;
+  background: #2c2c2c;
   outline: none;
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-/* Slider Glow on Hover */
-.slider:hover, #volumeSlider:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-/* Custom Thumb (Cyan Neon Glow) */
+/* Custom Thumb - Clean Matte White */
 .slider::-webkit-slider-thumb,
 #volumeSlider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 16px;
-  height: 16px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background: #00ffff;
-  box-shadow: 0 0 10px rgba(0,255,255,0.8), 0 0 20px rgba(0,255,255,0.4);
+  background: #ffffff;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.1s ease;
 }
 
 .slider::-webkit-slider-thumb:hover,
 #volumeSlider::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
-  background: #ffffff;
-  box-shadow: 0 0 15px #00ffff, 0 0 25px #00ffff;
-}
-
-/* For Firefox */
-.slider::-moz-range-thumb,
-#volumeSlider::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
-  border: none;
-  border-radius: 50%;
-  background: #00ffff;
-  box-shadow: 0 0 10px rgba(0,255,255,0.8);
+  transform: scale(1.3);
 }
 
 /* Time display */
 .slider-times {
   display: flex;
   justify-content: space-between;
-  font-size: 0.8rem;
-  color: #9ca3af;
-  margin-top: 8px;
-  font-weight: 600;
-  font-family: monospace; /* Looks like a pro media player */
+  font-size: 0.75rem;
+  color: #666666;
+  margin-top: 6px;
 }
 
-/* Controls - Sleek Bottom Dock */
+/* Controls - Seamless Bottom Bar */
 #song-controls {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 28px;
+  gap: 24px;
   width: 100%;
-  padding: 24px 0 34px 0;
+  padding: 20px 0 30px 0;
   position: fixed;
   bottom: 0;
   left: 0;
-  background: rgba(15, 15, 18, 0.85);
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: #111111;
+  border-top: 1px solid #1f1f1f;
   box-sizing: border-box;
 }
 
-/* Play Button - Centerpiece Mastermind */
+/* Play Button - Standard Pro Layout */
 #play {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%; /* Rounded for classic premium player feel */
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
   background: #ffffff;
-  color: #0f0f12; 
-  font-size: 1.8rem;
+  color: #000000; 
+  font-size: 1.4rem;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2), 0 0 30px rgba(0, 255, 255, 0.15);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 #play:hover {
-  transform: scale(1.08);
-  background: #00ffff;
-  color: #0f0f12;
-  box-shadow: 0 0 25px rgba(0, 255, 255, 0.6), 0 0 40px rgba(0, 255, 255, 0.3);
+  transform: scale(1.05);
+  background: #e6e6e6;
 }
 
 #play:active {
   transform: scale(0.95);
 }
 
-/* Other Buttons (Sleek Dark Theme) */
+/* Other Buttons - Balanced Dark Grey */
 .button {
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%; 
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #ccced3;
-  font-size: 1.2rem;
+  background: #1a1a1a;
+  color: #ffffff;
+  font-size: 1.1rem;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid #262626;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-/* Removed the harsh yellow hover, made it fluid cyan/white */
+/* Fixed the harsh yellow/cyan hover - now it's smooth matte gray */
 .button:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #00ffff;
-  border-color: rgba(0, 255, 255, 0.4);
-  transform: translateY(-2px);
+  background: #262626;
+  color: #ffffff;
 }
 
 .button:active {
@@ -267,32 +220,29 @@ body {
 .volume-container {
   display: flex;
   align-items: center;
-  width: 88%;
-  max-width: 450px;
+  width: 85%;
+  max-width: 400px;
   justify-content: center;
   gap: 12px;
   margin: 10px auto;
 }
 
 .speaker {
-  width: 44px;
-  height: 44px;
-  background: rgba(255, 255, 255, 0.04);   
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 50%;   
+  width: 36px;
+  height: 36px;
+  background: #1a1a1a;   
+  border: 1px solid #262626;
+  border-radius: 6px;   
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #00ffff;
+  color: #ffffff;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color 0.2s ease;
 }
 
 .speaker:hover {
-  background: rgba(0, 255, 255, 0.1);
-  border-color: rgba(0, 255, 255, 0.4);
-  transform: scale(1.08);
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+  background: #262626;
 }
 
 /* Hide next/previous buttons */
@@ -300,15 +250,11 @@ body {
   display: none !important;
 }
 
-/* Ultra Smooth Responsive Fixes */
+/* Responsive */
 @media(max-width:500px){
-  body { padding-top: 70px; }
-  .thumbnail-border { height: 56vw; width: 56vw; border-radius: 20px; }
-  .thumbnail-border img { border-radius: 14px; }
-  .song-title { font-size: 1.6rem; }
-  .artist { font-size: 0.95rem; }
-  #song-controls { gap: 20px; padding: 16px 0 26px 0; }
-  .button { width: 46px; height: 46px; font-size: 1.1rem; }
-  #play { width: 60px; height: 60px; font-size: 1.5rem; }
-  #volumeSliderContainer, .volumebar { width: 130px; }
+  .thumbnail-border { height: 52vw; width: 52vw; }
+  .song-title { font-size: 1.4rem; }
+  .button { width: 44px; height: 44px; font-size: 1rem; }
+  #play { width: 52px; height: 52px; font-size: 1.2rem; }
+  #volumeSliderContainer, .volumebar { width: 120px; }
 }
