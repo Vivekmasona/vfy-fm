@@ -1,4 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap');
+/*
+ * प्रीमियम "निओ-पंक" स्टाइलशीट
+ * इमेज: 1000244883.png पर आधारित
+ * सभी पुरानी IDs और Classes को बरकरार रखा गया है।
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Khula:wght@400;600;700&family=Public+Sans:wght@100;300;400;500;600&display=swap');
 
 html, body {
   margin: 0;
@@ -6,255 +12,308 @@ html, body {
   width: 100%;
   height: 100%;
   font-family: "Public Sans", sans-serif;
-  background-color: #0a0a0a; /* Pure matte dark */
-  color: #ffffff;
-  -webkit-font-smoothing: antialiased;
+  /* इमेज के गहरे, पर्पलिश-ब्लैक बैकग्राउंड को अपनाया गया */
+  background: #0D0819;
+  color: #F8F7FF;
+  overflow: hidden; /* मोबाइल स्क्रीन के बाहर स्क्रॉल को रोकता है */
 }
 
 body {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
   height: 100vh;
   box-sizing: border-box;
-  padding-top: 60px;
 }
 
-/* Top Menu - Clean & Flat */
+/*
+ * एक असली मोबाइल फ्रेम और स्क्रीन का अनुकरण
+ * (यह इमेज में मोबाइल स्क्रीन के लेआउट के लिए आवश्यक है)
+ */
+.screen-wrapper {
+  width: 375px; /* मानक मोबाइल चौड़ाई */
+  height: 812px; /* मानक मोबाइल ऊंचाई */
+  background: #190F2C; /* इमेज से गहरा बैंगनी बैकग्राउंड */
+  border-radius: 40px; /* प्रीमियम गोल कोने */
+  box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+  overflow: hidden;
+  position: relative;
+  border: 4px solid #23163E; /* एक सूक्ष्म बेज़ेल */
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+ * टॉप मेनू - स्वच्छ और पारदर्शी
+ */
 #top-menu {
-  position: fixed;
-  top: 0;
-  left: 0;
+  position: static; /* फिक्स्ड के बजाय स्क्रीन रैपर के अंदर */
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 24px;
-  font-size: 1rem;
+  padding: 20px;
+  font-size: 1.1rem;
   font-weight: 500;
-  background: #111111;
-  border-bottom: 1px solid #1f1f1f;
-  z-index: 9999;
-  box-sizing: border-box;
+  background: transparent;
+  backdrop-filter: none;
+  z-index: 100;
+  box-shadow: none;
+  border-radius: 0;
 }
 
-/* Top menu button - Solid Premium Crimson */
+/* इमेज के अनुसार 'हैलो' टेक्स्ट के लिए एक कस्टम स्टाइल */
+.hello-text {
+  font-size: 1.1rem;
+  color: #F8F7FF;
+}
+
+/* इमेज के अनुसार यूज़र अवतार */
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: url('path_to_user_avatar.jpg') center/cover;
+}
+
+/*
+ * टॉप मेनू बटन (इमेज से बैंगनी रंग)
+ */
 #top-menu button {
-  background-color: #e50914;
+  background-color: #AF40FF; /* इमेज का बैंगनी रंग */
   color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   padding: 8px 16px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 0.85rem;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
 }
 
 #top-menu button:hover {
-  background-color: #b80710;
+  background-color: #C173FF; /* चमकीला बैंगनी */
 }
 
-/* Thumbnail - Clean Borderless Studio Look */
+/*
+ * थंबनेल - गोल और स्वच्छ (कोई बाहरी बॉर्डर नहीं)
+ */
 .thumbnail-border {
-  height: 50vw;
-  width: 50vw;
-  max-width: 280px;
-  max-height: 280px;
+  /* आपकी पुरानी सेटिंग्स */
+  height: 46vw;
+  width: 46vw;
+  max-width: 250px;
+  max-height: 250px;
   min-width: 200px;
   min-height: 200px;
-  margin: 40px auto;
-  border-radius: 12px;
-  padding: 0; /* Removed bulky inner padding */
-  background: none;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.7);
+  
+  /* नया प्रीमियम स्टाइल */
+  margin: 30px auto 15px auto;
+  border-radius: 30px; /* और अधिक गोल */
+  padding: 0; /* पुराना पैडिंग हटाया गया */
+  background: transparent;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
+  overflow: hidden; /* महत्वपूर्ण: इमेज को गोल रखने के लिए */
 }
 
 .thumbnail-border img {
   height: 100%;
   width: 100%;
-  border-radius: 12px;
+  border-radius: 30px;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  box-shadow: none;
+  transition: all 0.3s ease;
 }
 
-.thumbnail-border:hover {
-  transform: scale(1.02);
+.thumbnail-border img:hover {
+  transform: scale(1.03);
 }
 
-/* Song Details */
+/*
+ * गीत का विवरण
+ */
 #song-details {
   text-align: center;
-  margin: 20px;
+  margin: 10px 20px;
 }
 
 .song-title {
-  font-size: 1.6rem;
+  font-size: 1.8rem;
   font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 6px;
-  letter-spacing: -0.3px;
+  color: #F8F7FF; /* मुख्य टेक्स्ट अब सफेद है */
+  text-shadow: none;
+  margin-bottom: 5px;
 }
 
 .artist {
-  font-size: 0.95rem;
-  color: #888888;
-  font-weight: 400;
+  font-size: 1rem;
+  color: #A09BB4; /* धूसर बैंगनी */
 }
 
-/* Sliders - Elegant Minimalist Rail */
+/*
+ * स्लाइडर - स्वच्छ बैंगनी ट्रैक
+ */
 #time-slider, #volumeSliderContainer {
   width: 85%;
-  max-width: 450px;
-  margin: 20px auto;
+  margin: 15px auto;
 }
 
 .slider, #volumeSlider {
   -webkit-appearance: none;
   width: 100%;
-  height: 4px; /* Super thin & clean */
-  border-radius: 2px;
-  background: #2c2c2c;
+  height: 6px; /* थोड़ा मोटा */
+  border-radius: 3px;
+  background: rgba(255,255,255,0.1); /* सूक्ष्म ट्रैक */
   outline: none;
   cursor: pointer;
+  transition: all 0.25s ease;
 }
 
-/* Custom Thumb - Clean Matte White */
+/* कस्टम थंब - चमकीला बैंगनी */
 .slider::-webkit-slider-thumb,
 #volumeSlider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: #ffffff;
+  background: #AF40FF; /* बैंगनी */
+  box-shadow: 0 0 10px rgba(175, 64, 255, 0.6);
   cursor: pointer;
-  transition: transform 0.1s ease;
+  transition: all 0.2s ease;
 }
 
-.slider::-webkit-slider-thumb:hover,
-#volumeSlider::-webkit-slider-thumb:hover {
-  transform: scale(1.3);
-}
-
-/* Time display */
-.slider-times {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  color: #666666;
-  margin-top: 6px;
-}
-
-/* Controls - Seamless Bottom Bar */
+/*
+ * गीत का नियंत्रण - मोबाइल लेआउट के लिए अपडेट किया गया
+ */
 #song-controls {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
   width: 100%;
-  padding: 20px 0 30px 0;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  background: #111111;
-  border-top: 1px solid #1f1f1f;
-  box-sizing: border-box;
+  padding: 16px 0;
+  position: static; /* फिक्स्ड हटाया गया */
+  background: transparent;
+  backdrop-filter: none;
+  box-shadow: none;
+  border-radius: 0;
 }
 
-/* Play Button - Standard Pro Layout */
+/*
+ * प्ले बटन - बैंगनी रंग का गोलाकार आइकन
+ */
 #play {
-  width: 56px;
-  height: 56px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  background: #ffffff;
-  color: #000000; 
-  font-size: 1.4rem;
+  background: #AF40FF; /* बैंगनी */
+  color: #fff;
+  font-size: 1.8rem;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  box-shadow: 0 10px 30px rgba(175, 64, 255, 0.4);
+  transition: all 0.3s ease;
 }
 
 #play:hover {
-  transform: scale(1.05);
-  background: #e6e6e6;
+  transform: scale(1.08);
+  background: #C173FF;
+  box-shadow: 0 15px 40px rgba(175, 64, 255, 0.6);
 }
 
 #play:active {
   transform: scale(0.95);
 }
 
-/* Other Buttons - Balanced Dark Grey */
+/*
+ * अन्य बटन्स - स्वच्छ डार्क ग्रे
+ */
 .button {
   width: 48px;
   height: 48px;
   border-radius: 50%; 
-  background: #1a1a1a;
-  color: #ffffff;
+  background: rgba(255,255,255,0.05); /* बहुत सूक्ष्म पृष्ठभूमि */
+  color: #A09BB4; /* धूसर बैंगनी */
   font-size: 1.1rem;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  border: 1px solid #262626;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  box-shadow: none;
+  transition: all 0.2s ease;
 }
 
-/* Fixed the harsh yellow/cyan hover - now it's smooth matte gray */
 .button:hover {
-  background: #262626;
-  color: #ffffff;
+  background: rgba(255,255,255,0.1);
+  color: #F8F7FF; /* सफेद रंग पर स्विच */
+  transform: translateY(-2px);
 }
 
 .button:active {
   transform: scale(0.95);
 }
 
-/* Volume container */
+/*
+ * वॉल्यूम कंटेनर
+ */
 .volume-container {
   display: flex;
   align-items: center;
   width: 85%;
-  max-width: 400px;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   margin: 10px auto;
 }
 
 .speaker {
-  width: 36px;
-  height: 36px;
-  background: #1a1a1a;   
-  border: 1px solid #262626;
-  border-radius: 6px;   
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.05);   
+  border-radius: 12px;   
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #ffffff;
+  color: #A09BB4; /* धूसर बैंगनी */
+  box-shadow: none;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .speaker:hover {
-  background: #262626;
+  background: rgba(255,255,255,0.1);
+  color: #F8F7FF;
+  transform: scale(1.05);
 }
 
-/* Hide next/previous buttons */
+/* छिपाए गए बटन्स (जैसा कि आपने अनुरोध किया था) */
 #next, #prev, .next, .prev {
   display: none !important;
 }
 
-/* Responsive */
-@media(max-width:500px){
-  .thumbnail-border { height: 52vw; width: 52vw; }
-  .song-title { font-size: 1.4rem; }
-  .button { width: 44px; height: 44px; font-size: 1rem; }
-  #play { width: 52px; height: 52px; font-size: 1.2rem; }
-  #volumeSliderContainer, .volumebar { width: 120px; }
+/*
+ * मोबाइल लेआउट के लिए अतिरिक्त उपयोगिता क्लासेस (इमेज के अनुसार)
+ */
+.time-display {
+  width: 85%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #A09BB4;
+  margin-top: 5px;
 }
+
+.lyrics-link {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: #A09BB4;
+  cursor: pointer;
+}
+
