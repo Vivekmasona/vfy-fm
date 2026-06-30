@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Khula:wght=400;600;700&family=Public+Sans:wght=100;300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Khula:wght@400;600;700&family=Public+Sans:wght@300;400;500;600;700&display=swap');
 
 html, body {
   margin: 0;
@@ -6,9 +6,10 @@ html, body {
   width: 100%;
   height: 100%;
   font-family: "Public Sans", sans-serif;
-  background: #000000; /* Pure AMOLED Black */
-  color: #fff;
-  overflow: hidden; /* Prevent scrolling for fluid full screen */
+  background: #000000; /* Pure AMOLED Black for ultimate contrast */
+  color: #ffffff;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
@@ -18,10 +19,10 @@ body {
   align-items: center;
   height: 100vh;
   box-sizing: border-box;
-  padding: 70px 20px 110px 20px; /* Perfectly balances top menu and bottom controls */
+  padding: 70px 24px 120px 24px; /* Perfectly balanced viewport padding */
 }
 
-/* Top Menu (Fixed & Minimal) */
+/* --- TOP MINIMAL MENU --- */
 #top-menu {
   position: fixed;
   top: 0;
@@ -30,99 +31,101 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 20px;
-  font-size: 1.1rem;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(10px);
+  padding: 14px 24px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   z-index: 9999;
   box-sizing: border-box;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 #top-menu button {
-  background-color: #ff3b30;
-  color: #fff;
+  background-color: #ff3b30; /* iOS Style Red */
+  color: #ffffff;
   border: none;
-  border-radius: 6px;
-  padding: 6px 12px;
+  border-radius: 20px; /* Rounded pill style for modern look */
+  padding: 6px 16px;
   cursor: pointer;
+  font-size: 0.85rem;
   font-weight: 600;
-  transition: background 0.2s ease;
+  letter-spacing: 0.3px;
+  transition: background 0.2s ease, transform 0.1s ease;
 }
 
-#top-menu button:hover {
-  background-color: #d11a1a;
+#top-menu button:active {
+  transform: scale(0.96);
 }
 
-/* Full Screen Poster Container - Straight & Non-Rotating */
+/* --- PREMIUM CONTAINER & POSTER --- */
 .poster-container {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  max-height: 45vh; /* Limits height on tall screens to maintain spacing */
-  margin: 10px 0;
+  max-height: 42vh;
+  margin: 20px 0;
 }
 
 .thumbnail-border {
-  height: 75vw;
-  width: 75vw;
-  max-width: 320px;
-  max-height: 320px;
-  min-width: 200px;
-  min-height: 200px;
-  border-radius: 16px;
-  overflow: hidden; /* Clips image neatly to border radius */
+  height: 80vw;
+  width: 80vw;
+  max-width: 310px;
+  max-height: 310px;
+  min-width: 220px;
+  min-height: 220px;
+  border-radius: 28px; /* Smooth squircle corners */
+  overflow: hidden;
   background: transparent;
-  /* Dark AMOLED glow to make the poster blend smoothly into black background */
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 255, 255, 0.03); 
+  /* Ultra-premium subtle shadow & glow layer */
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 1px rgba(255, 255, 255, 0.1) inset; 
   display: flex;
   justify-content: center;
   align-items: center;
-  transform: none !important; /* Forces rotation to stop entirely */
-  transition: transform 0.2s ease;
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .thumbnail-border img {
   height: 100%;
   width: 100%;
   object-fit: cover;
-  transform: none !important; /* No laggy scaling or tilting */
 }
 
-/* Song Details */
+/* --- TYPOGRAPHY & TEXT DETAILS --- */
 #song-details {
   text-align: center;
-  margin: 10px 15px;
+  margin: 10px 10px 20px 10px;
   width: 100%;
-  max-width: 500px;
+  max-width: 480px;
 }
 
 .song-title {
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #ffffff; /* Clean white text for AMOLED premium feel */
-  margin-bottom: 6px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 8px;
+  letter-spacing: -0.3px;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis; /* Keeps long titles clean */
+  text-overflow: ellipsis; /* Professional multi-character cut-off */
 }
 
 .artist {
   font-size: 0.95rem;
-  color: #888;
+  color: #999999; /* Subdued gray for hierarchy */
+  font-weight: 400;
+  letter-spacing: 0.2px;
 }
 
-/* Sliders & Volume Wrapper */
+/* --- MINIMALIST SLIDERS (PREMIUM ACCENT) --- */
 .controls-wrapper {
   width: 100%;
-  max-width: 450px;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 10px;
+  gap: 16px;
+  margin-bottom: 15px;
 }
 
 #time-slider, .volume-container {
@@ -132,39 +135,46 @@ body {
 .slider, #volumeSlider {
   -webkit-appearance: none;
   width: 100%;
-  height: 4px; /* Thin, modern bar */
+  height: 4px; /* Ultra thin sleek layout */
   border-radius: 2px;
-  background: #222; /* Dark track */
+  background: #222222; 
   outline: none;
   cursor: pointer;
 }
 
-/* Slider Controls (Cyan Accents) */
+/* Slider Knobs - Clean & Tactile */
 .slider::-webkit-slider-thumb,
 #volumeSlider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background: #00ffff; 
-  box-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+  background: #00ffff; /* Signature Electric Cyan Accent */
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
   cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.slider::-webkit-slider-thumb:hover,
+#volumeSlider::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
 }
 
 .slider-times {
   display: flex;
   justify-content: space-between;
-  font-size: 0.8rem;
-  color: #666;
-  margin-top: 6px;
+  font-size: 0.78rem;
+  color: #777777;
+  font-weight: 500;
+  margin-top: 8px;
 }
 
-/* Volume Layout */
+/* --- VOLUME COMPONENT --- */
 .volume-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 14px;
 }
 
 .speaker {
@@ -176,54 +186,65 @@ body {
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  opacity: 0.85;
+  transition: opacity 0.2s;
 }
 
-/* Fixed Bottom Controls Bar */
+.speaker:hover {
+  opacity: 1;
+}
+
+/* --- CONTROLS DOCK (GLASSMORPHISM) --- */
 #song-controls {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 30px;
+  gap: 32px;
   width: 100%;
-  padding: 15px 0 25px 0;
+  padding: 16px 0 32px 0;
   position: fixed;
   bottom: 0;
   left: 0;
-  background: rgba(0, 0, 0, 0.9);
-  backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(255, 255, 255, 0.02);
+  background: rgba(10, 10, 10, 0.85); /* Dark frosted glass */
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-top: 1px solid rgba(255, 255, 255, 0.03);
   z-index: 999;
 }
 
-/* Perfect Circular Play Button (Lag-Free & Balanced) */
+/* --- THE PERFECT CIRCLULAR PLAY BUTTON --- */
 #play {
-  width: 65px;
-  height: 65px;
-  border-radius: 50% !important; /* Forces perfect circle shape, removing the egg look */
-  background: #ffffff;
+  width: 68px;
+  height: 68px;
+  border-radius: 50% !important; 
+  background: #ffffff; /* Clean white fill for high priority focus */
   color: #000000;
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15);
-  transition: transform 0.1s ease, background-color 0.2s ease; /* Fast, non-laggy transitions */
+  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.12);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s;
 }
 
 #play:hover {
-  transform: scale(1.05);
   background: #00ffff;
+  box-shadow: 0 8px 24px rgba(0, 255, 255, 0.3);
 }
 
-/* Circular Action Buttons (Repeat, Home, Download) */
+#play:active {
+  transform: scale(0.92);
+}
+
+/* --- COMPANION ACTION BUTTONS --- */
 .button {
   width: 46px;
   height: 46px;
-  border-radius: 50% !important; /* Clean rounded circles matching the screenshot */
-  background: #111;
-  border: 1px solid #222;
-  color: #fff;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.04); /* Subtle dark glass buttons */
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: #cccccc;
   font-size: 1.1rem;
   display: flex;
   justify-content: center;
@@ -233,24 +254,27 @@ body {
 }
 
 .button:hover {
+  background: rgba(255, 255, 255, 0.08);
   border-color: #00ffff;
   color: #00ffff;
 }
 
 .button:active {
-  transform: scale(0.95);
+  transform: scale(0.94);
 }
 
-/* Completely hidden visualizer remnants and next/prev buttons */
+/* --- HARD HIDDEN SYSTEM OVERRIDES --- */
 #amoled-visualizer, canvas, #next, #prev, .next, .prev {
   display: none !important;
 }
 
-/* Responsive fixes for small displays */
-@media(max-width:500px){
-  .thumbnail-border { height: 68vw; width: 68vw; }
-  .song-title { font-size: 1.15rem; }
-  #song-controls { gap: 20px; }
-  #play { width: 60px; height: 60px; font-size: 1.4rem; }
+/* --- MOBILE & RESPONSIVE REFINEMENTS --- */
+@media(max-width: 500px){
+  body { padding-top: 65px; }
+  .thumbnail-border { height: 74vw; width: 74vw; border-radius: 24px; }
+  .song-title { font-size: 1.25rem; }
+  .artist { font-size: 0.9rem; }
+  #song-controls { gap: 24px; }
+  #play { width: 62px; height: 62px; font-size: 1.3rem; }
   .button { width: 42px; height: 42px; font-size: 1rem; }
 }
