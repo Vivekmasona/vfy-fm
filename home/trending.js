@@ -1,5 +1,4 @@
 async function fetchTrendingSongs(query) {
-
     function playErrorSound() {
         const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
         audio.play();
@@ -18,16 +17,13 @@ async function fetchTrendingSongs(query) {
 
     const denoApiUrl = `https://vivekmasona-denocall-61.deno.dev/search?q=${encodeURIComponent(query)}`;
     const selfApiUrl = `https://self-lac.vercel.app/v3-api?q=${encodeURIComponent(query)}`;
-   // const selfApiUrl = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(query)}`;
     
     try {
-
-        // First API
+        // First API call
         let response = await fetch(denoApiUrl);
 
         if (response.ok) {
             const data = await response.json();
-
             if (data.items && data.items.length > 0) {
                 console.log("✅ Songs loaded from Deno API");
                 return data.items;
@@ -36,13 +32,11 @@ async function fetchTrendingSongs(query) {
 
         console.log("⚠️ Deno API failed, trying Self API...");
 
-        // Fallback API
+        // Fallback API call
         response = await fetch(selfApiUrl);
-
         if (!response.ok) throw new Error("Network response was not ok");
 
         const data = await response.json();
-
         console.log("✅ Songs loaded from Self API");
         return data.items || [];
 
@@ -54,6 +48,9 @@ async function fetchTrendingSongs(query) {
 
 function createPlaylistSongElement(videoId, title, channelTitle, videoDate, index) {
     const thumbUrl = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+
+    // Single quotes ka issue fix karne ke liye replace lagaya hai
+    const safeTitle = title.replace(/'/g, "\\'");
 
     return `
 <div style="margin-bottom:12px;">
@@ -71,7 +68,7 @@ function createPlaylistSongElement(videoId, title, channelTitle, videoDate, inde
       <div class="title">${title}</div>
 
       <button class="save-btn"
-          onclick="event.stopPropagation(); saveFavorite(${index}, '${title.replace(/'/g, "\\'")}', '${thumbUrl}', '${videoId}')">
+          onclick="event.stopPropagation(); saveFavorite(${index}, '${safeTitle}', '${thumbUrl}', '${videoId}')">
           <i class="fas fa-heart"></i>
       </button>
 
@@ -82,6 +79,8 @@ function createPlaylistSongElement(videoId, title, channelTitle, videoDate, inde
 
 function displaySongs(songs) {
     const songsContainer = document.getElementById("songs");
+    if (!songsContainer) return;
+    
     songsContainer.innerHTML = "";
 
     if (songs.length === 0) {
@@ -89,37 +88,33 @@ function displaySongs(songs) {
         return;
     }
 
+    let htmlContent = "";
     songs.forEach((song, index) => {
         const videoId = song.id.videoId;
         const title = song.snippet.title;
         const channelTitle = song.snippet.channelTitle;
         const videoDate = song.snippet.publishedAt;
 
-        const songElement = createPlaylistSongElement(
+        htmlContent += createPlaylistSongElement(
             videoId,
             title,
             channelTitle,
             videoDate,
             index
         );
-
-        songsContainer.innerHTML += songElement;
     });
+    
+    songsContainer.innerHTML = htmlContent;
 }
 
 async function loadTrendingSongs() {
+    const songsContainer = document.getElementById("songs");
+    if (!songsContainer) return;
 
-    const userQuery =
-        localStorage.getItem("songQuery") ||
-        "Beatz Bomber song";
+    const userQuery = localStorage.getItem("songQuery") || "Beatz Bomber song";
 
-   // document.getElementById("songs").innerHTML = `
-     // <div class="loading-dots">
-         // <span></span><span></span><span></span>
-      //</div>
-    //`;
-
-    document.getElementById("songs").innerHTML = `
+    // 1. Turant Skeleton Loader dikhao bina kisi delay ke
+    songsContainer.innerHTML = `
 <div class="skeleton-list">
     ${Array(8).fill(`
     <div class="skeleton-item">
@@ -134,29 +129,22 @@ async function loadTrendingSongs() {
 </div>
 `;
 
+    // 2. Blocked Pattern Check
     const blockedPattern = /(tuntun|tutun|tun|टुन|टुनटुन)/i;
-
     if (blockedPattern.test(userQuery.toLowerCase())) {
-
-        const audio = new Audio(
-            "https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
-        );
-
-        audio.play();
-
+        const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+        audio.play().catch(e => console.log("Audio play blocked by browser"));
+        
         alert("❌ Blocked search detected in saved query!");
-
         localStorage.removeItem("songQuery");
-
-        document.getElementById("songs").innerHTML =
-            "<p style='color:red;'>⚠️ Blocked search term detected. Please try another keyword.</p>";
-
+        songsContainer.innerHTML = "<p style='color:red;'>⚠️ Blocked search term detected. Please try another keyword.</p>";
         return;
     }
 
+    // 3. API se gaane fetch karo
     const trendingSongs = await fetchTrendingSongs(userQuery);
-
     displaySongs(trendingSongs);
 }
 
-window.onload = loadTrendingSongs;
+// 🚀 WINDOW.ONLOAD KI JAGAH ISKA USE KIYA HAI (FAST LOADING KE LIYE)
+document.addEventListener("DOMContentLoaded", loadTrendingSongs);
