@@ -4441,7 +4441,7 @@ var offlineMsg = document.getElementById("offline-message");
 
 
 
-<div class="main-container">
+<.     <div class="main-container">
   <div class="main-header"></div>
   <div id="api1" class="modal-design">
     <div>
@@ -4476,12 +4476,12 @@ var offlineMsg = document.getElementById("offline-message");
     box-sizing: border-box;
 }
 
-/* Square Card Shape */
-.song-card-wrapper {
+/* Square Card Shape (Dono .list aur wrapper class de di hai compatibility ke liye) */
+.song-card-wrapper, .list {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: #f9f9f9; /* Light background jaise Play Store me hota hai */
+    background: #f9f9f9; 
     border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
@@ -4498,13 +4498,13 @@ var offlineMsg = document.getElementById("offline-message");
 /* Perfect Square Thumbnail */
 .video-thumbnail-square {
     width: 100%;
-    aspect-ratio: 1 / 1; /* Isse image hamesha square rahegi */
+    aspect-ratio: 1 / 1; /* Square shape */
     object-fit: cover;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* Play Store Style Text (App Name style) */
+/* Play Store Style Text */
 .song-card-details {
     margin-top: 6px;
     width: 100%;
@@ -4516,7 +4516,7 @@ var offlineMsg = document.getElementById("offline-message");
     color: #333;
     margin: 0;
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* 2 line se zyada bada title hone par ... dikhega */
+    -webkit-line-clamp: 2; 
     -webkit-box-orient: vertical;
     overflow: hidden;
     line-height: 1.3;
@@ -4534,22 +4534,23 @@ var offlineMsg = document.getElementById("offline-message");
 </style>
 
 <script>
-    // LoadSong Function
+    // LoadSong Global Function (Jo player trigger karega)
     window.loadSong = function(element) {
+        if (!element) return;
         let videoId = element.getAttribute('vid');
         let player = document.querySelector('#video-player');
-        if (player) {
+        if (player && videoId) {
             player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
         }
         localStorage.setItem('currentSong', JSON.stringify({ videoId, index: element.getAttribute('index') }));
     };
 
-    // DeleteSong Function
+    // DeleteSong Global Function
     window.deleteSong = function(videoId, index) {
         let savedSongs = JSON.parse(localStorage.getItem('savedSongs')) || [];
         savedSongs = savedSongs.filter(song => song.videoId !== videoId);
         localStorage.setItem('savedSongs', JSON.stringify(savedSongs));
-        let el = document.querySelector(`#song-element-${index}`);
+        let el = document.getElementById(`song-element-${index}`);
         if(el) el.remove();
     };
 
@@ -4612,8 +4613,8 @@ var offlineMsg = document.getElementById("offline-message");
 
                 songsContainer.appendChild(fragment);
 
-                // Auto-click on first song setup properly
-                let firstSongElement = songsContainer.querySelector('.song-card-wrapper');
+                // Auto-play first song of playlist properly
+                let firstSongElement = songsContainer.querySelector('.list');
                 if (firstSongElement) {
                     window.loadSong(firstSongElement);
                 }
@@ -4664,7 +4665,7 @@ var offlineMsg = document.getElementById("offline-message");
 
         function createPlaylistSongElement(videoId, title, thumbnailUrl, channelTitle, videoDate, index) {
             let card = document.createElement('div');
-            card.className = 'song-card-wrapper';
+            card.className = 'song-card-wrapper list'; // Purani '.list' class barkarar rakhi
             card.id = `song-element-${index}`;
             card.setAttribute('vid', videoId);
             card.setAttribute('index', index);
@@ -4677,7 +4678,6 @@ var offlineMsg = document.getElementById("offline-message");
                 </div>
             `;
 
-            // Bulletproof Click Event Listener
             card.addEventListener('click', function() {
                 window.loadSong(this);
             });
@@ -4688,7 +4688,7 @@ var offlineMsg = document.getElementById("offline-message");
 
         function createSongElement(videoId, title, index) {
             let card = document.createElement('div');
-            card.className = 'song-card-wrapper';
+            card.className = 'song-card-wrapper list'; // Purani '.list' class barkarar rakhi
             card.id = `song-element-${index}`;
             card.setAttribute('vid', videoId);
             card.setAttribute('index', index);
@@ -4700,7 +4700,6 @@ var offlineMsg = document.getElementById("offline-message");
                 </div>
             `;
             
-            // Bulletproof Click Event Listener
             card.addEventListener('click', function() {
                 window.loadSong(this);
             });
@@ -4730,7 +4729,7 @@ var offlineMsg = document.getElementById("offline-message");
             let currentSong = JSON.parse(localStorage.getItem('currentSong'));
             if (currentSong) {
                 let nextIndex = parseInt(currentSong.index) + 1;
-                let nextSongElement = document.querySelector(`#song-element-${nextIndex}`);
+                let nextSongElement = document.getElementById(`song-element-${nextIndex}`);
                 if (nextSongElement) {
                     window.loadSong(nextSongElement);
                 }
@@ -4745,18 +4744,8 @@ var offlineMsg = document.getElementById("offline-message");
             if(loader) loader.style.display = "none";
         }
     });
-</script>
-    
-                    
-
-
-
-
-
-
-
-	
-        
+				</script>
+		
             
 
 
