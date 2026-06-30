@@ -4534,7 +4534,25 @@ var offlineMsg = document.getElementById("offline-message");
 </style>
 
 <script>
-    window.addEventListener('DOMContentLoaded', function() { // DOMContentLoaded load se fast hota hai
+    // LoadSong ko global window object me pehle hi define kar diya taaki HTML click kaam kare
+    window.loadSong = function(element) {
+        let videoId = element.getAttribute('vid');
+        let player = document.querySelector('#video-player');
+        if (player) {
+            player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        }
+        localStorage.setItem('currentSong', JSON.stringify({ videoId, index: element.getAttribute('index') }));
+    };
+
+    window.deleteSong = function(videoId, index) {
+        let savedSongs = JSON.parse(localStorage.getItem('savedSongs')) || [];
+        savedSongs = savedSongs.filter(song => song.videoId !== videoId);
+        localStorage.setItem('savedSongs', JSON.stringify(savedSongs));
+        let el = document.querySelector(`#song-element-${index}`);
+        if(el) el.remove();
+    };
+
+    window.addEventListener('DOMContentLoaded', function() {
         setTimeout(chhupa, 2000);
         var url = new URL(window.location.toString());
         let songList = [];
@@ -4576,12 +4594,12 @@ var offlineMsg = document.getElementById("offline-message");
             .then(response => response.json())
             .then(data => {
                 let songsContainer = document.querySelector('#song-container');
-                let fragment = document.createDocumentFragment(); // Fast rendering ke liye fragment use kiya
+                let fragment = document.createDocumentFragment();
 
                 data.items.forEach((item, index) => {
                     let videoId = item.snippet.resourceId.videoId;
                     let title = item.snippet.title;
-                    let thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`; // mqdefault se images jaldi load hongi
+                    let thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`; 
                     let channelTitle = item.snippet.channelTitle;
                     let videoDate = new Date(item.snippet.publishedAt);
                     songList.push({ videoId, title });
@@ -4621,7 +4639,7 @@ var offlineMsg = document.getElementById("offline-message");
 
         function saveSongToLocal(videoId, title) {
             let savedSongs = JSON.parse(localStorage.getItem('savedSongs')) || [];
-            if(!savedSongs.some(song => song.videoId === videoId)) { // Duplicate check lagaya fast performance ke liye
+            if(!savedSongs.some(song => song.videoId === videoId)) {
                 savedSongs.push({ videoId, title });
                 localStorage.setItem('savedSongs', JSON.stringify(savedSongs));
             }
@@ -4640,7 +4658,6 @@ var offlineMsg = document.getElementById("offline-message");
             songContainer.appendChild(fragment);
         }
 
-        // Playlist ke items ke liye square card
         function createPlaylistSongElement(videoId, title, thumbnailUrl, channelTitle, videoDate, index) {
             let card = document.createElement('div');
             card.className = 'song-card-wrapper';
@@ -4661,7 +4678,6 @@ var offlineMsg = document.getElementById("offline-message");
             return card;
         }
 
-        // Single song ke liye square card
         function createSongElement(videoId, title, index) {
             let card = document.createElement('div');
             card.className = 'song-card-wrapper';
@@ -4681,7 +4697,6 @@ var offlineMsg = document.getElementById("offline-message");
             return card;
         }
 
-        // Long press helper to optimize event handling
         function addLongPressListener(element, videoId, index) {
             element.addEventListener('contextmenu', function(e) {
                 e.preventDefault();
@@ -4692,25 +4707,11 @@ var offlineMsg = document.getElementById("offline-message");
             element.addEventListener('touchstart', function() {
                 longPressTimer = setTimeout(function() {
                     deleteSong(videoId, index);
-                }, 800); // 1 second se kam karke 800ms kiya taaki responsive lage
+                }, 800);
             }, {passive: true});
 
             element.addEventListener('touchend', function() { clearTimeout(longPressTimer); });
             element.addEventListener('touchmove', function() { clearTimeout(longPressTimer); });
-        }
-
-        window.deleteSong = function(videoId, index) {
-            let savedSongs = JSON.parse(localStorage.getItem('savedSongs')) || [];
-            savedSongs = savedSongs.filter(song => song.videoId !== videoId);
-            localStorage.setItem('savedSongs', JSON.stringify(savedSongs));
-            let el = document.querySelector(`#song-element-${index}`);
-            if(el) el.remove();
-        }
-
-        window.loadSong = function(element) {
-            let videoId = element.getAttribute('vid');
-            document.querySelector('#video-player').src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-            localStorage.setItem('currentSong', JSON.stringify({ videoId, index: element.getAttribute('index') }));
         }
 
         function playNextSong() {
@@ -4733,6 +4734,7 @@ var offlineMsg = document.getElementById("offline-message");
         }
     });
 </script>
+           
 
 
 
@@ -4746,13 +4748,14 @@ var offlineMsg = document.getElementById("offline-message");
             
 
 
-  </div></div></div>
+  
+
+</div></div></div>
 
 <div id="share_titlevkm1m"></div>
 <div id="share_textvkm1m"></div>
 <div id="outputvkm1m"></div>    
-
-
+	
 
 	
 </script>
