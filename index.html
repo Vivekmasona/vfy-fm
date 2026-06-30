@@ -4534,7 +4534,7 @@ var offlineMsg = document.getElementById("offline-message");
 </style>
 
 <script>
-    // LoadSong ko global window object me pehle hi define kar diya taaki HTML click kaam kare
+    // LoadSong Function
     window.loadSong = function(element) {
         let videoId = element.getAttribute('vid');
         let player = document.querySelector('#video-player');
@@ -4544,6 +4544,7 @@ var offlineMsg = document.getElementById("offline-message");
         localStorage.setItem('currentSong', JSON.stringify({ videoId, index: element.getAttribute('index') }));
     };
 
+    // DeleteSong Function
     window.deleteSong = function(videoId, index) {
         let savedSongs = JSON.parse(localStorage.getItem('savedSongs')) || [];
         savedSongs = savedSongs.filter(song => song.videoId !== videoId);
@@ -4611,8 +4612,11 @@ var offlineMsg = document.getElementById("offline-message");
 
                 songsContainer.appendChild(fragment);
 
+                // Auto-click on first song setup properly
                 let firstSongElement = songsContainer.querySelector('.song-card-wrapper');
-                if (firstSongElement) firstSongElement.click();
+                if (firstSongElement) {
+                    window.loadSong(firstSongElement);
+                }
             })
             .catch(error => console.error('Error fetching playlist:', error));
         }
@@ -4664,7 +4668,6 @@ var offlineMsg = document.getElementById("offline-message");
             card.id = `song-element-${index}`;
             card.setAttribute('vid', videoId);
             card.setAttribute('index', index);
-            card.setAttribute('onclick', 'loadSong(this)');
 
             card.innerHTML = `
                 <img src="${thumbnailUrl}" alt="${title}" class="video-thumbnail-square">
@@ -4673,6 +4676,11 @@ var offlineMsg = document.getElementById("offline-message");
                     <small>${channelTitle}</small>
                 </div>
             `;
+
+            // Bulletproof Click Event Listener
+            card.addEventListener('click', function() {
+                window.loadSong(this);
+            });
 
             addLongPressListener(card, videoId, index);
             return card;
@@ -4684,7 +4692,6 @@ var offlineMsg = document.getElementById("offline-message");
             card.id = `song-element-${index}`;
             card.setAttribute('vid', videoId);
             card.setAttribute('index', index);
-            card.setAttribute('onclick', 'loadSong(this)');
 
             card.innerHTML = `
                 <img src="https://i.ytimg.com/vi/${videoId}/hqdefault.jpg" alt="${title}" class="video-thumbnail-square">
@@ -4693,6 +4700,11 @@ var offlineMsg = document.getElementById("offline-message");
                 </div>
             `;
             
+            // Bulletproof Click Event Listener
+            card.addEventListener('click', function() {
+                window.loadSong(this);
+            });
+
             addLongPressListener(card, videoId, index);
             return card;
         }
@@ -4720,7 +4732,7 @@ var offlineMsg = document.getElementById("offline-message");
                 let nextIndex = parseInt(currentSong.index) + 1;
                 let nextSongElement = document.querySelector(`#song-element-${nextIndex}`);
                 if (nextSongElement) {
-                    nextSongElement.click();
+                    window.loadSong(nextSongElement);
                 }
             }
         }
@@ -4734,8 +4746,8 @@ var offlineMsg = document.getElementById("offline-message");
         }
     });
 </script>
-           
-
+    
+                    
 
 
 
