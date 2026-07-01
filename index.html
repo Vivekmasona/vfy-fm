@@ -1,7 +1,7 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <script src="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery-1.11.3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery-mobile.js"></script>
-<scri src="https://code.jquery.com/jquery-3.6.0.min.js"></scri>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery.mobile-1.4.5.min.css" />
 <meta name="theme-color" content="#00ffff" id="themeColorMeta">
 <meta content='yes' name='apple-mobile-web-app-capable'/>
@@ -69,8 +69,6 @@
     }, 200);
   });
 </script>
-
-
 <b id="play"></b>
 <div class="fixed-right-buttons" id="scrollButtons">
   <button id="pichhe" class="btn-left">
@@ -766,7 +764,16 @@ if (!sessionStorage.getItem("refreshed")) {
 
 
   
+<style>
 
+@-webkit-keyframes hue {
+100% { -webkit-filter:hue-rotate(360deg); }
+}
+img:hover {
+-webkit-animation:hue 10s linear infinite;
+}
+	
+</style>
 
 
 
@@ -4882,12 +4889,14 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 
 
     	
-
+<div style="text-align: center; margin-top: 50vh; transform: translateY(-50%);">
+  <button onclick="openModal()" style="padding: 16px 36px; border-radius: 16px; border: 1px solid #00f5ff; background: transparent; color: #00f5ff; font-weight: 700; cursor: pointer; box-shadow: 0 0 20px rgba(0,245,255,0.2); letter-spacing: 1px;">LAUNCH UNIQUE HUD</button>
+</div>
 
 <div id="modal" class="modal-container1">
   <div class="modal-content1">
     
-    
+    <span onclick="closeModal()"></span>
 
     <div class="container"> 
       <div id="phone">
@@ -4917,7 +4926,7 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
           </div>
 
           <div id="time-slider">
-            <div id="currentSongTitle"></div>
+            <div id="currentSongTitle">MATRIX DECODING LIVE STREAM</div>
             <div class="slider-times">
               <span id="current-time"></span> 
               <span id="total-time"></span> 
