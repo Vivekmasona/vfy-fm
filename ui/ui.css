@@ -5,12 +5,14 @@
   padding: 0;
 }
 
-body {
-  /* Dark Cosmic Obsidian Background */
-  background: #060814; 
-  font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
-  height: 100vh;
+/* Fix: Allow HTML and Body to scroll properly so JavaScript scroll event works */
+html {
+  scroll-behavior: smooth;
+  height: auto;
 }
+
+
+
 
 /* 100% Immersive Full Screen Background Matrix */
 .modal-container1 {
