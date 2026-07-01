@@ -1,352 +1,352 @@
-/* Reset & Deep Futuristic Cyber Background */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    
-    body {
-      background: #04060a;
-      font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
-      height: 100vh;
-      overflow: hidden;
-    }
+/* ========================================================
+   TRUE FULL SCREEN IMMERSIVE CYBER AUDIO SYSTEM (CSS ONLY)
+   ======================================================== */
 
-    /* 100% Immersive Full Screen Background Matrix */
-    .modal-container1 {
-      display: none;
-      position: fixed;
-      z-index: 9999;
-      left: 0;
-      top: 0;
-      width: 100vw;
-      height: 100vh;
-      background: radial-gradient(circle at 50% 40%, #0d1b2a 0%, #040814 70%, #010307 100%);
-      overflow: hidden;
-    }
+/* Reset & Deep Futuristic Matrix Background */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-    .modal-content1 {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-    }
+body {
+  background: #04060a;
+  font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
+  height: 100vh;
+  overflow: hidden;
+}
 
-    /* Unique Glowing Minimalist Close Switch */
-    .modal-content1 > span[onclick="closeModal()"] {
-      position: absolute;
-      right: 25px;
-      top: 25px;
-      z-index: 100;
-      cursor: pointer;
-      width: 44px;
-      height: 44px;
-      background: rgba(0, 245, 255, 0.03);
-      border: 1px solid rgba(0, 245, 255, 0.15);
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 15px rgba(0, 245, 255, 0.05);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    .modal-content1 > span[onclick="closeModal()"]::before {
-      content: "\f00d";
-      font-family: "Font Awesome 6 Free";
-      font-weight: 900;
-      color: #00f5ff;
-      font-size: 1.1rem;
-      text-shadow: 0 0 8px #00f5ff;
-    }
-    
-    .modal-content1 > span[onclick="closeModal()"]:hover {
-      background: rgba(255, 71, 111, 0.2);
-      border-color: #ff4773;
-      box-shadow: 0 0 20px rgba(255, 71, 111, 0.4);
-      transform: rotate(90deg);
-    }
-    .modal-content1 > span[onclick="closeModal()"]:hover::before {
-      color: #ff4773;
-      text-shadow: 0 0 8px #ff4773;
-    }
+/* 100% Immersive Full Screen Background Matrix */
+.modal-container1 {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at 50% 35%, #0c1a2b 0%, #040813 75%, #010205 100%);
+  overflow: hidden;
+}
 
-    /* Core Layout */
-    .container {
-      width: 100%;
-      height: 100%;
-      max-width: 450px;
-      margin: 0 auto;
-    }
+.modal-content1 {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
 
-    #phone {
-      width: 100%;
-      height: 100%;
-      padding: 30px 25px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
+/* Glowing Minimalist Close Switch */
+.modal-content1 > span[onclick="closeModal()"] {
+  position: absolute;
+  right: 25px;
+  top: 25px;
+  z-index: 100;
+  cursor: pointer;
+  width: 42px;
+  height: 42px;
+  background: rgba(0, 255, 136, 0.03);
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-    /* Floating Top Bar (Volume Grid) */
-    #top-menu {
-      display: flex;
-      align-items: center;
-      background: rgba(255, 255, 255, 0.02);
-      padding: 12px 20px;
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
-      margin-top: 40px;
-    }
+.modal-content1 > span[onclick="closeModal()"]::before {
+  content: "\f00d";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  color: #00ff88;
+  font-size: 1.1rem;
+  text-shadow: 0 0 8px #00ff88;
+}
 
-    #top-menu i {
-      color: #52647c;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: color 0.3s;
-    }
-    #top-menu i:hover { 
-      color: #00ff88; 
-      text-shadow: 0 0 8px #00ff88;
-    }
+.modal-content1 > span[onclick="closeModal()"]:hover {
+  background: rgba(255, 71, 111, 0.2);
+  border-color: #ff4773;
+  box-shadow: 0 0 20px rgba(255, 71, 111, 0.4);
+  transform: rotate(90deg);
+}
+.modal-content1 > span[onclick="closeModal()"]:hover::before {
+  color: #ff4773;
+  text-shadow: 0 0 8px #ff4773;
+}
 
-    #volumeSliderContainer {
-      flex-grow: 1;
-      margin: 0 15px;
-      display: flex;
-      align-items: center;
-    }
+/* Base Wrapper Matrix */
+.container {
+  width: 100%;
+  height: 100%;
+  max-width: 450px;
+  margin: 0 auto;
+}
 
-    #volumeSlider {
-      -webkit-appearance: none;
-      width: 100%;
-      height: 3px;
-      background: rgba(255, 255, 255, 0.08);
-      outline: none;
-      border-radius: 10px;
-    }
+/* Main Display Engine - Grid Controlled to Prevent Overlapping */
+#phone {
+  width: 100%;
+  height: 100%;
+  padding: 40px 25px;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto auto; /* Fixes stacking order automatically */
+  gap: 15px;
+  align-items: center;
+  color: #ffffff;
+}
 
-    #volumeSlider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #00ff88;
-      box-shadow: 0 0 10px #00ff88;
-      cursor: pointer;
-    }
+/* Top Segment: Volume System */
+#top-menu {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 12px 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  margin-top: 25px;
+}
 
-    /* Holographic Cyber Orbit (Vinyl Image Container) */
-    .thumbnail-border {
-      width: 68vw;
-      height: 68vw;
-      max-width: 270px;
-      max-height: 270px;
-      margin: auto;
-      border-radius: 50%;
-      padding: 10px;
-      background: transparent;
-      border: 2px solid rgba(0, 245, 255, 0.15);
-      position: relative;
-      box-shadow: 0 0 40px rgba(0, 245, 255, 0.05);
-    }
+#top-menu i {
+  color: #52647c;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+#top-menu i:hover { 
+  color: #00ff88; 
+  text-shadow: 0 0 8px #00ff88;
+}
 
-    /* Outer Tech Rings */
-    .thumbnail-border::before {
-      content: '';
-      position: absolute;
-      top: -6px; left: -6px; right: -6px; bottom: -6px;
-      border-radius: 50%;
-      border: 1px dashed rgba(0, 255, 136, 0.3);
-      animation: rotateRing 20s linear infinite;
-    }
+#volumeSliderContainer {
+  flex-grow: 1;
+  margin: 0 15px;
+  display: flex;
+  align-items: center;
+}
 
-    @keyframes rotateRing {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
+#volumeSlider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  outline: none;
+  border-radius: 10px;
+}
 
-    .audio-player #thumbnailContainer {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      overflow: hidden;
-      cursor: pointer;
-    }
+#volumeSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #00ff88;
+  box-shadow: 0 0 10px #00ff88;
+  cursor: pointer;
+}
 
-    #SThumb {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%;
-      background: #0d1527;
-    }
+/* Mid Segment: Orbital Holographic Vinyl */
+.thumbnail-border {
+  width: 72vw;
+  height: 72vw;
+  max-width: 270px;
+  max-height: 270px;
+  margin: auto;
+  border-radius: 50%;
+  padding: 10px;
+  background: transparent;
+  border: 2px solid rgba(0, 255, 136, 0.15);
+  position: relative;
+  box-shadow: 0 0 40px rgba(0, 255, 136, 0.05);
+}
 
-    #playButtonOverlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(4, 6, 10, 0.7);
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    #playButtonOverlay::after {
-      content: "\f144";
-      font-family: "Font Awesome 6 Free";
-      font-weight: 900;
-      color: #00ff88;
-      font-size: 2.8rem;
-      text-shadow: 0 0 15px #00ff88;
-    }
-    #thumbnailContainer:hover #playButtonOverlay { opacity: 1; }
+/* Outer Cyber Ring Animation */
+.thumbnail-border::before {
+  content: '';
+  position: absolute;
+  top: -6px; left: -6px; right: -6px; bottom: -6px;
+  border-radius: 50%;
+  border: 1px dashed rgba(0, 255, 136, 0.3);
+  animation: rotateRing 25s linear infinite;
+}
 
-    /* Floating Glass-Console Pod (Bottom Section) */
-    .bottom-console-pod {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      border-radius: 35px;
-      padding: 25px 20px;
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      margin-bottom: 10px;
-    }
+@keyframes rotateRing {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
 
-    /* Typography Matrix */
-    #song-details {
-      text-align: center;
-      margin-bottom: 20px;
-    }
+.audio-player #thumbnailContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+}
 
-    .song-title {
-      font-size: 1.6rem;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      color: #ffffff;
-      margin-bottom: 6px;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-    }
-    .song-title:empty::before { content: "Cyber-Fi Track Master"; }
+#SThumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  background: #0d1527;
+}
 
-    .artist {
-      font-size: 0.85rem;
-      color: #00f5ff;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      text-shadow: 0 0 8px rgba(0, 245, 255, 0.3);
-    }
-    .artist:empty::before { content: "Neon Core Engine"; }
+#playButtonOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(4, 6, 10, 0.7);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#playButtonOverlay::after {
+  content: "\f144";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  color: #00ff88;
+  font-size: 2.5rem;
+  text-shadow: 0 0 15px #00ff88;
+}
+#thumbnailContainer:hover #playButtonOverlay { opacity: 1; }
 
-    /* Timeline & Laser Seekbar */
-    #time-slider {
-      padding: 0 5px;
-      margin-bottom: 25px;
-    }
+/* Dynamic Typography Adjustments */
+#song-details {
+  text-align: center;
+  margin-top: 10px;
+  padding: 0 10px;
+}
 
-    #currentSongTitle {
-      font-size: 0.75rem;
-      color: #627792;
-      letter-spacing: 1.5px;
-      font-weight: 600;
-      margin-bottom: 12px;
-      text-transform: uppercase;
-      text-align: center;
-    }
+.song-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.3px;
+  color: #ffffff;
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Maximum two lines for song title */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 
-    .slider-times {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.75rem;
-      color: #52647c;
-      margin-bottom: 8px;
-      font-family: monospace;
-    }
-    #current-time:empty::before { content: "00:00"; }
-    #total-time:empty::before { content: "03:50"; }
+.artist {
+  font-size: 0.85rem;
+  color: #00ff88;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px rgba(0, 255, 136, 0.3);
+}
 
-    #seekbar {
-      -webkit-appearance: none;
-      width: 100%;
-      height: 4px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.05);
-      outline: none;
-      cursor: pointer;
-    }
+/* Timeline & Laser Seekbar Module */
+#time-slider {
+  padding: 0 10px;
+  margin-top: 5px;
+}
 
-    #seekbar::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: #ffffff;
-      box-shadow: 0 0 12px #ffffff, 0 0 6px #00f5ff;
-      border: 2px solid #00f5ff;
-    }
+#currentSongTitle {
+  font-size: 0.75rem;
+  color: #52647c;
+  letter-spacing: 1px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  text-align: center;
+}
 
-    /* Premium Control Node Array */
-    #song-controls {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-    }
+.slider-times {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-bottom: 8px;
+  font-family: monospace;
+}
 
-    #song-controls .button {
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.2s;
-    }
-    #song-controls .button:hover { transform: scale(1.1); }
+#seekbar {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  outline: none;
+  cursor: pointer;
+}
 
-    #song-controls i {
-      font-size: 1.25rem;
-      color: #52647c;
-      transition: color 0.3s;
-    }
-    #song-controls i:hover {
-      color: #00f5ff;
-      text-shadow: 0 0 10px #00f5ff;
-    }
+#seekbar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 10px #ffffff, 0 0 5px #00ff88;
+  border: 2px solid #00ff88;
+}
 
-    /* Core Center Glowing Play Button */
-    #play {
-      background: #060c16;
-      width: 65px;
-      height: 65px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid rgba(0, 255, 136, 0.3);
-      box-shadow: 0 0 20px rgba(0, 255, 136, 0.15);
-      position: relative;
-    }
+/* Lower Control Pod (Unified Capsule Block Effect via CSS Grid Mapping) */
+#song-controls {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.005) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 28px;
+  padding: 16px 20px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+  margin-bottom: 15px;
+}
 
-    #play i {
-      color: #00ff88 !important;
-      font-size: 1.35rem;
-      text-shadow: 0 0 10px #00ff88;
-    }
+#song-controls .button {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+#song-controls .button:hover { transform: scale(1.1); }
 
-    #play:hover {
-      border-color: #00f5ff;
-      box-shadow: 0 0 25px rgba(0, 245, 255, 0.4);
-    }
-    #play:hover i {
-      color: #00f5ff !important;
-      text-shadow: 0 0 10px #00f5ff;
-    }
+#song-controls i {
+  font-size: 1.25rem;
+  color: #52647c;
+  transition: color 0.3s;
+}
+#song-controls i:hover {
+  color: #00ff88;
+  text-shadow: 0 0 10px #00ff88;
+}
 
-    /* Hidden Utilities */
-    #stop, br { display: none; }
+/* Circular Glowing Center Action Node (Play/Pause) */
+#play {
+  background: #060c16;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.15);
+  position: relative;
+}
+
+#play i {
+  color: #00ff88 !important;
+  font-size: 1.3rem;
+  text-shadow: 0 0 10px #00ff88;
+}
+
+#play:hover {
+  border-color: #00ff88;
+  box-shadow: 0 0 25px rgba(0, 255, 136, 0.5);
+}
+
+/* Hidden Utilities */
+#stop, br { display: none !important; }
+
+
