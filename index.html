@@ -1,7 +1,7 @@
+
 <link rel="manifest" href="./manifest.webmanifest">
 <script src="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery-1.11.3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery-mobile.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Vivekmasona/musicjs/jquery.mobile-1.4.5.min.css" />
 <meta name="theme-color" content="#00ffff" id="themeColorMeta">
 <meta content='yes' name='apple-mobile-web-app-capable'/>
@@ -4925,95 +4925,120 @@ background: linear-gradient(180deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.92) 
 
 
     	
-
-
+<!-- The modal container -->
 <div id="modal" class="modal-container1">
   <div class="modal-content1">
-    
-    
+    <span onclick="closeModal()" style="float: right;"></span>
 
-    <div class="container"> 
-      <div id="phone">
-      
-        <div id="top-menu">
-          <i class="fas fa-volume-mute" id="volume10"></i>
-          <div id="volumeSliderContainer">
-            <input type="range" id="volumeSlider" min="0" max="100" step="1" value="100"/>
-          </div>
-          <i id="volume100" class="fa fa-volume-up"></i>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<div class="container"> 
+  
+  <div id="phone">
+  
+    <div id="top-menu">
+  <i class="fas fa-volume-mute" id="volume10"></i>
+  
+  <div id="volumeSliderContainer">
+    <input type="range" id="volumeSlider" min="0" max="100" step="1" value="100"/>
+  </div>
+  
+  <i id="volume100" class="fa fa-volume-up"></i>
+</div><!-- /top-menu -->
+    
+    <div class="thumbnail-border">
+      <div class="audio-player">
+        <div id="thumbnailContainer">
+          <img id="SThumb" src="" alt="/img/newdp.png" onclick="clickButton()">
+          <div id="playButtonOverlay" onclick="playPause()"></div>
         </div>
-        
-        <div class="thumbnail-border">
-          <div class="audio-player">
-            <div id="thumbnailContainer">
-              <img id="SThumb" src="" alt="/img/newdp.png" onclick="clickButton()">
-              <div id="playButtonOverlay" onclick="playPause()"></div>
-            </div>
-          </div>  
-        </div> 
-        
-        <div class="bottom-console-pod">
-          
-          <div id="song-details">
-            <h1 class="song-title" id="vfytitle"></h1>
-            <span class="artist"></span>
-          </div>
+      </div>  
+    </div> <!--/thumbnail-border -->
+    
+    <br>
+    
+    
+    <div id="song-details">
+      <h1 class="song-title" id="vfytitle"></h1>
+      <span class="artist"></span>
+    </div> <!-- /song-details -->
 
-          <div id="time-slider">
-            <div id="currentSongTitle"></div>
-            <div class="slider-times">
-              <span id="current-time"></span> 
-              <span id="total-time"></span> 
-            </div>
-            <input type="range" min="1" max="100" value="0" class="slider" id="seekbar" />
-          </div> 
-          
-          <div id="song-controls">
-            <div class="button">
-              <i id="repeat" class="fas fa-redo"></i>
-            </div>
+    
+    
+    <b id="stop"></b>
+    <br>
+    <br>
+    <br>
+	 <br>
+	  
+    <div id="time-slider">
+    	
+    <br>
+    	<div id="currentSongTitle"></div>
+    <br>
+      <div class="slider-times">
+        <span id="current-time"></span> 
+        <span id="total-time"></span> 
+      </div>
+      <input type="range" min="1" max="100" value="0" class="slider" id="seekbar" />
+      
+      
+      
+    </div> <!-- /time-slider -->
+    
+    
+	
+    <div id="song-controls">
 
-            <div class="button">
-              <b id="play" onclick="clickButton()">	
-                <i id="playvfy" class="fas fa-pause" onclick="togglePause()"></i>
-              </b>
-            </div>
+      
 
-            <div class="button">
-              <i onclick="closeModal()" class="fa fa-home"></i>
-            </div> 
+      <!-- Play -->
+      <div class="button">
+        <b id="play" onclick="clickButton()">	
+          <i id="playvfy" class="fas fa-pause" onclick="togglePause()"></i>
+        </b>
+      </div>
 
-            <div class="button">
-              <i id="VFYmp3" class="fas fa-download"></i>
-            </div>
-          </div>
-          
-        </div> <b id="stop"></b>
-        
-      </div> </div> <div id="audio-player">
-      <audio id="SAudio" controls style="display: none;">
-        <source src="your-audio-file.mp3" type="audio/mp3">
-      </audio>
-    </div>    
-       
+      <!-- Next -->
+      
+
+      <!-- Repeat -->
+      <div class="button">
+        <i id="repeat" class="fas fa-redo"></i>
+      </div>
+
+      <!-- Home -->
+      <div class="button">
+        <i onclick="closeModal()" class="fa fa-home"></i>
+      </div> 
+
+      <!-- Download -->
+      <div class="button">
+        <i id="VFYmp3" class="fas fa-download"></i>
+      </div>
+	    
+    </div><!-- /song-controls -->
+    
+  </div> <!-- /phone -->
+  
+</div> <!-- /container -->
+
+<div id="audio-player">
+  <audio id="SAudio" controls style="display: none;">
+    <source src="your-audio-file.mp3" type="audio/mp3">
+    Your browser does not support the audio element.
+  </audio>
+</div>    
+    
+	  
+	  
+
+
+
+<!-- Popup container -->	   
   </div>
 </div>
-	</div>
-</div>
-
-
-
-
-
-            
-	
-    
-	  
-	  
-
-
-
-
 
 <script>
     // Function to open the modal
@@ -5566,8 +5591,7 @@ document.getElementById('search-btn').addEventListener('click', function() {
 
 
 
-           
-    <div id="lockOverlay">
+<div id="lockOverlay">
   <canvas id="lockCanvas"></canvas>
 
   <div class="big-clock">
@@ -5739,6 +5763,11 @@ body:has(#lockOverlay:visible) {
   animation: pulseGlow 4s infinite alternate ease-in-out;
 }
 
+/* REAL FEEL OPTIMIZATION: गाना अटकने पर बाहर की नियॉन रिंग की ऐनिमेशन को फ्रीज करने के लिए */
+.audio-buffering .neon-ring-glow {
+  animation-play-state: paused !important;
+}
+
 #overlayThumb {
   width: 100%;
   height: 100%;
@@ -5897,13 +5926,23 @@ function renderLockVisuals() {
   
   const w = window.innerWidth;
   const h = window.innerHeight;
-  let isPlaying = audioPlayer && !audioPlayer.paused;
 
-  if (!isPlaying) {
+  if (!audioPlayer || audioPlayer.paused) {
     hideOverlay();
     return;
   }
 
+  // --- REAL FEEL LOGIC: चेक करें कि क्या गाना बफर हो रहा है या अटका हुआ है ---
+  // HTML5 Audio में readyState < 3 (HAVE_FUTURE_DATA) का मतलब डेटा लोड हो रहा है
+  let isActuallyPlaying = audioPlayer.readyState >= 3;
+
+  if (!isActuallyPlaying) {
+    // अगर गाना अटक गया है, तो म्यूटेशन वैल्यू को मत बढ़ाओ और ऐनिमेशन को यहीं फ्रीज कर दो
+    if(overlayThumb) overlayThumb.style.transform = `scale(1)`;
+    return; 
+  }
+
+  // गाना स्मूथ चल रहा हो तभी ऐनिमेशन टाइमर आगे बढ़ेगा
   globalMutationTracker += 0.025; 
 
   let bassPulse = 25 + Math.sin(globalMutationTracker * 1.8) * 12 
@@ -6027,6 +6066,11 @@ function setStatusBarColor(color) {
     if (themeMeta) themeMeta.setAttribute("content", color);
 }
 
+// बफरिंग स्टेट क्लासेस रीसेट करने के लिए हेल्पर
+function clearBufferingState() {
+    document.querySelector('.visualizer-core-wrap')?.classList.remove('audio-buffering');
+}
+
 function showOverlay() {
     if (audioPlayer && !audioPlayer.paused) {
         if (modeToggleBtn && modeToggleBtn.checked) return; 
@@ -6050,6 +6094,7 @@ function hideOverlay() {
     setStatusBarColor("#00ffff");
     cancelAnimationFrame(lAnimationId);
     resetOverlayTimer();
+    clearBufferingState();
     
     // Exit Fullscreen Mode smoothly
     if (document.fullscreenElement || document.webkitFullscreenElement) {
@@ -6148,9 +6193,20 @@ function updateOverlayContent() {
 if (audioPlayer) {
     audioPlayer.addEventListener('timeupdate', updateOverlayContent);
     audioPlayer.addEventListener('loadedmetadata', updateOverlayContent);
-    audioPlayer.addEventListener('play', () => { resetOverlayTimer(); });
+    audioPlayer.addEventListener('play', () => { resetOverlayTimer(); clearBufferingState(); });
     audioPlayer.addEventListener('pause', hideOverlay);
     audioPlayer.addEventListener('ended', hideOverlay);
+
+    // --- REAL FEEL LISTENERS: गाना रुकने (Waiting) और वापस चालू होने (Playing) को कैच करना ---
+    audioPlayer.addEventListener('waiting', () => {
+        document.querySelector('.visualizer-core-wrap')?.classList.add('audio-buffering');
+    });
+    audioPlayer.addEventListener('playing', () => {
+        clearBufferingState();
+    });
+    audioPlayer.addEventListener('stalled', () => {
+        document.querySelector('.visualizer-core-wrap')?.classList.add('audio-buffering');
+    });
 }
 
 /* -------- MODE TOGGLE HANDLER -------- */
@@ -6186,9 +6242,9 @@ window.addEventListener("scroll", () => {
                 toggleFooterVisibility(false); 
             }
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-            isScrollTicking = false;
+            isScrollTicking = true;
         });
-        isScrollTicking = true;
+        isScrollTicking = false;
     }
 }, { passive: true });
 
@@ -6229,3 +6285,10 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 </script>
+           
+        
+          
+        
+
+
+
