@@ -6166,22 +6166,40 @@ if(modeToggleBtn) {
     });
 }
 
-/* ---------------- SCROLL HANDLER ---------------- */
-window.addEventListener("scroll", () => {
+/* ---------------- PREMIUM COHERENT TOUCH & WHEEL DETECTOR ---------------- */
+let touchStartY = 0;
+let touchEndY = 0;
+
+// 1. मोबाइल और टच डिवाइसेस के लिए (Swipe Tracking)
+document.addEventListener('touchstart', (e) => {
+    touchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+
+document.addEventListener('touchend', (e) => {
+    if (modeToggleBtn && modeToggleBtn.checked) return;
+    
+    touchEndY = e.changedTouches[0].screenY;
+    let swipeDistance = touchStartY - touchEndY;
+
+    // अगर उंगली ऊपर की तरफ स्वाइप हुई (मतलब यूजर नीचे जा रहा है) -> फुटर छुपाओ
+    if (swipeDistance > 40) { 
+        toggleFooterVisibility(true); 
+    }
+    // अगर उंगली नीचे की तरफ स्वाइप हुई (मतलब यूजर ऊपर जा रहा है) -> फुटर दिखाओ
+    else if (swipeDistance < -40) { 
+        toggleFooterVisibility(false); 
+    }
+}, { passive: true });
+
+
+// 2. डेस्कटॉप और माउस वाले यूजर्स के लिए (Wheel Tracking)
+window.addEventListener('wheel', (e) => {
     if (modeToggleBtn && modeToggleBtn.checked) return;
 
-    if (!isScrollTicking) {
-        window.requestAnimationFrame(() => {
-            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            if (scrollTop > lastScrollTop) {
-                toggleFooterVisibility(true); 
-            } else {
-                toggleFooterVisibility(false); 
-            }
-            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-            isScrollTicking = true;
-        });
-        isScrollTicking = false;
+    if (e.deltaY > 0) {
+        toggleFooterVisibility(true);  // Mouse Wheel Down -> Hide Footer
+    } else {
+        toggleFooterVisibility(false); // Mouse Wheel Up -> Show Footer
     }
 }, { passive: true });
 
