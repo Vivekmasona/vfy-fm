@@ -9,14 +9,14 @@
       background: #04060a;
       font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
       height: 100vh;
-      overflow: hidden;
+      /*overflow: hidden;*/
     }
 
     /* 100% Immersive Full Screen Background Matrix */
     .modal-container1 {
       display: none;
       position: fixed;
-      z-index: 9999;
+      z-index: 99999;
       left: 0;
       top: 0;
       width: 100vw;
