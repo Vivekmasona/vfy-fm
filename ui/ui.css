@@ -1,19 +1,30 @@
-/* Reset & Deep Futuristic Cyber Background */
+/* ==========================================================================
+   1. RESET & SYSTEM CORE
+   ========================================================================== */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* Fix: Allow HTML and Body to scroll properly so JavaScript scroll event works */
 html {
   scroll-behavior: smooth;
   height: auto;
+  overflow-y: auto; /* जकड़े हुए स्क्रॉल को जबरन अनलॉक करने के लिए */
 }
 
+body {
+  /* Deep Cosmic Obsidian Background */
+  background: #060814; 
+  font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
+  min-height: 100vh;  /* स्क्रीन की पूरी हाइट लेगा लेकिन स्क्रॉल नहीं रोकेगा */
+  height: auto;
+  overflow-x: hidden; /* हॉरिजॉन्टल स्क्रॉल को रोकने के लिए */
+}
 
-
-
+/* ==========================================================================
+   2. IMMERSIVE MODAL & LAYER ARCHITECTURE
+   ========================================================================== */
 /* 100% Immersive Full Screen Background Matrix */
 .modal-container1 {
   display: none;
@@ -70,12 +81,15 @@ html {
   box-shadow: 0 0 20px rgba(255, 11, 100, 0.5);
   transform: rotate(90deg);
 }
+
 .modal-content1 > span[onclick="closeModal()"]:hover::before {
   color: #ff0b64;
   text-shadow: 0 0 8px #ff0b64;
 }
 
-/* Core Layout */
+/* ==========================================================================
+   3. CONTAINER & CORE LAYOUT
+   ========================================================================== */
 .container {
   width: 100%;
   height: 100%;
@@ -85,7 +99,8 @@ html {
 
 #phone {
   width: 100%;
-  height: 100%;
+  min-height: 100vh; /* फिक्स 100% को बदलकर मिनिमम किया ताकि स्क्रॉल जेनरेट हो सके */
+  height: auto;
   padding: 30px 25px;
   display: flex;
   flex-direction: column;
@@ -112,6 +127,7 @@ html {
   cursor: pointer;
   transition: color 0.3s;
 }
+
 #top-menu i:hover { 
   color: #bd00ff; /* Purple Neon Spark */
   text-shadow: 0 0 10px #bd00ff;
@@ -143,7 +159,9 @@ html {
   cursor: pointer;
 }
 
-/* Holographic Cyber Orbit (Vinyl Image Container) */
+/* ==========================================================================
+   4. HOLOGRAPHIC CYBER ORBIT (VINYL IMAGE)
+   ========================================================================== */
 .thumbnail-border {
   width: 68vw;
   height: 68vw;
@@ -199,6 +217,7 @@ html {
   align-items: center;
   justify-content: center;
 }
+
 #playButtonOverlay::after {
   content: "\f144";
   font-family: "Font Awesome 6 Free";
@@ -207,9 +226,14 @@ html {
   font-size: 2.8rem;
   text-shadow: 0 0 15px #00ff88;
 }
-  #thumbnailContainer:hover #playButtonOverlay { opacity: 1; }
 
-/* Floating Glass-Console Pod (Bottom Section) */
+#thumbnailContainer:hover #playButtonOverlay { 
+  opacity: 1; 
+}
+
+/* ==========================================================================
+   5. GLASS-CONSOLE & INFRASTRUCTURE
+   ========================================================================== */
 .bottom-console-pod {
   /* Rich Mix Dark Gradient */
   background: linear-gradient(135deg, rgba(20, 12, 38, 0.6) 0%, rgba(10, 15, 30, 0.4) 100%);
@@ -248,11 +272,14 @@ html {
 .artist:empty::before { content: "</> Vivek Kushwaha "; }
 
 /* Timeline & Laser Seekbar */
-  #time-slider {
+#time-slider {
   padding: 0 5px;
   margin-bottom: 25px;
 }
 
+/* ==========================================================================
+   6. CONTROLS & UTILITIES
+   ========================================================================== */
 #currentSongTitle {
   font-size: 0.75rem;
   color: #8fa2bc;
@@ -355,3 +382,4 @@ html {
 
 /* Hidden Utilities */
 #stop, br { display: none; }
+
