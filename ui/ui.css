@@ -163,10 +163,10 @@
       animation: rotateRing 20s linear infinite;
     }
 
-    @keyframes rotateRing {
+   /* @keyframes rotateRing {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
-    }
+    }*/
 
     .audio-player #thumbnailContainer {
       position: relative;
