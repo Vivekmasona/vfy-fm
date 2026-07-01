@@ -1,8 +1,8 @@
 /* ========================================================
-   TRUE FULL SCREEN IMMERSIVE CYBER AUDIO SYSTEM (CSS ONLY)
+   TRUE IMMERSIVE FULL-SCREEN CYBER CORE ENGINE (FIXED MAP)
    ======================================================== */
 
-/* Reset & Deep Futuristic Matrix Background */
+/* Global Screen Reset */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -16,16 +16,16 @@ body {
   overflow: hidden;
 }
 
-/* 100% Immersive Full Screen Background Matrix */
+/* 100% Immersive Full View Backdrop */
 .modal-container1 {
-  display: none;
+  display: block !important; /* Forces layout tracking */
   position: fixed;
   z-index: 9999;
   left: 0;
   top: 0;
   width: 100vw;
   height: 100vh;
-  background: radial-gradient(circle at 50% 35%, #0c1a2b 0%, #040813 75%, #010205 100%);
+  background: radial-gradient(circle at 50% 30%, #0d1a2b 0%, #040813 75%, #010205 100%);
   overflow: hidden;
 }
 
@@ -35,22 +35,22 @@ body {
   position: relative;
 }
 
-/* Glowing Minimalist Close Switch */
+/* Top Right Glowing Close Button */
 .modal-content1 > span[onclick="closeModal()"] {
   position: absolute;
   right: 25px;
   top: 25px;
-  z-index: 100;
+  z-index: 110;
   cursor: pointer;
   width: 42px;
   height: 42px;
   background: rgba(0, 255, 136, 0.03);
-  border: 1px solid rgba(0, 255, 136, 0.2);
+  border: 1px solid rgba(0, 255, 136, 0.25);
   border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 15px rgba(0, 255, 136, 0.05);
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -63,17 +63,6 @@ body {
   text-shadow: 0 0 8px #00ff88;
 }
 
-.modal-content1 > span[onclick="closeModal()"]:hover {
-  background: rgba(255, 71, 111, 0.2);
-  border-color: #ff4773;
-  box-shadow: 0 0 20px rgba(255, 71, 111, 0.4);
-  transform: rotate(90deg);
-}
-.modal-content1 > span[onclick="closeModal()"]:hover::before {
-  color: #ff4773;
-  text-shadow: 0 0 8px #ff4773;
-}
-
 /* Base Wrapper Matrix */
 .container {
   width: 100%;
@@ -82,19 +71,18 @@ body {
   margin: 0 auto;
 }
 
-/* Main Display Engine - Grid Controlled to Prevent Overlapping */
+/* Flex Column Layout stretching perfectly to fill 100% Mobile Height */
 #phone {
   width: 100%;
   height: 100%;
-  padding: 40px 25px;
-  display: grid;
-  grid-template-rows: auto 1fr auto auto auto; /* Fixes stacking order automatically */
-  gap: 15px;
-  align-items: center;
+  padding: 50px 25px 30px 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Creates flawless auto-spacing between blocks */
   color: #ffffff;
 }
 
-/* Top Segment: Volume System */
+/* SECTION 1: Top Volume Controller Strip */
 #top-menu {
   display: flex;
   align-items: center;
@@ -103,7 +91,8 @@ body {
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
-  margin-top: 25px;
+  width: 100%;
+  margin-bottom: 10px;
 }
 
 #top-menu i {
@@ -143,22 +132,21 @@ body {
   cursor: pointer;
 }
 
-/* Mid Segment: Orbital Holographic Vinyl */
+/* SECTION 2: Center Orbital Vinyl Artwork */
 .thumbnail-border {
-  width: 72vw;
-  height: 72vw;
-  max-width: 270px;
-  max-height: 270px;
+  width: 74vw;
+  height: 74vw;
+  max-width: 280px;
+  max-height: 280px;
   margin: auto;
   border-radius: 50%;
   padding: 10px;
   background: transparent;
-  border: 2px solid rgba(0, 255, 136, 0.15);
+  border: 2px solid rgba(0, 255, 136, 0.18);
   position: relative;
-  box-shadow: 0 0 40px rgba(0, 255, 136, 0.05);
+  box-shadow: 0 0 40px rgba(0, 255, 136, 0.08);
 }
 
-/* Outer Cyber Ring Animation */
 .thumbnail-border::before {
   content: '';
   position: absolute;
@@ -192,16 +180,13 @@ body {
 
 #playButtonOverlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(4, 6, 10, 0.7);
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(4, 6, 10, 0.6);
   opacity: 0;
-  transition: opacity 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: opacity 0.3s;
 }
 #playButtonOverlay::after {
   content: "\f144";
@@ -213,56 +198,63 @@ body {
 }
 #thumbnailContainer:hover #playButtonOverlay { opacity: 1; }
 
-/* Dynamic Typography Adjustments */
+/* SECTION 3: Song Meta Details (Now perfectly placed below thumbnail) */
 #song-details {
   text-align: center;
+  width: 100%;
+  padding: 0 5px;
   margin-top: 10px;
-  padding: 0 10px;
+  margin-bottom: 5px;
 }
 
 .song-title {
-  font-size: 1.4rem;
+  font-size: 1.15rem;
   font-weight: 700;
-  line-height: 1.3;
-  letter-spacing: -0.3px;
+  line-height: 1.4;
+  letter-spacing: -0.2px;
   color: #ffffff;
   margin-bottom: 6px;
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* Maximum two lines for song title */
+  -webkit-line-clamp: 2; /* Automatically wraps very long dynamic texts up to 2 lines */
   -webkit-box-orient: vertical;
   overflow: hidden;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
 }
 
 .artist {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #00ff88;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 2px;
   text-shadow: 0 0 8px rgba(0, 255, 136, 0.3);
+  display: block;
 }
 
-/* Timeline & Laser Seekbar Module */
+/* SECTION 4: System Timeline Monitor & Laser Seekbar */
 #time-slider {
-  padding: 0 10px;
-  margin-top: 5px;
+  width: 100%;
+  padding: 0 5px;
+  margin-bottom: 15px;
 }
 
 #currentSongTitle {
   font-size: 0.75rem;
   color: #52647c;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   font-weight: 600;
   margin-bottom: 10px;
   text-transform: uppercase;
   text-align: center;
 }
 
+/* Fixed Time Stamps Overlapping layout issue */
 .slider-times {
   display: flex;
   justify-content: space-between;
-  font-size: 0.8rem;
-  color: #64748b;
+  font-size: 1.05rem; /* Clean professional readability */
+  font-weight: 500;
+  color: #e2e8f0;
   margin-bottom: 8px;
   font-family: monospace;
 }
@@ -272,7 +264,7 @@ body {
   width: 100%;
   height: 4px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.08);
   outline: none;
   cursor: pointer;
 }
@@ -283,11 +275,11 @@ body {
   height: 14px;
   border-radius: 50%;
   background: #ffffff;
-  box-shadow: 0 0 10px #ffffff, 0 0 5px #00ff88;
+  box-shadow: 0 0 12px #ffffff, 0 0 5px #00ff88;
   border: 2px solid #00ff88;
 }
 
-/* Lower Control Pod (Unified Capsule Block Effect via CSS Grid Mapping) */
+/* SECTION 5: High-End Unified Frosted Glass Action Pod */
 #song-controls {
   display: flex;
   justify-content: space-around;
@@ -296,10 +288,10 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 28px;
   padding: 16px 20px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-  margin-bottom: 15px;
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+  width: 100%;
 }
 
 #song-controls .button {
@@ -312,7 +304,7 @@ body {
 #song-controls .button:hover { transform: scale(1.1); }
 
 #song-controls i {
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   color: #52647c;
   transition: color 0.3s;
 }
@@ -321,32 +313,28 @@ body {
   text-shadow: 0 0 10px #00ff88;
 }
 
-/* Circular Glowing Center Action Node (Play/Pause) */
+/* Bioluminescent Circular Main Trigger (Play/Pause Button) */
 #play {
   background: #060c16;
-  width: 62px;
-  height: 62px;
+  width: 65px;
+  height: 65px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(0, 255, 136, 0.3);
-  box-shadow: 0 0 20px rgba(0, 255, 136, 0.15);
-  position: relative;
+  border: 1px solid rgba(0, 255, 136, 0.35);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
 }
 
 #play i {
   color: #00ff88 !important;
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   text-shadow: 0 0 10px #00ff88;
 }
-
 #play:hover {
   border-color: #00ff88;
-  box-shadow: 0 0 25px rgba(0, 255, 136, 0.5);
+  box-shadow: 0 0 25px rgba(0, 255, 136, 0.6);
 }
 
-/* Hidden Utilities */
+/* Force kill clutter tags causing layout breaks */
 #stop, br { display: none !important; }
-
-
