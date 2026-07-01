@@ -69,6 +69,29 @@
     }, 200);
   });
 </script>
+
+<script>
+let lastScrollTop = 0;
+const overlay = document.getElementById("playButtonOverlay");
+
+window.addEventListener("scroll", function () {
+    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+    if (scrollTop > lastScrollTop) {
+        // Scroll Down
+        overlay.style.opacity = "1";
+        overlay.style.pointerEvents = "auto";
+    } else {
+        // Scroll Up
+        overlay.style.opacity = "0";
+        overlay.style.pointerEvents = "none";
+    }
+
+    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+});
+</script>
+
+
 <b id="play"></b>
 <div class="fixed-right-buttons" id="scrollButtons">
   <button id="pichhe" class="btn-left">
