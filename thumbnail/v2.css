@@ -39,7 +39,7 @@ box-shadow: 0 0 20px #000; /* Add dark black shadow */
   animation: spin 5s linear infinite, hueBlink 2s infinite; /* Adjust durations as needed */
 }
 
-@keyframes spin {
+/*@keyframes spin {
   from {
     transform: rotate(0deg);
   }
