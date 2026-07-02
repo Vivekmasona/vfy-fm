@@ -148,20 +148,24 @@ body {
 }
 
 /* ==========================================================================
-   4. HYPER-HD ARTWORK (CLEAN GRADIENT BLEND)
+   4. HYPER-HD ARTWORK (FULL BLEED WIDTH & INCREASED HEIGHT)
    ========================================================================== */
 .thumbnail-border {
-  width: 100%;
-  height: 75vw;
-  max-height: 340px;
-  margin: 30px auto;
+  /* Phone ke padding (25px) ko kaat kar poora kone se kone tak full width dene ke liye */
+  width: calc(100% + 50px); 
+  margin: 20px -25px; 
+  
+  /* Height ko bada kiya */
+  height: 95vw; 
+  max-height: 420px;
+  
   position: relative;
-  border-radius: 24px;
   overflow: hidden;
+  border-radius: 0px; /* Full screen edge par border-radius hatana sexy lagta hai */
   
   /* Smooth Top and Bottom Fade Effect */
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
 }
 
 .audio-player #thumbnailContainer {
@@ -208,33 +212,36 @@ body {
    5. MINIMAL GLASS-CONSOLE
    ========================================================================== */
 .bottom-console-pod {
-  background: transparent; /* No heavy backgrounds */
-  padding: 10px 10px;
-  margin-bottom: 20px;
+  background: transparent; 
+  padding: 5px 0px;
+  margin-bottom: 15px;
 }
 
-/* Typography */
+/* Typography Matrix - Fixed Title Visibility */
 #song-details {
   text-align: center;
   margin-bottom: 25px;
-}
-
-.song-title {
-  font-size: 1.15rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.6);
-  margin-top: 8px;
-  line-height: 1.4;
-  letter-spacing: 0.3px;
+  padding: 0 10px;
 }
 
 .artist {
-  font-size: 0.95rem;
+  font-size: 1rem;
   color: #ffffff;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 1px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
 }
 .artist:empty::before { content: "Vivek Kushwaha"; }
+
+.song-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5); /* Title ab clear dikhega */
+  line-height: 1.4;
+  letter-spacing: 0.5px;
+  display: block !important; /* Force show */
+}
 
 /* Timeline & Seekbar */
 #time-slider {
@@ -242,7 +249,7 @@ body {
 }
 
 #currentSongTitle {
-  display: none; /* Removed unwanted tiny text headers */
+  display: none; 
 }
 
 .slider-times {
@@ -253,8 +260,8 @@ body {
   margin-bottom: 12px;
   font-weight: 400;
 }
-#current-time:empty::before { content: "0:55"; }
-#total-time:empty::before { content: "4:47"; }
+#current-time:empty::before { content: "1:46"; }
+#total-time:empty::before { content: "3:58"; }
 
 #seekbar {
   -webkit-appearance: none;
@@ -266,7 +273,6 @@ body {
   cursor: pointer;
 }
 
-/* Dynamic slider fill mimicking your layout */
 #seekbar::-webkit-slider-runnable-track {
   width: 100%;
   height: 3px;
