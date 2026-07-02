@@ -260,44 +260,65 @@
 </style>
 
 
-  <style>
+  
+<style>
 .fixed-right-buttons {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 20px; /* Thoda upar kiya screen edge se */
+  right: 20px;  /* Thoda left kiya perfect spacing ke liye */
   display: flex;
-  gap: 5px; /* Compact gap */
-  padding: 6px;
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  z-index: 99999;
+  gap: 8px;     /* Modern spacing */
+  padding: 8px 12px;
+  border-radius: 16px; /* Zyada curved aur modern corners */
+  
+  /* Modern Glassmorphism Look */
+  background: rgba(255, 255, 255, 0.07); 
+  backdrop-filter: blur(16px) saturate(120%); 
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  
+  /* Subtle Border & Soft Deep Shadow */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  
+  z-index: 99999; 
+  transition: all 0.4s ease;
 }
 
 .fixed-right-buttons button {
-  width: 36px;  /* Compact size */
-  height: 36px;
-  border: none;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.05); /* Very subtle background */
-  color: #ffffff; /* Icons are pure white */
-  font-size: 16px;
+  width: 44px;  /* Thoda bada kiya touch-friendly banane ke liye */
+  height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  
+  /* Dark Sleek Gradient Background */
+  background: linear-gradient(135deg, rgba(30, 30, 30, 0.7), rgba(15, 15, 15, 0.8));
+  color: #f0f0f0; /* Crisp light text/icon color */
+  font-size: 18px; /* Thoda bada icon size */
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  
+  /* Smooth transitions for animations */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Hover effect: Jab mouse le jayenge tab gradient aayega */
+/* Hover Effects */
 .fixed-right-buttons button:hover {
-  background: linear-gradient(135deg, #00ffff, #ff0000); /* Cyan to Red */
-  color: #ffffff; /* Icons white hi rahenge, background gradient ban jayega */
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 255, 255, 0.3);
+  color: #ffffff;
+  /* Soft color tint on hover (Aap is #00adb5 ko apne brand color se badal sakte hain) */
+  background: linear-gradient(135deg, #00adb5, #007c82); 
+  transform: translateY(-3px); /* Button thoda upar uthega */
+  
+  /* Soft Glow Effect */
+  box-shadow: 0 4px 15px rgba(0, 173, 181, 0.4); 
 }
-  </style>
+
+/* Active/Click Effect */
+.fixed-right-buttons button:active {
+  transform: translateY(-1px) scale(0.95); /* Click karne par standard feedback */
+}
+</style>
 
 
 
