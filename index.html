@@ -261,87 +261,95 @@
 
 
   
+
 <style>
 /* Main Floating Bar */
 .fixed-right-buttons {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 85px; /* Kafi upar kiya taaki footer ke upar safely float kare */
+  right: 15px;  /* Screen edge se chipke na */
   display: flex;
-  gap: 8px; /* Perfect spacing between tabs */
-  padding: 10px 14px;
-  border-radius: 20px; /* Fully rounded modern pill shape */
-  background: #121212; /* Dark sleek premium background from image */
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); /* Soft deep shadow below the container */
+  gap: 5px;     /* Ekdam compact spacing */
+  padding: 6px 8px;
+  border-radius: 30px; /* Pill shape jo screen par bahot premium lagta hai */
+  
+  /* Ultra-Premium Dark Glass Look (Music app matching) */
+  background: rgba(18, 18, 18, 0.75); 
+  backdrop-filter: blur(12px); 
+  -webkit-backdrop-filter: blur(12px);
+  
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6); 
   z-index: 99999;
-  overflow: visible; /* Spotlight line ko container se thoda bahar dikhane ke liye */
+  overflow: visible; /* Spotlight effect ke liye zaroori hai */
 }
 
-/* Individual Buttons */
+/* Individual Compact Buttons */
 .fixed-right-buttons button {
-  position: relative; /* Crucial for spotlight positioning */
-  width: 44px;  
-  height: 44px;
+  position: relative; 
+  width: 36px;  /* Size chhota kiya (ekdam compact) */
+  height: 36px;
   border: none;
-  background: transparent; /* Flat appearance like image */
-  color: #757575; /* Default muted icon color */
-  font-size: 18px;
+  background: transparent; 
+  color: #b3b3b3; /* Default light gray (saaf dikhega par chubhga nahi) */
+  font-size: 15px; /* Perfectly sized small icons */
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: color 0.3s ease;
+  will-change: transform, opacity;
 }
 
-/* Hover State: Icon glows white/cyan/red on hover */
+/* Hover State */
 .fixed-right-buttons button:hover {
-  color: #ff3344; /* Image jaisa Red neon glow color (Aap #00ffff bhi kar sakte hain) */
-  text-shadow: 0 0 10px rgba(255, 51, 68, 0.6); /* Soft icon glow effect */
+  color: #ff3344; /* Neon Red glow on hover (Aap ise #00ffff bhi kar sakte hain) */
+  text-shadow: 0 0 8px rgba(255, 51, 68, 0.6);
 }
 
-/* 1. TOP NEON BAR EFFECT */
+/* 1. TOP NEON BAR EFFECT (More Compact) */
 .fixed-right-buttons button::before {
   content: '';
   position: absolute;
-  top: -10px; /* Exact container ke top edge par layout karega */
-  left: 15%;
-  width: 70%;
-  height: 4px; /* Thin line */
-  background: #ff3344; /* Neon Line Color */
-  border-radius: 4px;
-  box-shadow: 0 0 12px #ff3344, 0 0 4px #ff3344; /* Intense neon glow */
+  top: -6px; /* Adjusted for smaller size */
+  left: 20%;
+  width: 60%;
+  height: 3px; 
+  background: #ff3344; 
+  border-radius: 3px;
+  box-shadow: 0 0 8px #ff3344;
   opacity: 0;
   transform: scaleX(0.4);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 2. DOWNWARD SPOTLIGHT BEAM EFFECT */
+/* 2. DOWNWARD SPOTLIGHT BEAM EFFECT (More Compact) */
 .fixed-right-buttons button::after {
   content: '';
   position: absolute;
-  top: -6px;
+  top: -4px;
   left: 50%;
   transform: translateX(-50%);
-  /* Light beam cone shape simulation using linear gradient shape */
-  width: 40px;
-  height: 44px;
-  background: linear-gradient(to bottom, rgba(255, 51, 68, 0.15), rgba(255, 51, 68, 0.03) 70%, transparent);
-  clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%); /* Spotlight cone cut */
+  width: 32px;
+  height: 36px;
+  background: linear-gradient(to bottom, rgba(255, 51, 68, 0.12), rgba(255, 51, 68, 0.02) 70%, transparent);
+  clip-path: polygon(35% 0%, 65% 0%, 100% 100%, 0% 100%);
   opacity: 0;
-  pointer-events: none; /* Mouse actions block nahi karega */
+  pointer-events: none;
   transition: opacity 0.3s ease;
 }
 
-/* Triggering Spotlight effects on Hover */
+/* Hover Animations */
 .fixed-right-buttons button:hover::before {
   opacity: 1;
-  transform: scaleX(1); /* Smooth stretch expand line animation */
+  transform: scaleX(1);
 }
 
 .fixed-right-buttons button:hover::after {
-  opacity: 1; /* Spotlight smoothly fades in */
+  opacity: 1;
 }
 </style>
+
 
 
 
