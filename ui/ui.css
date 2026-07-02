@@ -1,143 +1,35 @@
 /* ==========================================================================
-   1. RESET & SYSTEM CORE
+   3. CONTAINER & CORE LAYOUT (UPDATED TOP MENU)
    ========================================================================== */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html {
-  scroll-behavior: smooth;
-  height: auto;
-  overflow-y: auto;
-}
-
-body {
-  /* Deep Space Background with subtle grit */
-  background: radial-gradient(circle at center, #0a0c1a 0%, #03040a 100%);
-  font-family: 'SF Pro Display', -apple-system, 'Segoe UI', Roboto, sans-serif;
-  min-height: 100vh;
-  height: auto;
-  overflow-x: hidden;
-  color: #fff;
-}
-
-/* ==========================================================================
-   2. IMMERSIVE MODAL & LAYER ARCHITECTURE
-   ========================================================================== */
-.modal-container1 {
-  display: none;
-  position: fixed;
-  z-index: 99999;
-  left: 0;
-  top: 0;
-  width: 100vw;
-  height: 100vh;
-  /* Hyper-Gradient background */
-  background: 
-    linear-gradient(160deg, rgba(10, 15, 40, 0.96) 0%, rgba(5, 5, 10, 0.99) 100%),
-    radial-gradient(circle at 20% 30%, rgba(0, 255, 136, 0.1) 0%, transparent 40%),
-    radial-gradient(circle at 80% 70%, rgba(189, 0, 255, 0.1) 0%, transparent 40%);
-  overflow: hidden;
-  backdrop-filter: blur(20px);
-}
-
-.modal-content1 {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Angular, Hyper-Glossy Close Button */
-.modal-content1 > span[onclick="closeModal()"] {
-  position: absolute;
-  right: 25px;
-  top: 25px;
-  z-index: 100;
-  cursor: pointer;
-  width: 42px;
-  height: 42px;
-  background: rgba(255, 255, 255, 0.03);
-  /* Angle cut corner effect */
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px; 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-  overflow: hidden;
-}
-
-.modal-content1 > span[onclick="closeModal()"]::before {
-  content: "\f00d";
-  font-family: "Font Awesome 6 Free";
-  font-weight: 900;
-  color: #8fa2bc;
-  font-size: 1.1rem;
-}
-
-/* Holographic Hover State */
-.modal-content1 > span[onclick="closeModal()"]:hover {
-  background: linear-gradient(135deg, #00ff88 0%, #bd00ff 100%);
-  border-color: transparent;
-  box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
-  transform: rotate(90deg) scale(1.1);
-}
-
-.modal-content1 > span[onclick="closeModal()"]:hover::before {
-  color: #000;
-}
-
-/* ==========================================================================
-   3. CONTAINER & CORE LAYOUT
-   ========================================================================== */
-.container {
-  width: 100%;
-  height: 100%;
-  max-width: 440px;
-  margin: 0 auto;
-}
-
-#phone {
-  width: 100%;
-  min-height: 100vh;
-  height: auto;
-  padding: 30px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-/* Sleek, Integrated Top Bar */
 #top-menu {
   display: flex;
   align-items: center;
-  background: rgba(10, 12, 26, 0.5);
-  padding: 12px 20px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(15px);
+  /* 1000245475.jpg से मैच्ड प्रीमियम डार्क मिनिमलिस्टिक कंसोल */
+  background: rgba(14, 18, 29, 0.4); 
+  padding: 14px 24px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
   margin-top: 20px;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.02), 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
 #top-menu i {
-  color: #64748b;
-  font-size: 0.9rem;
+  color: #718096; /* सेटल म्यूटेड ग्रे आइकॉन */
+  font-size: 0.95rem;
   cursor: pointer;
-  transition: color 0.3s, text-shadow 0.3s;
+  transition: all 0.3s ease;
 }
 
 #top-menu i:hover { 
-  color: #fff;
-  text-shadow: 0 0 8px rgba(255,255,255,0.6);
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
 }
 
 #volumeSliderContainer {
   flex-grow: 1;
-  margin: 0 15px;
+  margin: 0 18px;
   display: flex;
   align-items: center;
 }
@@ -145,271 +37,24 @@ body {
 #volumeSlider {
   -webkit-appearance: none;
   width: 100%;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.06);
+  height: 3px; /* स्लीक और थिन ट्रैक लाइन */
+  background: rgba(255, 255, 255, 0.07);
   outline: none;
+  border-radius: 2px;
 }
 
+/* 1000245475.jpg की तरह प्रीमियम स्क्वायर-राउंडेड व्हाइट थंब */
 #volumeSlider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 12px;
-  height: 12px;
-  border-radius: 3px; /* Match geometric language */
-  background: #fff;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: #ffffff;
   cursor: pointer;
-  box-shadow: 0 0 10px rgba(255,255,255,0.3);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+  transition: transform 0.2s ease;
 }
 
-/* ==========================================================================
-   4. HYPER-HD ARTWORK & GRADIENT BORDER SYSTEM
-   ========================================================================== */
-.thumbnail-border {
-  width: 70vw;
-  height: 70vw;
-  max-width: 280px;
-  max-height: 280px;
-  margin: auto;
-  position: relative;
-  
-  /* THE FIX: Old border radius removed, background changed to gradient */
-  border-radius: 20px; /* Modern, clean radius */
-  padding: 2px; /* Small padding creates the border width */
-  background: linear-gradient(135deg, #00ff88 0%, #bd00ff 100%); /* The gradient border */
-  
-  /* Deep glow for integration */
-  box-shadow: 
-    0 15px 50px rgba(0, 0, 0, 0.8),
-    0 0 30px rgba(0, 255, 136, 0.15),
-    0 0 30px rgba(189, 0, 255, 0.15);
+#volumeSlider::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
 }
-
-/* Glass Refraction Layer over artwork border */
-.thumbnail-border::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  border-radius: 20px;
-  background: linear-gradient(160deg, rgba(255,255,255,0.08) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 2;
-}
-
-.audio-player #thumbnailContainer {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 18px; /* Slightly less than parent for clean fit */
-  overflow: hidden;
-  cursor: pointer;
-  z-index: 1;
-}
-
-#SThumb {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 18px;
-  background: #0d1527;
-  
-  /* THE FIX: Visual processing to make artwork pop/HD */
-  filter: contrast(110%) brightness(105%) saturate(110%);
-  display: block;
-}
-
-#playButtonOverlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(5, 7, 11, 0.85);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(5px);
-  z-index: 3;
-}
-
-#playButtonOverlay::after {
-  content: "\f04b"; /* Modern Play Triangle */
-  font-family: "Font Awesome 6 Free";
-  font-weight: 900;
-  color: #fff;
-  font-size: 2.5rem;
-}
-
-#thumbnailContainer:hover #playButtonOverlay { 
-  opacity: 1; 
-}
-
-/* ==========================================================================
-   5. UNIBODY GLASS-CONSOLE
-   ========================================================================== */
-.bottom-console-pod {
-  background: linear-gradient(160deg, rgba(15, 18, 35, 0.6) 0%, rgba(8, 10, 20, 0.8) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 24px;
-  padding: 30px 25px;
-  backdrop-filter: blur(25px);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
-  margin-bottom: 10px;
-}
-
-/* Typography Matrix */
-#song-details {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.song-title {
-  font-size: 1.7rem;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  color: #ffffff;
-  margin-bottom: 5px;
-  line-height: 1.2;
-}
-
-.artist {
-  font-size: 0.85rem;
-  color: rgba(255,255,255,0.7);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-}
-.artist:empty::before { content: "Vivek Kushwaha"; }
-
-/* Timeline & Laser Seekbar */
-#time-slider {
-  margin-bottom: 25px;
-}
-
-/* ==========================================================================
-   6. CONTROLS & UTILITIES
-   ========================================================================== */
-#currentSongTitle {
-  font-size: 0.7rem;
-  color: #475569;
-  letter-spacing: 1.5px;
-  font-weight: 700;
-  margin-bottom: 12px;
-  text-transform: uppercase;
-  text-align: center;
-}
-
-.slider-times {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  color: #94a3b8;
-  margin-bottom: 8px;
-  font-family: 'Courier New', monospace; /* Technical look */
-  font-weight: bold;
-}
-#current-time:empty::before { content: "00:00"; }
-#total-time:empty::before { content: "03:50"; }
-
-#seekbar {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 4px;
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.1);
-  outline: none;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden; /* Important for the gradient track */
-}
-
-/* Seekbar Track Background - This needs JavaScript for dynamic update, 
-   but this CSS sets up the gradient capability */
-#seekbar::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 0%; /* JS must update this width based on progress */
-  background: linear-gradient(90deg, #00ff88 0%, #bd00ff 100%);
-  border-radius: 2px;
-}
-
-#seekbar::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 0; /* Hide default thumb to let the gradient fill show */
-  height: 0;
-}
-
-/* Premium Control Node Array */
-#song-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 10px;
-}
-
-#song-controls .button {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
-}
-#song-controls .button:hover { transform: translateY(-2px); }
-
-#song-controls i {
-  font-size: 1.1rem;
-  color: #64748b;
-  transition: color 0.3s;
-}
-#song-controls i:hover {
-  color: #fff;
-}
-
-/* The Matrix Play Button (Geometric Gradient unibody) */
-#play {
-  background: #fff;
-  width: 60px;
-  height: 60px;
-  border-radius: 16px; /* Geometric shape */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-
-#play::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(135deg, #00ff88 0%, #bd00ff 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-#play i {
-  color: #000 !important;
-  font-size: 1.2rem;
-  position: relative;
-  z-index: 2;
-  transition: color 0.3s ease;
-}
-
-#play:hover {
-  transform: scale(1.05) translateY(-3px);
-  box-shadow: 0 12px 30px rgba(0, 255, 136, 0.3);
-}
-
-#play:hover::before {
-  opacity: 1;
-}
-
-#play:hover i {
-  color: #fff !important;
-}
-
-/* Hidden Utilities */
-#stop, br { display: none; }
