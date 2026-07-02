@@ -14,8 +14,8 @@ html {
 }
 
 body {
-  /* Deep Space Background with subtle grit */
-  background: radial-gradient(circle at center, #0a0c1a 0%, #03040a 100%);
+  /* Ultra-smooth Dark Ambient Gradient */
+  background: linear-gradient(180deg, #16192b 0%, #090a10 100%);
   font-family: 'SF Pro Display', -apple-system, 'Segoe UI', Roboto, sans-serif;
   min-height: 100vh;
   height: auto;
@@ -34,13 +34,9 @@ body {
   top: 0;
   width: 100vw;
   height: 100vh;
-  /* Hyper-Gradient background */
-  background: 
-    linear-gradient(160deg, rgba(10, 15, 40, 0.96) 0%, rgba(5, 5, 10, 0.99) 100%),
-    radial-gradient(circle at 20% 30%, rgba(0, 255, 136, 0.1) 0%, transparent 40%),
-    radial-gradient(circle at 80% 70%, rgba(189, 0, 255, 0.1) 0%, transparent 40%);
+  background: linear-gradient(180deg, rgba(22, 25, 43, 0.98) 0%, rgba(9, 10, 16, 0.99) 100%);
   overflow: hidden;
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(30px);
 }
 
 .modal-content1 {
@@ -51,44 +47,35 @@ body {
   flex-direction: column;
 }
 
-/* Angular, Hyper-Glossy Close Button */
+/* Premium Minimal Close Button */
 .modal-content1 > span[onclick="closeModal()"] {
   position: absolute;
   right: 25px;
   top: 25px;
   z-index: 100;
   cursor: pointer;
-  width: 42px;
-  height: 42px;
-  background: rgba(255, 255, 255, 0.03);
-  /* Angle cut corner effect */
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px; 
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%; 
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .modal-content1 > span[onclick="closeModal()"]::before {
   content: "\f00d";
   font-family: "Font Awesome 6 Free";
   font-weight: 900;
-  color: #8fa2bc;
-  font-size: 1.1rem;
+  color: #ffffff;
+  font-size: 1rem;
 }
 
-/* Holographic Hover State */
 .modal-content1 > span[onclick="closeModal()"]:hover {
-  background: linear-gradient(135deg, #00ff88 0%, #bd00ff 100%);
-  border-color: transparent;
-  box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
-  transform: rotate(90deg) scale(1.1);
-}
-
-.modal-content1 > span[onclick="closeModal()"]:hover::before {
-  color: #000;
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.05);
 }
 
 /* ==========================================================================
@@ -105,34 +92,33 @@ body {
   width: 100%;
   min-height: 100vh;
   height: auto;
-  padding: 30px;
+  padding: 25px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-/* Sleek, Integrated Top Bar */
+/* Minimalistic Top Volume Bar */
 #top-menu {
   display: flex;
   align-items: center;
-  background: rgba(10, 12, 26, 0.5);
-  padding: 12px 20px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(15px);
-  margin-top: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 14px 20px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  margin-top: 10px;
 }
 
 #top-menu i {
-  color: #64748b;
-  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.95rem;
   cursor: pointer;
-  transition: color 0.3s, text-shadow 0.3s;
+  transition: color 0.3s;
 }
 
 #top-menu i:hover { 
   color: #fff;
-  text-shadow: 0 0 8px rgba(255,255,255,0.6);
 }
 
 #volumeSliderContainer {
@@ -145,70 +131,49 @@ body {
 #volumeSlider {
   -webkit-appearance: none;
   width: 100%;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.06);
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
   outline: none;
 }
 
 #volumeSlider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 12px;
-  height: 12px;
-  border-radius: 3px; /* Match geometric language */
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
   background: #fff;
   cursor: pointer;
-  box-shadow: 0 0 10px rgba(255,255,255,0.3);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }
 
 /* ==========================================================================
-   4. HYPER-HD ARTWORK & GRADIENT BORDER SYSTEM (UPDATED: FULL WIDTH & FADE)
+   4. HYPER-HD ARTWORK (CLEAN GRADIENT BLEND)
    ========================================================================== */
 .thumbnail-border {
-  width: 100%; /* Image container ko full width kiya */
-  height: 65vw; /* Phone screen ke mutabik proportional height */
-  max-height: 360px;
-  margin: 0 auto 20px auto;
+  width: 100%;
+  height: 75vw;
+  max-height: 340px;
+  margin: 30px auto;
   position: relative;
+  border-radius: 24px;
+  overflow: hidden;
   
-  /* Full width me edges ko flat rakhna natural lagta hai */
-  border-radius: 0px; 
-  padding: 0; 
-  
-  /* Linear gradient mask jo top aur bottom ko background se transparent mix karega */
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
-  
-  /* Smooth integration glow */
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.8);
-}
-
-/* Glass Refraction Layer over artwork */
-.thumbnail-border::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(160deg, rgba(255,255,255,0.05) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 2;
+  /* Smooth Top and Bottom Fade Effect */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
 }
 
 .audio-player #thumbnailContainer {
   position: relative;
   width: 100%;
   height: 100%;
-  overflow: hidden;
-  cursor: pointer;
-  z-index: 1;
 }
 
 #SThumb {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Image bina stretch hue pure layout area me fit ho jayegi */
-  background: #0d1527;
-  
-  /* Visual processing to make artwork pop/HD */
-  filter: contrast(108%) brightness(102%) saturate(110%);
+  object-fit: cover;
   display: block;
 }
 
@@ -218,22 +183,21 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(5, 7, 11, 0.85);
+  background: rgba(0, 0, 0, 0.4);
   opacity: 0;
   transition: opacity 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(5px);
-  z-index: 3;
+  backdrop-filter: blur(4px);
 }
 
 #playButtonOverlay::after {
-  content: "\f04b"; /* Modern Play Triangle */
+  content: "\f04b";
   font-family: "Font Awesome 6 Free";
   font-weight: 900;
   color: #fff;
-  font-size: 2.5rem;
+  font-size: 2.2rem;
 }
 
 #thumbnailContainer:hover #playButtonOverlay { 
@@ -241,106 +205,93 @@ body {
 }
 
 /* ==========================================================================
-   5. UNIBODY GLASS-CONSOLE
+   5. MINIMAL GLASS-CONSOLE
    ========================================================================== */
 .bottom-console-pod {
-  background: linear-gradient(160deg, rgba(15, 18, 35, 0.6) 0%, rgba(8, 10, 20, 0.8) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 24px;
-  padding: 30px 25px;
-  backdrop-filter: blur(25px);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
-  margin-bottom: 10px;
-}
-
-/* Typography Matrix */
-#song-details {
-  text-align: center;
+  background: transparent; /* No heavy backgrounds */
+  padding: 10px 10px;
   margin-bottom: 20px;
 }
 
-.song-title {
-  font-size: 1.7rem;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  color: #ffffff;
-  margin-bottom: 5px;
-  line-height: 1.2;
-}
-
-.artist {
-  font-size: 0.85rem;
-  color: rgba(255,255,255,0.7);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-}
-.artist:empty::before { content: "Vivek Kushwaha"; }
-
-/* Timeline & Laser Seekbar */
-#time-slider {
+/* Typography */
+#song-details {
+  text-align: center;
   margin-bottom: 25px;
 }
 
-/* ==========================================================================
-   6. CONTROLS & UTILITIES
-   ========================================================================== */
+.song-title {
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 8px;
+  line-height: 1.4;
+  letter-spacing: 0.3px;
+}
+
+.artist {
+  font-size: 0.95rem;
+  color: #ffffff;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+.artist:empty::before { content: "Vivek Kushwaha"; }
+
+/* Timeline & Seekbar */
+#time-slider {
+  margin-bottom: 30px;
+}
+
 #currentSongTitle {
-  font-size: 0.7rem;
-  color: #475569;
-  letter-spacing: 1.5px;
-  font-weight: 700;
-  margin-bottom: 12px;
-  text-transform: uppercase;
-  text-align: center;
+  display: none; /* Removed unwanted tiny text headers */
 }
 
 .slider-times {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem;
-  color: #94a3b8;
-  margin-bottom: 8px;
-  font-family: 'Courier New', monospace; /* Technical look */
-  font-weight: bold;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 12px;
+  font-weight: 400;
 }
-#current-time:empty::before { content: "00:00"; }
-#total-time:empty::before { content: "03:50"; }
+#current-time:empty::before { content: "0:55"; }
+#total-time:empty::before { content: "4:47"; }
 
 #seekbar {
   -webkit-appearance: none;
   width: 100%;
-  height: 4px;
+  height: 3px;
   border-radius: 2px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.2);
   outline: none;
   cursor: pointer;
-  position: relative;
-  overflow: hidden; /* Important for the gradient track */
 }
 
-/* Seekbar Track Background */
-#seekbar::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 0%; /* JS must update this width based on progress */
-  background: linear-gradient(90deg, #00ff88 0%, #bd00ff 100%);
-  border-radius: 2px;
+/* Dynamic slider fill mimicking your layout */
+#seekbar::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 #seekbar::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 0; /* Hide default thumb to let the gradient fill show */
-  height: 0;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ffffff;
+  margin-top: -5px;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
-/* Premium Control Node Array */
+/* ==========================================================================
+   6. CONTROLS & UTILITIES
+   ========================================================================== */
 #song-controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 10px;
+  padding: 0 5px;
 }
 
 #song-controls .button {
@@ -348,63 +299,44 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: transform 0.2s ease;
 }
-#song-controls .button:hover { transform: translateY(-2px); }
+#song-controls .button:hover { 
+  transform: scale(1.08); 
+}
 
 #song-controls i {
-  font-size: 1.1rem;
-  color: #64748b;
+  font-size: 1.3rem;
+  color: rgba(255, 255, 255, 0.6);
   transition: color 0.3s;
 }
 #song-controls i:hover {
   color: #fff;
 }
 
-/* The Matrix Play Button (Geometric Gradient unibody) */
+/* Clean Rounded Play/Pause Button with Smooth Glow */
 #play {
-  background: #fff;
-  width: 60px;
-  height: 60px;
-  border-radius: 16px; /* Geometric shape */
+  background: #ffffff;
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
   transition: all 0.3s ease;
-  overflow: hidden;
-}
-
-#play::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(135deg, #00ff88 0%, #bd00ff 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
 }
 
 #play i {
   color: #000 !important;
-  font-size: 1.2rem;
-  position: relative;
-  z-index: 2;
-  transition: color 0.3s ease;
+  font-size: 1.4rem;
 }
 
 #play:hover {
-  transform: scale(1.05) translateY(-3px);
-  box-shadow: 0 12px 30px rgba(0, 255, 136, 0.3);
-}
-
-#play:hover::before {
-  opacity: 1;
-}
-
-#play:hover i {
-  color: #fff !important;
+  transform: scale(1.05);
+  box-shadow: 0 6px 25px rgba(255, 255, 255, 0.5);
 }
 
 /* Hidden Utilities */
 #stop, br { display: none; }
+
