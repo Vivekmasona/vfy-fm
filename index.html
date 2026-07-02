@@ -261,72 +261,44 @@
 
 
   <style>
-/* Main Container: Stylish Glassmorphism & Position (Same as before) */
 .fixed-right-buttons {
   position: fixed;
-  bottom: 20px; 
-  right: 20px; 
+  bottom: 20px;
+  right: 20px;
   display: flex;
-  gap: 8px;     
-  padding: 8px 12px;
-  border-radius: 16px; 
-  background: rgba(255, 255, 255, 0.07); 
-  backdrop-filter: blur(16px) saturate(120%); 
-  -webkit-backdrop-filter: blur(16px) saturate(120%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  z-index: 99999; 
-  transition: all 0.4s ease;
+  gap: 5px; /* Compact gap */
+  padding: 6px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  z-index: 99999;
 }
 
-/* Button Styling: Modern Dark Gradient Background */
 .fixed-right-buttons button {
-  width: 44px;  
-  height: 38px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  background: linear-gradient(135deg, rgba(30, 30, 30, 0.7), rgba(15, 15, 15, 0.8));
-  
-  /* CRITICAL: Applying Gradient to ICON COLOR */
-  /* Standard color is removed, gradient background is applied *behind* text, then clipped */
-  
-  /* Applying Gradient Image to Text/Icon Area */
-  background-image: linear-gradient(to bottom right, #00ffff, #ff4d4d); /* Cyan to bright Red (slightly softer red for better color transition) */
-  
-  /* Modern CSS properties for gradient text */
-  -webkit-background-clip: text; /* Clips the background image to the text shape */
-  background-clip: text; 
-  
-  color: transparent; /* Makes the original text color invisible, showing the gradient background through the shape */
-  
-  font-size: 20px; /* Sightly larger icon for visibility */
-  font-weight: bold; /* Ensures gradient text has some substance, especially important for line-art icons */
+  width: 36px;  /* Compact size */
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05); /* Very subtle background */
+  color: #ffffff; /* Icons are pure white */
+  font-size: 16px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  
-  /* Add subtle shadow to help gradient text pop against dark background */
-  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
 }
 
-/* Hover Effects: Maintaining the feel but highlighting the gradient */
+/* Hover effect: Jab mouse le jayenge tab gradient aayega */
 .fixed-right-buttons button:hover {
-  /* Subtly lighten the button background on hover to draw attention */
-  background: linear-gradient(135deg, rgba(40, 40, 40, 0.8), rgba(20, 20, 20, 0.9)); 
-  
-  transform: translateY(-3px); /* Subtle float */
-  
-  /* Soft, broad neutral white glow on hover, makes the vibrant icon stand out more */
-  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15); 
+  background: linear-gradient(135deg, #00ffff, #ff0000); /* Cyan to Red */
+  color: #ffffff; /* Icons white hi rahenge, background gradient ban jayega */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 255, 255, 0.3);
 }
+  </style>
 
-/* Active/Click Effect (Same feedback) */
-.fixed-right-buttons button:active {
-  transform: translateY(-1px) scale(0.95);
-}
-</style>
 
 
 
