@@ -1,192 +1,8 @@
 /* ==========================================================================
-   1. RESET & SYSTEM CORE
-   ========================================================================== */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html, body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden; /* Screen lock taaki back-page scroll na ho */
-  background: #060814; 
-  font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
-}
-
-/* ==========================================================================
-   2. IMMERSIVE MODAL & LAYER ARCHITECTURE (FIXED OPEN ISSUE)
-   ========================================================================== */
-.modal-container1 {
-  display: none; /* Default completely hidden */
-  position: fixed;
-  z-index: 99999;
-  left: 0;
-  top: 0;
-  width: 100vw;
-  height: 100vh;
-  background: radial-gradient(circle at 50% 30%, #120e2e 0%, #060919 60%, #02040a 100%);
-  overflow: hidden;
-}
-
-.modal-content1 {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Close Switch */
-.modal-content1 > span[onclick="closeModal()"] {
-  position: absolute;
-  right: 25px;
-  top: 25px;
-  z-index: 100;
-  cursor: pointer;
-  width: 44px;
-  height: 44px;
-  background: rgba(186, 12, 247, 0.05);
-  border: 1px solid rgba(0, 245, 255, 0.2);
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 15px rgba(0, 245, 255, 0.1);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.modal-content1 > span[onclick="closeModal()"]::before {
-  content: "\f00d";
-  font-family: "Font Awesome 6 Free";
-  font-weight: 900;
-  color: #00f5ff;
-  font-size: 1.1rem;
-  text-shadow: 0 0 8px #00f5ff;
-}
-
-/* ==========================================================================
-   3. CONTAINER & FIXED MAIN LAYOUT
-   ========================================================================== */
-.container {
-  width: 100%;
-  height: 100%;
-  max-width: 450px;
-  margin: 0 auto;
-}
-
-#phone {
-  width: 100%;
-  height: 100%; /* Auto heights hatakar modal screen ke barabar lock kiya */
-  padding: 30px 25px 40px 25px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  position: relative;
-}
-
-/* Top Menu Volume Bar */
-#top-menu {
-  display: flex;
-  align-items: center;
-  background: rgba(20, 15, 38, 0.4);
-  padding: 12px 20px;
-  border-radius: 20px;
-  border: 1px solid rgba(0, 245, 255, 0.15);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  margin-top: 40px;
-  z-index: 10;
-}
-
-#top-menu i {
-  color: #7b8fa9;
-  font-size: 0.95rem;
-  cursor: pointer;
-}
-
-#volumeSliderContainer {
-  flex-grow: 1;
-  margin: 0 15px;
-  display: flex;
-  align-items: center;
-}
-
-#volumeSlider {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.08);
-  outline: none;
-  border-radius: 10px;
-}
-
-#volumeSlider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #00f5ff, #bd00ff);
-  box-shadow: 0 0 10px #00f5ff;
-}
-
-/* ==========================================================================
-   4. IMAGE 1000245468: 3D FLOATING PREMIUM CARD
-   ========================================================================== */
-/* Vinyl circle layout ko badalkar perfect square 3D shadow card banaya */
-.thumbnail-border {
-  width: 80vw;
-  height: 80vw;
-  max-width: 290px;
-  max-height: 290px;
-  margin: auto;
-  border-radius: 28px; /* Square with rounded corners like screenshot */
-  padding: 0;
-  background: transparent;
-  border: none;
-  z-index: 5;
-  
-  /* 3D Soft Ambient Red Projection Glow Shadow */
-  box-shadow: 
-    0 25px 45px -10px rgba(239, 68, 68, 0.55), 
-    0 12px 30px rgba(0, 0, 0, 0.7);
-  perspective: 1000px;
-}
-
-/* Outer Ring features bypass */
-.thumbnail-border::before { display: none; }
-
-.audio-player, #thumbnailContainer {
-  width: 100%;
-  height: 100%;
-  border-radius: 28px;
-  position: relative;
-  overflow: hidden;
-}
-
-#SThumb {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 28px;
-  background: #0d1527;
-}
-
-#playButtonOverlay {
-  position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(4, 6, 14, 0.4);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-#thumbnailContainer:hover #playButtonOverlay { opacity: 1; }
-
-/* ==========================================================================
-   5. BOTTOM CONSOLE INFRASTRUCTURE
+   5. BOTTOM CONSOLE INTEGRATION & METADATA
    ========================================================================== */
 .bottom-console-pod {
-  background: transparent; /* Fluid design match karne ke liye base translucent kiya */
+  background: transparent;
   border: none;
   border-radius: 0;
   padding: 0;
@@ -195,18 +11,19 @@ html, body {
   -webkit-backdrop-filter: none;
   width: 100%;
   z-index: 10;
+  position: relative;
 }
 
 #song-details {
   text-align: center;
-  margin-bottom: 12px;
+  margin-bottom: 5px;
 }
 
 .song-title {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: #ffffff;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .artist {
@@ -216,98 +33,137 @@ html, body {
   letter-spacing: 1px;
 }
 
-/* Timeline & Laser Seekbar */
+/* ==========================================================================
+   6. INTERACTIVE CURVED RED WAVE SEEKBAR ENGINE (FIXED TO THE PATH)
+   ========================================================================== */
 #time-slider {
-  padding: 0;
-  margin-bottom: 20px;
+  position: relative;
+  width: 100%;
+  padding-top: 40px; /* Curve aur dot ke liye solid spacing container */
+  margin-bottom: 10px;
 }
 
-/* Converting subtitle field to high density Red '3D' Badge */
+/* 3D Dynamic Badge */
 #currentSongTitle {
-  font-size: 2.2rem;
+  font-size: 2.4rem;
   font-weight: 900;
   color: #ef4444; 
-  text-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
-  margin-bottom: 15px;
+  text-shadow: 0 0 25px rgba(239, 68, 68, 0.7);
+  margin-bottom: 5px;
   letter-spacing: 2px;
   text-align: center;
   font-family: Arial, sans-serif;
 }
-#currentSongTitle::text, #currentSongTitle:empty::before { content: "3D"; }
+#currentSongTitle:empty::before { content: "3D"; }
 
+/* Time Indicators placed inside the curve layout zone */
 .slider-times {
   display: flex;
   justify-content: space-between;
   font-size: 0.75rem;
   color: #7287a5;
-  margin-bottom: 6px;
+  position: absolute;
+  bottom: -15px;
+  width: 100%;
+  padding: 0 10px;
   font-family: monospace;
+  z-index: 12;
 }
 
+/* Pure Masking: Range Slider ko invisible banaya track control karne ke liye */
 #seekbar {
   -webkit-appearance: none;
+  appearance: none;
   width: 100%;
-  height: 4px;
-  border-radius: 10px;
-  background: #27272a;
+  height: 40px; /* Big touch targets */
+  background: transparent; /* Native track removed completely */
+  position: absolute;
+  bottom: -25px;
+  left: 0;
+  z-index: 15; /* Sub-systems handle intersection overrides */
   outline: none;
   cursor: pointer;
 }
 
+/* CHHOTA RED/WHITE DOT: Jo exact aapki dynamic red curve line par chalega */
 #seekbar::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 12px;
-  height: 12px;
+  appearance: none;
+  width: 10px;  /* Chhota sa clean thumb size */
+  height: 10px;
   border-radius: 50%;
   background: #ffffff;
-  box-shadow: 0 0 8px #ffffff;
+  border: 2px solid #ef4444;
+  box-shadow: 0 0 10px #ef4444, 0 0 4px #ffffff;
+  transition: transform 0.1s;
+  
+  /* Thumb position adjustment to match image curve layer apex */
+  margin-top: -12px; 
+}
+
+#seekbar::-webkit-slider-thumb:hover {
+  transform: scale(1.3);
+}
+
+/* Mozilla Support Firefox Track */
+#seekbar::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #ef4444;
+  box-shadow: 0 0 10px #ef4444;
 }
 
 /* ==========================================================================
-   6. IMAGE 1000245468: GLOWING CURVED RED LINE CONTROLS DECK
+   7. CONTROL BUTTONS & BASE CURVE LAYER INTERSECTION
    ========================================================================== */
 #song-controls {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 25px 0 10px 0;
+  padding: 45px 0 15px 0; /* Controls slightly lowered to give room to the thumb */
   position: relative;
 }
 
-/* Exact screenshot style asymmetric wave curved line engine layout */
+/* Image 1000245468 standard dynamic organic background curve line path */
 #song-controls::before {
   content: '';
   position: absolute;
-  top: -15px; /* Seekbar ke upar-niche auto snap position balance */
+  top: -5px; /* Directly locks beneath the metadata flow */
   left: -35px;
   right: -35px;
-  height: 140px;
+  height: 150px;
   
-  /* Dark space filling within arc */
-  background: radial-gradient(circle at 50% 0%, #1e0910 0%, #050609 75%);
+  /* Deep acoustic void fill inside the arc layout */
+  background: radial-gradient(circle at 50% 0%, #1c080f 0%, #050609 80%);
   
-  /* Top shape curvature mapping */
-  border-top-left-radius: 50% 32px;
-  border-top-right-radius: 50% 32px;
+  /* Smooth Top Curve Path Profile Geometry */
+  border-top-left-radius: 50% 28px;
+  border-top-right-radius: 50% 28px;
   z-index: -1;
   
-  /* Solid Ultra Glowing Red Neon Border line structure */
+  /* Beautiful Solid Neon Glowing Red Curve Line from screenshot */
   border-top: 3px solid #ef4444; 
-  box-shadow: 0 -10px 22px rgba(239, 68, 68, 0.4);
+  box-shadow: 0 -8px 20px rgba(239, 68, 68, 0.45);
 }
 
 #song-controls .button {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  z-index: 20; /* Buttons kept above the invisible slider overlap */
 }
 
 #song-controls i {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   color: #a1a1aa;
+  transition: color 0.2s;
 }
+#song-controls i:hover { color: #ffffff; }
 
-/* Center Play/Pause button customized to match neon design profile */
+/* Pure Media System Center Sync Button */
 #play {
   background: none;
   width: auto;
@@ -318,7 +174,7 @@ html, body {
 
 #play i {
   color: #ef4444 !important;
-  font-size: 2.2rem !important;
+  font-size: 2.4rem !important;
   text-shadow: 0 0 15px rgba(239, 68, 68, 0.5) !important;
 }
 
