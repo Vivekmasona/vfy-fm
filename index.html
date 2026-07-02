@@ -259,41 +259,63 @@
 	
 </style>
 
-<style>
+
+  <style>
 .fixed-right-buttons {
   position: fixed;
-  bottom: 10px;
-  right: 5px;
+  bottom: 20px; /* Thoda upar kiya screen edge se */
+  right: 20px;  /* Thoda left kiya perfect spacing ke liye */
   display: flex;
-  gap: 5px; /* buttons ke beech gap */
-  padding: 5px 10px;
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.5); /* container background */
-  backdrop-filter: blur(10px); /* blur effect */
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  z-index: 99999; /* top layer */
-  transition: opacity 0.5s;
-  opacity: 1;
+  gap: 8px;     /* Modern spacing */
+  padding: 8px 12px;
+  border-radius: 16px; /* Zyada curved aur modern corners */
+  
+  /* Modern Glassmorphism Look */
+  background: rgba(255, 255, 255, 0.07); 
+  backdrop-filter: blur(16px) saturate(120%); 
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  
+  /* Subtle Border & Soft Deep Shadow */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  
+  z-index: 99999; 
+  transition: all 0.4s ease;
 }
 
 .fixed-right-buttons button {
-  width: 40px;
-  height: 32px;
-  border: none;
-  border-radius: 8px;
-  background-color: rgba(0, 0, 0, 0.6); /* button background */
-  color: #dadada; /* icon color */
-  font-size: 16px;
+  width: 44px;  /* Thoda bada kiya touch-friendly banane ke liye */
+  height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  
+  /* Dark Sleek Gradient Background */
+  background: linear-gradient(135deg, rgba(30, 30, 30, 0.7), rgba(15, 15, 15, 0.8));
+  color: #f0f0f0; /* Crisp light text/icon color */
+  font-size: 18px; /* Thoda bada icon size */
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.3s, transform 0.2s;
+  
+  /* Smooth transitions for animations */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Hover Effects */
 .fixed-right-buttons button:hover {
-  background-color: rgba(0, 0, 0, 0.6);
-  transform: scale(1.1);
+  color: #ffffff;
+  /* Soft color tint on hover (Aap is #00adb5 ko apne brand color se badal sakte hain) */
+  background: linear-gradient(135deg, #00adb5, #007c82); 
+  transform: translateY(-3px); /* Button thoda upar uthega */
+  
+  /* Soft Glow Effect */
+  box-shadow: 0 4px 15px rgba(0, 173, 181, 0.4); 
+}
+
+/* Active/Click Effect */
+.fixed-right-buttons button:active {
+  transform: translateY(-1px) scale(0.95); /* Click karne par standard feedback */
 }
 </style>
 
