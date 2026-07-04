@@ -1,9 +1,9 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Neural Visualizer Engine</title>
+  <title>Realistic Neural Visualizer Engine</title>
   <style>
     html, body {
       margin: 0;
@@ -94,7 +94,9 @@ function resize() {
 window.addEventListener("resize", resize);
 resize();
 
+// Realistic Elastic Spring Motion Variables
 let lSmoothZoom = 80;
+let zoomVelocity = 0;
 let lDynamicHue = 180; 
 let globalMutationTracker = 0; 
 let playing = false;
@@ -106,9 +108,9 @@ function initAmoledParticles() {
   for (let i = 0; i < maxParticles; i++) {
     amoledParticles.push({
       angle: Math.random() * Math.PI * 2,
-      distanceRatio: 0.3 + Math.random() * 0.7,
-      size: 0.8 + Math.random() * 1.6,
-      speed: 0.001 + Math.random() * 0.004,
+      distanceRatio: 0.25 + Math.random() * 0.75,
+      size: 0.6 + Math.random() * 1.4,
+      speed: 0.001 + Math.random() * 0.003,
       seed: Math.random() * 100
     });
   }
@@ -126,7 +128,7 @@ function initAudioContext() {
     actx = new AudioContext();
     analyser = actx.createAnalyser();
     analyser.fftSize = 256;
-    analyser.smoothingTimeConstant = 0.65;
+    analyser.smoothingTimeConstant = 0.45; // Real-time high-speed drop reaction
     
     sourceNode = actx.createMediaElementSource(audioEl);
     sourceNode.connect(analyser);
@@ -218,7 +220,8 @@ function pause() {
 function getBassPulse() {
   if (!frequencyData) return 0;
   let bassSum = 0;
-  const totalBins = 6; 
+  // Sub-bass frequency band extraction (First 5 spectrum indices)
+  const totalBins = 5; 
   for (let i = 0; i < totalBins; i++) {
     bassSum += frequencyData[i];
   }
@@ -242,22 +245,39 @@ function render() {
 
   globalMutationTracker += 0.025; 
   let realAudioBass = getBassPulse(); 
-  let bassPulse = (realAudioBass * 0.38) + Math.sin(globalMutationTracker * 1.8) * 4;
+  
+  // Realism: Non-linear zoom trigger map
+  let bassFactor = realAudioBass / 255;
+  let targetZoom = 80 + Math.pow(bassFactor, 2) * 55 + Math.sin(globalMutationTracker * 1.5) * 2;
+
+  // Realism Physics: Spring acceleration instead of constant translation tracking
+  let springForce = (targetZoom - lSmoothZoom) * 0.4;
+  zoomVelocity += springForce;
+  zoomVelocity *= 0.72; // Elastic friction coefficient
+  lSmoothZoom += zoomVelocity;
 
   if (Math.floor(globalMutationTracker * 0.15) % 2 === 0) {
-    lDynamicHue = (180 + Math.sin(globalMutationTracker * 0.08) * 25) % 360; 
+    lDynamicHue = (180 + Math.sin(globalMutationTracker * 0.08) * 20) % 360; 
   } else {
-    lDynamicHue = (355 + Math.sin(globalMutationTracker * 0.08) * 15) % 360; 
+    lDynamicHue = (345 + Math.sin(globalMutationTracker * 0.08) * 15) % 360; 
   }
 
-  let minR = 80;
-  let targetZoom = minR + (bassPulse * 0.45);
-  lSmoothZoom += (targetZoom - lSmoothZoom) * 0.22;
-
+  // Pure AMOLED background render layer
   ctx.clearRect(0, 0, w, h);
   ctx.fillStyle = "#000000";
   ctx.fillRect(0, 0, w, h);
 
+  // Realism Upgrade: Sree Style Shadow Glow Ring under the boundary
+  ctx.save();
+  ctx.shadowBlur = 15 + bassFactor * 35;
+  ctx.shadowColor = `hsla(${lDynamicHue}, 100%, 50%, 0.65)`;
+  ctx.beginPath();
+  ctx.arc(cx, cy, lSmoothZoom - 2, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(0,0,0,0.1)";
+  ctx.fill();
+  ctx.restore();
+
+  // Central Round Image Node
   if (bgImage.complete) {
     ctx.save();
     ctx.beginPath();
@@ -267,44 +287,46 @@ function render() {
     ctx.restore();
   }
 
+  // Sharp Laser Orbits
   ctx.save();
-  ctx.lineWidth = 1.5;
+  ctx.lineWidth = 1.8;
   ctx.beginPath();
   ctx.arc(cx, cy, lSmoothZoom + 2, 0, Math.PI * 2);
-  ctx.strokeStyle = `hsla(${lDynamicHue}, 100%, 50%, 0.85)`;
+  ctx.strokeStyle = `hsla(${lDynamicHue}, 100%, 50%, 0.95)`;
   ctx.stroke();
 
   ctx.beginPath();
-  ctx.arc(cx, cy, lSmoothZoom + 25 + Math.sin(globalMutationTracker) * 8, 0, Math.PI * 2);
-  ctx.setLineDash([4, 12]);
+  ctx.arc(cx, cy, lSmoothZoom + 20 + Math.sin(globalMutationTracker) * 6, 0, Math.PI * 2);
+  ctx.setLineDash([4, 14]);
   ctx.strokeStyle = `hsla(${lDynamicHue - 30}, 100%, 45%, 0.35)`;
   ctx.stroke();
   ctx.restore();
 
+  // Cyber Particle Network Array
   ctx.save();
-  const maxReach = Math.min(w, h) * 0.46;
+  const maxReach = Math.min(w, h) * 0.45;
   
   amoledParticles.forEach((p) => {
-    p.angle += p.speed * (1 + bassPulse * 0.05);
-    let pulseDist = lSmoothZoom + 5 + (maxReach * p.distanceRatio) + Math.sin(globalMutationTracker + p.seed) * 15;
+    p.angle += p.speed * (1 + bassFactor * 2.5);
+    let pulseDist = lSmoothZoom + 6 + (maxReach * p.distanceRatio) + Math.sin(globalMutationTracker + p.seed) * 12;
     
     let px = cx + Math.cos(p.angle) * pulseDist;
     let py = cy + Math.sin(p.angle) * pulseDist;
-    let alpha = (1 - (p.distanceRatio)) * 0.6;
+    let alpha = (1 - (p.distanceRatio)) * 0.55;
     
-    ctx.fillStyle = `hsla(${lDynamicHue + (p.angle * 10)}, 100%, 65%, ${alpha})`;
+    ctx.fillStyle = `hsla(${lDynamicHue + (p.angle * 8)}, 100%, 65%, ${alpha})`;
     ctx.beginPath();
-    ctx.arc(px, py, p.size * (1 + bassPulse * 0.02), 0, Math.PI * 2);
+    ctx.arc(px, py, p.size * (1 + bassFactor * 1.5), 0, Math.PI * 2);
     ctx.fill();
 
     amoledParticles.forEach((p2) => {
-      let p2Dist = lSmoothZoom + 5 + (maxReach * p2.distanceRatio) + Math.sin(globalMutationTracker + p2.seed) * 15;
+      let p2Dist = lSmoothZoom + 6 + (maxReach * p2.distanceRatio) + Math.sin(globalMutationTracker + p2.seed) * 12;
       let p2x = cx + Math.cos(p2.angle) * p2Dist;
       let p2y = cy + Math.sin(p2.angle) * p2Dist;
       let distance = Math.hypot(px - p2x, py - p2y);
       
-      if(distance < 55) {
-        ctx.strokeStyle = `hsla(${lDynamicHue}, 100%, 50%, ${(1 - distance/55) * 0.1})`;
+      if(distance < 50) {
+        ctx.strokeStyle = `hsla(${lDynamicHue}, 100%, 50%, ${(1 - distance/50) * 0.08})`;
         ctx.lineWidth = 0.5;
         ctx.beginPath();
         ctx.moveTo(px, py);
@@ -315,15 +337,26 @@ function render() {
   });
   ctx.restore();
 
-  const totalRays = 90; 
+  // REALISM BREAKTHROUGH: Multi-Band Audio Ray Logarithmic Distribution Mapping
+  const totalRays = 120; // High-density clean look
   ctx.save();
   for (let i = 0; i < totalRays; i++) {
-    let angle = (i / totalRays) * Math.PI * 2 + (globalMutationTracker * 0.04);
-    let frequencyIntensity = frequencyData ? frequencyData[i % frequencyDataLen] * 0.28 : 0;
-    let waveSpike = Math.sin(i * 0.25 + globalMutationTracker * 3.5) * 12 +
-                    Math.cos(i * 0.12 - globalMutationTracker * 1.5) * 8;
-                    
-    let rayLength = Math.max(0, (waveSpike * 0.5) + (bassPulse * 0.3) + frequencyIntensity);
+    // Spatial distribution mapping strategy
+    let angle = (i / totalRays) * Math.PI * 2 - Math.PI / 2 + (globalMutationTracker * 0.02);
+    
+    // Divide frequencies across natural auditory steps (Logarithmic lookup variation)
+    let freqIndex = Math.floor(Math.pow(i / totalRays, 1.5) * (frequencyDataLen * 0.75));
+    let rawFreqValue = frequencyData ? frequencyData[freqIndex] : 0;
+    
+    // Give specialized weight based on quadrant (Bass kicks hard on sides, Treble sparkles on top)
+    let dynamicWeight = 0.35;
+    if (freqIndex < 6) {
+      dynamicWeight = 0.65; // Massive boost for lower instruments
+    }
+    
+    let frequencyIntensity = rawFreqValue * dynamicWeight;
+    let organicMicroWave = Math.sin(i * 0.4 + globalMutationTracker * 4) * 6;
+    let rayLength = Math.max(0, organicMicroWave + frequencyIntensity);
     
     let cos = Math.cos(angle);
     let sin = Math.sin(angle);
@@ -334,14 +367,14 @@ function render() {
     let endY = cy + (lSmoothZoom + 4 + rayLength) * sin;
 
     let rayGrd = ctx.createLinearGradient(startX, startY, endX, endY);
-    rayGrd.addColorStop(0, `hsla(${lDynamicHue}, 100%, 55%, 0.75)`);
-    rayGrd.addColorStop(0.5, `hsla(${lDynamicHue + 30}, 100%, 50%, 0.15)`);
+    rayGrd.addColorStop(0, `hsla(${lDynamicHue}, 100%, 55%, 0.85)`);
+    rayGrd.addColorStop(0.4, `hsla(${lDynamicHue + 25}, 100%, 50%, 0.25)`);
     rayGrd.addColorStop(1, 'rgba(0,0,0,0)');
 
     ctx.beginPath();
     ctx.moveTo(startX, startY);
     ctx.lineTo(endX, endY);
-    ctx.lineWidth = 1.2; 
+    ctx.lineWidth = 1.4; 
     ctx.strokeStyle = rayGrd;
     ctx.stroke();
   }
@@ -352,3 +385,4 @@ function render() {
 </script>
 </body>
 </html>
+
