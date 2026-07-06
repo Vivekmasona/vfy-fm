@@ -369,31 +369,33 @@ body {
 #stop, br { display: none; }
 
 /* ==========================================================================
-   7. ADVANCED FLUID WAVE CANVAS VISUALIZER
+   7. YOUTUBE TRAP NATION STYLE CENTRED VISUALIZER
    ========================================================================== */
 .thumbnail-border {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  transform-style: preserve-3d;
+  perspective: 500px;
+  will-change: transform, box-shadow;
+  /* 0.05s का स्प्रिंग टाइमिंग जो बीच के लोगो को कड़क झटका देगा */
+  transition: transform 0.05s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.05s ease;
 }
 
 #fluid-wave-visualizer {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 340px;  /* आपके थंबनेल साइज के हिसाब से परफेक्ट क्राउन व्यास */
-  height: 340px;
+  width: 360px; /* लहरों को बड़ी स्क्रीन देने के लिए साइज थोड़ा बढ़ाया */
+  height: 360px;
   transform: translate(-50%, -50%);
   pointer-events: none;
-  z-index: 1;    /* थंबनेल इमेज के पीछे और बॉर्डर के साथ ब्लेंड होने के लिए */
-  
-  /* शुरुआत में पूरी तरह गायब जब तक गाना न बजे */
+  z-index: 1;
   opacity: 0;
   transition: opacity 0.4s ease;
 }
 
-/* गाना बजते ही कैनवास धीरे से ग्लो के साथ उभर कर आएगा */
 #fluid-wave-visualizer.wave-active {
   opacity: 1;
 }
