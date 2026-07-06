@@ -6326,41 +6326,39 @@ document.addEventListener('visibilitychange', () => {
 document.addEventListener('DOMContentLoaded', () => {
   const playIcon = document.getElementById('playvfy');
   const audio = document.getElementById('SAudio');
-  const bars = document.querySelectorAll('.vfy-bar');
+  const thumbBorder = document.querySelector('.thumbnail-border');
 
-  function updateVisualizerState() {
-    if (!bars.length) return;
+  function updateZoomVisualizer() {
+    if (!thumbBorder) return;
 
-    // डबल सिक्योरिटी चेक: बटन में पॉज़ का आइकन हो और ऑडियो सच में बज रहा हो
+    // चेक करें कि बटन पॉज़ स्टेट में है (||) और ऑडियो सच में चल रहा है
     const isPlaying = playIcon && playIcon.classList.contains('fa-pause') && audio && !audio.paused && !audio.ended;
 
-    bars.forEach(bar => {
-      if (isPlaying) {
-        // गाना चलने पर क्लास जोड़ो (बार्स दिखेंगी और नाचेंगी)
-        bar.classList.add('vfy-dancing');
-      } else {
-        // गाना रुकते ही क्लास हटाओ (बार्स तुरंत 100% गायब हो जाएंगी)
-        bar.classList.remove('vfy-dancing');
-      }
-    });
+    if (isPlaying) {
+      // गाना चलने पर ज़ूम एनिमेशन क्लास जोड़ें
+      thumbBorder.classList.add('vfy-beat-active');
+    } else {
+      // गाना रुकते, पॉज़ या बफ़र होते ही ज़ूम इफ़ेक्ट हटा दें
+      thumbBorder.classList.remove('vfy-beat-active');
+    }
   }
 
-  // यूजर के हर क्लिक पर तुरंत रिस्पॉन्स
+  // यूज़र के हर क्लिक पर तुरंत रिस्पॉन्स
   document.addEventListener('click', () => {
-    setTimeout(updateVisualizerState, 50);
+    setTimeout(updateZoomVisualizer, 50);
   });
 
-  // ऑडियो के खुद के प्ले/पॉज होने पर रिस्पॉन्स (जैसे नेटवर्क स्लो होने पर या गाना खत्म होने पर)
+  // ऑडियो के खुद के प्ले/पॉज होने पर (जैसे नेटवर्क स्लो होने पर या गाना खत्म होने पर)
   if (audio) {
-    audio.addEventListener('play', updateVisualizerState);
-    audio.addEventListener('playing', updateVisualizerState);
-    audio.addEventListener('pause', updateVisualizerState);
-    audio.addEventListener('ended', updateVisualizerState);
-    audio.addEventListener('waiting', updateVisualizerState); // बफरिंग होने पर भी गायब हो जाएगा
+    audio.addEventListener('play', updateZoomVisualizer);
+    audio.addEventListener('playing', updateZoomVisualizer);
+    audio.addEventListener('pause', updateZoomVisualizer);
+    audio.addEventListener('ended', updateZoomVisualizer);
+    audio.addEventListener('waiting', updateZoomVisualizer); // बफ़रिंग होने पर ज़ूम तुरंत बंद होगा
   }
 
-  // बैकअप सेफ्टी रनर (200ms) ताकि कोई लैग न हो
-  setInterval(updateVisualizerState, 200);
+  // बैकअप सेफ्टी टाइमर (200ms) ताकि स्टेट हमेशा सिंक रहे
+  setInterval(updateZoomVisualizer, 200);
 });
 		  </script>
 		  
