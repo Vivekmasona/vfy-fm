@@ -6319,14 +6319,13 @@ document.addEventListener('visibilitychange', () => {
 
 
 
-
-      <script>
+<script>
 let audioCtx = null;
 let analyser = null;
 let dataArray = null;
 let source = null;
 let animationFrameId = null;
-let useFallback = false;
+let useFallback = false; // CORS ब्लॉक होने पर सुरक्षित रखने के लिए
 
 function initFluidVisualizer() {
   const audio = document.getElementById('SAudio');
@@ -6336,12 +6335,12 @@ function initFluidVisualizer() {
 
   const ctx = canvas.getContext('2d');
   
-  // हाई-डेफिनिशन (HD) रेंडरिंग सेटिंग्स
+  // हाई-डेफिनिशन (HD) रेंडरिंग के लिए कैनवास साइज
   canvas.width = 500;
   canvas.height = 500;
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
-  const baseRadius = 132; // आपकी थंबनेल रिंग के हिसाब से सेट
+  const baseRadius = 132; // इमेज के चारों तरफ सेट करने के लिए सटीक रेडियस
 
   audio.crossOrigin = "anonymous";
 
@@ -6353,11 +6352,11 @@ function initFluidVisualizer() {
       source.connect(analyser);
       analyser.connect(audioCtx.destination);
 
-      analyser.smoothingTimeConstant = 0.78; // एग्रेसिव और स्मूथ बाउंस के लिए
+      analyser.smoothingTimeConstant = 0.78; // लहरों को तेज़ और मखमली बाउंस देने के लिए
       analyser.fftSize = 128; 
       dataArray = new Uint8Array(analyser.frequencyBinCount);
     } catch (e) {
-      console.log("CORS Blocked or Audio Error! Using Bulletproof Fallback Engine.");
+      console.log("CORS Blocked or Audio Error! Switching to Safe Fallback Mode.");
       useFallback = true;
     }
   }
@@ -6376,14 +6375,14 @@ function initFluidVisualizer() {
     animationFrameId = requestAnimationFrame(drawWave);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const pointsCount = 72; // यूट्यूब जैसी घनी लहरों के लिए पॉइंट्स बढ़ाए
+    const pointsCount = 72; // यूट्यूब जैसी घनी और स्मूथ लहरों के लिए
     let bassSum = 0;
 
     if (!useFallback && analyser) {
       analyser.getByteFrequencyData(dataArray);
       bassSum = (dataArray[0] + dataArray[1] + dataArray[2]) / 3;
     } else {
-      // फॉलबैक बैकअप मोड के लिए बास जनरेटर
+      // फॉलबैक बैकअप मोड (CORS एरर आने पर यह एक्टिव रहेगा)
       let curTime = audio.currentTime;
       let rawBeat = Math.sin(curTime * 9.8) * Math.cos(curTime * 4.3) * Math.sin(Date.now() * 0.015);
       if (rawBeat > 0.25) bassSum = ((rawBeat - 0.25) / 0.75) * 200;
@@ -6394,7 +6393,7 @@ function initFluidVisualizer() {
     // ==========================================
     if (bassSum > 45) {
       const norm = bassSum / 255;
-      const scaleFactor = 1 + (norm * 0.14); // 1.14x तक कड़क झटका
+      const scaleFactor = 1 + (norm * 0.14); // 1.14x कड़क झटका
       const translateZ = norm * 40;
       thumbBorder.style.transform = `scale(${scaleFactor}) translateZ(${translateZ}px)`;
       thumbBorder.style.boxShadow = `0 0 ${norm * 60 + 20}px rgba(255, 0, 0, 0.6)`;
@@ -6404,14 +6403,8 @@ function initFluidVisualizer() {
     }
 
     // ==========================================
-    // पार्ट B: 1000246738.jpg जैसा यूट्यूब ग्रेडिएंट वेव
+    // पार्ट B: लहर के पाथ (Path) की कैलकुलेशन
     // ==========================================
-    let gradient = ctx.createRadialGradient(centerX, centerY, baseRadius, centerX, centerY, baseRadius + 90);
-    gradient.addColorStop(0, '#ffffff'); // अंदर एकदम चमकदार सफ़ेद (White)
-    gradient.addColorStop(0.2, '#ffea00'); // बीच में चटक पीला (Yellow)
-    gradient.addColorStop(0.6, '#ff0000'); // बाहर की तरफ गहरा लाल (Red)
-    gradient.addColorStop(1, 'rgba(255, 0, 0, 0)'); // अंत में गायब
-
     ctx.beginPath();
 
     for (let i = 0; i < pointsCount; i++) {
@@ -6426,7 +6419,7 @@ function initFluidVisualizer() {
         rawValue = (Math.sin(curTime * 6 + i * 0.3) * Math.cos(curTime * 2 + i * 0.5) + 1) * 75;
       }
 
-      // यूट्यूब स्टाइल ऊंची लहरों के लिए लंबाई बढ़ाकर 85px की
+      // यूट्यूब स्टाइल ऊंची और एग्रेसिव लहरों के लिए लंबाई 85px तक सेट
       let waveHeight = (rawValue / 255) * 85;
       if (rawValue < 15) waveHeight = 0;
 
@@ -6442,10 +6435,28 @@ function initFluidVisualizer() {
     }
 
     ctx.closePath();
-    ctx.lineWidth = 5; // थोड़ी मोटी और कड़क लाइनें
-    ctx.strokeStyle = gradient;
-    ctx.shadowBlur = 20;
-    ctx.shadowColor = '#ff3300'; // लाल-नारंगी नियॉन ग्लो
+
+    // ==========================================
+    // पार्ट C: यूट्यूब जैसा मोटा 3D शेडेड रेंडरर
+    // ==========================================
+    
+    // लेयर 1: पीछे का फैला हुआ भारी लाल नियॉन ग्लो (14px थिकनेस)
+    ctx.lineWidth = 14; 
+    ctx.strokeStyle = 'rgba(255, 0, 0, 0.45)'; 
+    ctx.shadowBlur = 25;
+    ctx.shadowColor = '#ff0000';
+    ctx.stroke();
+
+    // लेयर 2: ठीक उसके ऊपर मुख्य रंग-बिरंगा कोर (सफ़ेद, पीला, लाल मिक्स ग्रेडिएंट)
+    let coreGradient = ctx.createRadialGradient(centerX, centerY, baseRadius, centerX, centerY, baseRadius + 45);
+    coreGradient.addColorStop(0, '#ffffff');   // एकदम अंदर चमकदार सफ़ेद (White)
+    coreGradient.addColorStop(0.3, '#ffea00'); // बीच में चटक पीला (Yellow)
+    coreGradient.addColorStop(0.7, '#ff0000'); // बाहरी टिप्स पर गहरा लाल (Red)
+    coreGradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
+
+    ctx.lineWidth = 8; // कोर को मोटा और सॉलिड दिखाने के लिए 8px चौड़ाई
+    ctx.strokeStyle = coreGradient;
+    ctx.shadowBlur = 0; // कोर को एकदम साफ़ और शार्प रखने के लिए ब्लर 0 किया
     ctx.stroke();
   }
 
@@ -6455,7 +6466,7 @@ function initFluidVisualizer() {
   drawWave();
 }
 
-// इवेंट्स सिंकिंग
+// प्लेयर के प्ले/पॉज़ इवेंट्स के साथ सिंकिंग
 window.addEventListener('DOMContentLoaded', () => {
   const audio = document.getElementById('SAudio');
   if (!audio) return;
@@ -6481,5 +6492,8 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
-	  </script>
-	  
+</script>
+	
+      
+
+	
