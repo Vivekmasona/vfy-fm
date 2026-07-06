@@ -5899,13 +5899,6 @@ let sideMenuTimer;
 let wakeLock = null;
 let isScrollTicking = false; 
 
-// --- हाइब्रिड बीट डिटेक्शन वेरिएबल्स ---
-let audioCtx = null;
-let analyser = null;
-let dataArray = null;
-let source = null;
-let useFallback = false; // CORS ब्लॉक होने पर यह ऑटोमैटिक true हो जाएगा
-
 function resizeLockCanvas() {
   const dpr = window.devicePixelRatio || 1;
   lCanvas.width = window.innerWidth * dpr;
@@ -5931,36 +5924,6 @@ function initAmoledParticles() {
 }
 initAmoledParticles();
 
-// असली ऑडियो ट्रैक करने का मेन इनिशियलाइज़र
-function initAudioContextEngine() {
-  if (!audioPlayer) return;
-  
-  // RapidAPI/Invidious के लिए क्रॉस-ओरिजिन रिक्वेस्ट सेट करना
-  audioPlayer.crossOrigin = "anonymous";
-
-  if (!audioCtx && !useFallback) {
-    try {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      analyser = audioCtx.createAnalyser();
-      
-      source = audioCtx.createMediaElementSource(audioPlayer);
-      source.connect(analyser);
-      analyser.connect(audioCtx.destination);
-
-      analyser.smoothingTimeConstant = 0.75; 
-      analyser.fftSize = 32; 
-      dataArray = new Uint8Array(analyser.frequencyBinCount);
-    } catch (e) {
-      console.log("CORS Blocked or Audio Error! Switching to Safe Fallback Mode.");
-      useFallback = true;
-    }
-  }
-  
-  if (audioCtx && audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
-}
-
 function renderLockVisuals() {
   if (lockOverlay.style.display !== "flex") {
     cancelAnimationFrame(lAnimationId);
@@ -5977,36 +5940,22 @@ function renderLockVisuals() {
     return;
   }
 
-  // --- REAL FEEL LOGIC ---
+  // --- REAL FEEL LOGIC: चेक करें कि क्या गाना बफर हो रहा है या अटका हुआ है ---
+  // HTML5 Audio में readyState < 3 (HAVE_FUTURE_DATA) का मतलब डेटा लोड हो रहा है
   let isActuallyPlaying = audioPlayer.readyState >= 3;
+
   if (!isActuallyPlaying) {
+    // अगर गाना अटक गया है, तो म्यूटेशन वैल्यू को मत बढ़ाओ और ऐनिमेशन को यहीं फ्रीज कर दो
     if(overlayThumb) overlayThumb.style.transform = `scale(1)`;
     return; 
   }
 
+  // गाना स्मूथ चल रहा हो तभी ऐनिमेशन टाइमर आगे बढ़ेगा
   globalMutationTracker += 0.025; 
 
-  // --- हाइब्रिड बीट कैलकुलेटर (असली बनाम फॉलबैक) ---
-  let bassPulse = 0;
+  let bassPulse = 25 + Math.sin(globalMutationTracker * 1.8) * 12 
+                        + Math.cos(globalMutationTracker * 0.9) * 10;
 
-  if (!useFallback && analyser) {
-    // मोड 1: 100% असली ऑडियो फ्रीक्वेंसी रीड करना
-    analyser.getByteFrequencyData(dataArray);
-    let realBass = (dataArray[0] + dataArray[1] + dataArray[2]) / 3;
-    
-    if (realBass > 40) {
-      // असली बेस को स्केल करना ताकि पुराना सुंदर विज़ुअलाइज़ेशन खराब न हो
-      bassPulse = (realBass / 255) * 45 + 10;
-    } else {
-      bassPulse = 15;
-    }
-  } else {
-    // मोड 2: फॉलबैक मोड (CORS ब्लॉक होने पर भी स्मूथ गणित से लहरें और बीट बनाए रखेगा)
-    bassPulse = 25 + Math.sin(globalMutationTracker * 1.8) * 12 
-                  + Math.cos(globalMutationTracker * 0.9) * 10;
-  }
-
-  // डायनामिक कलर हब
   if (Math.floor(globalMutationTracker * 0.15) % 2 === 0) {
       lDynamicHue = (180 + Math.sin(globalMutationTracker * 0.08) * 25) % 360; 
   } else {
@@ -6021,7 +5970,7 @@ function renderLockVisuals() {
      overlayThumb.style.transform = `scale(${lSmoothZoom / minR})`;
   }
 
-  // Pure clean clear rect paths
+  // Pure clean clear rect paths ensuring true deep blacks
   lCtx.clearRect(0, 0, w, h);
   lCtx.fillStyle = "#000000";
   lCtx.fillRect(0, 0, w, h);
@@ -6086,7 +6035,7 @@ function renderLockVisuals() {
   });
   lCtx.restore();
 
-  // 3. Precision Line Matrix Rays (1000246707.jpg जैसा लुक देने वाली किरणें)
+  // 3. Precision Line Matrix Rays
   const totalRays = 90; 
   lCtx.save();
   for (let i = 0; i < totalRays; i++) {
@@ -6125,6 +6074,7 @@ function setStatusBarColor(color) {
     if (themeMeta) themeMeta.setAttribute("content", color);
 }
 
+// बफरिंग स्टेट क्लासेस रीसेट करने के लिए हेल्पर
 function clearBufferingState() {
     document.querySelector('.visualizer-core-wrap')?.classList.remove('audio-buffering');
 }
@@ -6133,6 +6083,7 @@ function showOverlay() {
     if (audioPlayer && !audioPlayer.paused) {
         if (modeToggleBtn && modeToggleBtn.checked) return; 
         
+        // SECURITY TWEAK: Request Fullscreen standard to cover device browser limits
         if (document.documentElement.requestFullscreen) {
             document.documentElement.requestFullscreen().catch(() => {});
         } else if (document.documentElement.webkitRequestFullscreen) {
@@ -6142,9 +6093,6 @@ function showOverlay() {
         resizeLockCanvas();
         lockOverlay.style.display = "flex";
         setStatusBarColor("#000000");
-        
-        // लॉकस्क्रीन एक्टिव होते ही ऑडियो रीडर सिंक चालू करना
-        initAudioContextEngine();
         renderLockVisuals();
     }
 }
@@ -6156,6 +6104,7 @@ function hideOverlay() {
     resetOverlayTimer();
     clearBufferingState();
     
+    // Exit Fullscreen Mode smoothly
     if (document.fullscreenElement || document.webkitFullscreenElement) {
         if (document.exitFullscreen) {
             document.exitFullscreen().catch(() => {});
@@ -6184,7 +6133,7 @@ function handleSecureLockStart(e) {
     holdTimer = setTimeout(() => {
         hideOverlay();
         handleSecureLockEnd();
-    }, 1000); 
+    }, 1000); // Exquisite 1000ms delay verification
 }
 
 function handleSecureLockEnd() {
@@ -6199,6 +6148,7 @@ function handleSecureLockEnd() {
     }
 }
 
+// Multi-touch response tracking layers
 unlockBtn.addEventListener("mousedown", handleSecureLockStart);
 unlockBtn.addEventListener("mouseup", handleSecureLockEnd);
 unlockBtn.addEventListener("mouseleave", handleSecureLockEnd);
@@ -6251,29 +6201,16 @@ function updateOverlayContent() {
 if (audioPlayer) {
     audioPlayer.addEventListener('timeupdate', updateOverlayContent);
     audioPlayer.addEventListener('loadedmetadata', updateOverlayContent);
-    
-    // गाना प्ले होते ही ऑडियो इंजन भी साथ में स्टार्ट करना
-    audioPlayer.addEventListener('play', () => { 
-        resetOverlayTimer(); 
-        clearBufferingState();
-        initAudioContextEngine();
-    });
-    
-    audioPlayer.addEventListener('playing', () => {
-        clearBufferingState();
-        initAudioContextEngine();
-    });
-    
+    audioPlayer.addEventListener('play', () => { resetOverlayTimer(); clearBufferingState(); });
     audioPlayer.addEventListener('pause', hideOverlay);
     audioPlayer.addEventListener('ended', hideOverlay);
 
-    // अगर RapidAPI या Invidious का लिंक ब्राउज़र सिक्योरिटी से ब्लॉक हो जाए, तो एरर इवेंट उसे तुरंत सेफ मोड पे डाल देगा
-    audioPlayer.addEventListener('error', () => {
-        useFallback = true;
-    });
-
+    // --- REAL FEEL LISTENERS: गाना रुकने (Waiting) और वापस चालू होने (Playing) को कैच करना ---
     audioPlayer.addEventListener('waiting', () => {
         document.querySelector('.visualizer-core-wrap')?.classList.add('audio-buffering');
+    });
+    audioPlayer.addEventListener('playing', () => {
+        clearBufferingState();
     });
     audioPlayer.addEventListener('stalled', () => {
         document.querySelector('.visualizer-core-wrap')?.classList.add('audio-buffering');
@@ -6304,6 +6241,7 @@ if(modeToggleBtn) {
 let touchStartY = 0;
 let touchEndY = 0;
 
+// 1. मोबाइल और टच डिवाइसेस के लिए (Swipe Tracking)
 document.addEventListener('touchstart', (e) => {
     touchStartY = e.changedTouches[0].screenY;
 }, { passive: true });
@@ -6314,20 +6252,25 @@ document.addEventListener('touchend', (e) => {
     touchEndY = e.changedTouches[0].screenY;
     let swipeDistance = touchStartY - touchEndY;
 
+    // अगर उंगली ऊपर की तरफ स्वाइप हुई (मतलब यूजर नीचे जा रहा है) -> फुटर छुपाओ
     if (swipeDistance > 40) { 
         toggleFooterVisibility(true); 
-    } else if (swipeDistance < -40) { 
+    }
+    // अगर उंगली नीचे की तरफ स्वाइप हुई (मतलब यूजर ऊपर जा रहा है) -> फुटर दिखाओ
+    else if (swipeDistance < -40) { 
         toggleFooterVisibility(false); 
     }
 }, { passive: true });
 
+
+// 2. डेस्कटॉप और माउस वाले यूजर्स के लिए (Wheel Tracking)
 window.addEventListener('wheel', (e) => {
     if (modeToggleBtn && modeToggleBtn.checked) return;
 
     if (e.deltaY > 0) {
-        toggleFooterVisibility(true);  
+        toggleFooterVisibility(true);  // Mouse Wheel Down -> Hide Footer
     } else {
-        toggleFooterVisibility(false); 
+        toggleFooterVisibility(false); // Mouse Wheel Up -> Show Footer
     }
 }, { passive: true });
 
@@ -6368,6 +6311,9 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 </script>
+           
+
+
 
 
 
