@@ -6313,7 +6313,7 @@ document.addEventListener('visibilitychange', () => {
 
 
 
-	      <script>
+	          <script>
 let audioCtx = null;
 let analyser = null;
 let dataArray = null;
@@ -6325,85 +6325,83 @@ function initAudioAnalyzer() {
   const thumbBorder = document.querySelector('.thumbnail-border');
   if (!audio || !thumbBorder) return;
 
-  // पहली बार प्ले होने पर ऑडियो कॉन्टेक्स्ट चालू करना (ब्राउज़र सुरक्षा के लिए)
+  if (!audio.crossOrigin) {
+    audio.crossOrigin = "anonymous";
+  }
+
   if (!audioCtx) {
     try {
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       analyser = audioCtx.createAnalyser();
       
-      // आपके ऑडियो एलिमेंट को एनालाइजर से जोड़ना
       source = audioCtx.createMediaElementSource(audio);
       source.connect(analyser);
       analyser.connect(audioCtx.destination);
 
-      // बास (Bass) और साउंड को रीड करने की सेटिंग
-      analyser.fftSize = 64; 
+      // सटीक बीट डिटेक्शन के लिए fftSize को सेट करना
+      analyser.fftSize = 32; 
       const bufferLength = analyser.frequencyBinCount;
       dataArray = new Uint8Array(bufferLength);
     } catch (e) {
-      console.log("AudioContext Setup Error:", e);
+      console.log("Audio API Setup Error:", e);
       return;
     }
   }
 
-  // साउंड ट्रैक करने का सुपर-फास्ट लूप (जीरो लैग)
+  // 60fps पर असली धमाका (हार्डकोर बीट सिंक)
   function renderBeat() {
     if (audio.paused || audio.ended) {
-      // गाना रुकते ही ज़ूम तुरंत बंद और नॉर्मल
+      // गाना रुकते ही सब कुछ तुरंत शांत और अपनी नॉर्मल जगह पर लॉक
       thumbBorder.style.transform = "scale(1)";
       thumbBorder.style.boxShadow = "none";
-      cancelAnimationFrame(animationFrameId);
+      thumbBorder.style.borderColor = "rgba(189, 0, 255, 0.4)";
       return;
     }
 
     animationFrameId = requestAnimationFrame(renderBeat);
-    
-    // असली साउंड का डेटा निकालना
     analyser.getByteFrequencyData(dataArray);
 
-    // शुरुआत की लो-फ्रीक्वेंसी (यानी बेस/ढोलक की थाप) को पकड़ना
-    let bassValue = 0;
-    for (let i = 0; i < 4; i++) {
-      bassValue += dataArray[i];
-    }
-    bassValue = bassValue / 4; // एवरेज साउंड वॉल्यूम
+    // गाने के सबसे भारी हिस्से (Sub-Bass और Bass) को एकदम सटीक पकड़ना
+    let bassValue = (dataArray[0] + dataArray[1] + dataArray[2]) / 3;
 
-    // अगर साउंड आ रहा है, तो ही ज़ूम करो, वरना बिल्कुल शांत (1)
-    if (bassValue > 20) {
-      // आवाज़ जितनी तेज़ होगी, ज़ूम उतना ही परफेक्ट होगा (मैक्स ज़ूम 1.05 तक)
-      const scaleFactor = 1 + (bassValue / 255) * 0.05; 
-      const glowFactor = (bassValue / 255) * 30;
+    // जब गाने में पर्याप्त बेस/साउंड हो (ताकि फालतू में न हिले)
+    if (bassValue > 40) {
+      // 1. ज़ूम की पावर बढ़ा दी है (अब यह 1.08x तक दमदार तरीके से पंप करेगा)
+      const scaleFactor = 1 + (bassValue / 255) * 0.08; 
+      
+      // 2. ग्लोइंग इफ़ेक्ट को और हैवी और ब्राइट बनाया है
+      const glowFactor = (bassValue / 255) * 45;
 
+      // 3. जादुई डायनामिक कलर - जैसे-जैसे बेस बढ़ेगा, नियॉन लाइट पर्पल से सियान/ब्लू में बदलेगी
+      const hueRotate = (bassValue / 255) * 120; 
+
+      // एप्लाइड विज़ुअल इफ़ेक्ट (बिना लैग के सीधा GPU पर रन होगा)
       thumbBorder.style.transform = `scale(${scaleFactor})`;
-      thumbBorder.style.boxShadow = `0 0 ${glowFactor + 15}px rgba(0, 245, 255, 0.6)`;
+      thumbBorder.style.boxShadow = `0 0 ${glowFactor + 15}px rgba(0, 245, 255, 0.85), inset 0 0 ${glowFactor / 2}px rgba(189, 0, 255, 0.6)`;
+      thumbBorder.style.filter = `hue-rotate(${hueRotate}deg)`;
+      thumbBorder.style.borderColor = "#00f5ff";
     } else {
+      // बीट्स के बीच के खाली गैप में तुरंत रिस्टोर
       thumbBorder.style.transform = "scale(1)";
       thumbBorder.style.boxShadow = "none";
+      thumbBorder.style.filter = "none";
+      thumbBorder.style.borderColor = "rgba(189, 0, 255, 0.4)";
     }
   }
 
-  // अगर ऑडियो कॉन्टेक्स्ट सस्पेंड है तो उसे चालू करें और लूप शुरू करें
   if (audioCtx.state === 'suspended') {
     audioCtx.resume();
   }
   renderBeat();
 }
 
-// ==========================================================================
-// आपके गानों के इवेंट्स के साथ ऑटो-सिंक
-// ==========================================================================
+// प्लेयर के प्ले/पॉज़ इवेंट्स के साथ ऑटो-कनेक्ट
 window.addEventListener('DOMContentLoaded', () => {
   const audio = document.getElementById('SAudio');
   if (!audio) return;
 
-  // जैसे ही गाना सच में बजना शुरू हो और साउंड आये, वैसे ही ज़ूम चालू करो
-  audio.addEventListener('play', () => {
-    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-  });
-  
   audio.addEventListener('playing', initAudioAnalyzer);
 
-  // गाना पॉज़, बफरिंग (waiting) या खत्म होने पर तुरंत ज़ूम गायब
   const stopEvents = ['pause', 'ended', 'waiting'];
   stopEvents.forEach(evt => {
     audio.addEventListener(evt, () => {
@@ -6411,10 +6409,12 @@ window.addEventListener('DOMContentLoaded', () => {
       if (thumbBorder) {
         thumbBorder.style.transform = "scale(1)";
         thumbBorder.style.boxShadow = "none";
+        thumbBorder.style.filter = "none";
+        thumbBorder.style.borderColor = "rgba(189, 0, 255, 0.4)";
       }
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
     });
   });
 });
-		  </script>
-		  
+			  </script>
+			  
