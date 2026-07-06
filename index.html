@@ -6313,23 +6313,23 @@ document.addEventListener('visibilitychange', () => {
 
 
 
-	                <script>
+	                    <script>
 let audioCtx = null;
 let analyser = null;
 let dataArray = null;
 let source = null;
 let animationFrameId = null;
+let useFallback = false; // CORS एरर आने पर यह अपने आप true हो जाएगा
 
 function initAudioAnalyzer() {
   const audio = document.getElementById('SAudio');
   const thumbBorder = document.querySelector('.thumbnail-border');
   if (!audio || !thumbBorder) return;
 
-  if (!audio.crossOrigin) {
-    audio.crossOrigin = "anonymous";
-  }
+  // RapidAPI/Invidious लिंक्स के लिए CORS रिक्वेस्ट भेजना
+  audio.crossOrigin = "anonymous";
 
-  if (!audioCtx) {
+  if (!audioCtx && !useFallback) {
     try {
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       analyser = audioCtx.createAnalyser();
@@ -6338,84 +6338,95 @@ function initAudioAnalyzer() {
       source.connect(analyser);
       analyser.connect(audioCtx.destination);
 
-      // बीट्स के उतार-चढ़ाव को एकदम कड़क और तीखा (Sharp) बनाने के लिए स्मूथिंग कम की
-      analyser.smoothingTimeConstant = 0.4; 
+      analyser.smoothingTimeConstant = 0.3; 
       analyser.fftSize = 32; 
       dataArray = new Uint8Array(analyser.frequencyBinCount);
     } catch (e) {
-      console.log("Audio API Setup Error:", e);
-      return;
+      console.log("CORS Blocked or Audio Error! Switching to Safe Fallback.", e);
+      useFallback = true; // एरर आते ही सेफ मोड चालू
     }
   }
 
   function renderBeat() {
     if (audio.paused || audio.ended) {
-      thumbBorder.style.transform = "matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)";
+      thumbBorder.style.transform = "scale(1) translateZ(0px)";
       thumbBorder.style.boxShadow = "none";
       thumbBorder.style.filter = "none";
       return;
     }
 
     animationFrameId = requestAnimationFrame(renderBeat);
-    analyser.getByteFrequencyData(dataArray);
 
-    // सब-बास और डीजे पंच को पूरी तरह निचोड़ना
-    let bassValue = (dataArray[0] + dataArray[1] + dataArray[2]) / 3;
+    // मोड 1: अगर CORS ब्लॉक नहीं है तो असली गाना रीड करो (100% Original)
+    if (!useFallback && analyser) {
+      analyser.getByteFrequencyData(dataArray);
+      let bassValue = (dataArray[0] + dataArray[1] + dataArray[2]) / 3;
 
-    // थ्रेशोल्ड (Threshold) सेट किया ताकि हल्की आवाज़ पर शांत रहे, और तेज़ बेस पर एकदम से झटका मारे
-    if (bassValue > 50) {
-      // बेस वैल्यू को एक्सपोनेंशियल (पावर) बनाकर ज़ूम की "जान" बढ़ाना
-      const intensity = Math.pow((bassValue / 255), 2); 
+      if (bassValue > 45) {
+        const normalized = bassValue / 255;
+        applyPumpEffect(thumbBorder, normalized);
+      } else {
+        resetPumpEffect(thumbBorder);
+      }
+    } 
+    // मोड 2: अगर Invidious सर्वर ने ब्लॉक कर दिया, तो ये स्मार्ट इंजन संभालेगा (Safe Mode)
+    else {
+      const curTime = audio.currentTime;
+      let rawBeat = Math.sin(curTime * 9.8) * Math.cos(curTime * 4.3) * Math.sin(Date.now() * 0.015);
       
-      // अब स्केल 1.15x तक जाएगा (यानी फुल स्क्रीन विजिबल झटका)
-      const scaleFactor = 1 + (intensity * 0.15); 
-      
-      // 3D पुश इफ़ेक्ट (यह इमेज को स्क्रीन से बाहर फेंकेगा)
-      const translateZ = intensity * 40; 
-      const glowFactor = intensity * 60;
-      const hueRotate = intensity * 150;
-
-      // 3D मैट्रिक्स ट्रांसफॉर्म का इस्तेमाल (मक्खन जैसी स्मूथनेस और खतरनाक झटका)
-      thumbBorder.style.transform = `scale(${scaleFactor}) translateZ(${translateZ}px)`;
-      thumbBorder.style.boxShadow = `0 0 ${glowFactor + 20}px rgba(0, 245, 255, 0.9), 
-                                     0 0 ${glowFactor / 2}px rgba(189, 0, 255, 0.7), 
-                                     inset 0 0 15px rgba(255, 255, 255, 0.5)`;
-      thumbBorder.style.filter = `hue-rotate(${hueRotate}deg) saturate(1.3)`;
-      thumbBorder.style.borderColor = "#00f5ff";
-    } else {
-      // बीट खत्म होते ही स्प्रिंग की तरह अपनी जगह वापस
-      thumbBorder.style.transform = "matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)";
-      thumbBorder.style.boxShadow = "none";
-      thumbBorder.style.filter = "none";
-      thumbBorder.style.borderColor = "rgba(189, 0, 255, 0.4)";
+      if (rawBeat > 0.25) {
+        const intensity = (rawBeat - 0.25) / 0.75;
+        applyPumpEffect(thumbBorder, intensity);
+      } else {
+        resetPumpEffect(thumbBorder);
+      }
     }
   }
 
-  if (audioCtx.state === 'suspended') {
+  if (audioCtx && audioCtx.state === 'suspended') {
     audioCtx.resume();
   }
   renderBeat();
 }
 
+// इफ़ेक्ट अप्लाई करने का कॉमन फंक्शन
+function applyPumpEffect(el, intensity) {
+  const scaleFactor = 1 + (intensity * 0.16); 
+  const translateZ = intensity * 45; 
+  const glowFactor = intensity * 65;
+  const hueRotate = intensity * 180;
+
+  el.style.transform = `scale(${scaleFactor}) translateZ(${translateZ}px)`;
+  el.style.boxShadow = `0 0 ${glowFactor + 20}px rgba(0, 245, 255, 0.95), 0 0 ${glowFactor / 2}px rgba(189, 0, 255, 0.8)`;
+  el.style.filter = `hue-rotate(${hueRotate}deg) saturate(1.4)`;
+}
+
+function resetPumpEffect(el) {
+  el.style.transform = "scale(1) translateZ(0px)";
+  el.style.boxShadow = "none";
+  el.style.filter = "none";
+}
+
+// प्लेयर इवेंट्स
 window.addEventListener('DOMContentLoaded', () => {
   const audio = document.getElementById('SAudio');
   if (!audio) return;
 
   audio.addEventListener('playing', initAudioAnalyzer);
 
+  // अगर ब्राउज़र CORS एरर देता है, तो यह इवेंट उसे तुरंत पकड़ लेगा
+  audio.addEventListener('error', () => {
+    useFallback = true;
+  });
+
   const stopEvents = ['pause', 'ended', 'waiting'];
   stopEvents.forEach(evt => {
     audio.addEventListener(evt, () => {
       const thumbBorder = document.querySelector('.thumbnail-border');
-      if (thumbBorder) {
-        thumbBorder.style.transform = "matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)";
-        thumbBorder.style.boxShadow = "none";
-        thumbBorder.style.filter = "none";
-        thumbBorder.style.borderColor = "rgba(189, 0, 255, 0.4)";
-      }
+      if (thumbBorder) resetPumpEffect(thumbBorder);
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
     });
   });
 });
-					</script>
-					
+						</script>
+						
