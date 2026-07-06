@@ -10,22 +10,20 @@
 html {
   scroll-behavior: smooth;
   height: auto;
-  overflow-y: auto; /* जकड़े हुए स्क्रॉल को जबरन अनलॉक करने के लिए */
+  overflow-y: auto;
 }
 
 body {
-  /* Deep Cosmic Obsidian Background */
   background: #060814; 
   font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
-  min-height: 100vh;  /* स्क्रीन की पूरी हाइट लेगा लेकिन स्क्रॉल नहीं रोकेगा */
+  min-height: 100vh;  
   height: auto;
-  overflow-x: hidden; /* हॉरिजॉन्टल स्क्रॉल को रोकने के लिए */
+  overflow-x: hidden; 
 }
 
 /* ==========================================================================
    2. IMMERSIVE MODAL & LAYER ARCHITECTURE
    ========================================================================== */
-/* 100% Immersive Full Screen Background Matrix */
 .modal-container1 {
   display: none;
   position: fixed;
@@ -34,7 +32,6 @@ body {
   top: 0;
   width: 100vw;
   height: 100vh;
-  /* Deep Blue-Purple Hybrid Gradient */
   background: radial-gradient(circle at 50% 30%, #120e2e 0%, #060919 60%, #02040a 100%);
   overflow: hidden;
 }
@@ -47,7 +44,6 @@ body {
   flex-direction: column;
 }
 
-/* Unique Glowing Minimalist Close Switch */
 .modal-content1 > span[onclick="closeModal()"] {
   position: absolute;
   right: 25px;
@@ -70,7 +66,7 @@ body {
   content: "\f00d";
   font-family: "Font Awesome 6 Free";
   font-weight: 900;
-  color: #00f5ff; /* Cyan Close Icon */
+  color: #00f5ff; 
   font-size: 1.1rem;
   text-shadow: 0 0 8px #00f5ff;
 }
@@ -99,7 +95,7 @@ body {
 
 #phone {
   width: 100%;
-  min-height: 100vh; /* फिक्स 100% को बदलकर मिनिमम किया ताकि स्क्रॉल जेनरेट हो सके */
+  min-height: 100vh; 
   height: auto;
   padding: 30px 25px;
   display: flex;
@@ -107,11 +103,9 @@ body {
   justify-content: space-between;
 }
 
-/* Floating Top Bar (Volume Grid) */
 #top-menu {
   display: flex;
   align-items: center;
-  /* Transparent Dark Glass with Purple Hint */
   background: rgba(20, 15, 38, 0.4);
   padding: 12px 20px;
   border-radius: 20px;
@@ -129,7 +123,7 @@ body {
 }
 
 #top-menu i:hover { 
-  color: #bd00ff; /* Purple Neon Spark */
+  color: #bd00ff; 
   text-shadow: 0 0 10px #bd00ff;
 }
 
@@ -154,7 +148,7 @@ body {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #00f5ff, #bd00ff); /* Mix Gradient Thumb */
+  background: linear-gradient(135deg, #00f5ff, #bd00ff); 
   box-shadow: 0 0 10px #00f5ff;
   cursor: pointer;
 }
@@ -171,20 +165,18 @@ body {
   border-radius: 50%;
   padding: 12px;
   background: transparent;
-  /* Cyan and Purple Dual Border Effect */
   border: 2px solid rgba(0, 245, 255, 0.2);
   border-bottom-color: rgba(189, 0, 255, 0.4);
-  position: relative;
+  position: relative; /* विजुअलाइज़र कैनवास के लिए आवश्यक */
   box-shadow: 0 0 40px rgba(189, 0, 255, 0.1);
 }
 
-/* Outer Tech Rings */
 .thumbnail-border::before {
   content: '';
   position: absolute;
   top: -6px; left: -6px; right: -6px; bottom: -6px;
   border-radius: 50%;
-  border: 1px dashed rgba(0, 255, 136, 0.4); /* Neon Green Laser Ring */
+  border: 1px dashed rgba(0, 255, 136, 0.4); 
 }
 
 .audio-player #thumbnailContainer {
@@ -235,7 +227,6 @@ body {
    5. GLASS-CONSOLE & INFRASTRUCTURE
    ========================================================================== */
 .bottom-console-pod {
-  /* Rich Mix Dark Gradient */
   background: linear-gradient(135deg, rgba(20, 12, 38, 0.6) 0%, rgba(10, 15, 30, 0.4) 100%);
   border: 1px solid rgba(0, 245, 255, 0.1);
   border-radius: 35px;
@@ -246,7 +237,6 @@ body {
   margin-bottom: 10px;
 }
 
-/* Typography Matrix */
 #song-details {
   text-align: center;
   margin-bottom: 20px;
@@ -263,7 +253,7 @@ body {
 
 .artist {
   font-size: 0.85rem;
-  color: #00f5ff; /* Hot Cyan Text */
+  color: #00f5ff; 
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 2px;
@@ -271,7 +261,6 @@ body {
 }
 .artist:empty::before { content: "</> Vivek Kushwaha "; }
 
-/* Timeline & Laser Seekbar */
 #time-slider {
   padding: 0 5px;
   margin-bottom: 25px;
@@ -306,7 +295,6 @@ body {
   width: 100%;
   height: 4px;
   border-radius: 10px;
-  /* Background Line Track Mix */
   background: linear-gradient(90deg, #bd00ff 0%, #00f5ff 100%);
   opacity: 0.3;
   outline: none;
@@ -325,7 +313,6 @@ body {
   border: 2px solid #bd00ff;
 }
 
-/* Premium Control Node Array */
 #song-controls {
   display: flex;
   justify-content: space-around;
@@ -351,7 +338,6 @@ body {
   text-shadow: 0 0 10px #00f5ff, 0 0 20px #bd00ff;
 }
 
-/* Core Center Glowing Play Button (Cyan-Green-Purple Hybrid) */
 #play {
   background: #0b091a;
   width: 65px;
@@ -360,7 +346,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #00ff88; /* Neon Green Border */
+  border: 2px solid #00ff88; 
   box-shadow: 0 0 20px rgba(0, 255, 136, 0.3), inset 0 0 10px rgba(189, 0, 255, 0.2);
   position: relative;
 }
@@ -372,7 +358,7 @@ body {
 }
 
 #play:hover {
-  border-color: #00f5ff; /* Changes to Cyan on Hover */
+  border-color: #00f5ff; 
   box-shadow: 0 0 25px rgba(0, 245, 255, 0.6);
 }
 #play:hover i {
@@ -380,6 +366,4 @@ body {
   text-shadow: 0 0 10px #00f5ff;
 }
 
-/* Hidden Utilities */
 #stop, br { display: none; }
-
