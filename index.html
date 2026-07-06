@@ -6307,65 +6307,80 @@ document.addEventListener('visibilitychange', () => {
 });
 </script>
            
-    <script>
+
+
+
+
+
+
+
+	<script>
 let visualizerInitialized = false;
 let animationId;
-const barsCount = 48; // विजुअलाइज़र लाइनों की संख्या (क्यूट घनी डिज़ाइन के लिए)
+const barsCount = 48; // लाइनों की कुल संख्या
 let barHeights = new Float32Array(barsCount);
 let targetHeights = new Float32Array(barsCount);
 
-// सिम्युलेटेड विजुअलाइज़र इंजन (100% लैग फ्री और असली जैसा लुक)
+// कैनवास की साइज को CSS (68vw) के हिसाब से एकदम परफेक्ट सेट करने का फंक्शन
+function resizeVisualizerCanvas(canvas) {
+  if (!canvas) return;
+  
+  // थंबनेल पैरेंट की असली चौड़ाई और ऊंचाई मापना
+  const parent = canvas.parentElement;
+  const size = parent ? parent.clientWidth : 270; 
+  
+  // डिवाइस पिक्सल रेशियो के साथ शार्पनेस फिक्स करना
+  canvas.width = size * window.devicePixelRatio;
+  canvas.height = size * window.devicePixelRatio;
+  
+  const ctx = canvas.getContext('2d');
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+}
+
 function startVisualizerEngine() {
   const audio = document.getElementById('SAudio');
   const canvas = document.getElementById('visualizer');
   
   if (!canvas || !audio) return;
   
-  // अगर एक बार इनिशियलाइज़ हो चुका है, तो दोबारा सेटअप न करें
+  // अगर साइज सेट नहीं है या 0 है, तो उसे तुरंत ठीक करें
+  resizeVisualizerCanvas(canvas);
+  
   if (visualizerInitialized) return;
 
   try {
     const ctx = canvas.getContext('2d');
-
-    // स्क्रीन के पिक्सल के हिसाब से कैनवास को क्रिस्टल क्लियर और शार्प करना
-    canvas.width = canvas.offsetWidth * window.devicePixelRatio;
-    canvas.height = canvas.offsetHeight * window.devicePixelRatio;
-    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-
-    const centerX = canvas.offsetWidth / 2;
-    const centerY = canvas.offsetHeight / 2;
-    const radius = (canvas.offsetWidth / 2) - 5; 
-
+    
     function draw() {
       animationId = requestAnimationFrame(draw);
       
-      // सीधे ऑडियो एलिमेंट के स्टेटस को ट्रैक करना
+      // पैरेंट की चौड़ाई के आधार पर सेंटर और रेडियस को हर फ्रेम पर डायनामिक रखना
+      const currentWidth = canvas.width / window.devicePixelRatio;
+      const centerX = currentWidth / 2;
+      const centerY = currentWidth / 2;
+      const radius = (currentWidth / 2) - 6; // आपकी लेज़र रिंग के एकदम पास सेट करने के लिए
+
       const isPlaying = audio && !audio.paused && !audio.ended;
 
-      // पुराना फ्रेम साफ करना
-      ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+      ctx.clearRect(0, 0, currentWidth, currentWidth);
 
       for (let i = 0; i < barsCount; i++) {
         if (isPlaying) {
-          // जब गाना चल रहा हो: बीट्स को रियलिस्टिक एडवांस लुक देने के लिए साइन-वेव और मैथ का कॉम्बिनेशन
+          // जब गाना चल रहा हो: बीट्स को रियलिस्टिक एडवांस लुक देने के लिए मैथ कैलकुलेशन
           if (Math.random() > 0.88) {
-            // अचानक आने वाली ऊंची बीट्स (Spikes)
-            targetHeights[i] = Math.random() * 24 + 4; 
+            targetHeights[i] = Math.random() * 22 + 4; // रैंडम स्पाइक्स
           } else {
-            // स्मूथ नेचुरल डांसिंग वेव फॉर्म
-            targetHeights[i] = (Math.sin(Date.now() * 0.006 + i * 0.3) * 8) + 12;
+            targetHeights[i] = (Math.sin(Date.now() * 0.006 + i * 0.3) * 8) + 12; // स्मूथ वेव्स
           }
-          // बास इफ़ेक्ट के लिए कुछ रैंडम वाइब्रेशन जोड़ना
           targetHeights[i] += Math.sin(Date.now() * 0.012) * 3;
         } else {
-          // जब गाना रुक जाए: सभी बार्स को बिना किसी झटके के धीरे से वापस जीरो पर लाना
+          // पॉज़ होने पर बिना झटके के धीरे से 0 पर लाना
           targetHeights[i] = 0;
         }
 
-        // लिनियर इंटरपोलेशन (स्मूथ ट्रांज़िशन के लिए ताकि बार्स कूदती हुई न लगें)
+        // स्मूथ ट्रांज़िशन (Lerp इफ़ेक्ट)
         barHeights[i] += (targetHeights[i] - barHeights[i]) * 0.22;
 
-        // गोल घुमावदार एंगल्स की गणना
         const angle = (i * 2 * Math.PI) / barsCount;
         const x1 = centerX + Math.cos(angle) * radius;
         const y1 = centerY + Math.sin(angle) * radius;
@@ -6376,40 +6391,45 @@ function startVisualizerEngine() {
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
         
-        // क्यूट नियोन कलर्स जो आपकी '1000246675.jpg' इमेज की थीम से मैच करते हैं (Cyan & Purple)
+        // इमेज `1000246677.jpg` की नियॉन थीम के अनुसार कलर्स (Cyan & Purple)
         ctx.strokeStyle = i % 2 === 0 ? '#00f5ff' : '#bd00ff';
-        ctx.lineWidth = 4;       // मोटी पिल्स जैसी प्रीमियम डिज़ाइन
-        ctx.lineCap = 'round';   // क्यूट राउंडेड किनारे
+        ctx.lineWidth = 4;       // थिकनेस (मोटी पिल्स जैसी डिज़ाइन)
+        ctx.lineCap = 'round';   // किनारों को क्यूट राउंड लुक
         ctx.stroke();
       }
     }
 
     draw();
     visualizerInitialized = true;
-    console.log("Advanced Simulated Visualizer Successfully Connected!");
+    console.log("Visualizer Fixed & Started Successfully!");
   } catch (error) {
-    console.log("Visualizer Engine Error:", error);
+    console.log("Visualizer Error:", error);
   }
 }
 
 // ==========================================================================
-// आपके प्लेयर के क्लिक इवेंट्स के साथ ऑटो-ट्रिगर इंटीग्रेशन
+// ऑटो-ट्रिगर और रीसाइज लिसनर्स
 // ==========================================================================
 window.addEventListener('DOMContentLoaded', () => {
-  // आपके सभी संभावित प्ले बटन्स की लिस्ट
+  const canvas = document.getElementById('visualizer');
+  if (canvas) {
+    resizeVisualizerCanvas(canvas);
+    // अगर स्क्रीन रोटेट या रीसाइज हो तो विजुअलाइज़र न बिगड़े
+    window.addEventListener('resize', () => resizeVisualizerCanvas(canvas));
+  }
+
+  // सभी प्ले बटन्स पर इवेंट जोड़ना
   const playElements = ['play', 'playvfy', 'SThumb', 'playButtonOverlay'];
-  
   playElements.forEach(id => {
     const el = document.getElementById(id);
     if (el) {
       el.addEventListener('click', () => {
-        // बटन क्लिक होते ही तुरंत विजुअलाइज़र शुरू करें
         setTimeout(startVisualizerEngine, 50);
       });
     }
   });
 
-  // बैकअप सेफ्टी: अगर गाना किसी और तरीके से भी प्ले होता है, तो विजुअलाइज़र एक्टिव हो जाएगा
+  // सेफ्टी बैकअप: ऑडियो के 'play' होते ही विजुअलाइज़र शुरू हो जाएगा
   const audio = document.getElementById('SAudio');
   if (audio) {
     audio.addEventListener('play', startVisualizerEngine);
@@ -6417,5 +6437,3 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 	</script>
 	
-
-        
