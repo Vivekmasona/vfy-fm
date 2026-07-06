@@ -4969,6 +4969,19 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
     </div>
     
     <div class="thumbnail-border">
+  
+  <!-- ये रहा आपका असली और स्टाइलिश 32 बार्स का कंटेनर -->
+  <div id="stylish-bars-visualizer">
+    <!-- 32 प्रीमियम नियॉन बार्स -->
+    <div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div>
+    <div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div>
+    <div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div>
+    <div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div>
+    <div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div>
+    <div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div>
+    <div class="s-bar"></div><div class="s-bar"></div>
+  </div>
+
   <div class="audio-player">
     <div id="thumbnailContainer">
       <img id="SThumb" src="" alt="/img/newdp.png" onclick="clickButton()">
@@ -4976,6 +4989,7 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
     </div>
   </div>  
 </div> 
+
 
 
 
@@ -6313,20 +6327,19 @@ document.addEventListener('visibilitychange', () => {
 
 
 
-	                    <script>
+	                      <script>
 let audioCtx = null;
 let analyser = null;
 let dataArray = null;
 let source = null;
 let animationFrameId = null;
-let useFallback = false; // CORS एरर आने पर यह अपने आप true हो जाएगा
+let useFallback = false;
 
-function initAudioAnalyzer() {
+function initAudioVisualizer() {
   const audio = document.getElementById('SAudio');
-  const thumbBorder = document.querySelector('.thumbnail-border');
-  if (!audio || !thumbBorder) return;
+  const bars = document.querySelectorAll('.s-bar');
+  if (!audio || !bars.length) return;
 
-  // RapidAPI/Invidious लिंक्स के लिए CORS रिक्वेस्ट भेजना
   audio.crossOrigin = "anonymous";
 
   if (!audioCtx && !useFallback) {
@@ -6338,95 +6351,86 @@ function initAudioAnalyzer() {
       source.connect(analyser);
       analyser.connect(audioCtx.destination);
 
-      analyser.smoothingTimeConstant = 0.3; 
-      analyser.fftSize = 32; 
+      analyser.smoothingTimeConstant = 0.75; // बार्स के डांस को मखमली स्मूथ बनाने के लिए
+      analyser.fftSize = 64; // 32 बार्स के लिए परफेक्ट साइज
       dataArray = new Uint8Array(analyser.frequencyBinCount);
     } catch (e) {
-      console.log("CORS Blocked or Audio Error! Switching to Safe Fallback.", e);
-      useFallback = true; // एरर आते ही सेफ मोड चालू
+      console.log("Audio API Setup Error! Using Stylish Fallback Engine.");
+      useFallback = true;
     }
   }
 
-  function renderBeat() {
+  function drawBars() {
     if (audio.paused || audio.ended) {
-      thumbBorder.style.transform = "scale(1) translateZ(0px)";
-      thumbBorder.style.boxShadow = "none";
-      thumbBorder.style.filter = "none";
+      // गाना रुकते ही सारी बार्स तुरंत अंदर छिप जाएंगी (0px हो जाएंगी)
+      bars.forEach(bar => {
+        bar.style.height = "4px";
+        bar.style.boxShadow = "none";
+      });
       return;
     }
 
-    animationFrameId = requestAnimationFrame(renderBeat);
+    animationFrameId = requestAnimationFrame(drawBars);
 
-    // मोड 1: अगर CORS ब्लॉक नहीं है तो असली गाना रीड करो (100% Original)
     if (!useFallback && analyser) {
+      // मोड 1: असली गाना रीड करना (100% Original Audio-Wave)
       analyser.getByteFrequencyData(dataArray);
-      let bassValue = (dataArray[0] + dataArray[1] + dataArray[2]) / 3;
-
-      if (bassValue > 45) {
-        const normalized = bassValue / 255;
-        applyPumpEffect(thumbBorder, normalized);
-      } else {
-        resetPumpEffect(thumbBorder);
-      }
-    } 
-    // मोड 2: अगर Invidious सर्वर ने ब्लॉक कर दिया, तो ये स्मार्ट इंजन संभालेगा (Safe Mode)
-    else {
-      const curTime = audio.currentTime;
-      let rawBeat = Math.sin(curTime * 9.8) * Math.cos(curTime * 4.3) * Math.sin(Date.now() * 0.015);
       
-      if (rawBeat > 0.25) {
-        const intensity = (rawBeat - 0.25) / 0.75;
-        applyPumpEffect(thumbBorder, intensity);
-      } else {
-        resetPumpEffect(thumbBorder);
-      }
+      bars.forEach((bar, index) => {
+        // अलग-अलग इंडेक्स को डेटा असाइन करना ताकि वेव ऊपर-नीचे अलग दिखे
+        let rawValue = dataArray[index % dataArray.length];
+        
+        if (rawValue > 20) {
+          let heightValue = (rawValue / 255) * 45; // मैक्स लंबाई 45px तक बाहर आएगी
+          bar.style.height = `${heightValue + 4}px`;
+          bar.style.boxShadow = `0 0 10px rgba(0, 245, 255, 0.8), 0 0 4px #ff007c`;
+        } else {
+          bar.style.height = "4px";
+          bar.style.boxShadow = "none";
+        }
+      });
+    } else {
+      // मोड 2: सुरक्षा बैकअप मोड (ताकि Invidious ब्लॉक होने पर भी बार्स नाचती रहें)
+      const curTime = audio.currentTime;
+      bars.forEach((bar, index) => {
+        let fakeWave = Math.sin(curTime * 8 + index) * Math.cos(curTime * 3 + index);
+        if (fakeWave > 0.1) {
+          let heightValue = fakeWave * 40;
+          bar.style.height = `${heightValue + 4}px`;
+          bar.style.boxShadow = `0 0 10px rgba(0, 245, 255, 0.8)`;
+        } else {
+          bar.style.height = "4px";
+          bar.style.boxShadow = "none";
+        }
+      });
     }
   }
 
   if (audioCtx && audioCtx.state === 'suspended') {
     audioCtx.resume();
   }
-  renderBeat();
+  drawBars();
 }
 
-// इफ़ेक्ट अप्लाई करने का कॉमन फंक्शन
-function applyPumpEffect(el, intensity) {
-  const scaleFactor = 1 + (intensity * 0.16); 
-  const translateZ = intensity * 45; 
-  const glowFactor = intensity * 65;
-  const hueRotate = intensity * 180;
-
-  el.style.transform = `scale(${scaleFactor}) translateZ(${translateZ}px)`;
-  el.style.boxShadow = `0 0 ${glowFactor + 20}px rgba(0, 245, 255, 0.95), 0 0 ${glowFactor / 2}px rgba(189, 0, 255, 0.8)`;
-  el.style.filter = `hue-rotate(${hueRotate}deg) saturate(1.4)`;
-}
-
-function resetPumpEffect(el) {
-  el.style.transform = "scale(1) translateZ(0px)";
-  el.style.boxShadow = "none";
-  el.style.filter = "none";
-}
-
-// प्लेयर इवेंट्स
+// प्लेयर इवेंट्स बाइंडिंग
 window.addEventListener('DOMContentLoaded', () => {
   const audio = document.getElementById('SAudio');
   if (!audio) return;
 
-  audio.addEventListener('playing', initAudioAnalyzer);
-
-  // अगर ब्राउज़र CORS एरर देता है, तो यह इवेंट उसे तुरंत पकड़ लेगा
-  audio.addEventListener('error', () => {
-    useFallback = true;
-  });
+  audio.addEventListener('playing', initAudioVisualizer);
+  audio.addEventListener('error', () => { useFallback = true; });
 
   const stopEvents = ['pause', 'ended', 'waiting'];
   stopEvents.forEach(evt => {
     audio.addEventListener(evt, () => {
-      const thumbBorder = document.querySelector('.thumbnail-border');
-      if (thumbBorder) resetPumpEffect(thumbBorder);
+      const bars = document.querySelectorAll('.s-bar');
+      bars.forEach(bar => {
+        bar.style.height = "4px";
+        bar.style.boxShadow = "none";
+      });
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
     });
   });
 });
-						</script>
-						
+						  </script>
+						  
