@@ -4970,17 +4970,8 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
     
     <div class="thumbnail-border">
   
-  <!-- ये रहा आपका असली और स्टाइलिश 32 बार्स का कंटेनर -->
-  <div id="stylish-bars-visualizer">
-    <!-- 32 प्रीमियम नियॉन बार्स -->
-    <div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div>
-    <div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div>
-    <div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div>
-    <div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div>
-    <div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div>
-    <div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div>
-    <div class="s-bar"></div><div class="s-bar"></div>
-  </div>
+  <!-- ये रहा आपका सुपर-स्मूथ 3D वेव कैनवास -->
+  <canvas id="fluid-wave-visualizer"></canvas>
 
   <div class="audio-player">
     <div id="thumbnailContainer">
@@ -4989,6 +4980,7 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
     </div>
   </div>  
 </div> 
+	  
 
 
 
@@ -6327,7 +6319,7 @@ document.addEventListener('visibilitychange', () => {
 
 
 
-	                      <script>
+<script>
 let audioCtx = null;
 let analyser = null;
 let dataArray = null;
@@ -6335,10 +6327,19 @@ let source = null;
 let animationFrameId = null;
 let useFallback = false;
 
-function initAudioVisualizer() {
+function initFluidVisualizer() {
   const audio = document.getElementById('SAudio');
-  const bars = document.querySelectorAll('.s-bar');
-  if (!audio || !bars.length) return;
+  const canvas = document.getElementById('fluid-wave-visualizer');
+  if (!audio || !canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  
+  // डिस्प्ले को शार्प और हाई-डेफिनिशन बनाने के लिए साइजिंग फिक्स
+  canvas.width = 400;
+  canvas.height = 400;
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  const baseRadius = 135; // थंबनेल रिंग के ठीक ऊपर सेट करने के लिए रेडियस
 
   audio.crossOrigin = "anonymous";
 
@@ -6346,91 +6347,109 @@ function initAudioVisualizer() {
     try {
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       analyser = audioCtx.createAnalyser();
-      
       source = audioCtx.createMediaElementSource(audio);
       source.connect(analyser);
       analyser.connect(audioCtx.destination);
 
-      analyser.smoothingTimeConstant = 0.75; // बार्स के डांस को मखमली स्मूथ बनाने के लिए
-      analyser.fftSize = 64; // 32 बार्स के लिए परफेक्ट साइज
+      analyser.smoothingTimeConstant = 0.82; // लहरों को पानी की तरह मखमली बहाव देने के लिए
+      analyser.fftSize = 128; // परफेक्ट वेव डेंसिटी
       dataArray = new Uint8Array(analyser.frequencyBinCount);
     } catch (e) {
-      console.log("Audio API Setup Error! Using Stylish Fallback Engine.");
+      console.log("Audio Context Error, switching to simulation mode.");
       useFallback = true;
     }
   }
 
-  function drawBars() {
+  // कैनवास को विजिबल करना
+  canvas.classList.add('wave-active');
+
+  function drawWave() {
     if (audio.paused || audio.ended) {
-      // गाना रुकते ही सारी बार्स तुरंत अंदर छिप जाएंगी (0px हो जाएंगी)
-      bars.forEach(bar => {
-        bar.style.height = "4px";
-        bar.style.boxShadow = "none";
-      });
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      canvas.classList.remove('wave-active');
       return;
     }
 
-    animationFrameId = requestAnimationFrame(drawBars);
+    animationFrameId = requestAnimationFrame(drawWave);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // कुल 64 पॉइंट्स से मिलकर बनेगा स्मूथ सर्कल
+    const pointsCount = 64; 
 
     if (!useFallback && analyser) {
-      // मोड 1: असली गाना रीड करना (100% Original Audio-Wave)
       analyser.getByteFrequencyData(dataArray);
-      
-      bars.forEach((bar, index) => {
-        // अलग-अलग इंडेक्स को डेटा असाइन करना ताकि वेव ऊपर-नीचे अलग दिखे
-        let rawValue = dataArray[index % dataArray.length];
-        
-        if (rawValue > 20) {
-          let heightValue = (rawValue / 255) * 45; // मैक्स लंबाई 45px तक बाहर आएगी
-          bar.style.height = `${heightValue + 4}px`;
-          bar.style.boxShadow = `0 0 10px rgba(0, 245, 255, 0.8), 0 0 4px #ff007c`;
-        } else {
-          bar.style.height = "4px";
-          bar.style.boxShadow = "none";
-        }
-      });
-    } else {
-      // मोड 2: सुरक्षा बैकअप मोड (ताकि Invidious ब्लॉक होने पर भी बार्स नाचती रहें)
-      const curTime = audio.currentTime;
-      bars.forEach((bar, index) => {
-        let fakeWave = Math.sin(curTime * 8 + index) * Math.cos(curTime * 3 + index);
-        if (fakeWave > 0.1) {
-          let heightValue = fakeWave * 40;
-          bar.style.height = `${heightValue + 4}px`;
-          bar.style.boxShadow = `0 0 10px rgba(0, 245, 255, 0.8)`;
-        } else {
-          bar.style.height = "4px";
-          bar.style.boxShadow = "none";
-        }
-      });
     }
+
+    // 1000246708.jpg की तरह सुंदर सियान-पर्पल ग्रेडिएंट बनाना
+    let gradient = ctx.createRadialGradient(centerX, centerY, baseRadius, centerX, centerY, baseRadius + 40);
+    gradient.addColorStop(0, '#00f5ff'); // अंदर सियान (Cyan)
+    gradient.addColorStop(0.5, '#bd00ff'); // बीच में पर्पल
+    gradient.addColorStop(1, 'rgba(255, 0, 124, 0)'); // बाहर जाते ही फेड आउट
+
+    ctx.beginPath();
+
+    for (let i = 0; i < pointsCount; i++) {
+      let angle = (i / pointsCount) * Math.PI * 2;
+      let audioIndex = i < pointsCount / 2 ? i : pointsCount - i;
+      
+      let rawValue = 0;
+      if (!useFallback && analyser) {
+        rawValue = dataArray[audioIndex % dataArray.length];
+      } else {
+        // बैकअप मोड: टाइम बेस्ड सिम्युलेटेड लहर
+        let curTime = audio.currentTime;
+        rawValue = (Math.sin(curTime * 6 + i * 0.3) * Math.cos(curTime * 2 + i * 0.5) + 1) * 70;
+      }
+
+      // लहर की ऊंचाई सेट करना (बास आने पर वेव बाहर उछलेगी)
+      let waveHeight = (rawValue / 255) * 45;
+      if (rawValue < 15) waveHeight = 0;
+
+      let r = baseRadius + waveHeight;
+      let x = centerX + Math.cos(angle) * r;
+      let y = centerY + Math.sin(angle) * r;
+
+      if (i === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
+    }
+
+    ctx.closePath();
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = gradient;
+    ctx.shadowBlur = 18;
+    ctx.shadowColor = '#00f5ff'; // नियॉन ग्लो इफ़ेक्ट
+    ctx.stroke();
   }
 
   if (audioCtx && audioCtx.state === 'suspended') {
     audioCtx.resume();
   }
-  drawBars();
+  drawWave();
 }
 
-// प्लेयर इवेंट्स बाइंडिंग
+// प्लेयर इवेंट्स सिंकिंग
 window.addEventListener('DOMContentLoaded', () => {
   const audio = document.getElementById('SAudio');
   if (!audio) return;
 
-  audio.addEventListener('playing', initAudioVisualizer);
+  audio.addEventListener('playing', initFluidVisualizer);
   audio.addEventListener('error', () => { useFallback = true; });
 
   const stopEvents = ['pause', 'ended', 'waiting'];
   stopEvents.forEach(evt => {
     audio.addEventListener(evt, () => {
-      const bars = document.querySelectorAll('.s-bar');
-      bars.forEach(bar => {
-        bar.style.height = "4px";
-        bar.style.boxShadow = "none";
-      });
+      const canvas = document.getElementById('fluid-wave-visualizer');
+      if (canvas) {
+        canvas.classList.remove('wave-active');
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
     });
   });
 });
-						  </script>
-						  
+</script>
+	
