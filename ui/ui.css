@@ -369,11 +369,16 @@ body {
 #stop, br { display: none; }
 
 /* ==========================================================================
-   7. ULTRA-SMOOTH HARDWARE-ACCELERATED ZOOM
+   7. ULTRA-RESPONSIVE 3D SPRING PUMP EFFECT
    ========================================================================== */
 .thumbnail-border {
-  /* मोबाइल में लैग खत्म करने के लिए हार्डवेयर एक्सीलरेशन */
-  will-change: transform, box-shadow;
-  transform: scale(1);
-  transition: transform 0.08s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.08s ease;
+  /* 3D गहराई देने के लिए */
+  transform-style: preserve-3d;
+  perspective: 500px;
+  will-change: transform, box-shadow, filter;
+  
+  /* बेहद जरूरी: 0.05s का सुपरफास्ट टाइमिंग जो बीट पर तुरंत झटका (Snap) देगा */
+  transition: transform 0.05s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+              box-shadow 0.05s ease, 
+              filter 0.1s ease;
 }
