@@ -6313,7 +6313,7 @@ document.addEventListener('visibilitychange', () => {
 
 
 
-	          <script>
+	                <script>
 let audioCtx = null;
 let analyser = null;
 let dataArray = null;
@@ -6338,51 +6338,53 @@ function initAudioAnalyzer() {
       source.connect(analyser);
       analyser.connect(audioCtx.destination);
 
-      // सटीक बीट डिटेक्शन के लिए fftSize को सेट करना
+      // बीट्स के उतार-चढ़ाव को एकदम कड़क और तीखा (Sharp) बनाने के लिए स्मूथिंग कम की
+      analyser.smoothingTimeConstant = 0.4; 
       analyser.fftSize = 32; 
-      const bufferLength = analyser.frequencyBinCount;
-      dataArray = new Uint8Array(bufferLength);
+      dataArray = new Uint8Array(analyser.frequencyBinCount);
     } catch (e) {
       console.log("Audio API Setup Error:", e);
       return;
     }
   }
 
-  // 60fps पर असली धमाका (हार्डकोर बीट सिंक)
   function renderBeat() {
     if (audio.paused || audio.ended) {
-      // गाना रुकते ही सब कुछ तुरंत शांत और अपनी नॉर्मल जगह पर लॉक
-      thumbBorder.style.transform = "scale(1)";
+      thumbBorder.style.transform = "matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)";
       thumbBorder.style.boxShadow = "none";
-      thumbBorder.style.borderColor = "rgba(189, 0, 255, 0.4)";
+      thumbBorder.style.filter = "none";
       return;
     }
 
     animationFrameId = requestAnimationFrame(renderBeat);
     analyser.getByteFrequencyData(dataArray);
 
-    // गाने के सबसे भारी हिस्से (Sub-Bass और Bass) को एकदम सटीक पकड़ना
+    // सब-बास और डीजे पंच को पूरी तरह निचोड़ना
     let bassValue = (dataArray[0] + dataArray[1] + dataArray[2]) / 3;
 
-    // जब गाने में पर्याप्त बेस/साउंड हो (ताकि फालतू में न हिले)
-    if (bassValue > 40) {
-      // 1. ज़ूम की पावर बढ़ा दी है (अब यह 1.08x तक दमदार तरीके से पंप करेगा)
-      const scaleFactor = 1 + (bassValue / 255) * 0.08; 
+    // थ्रेशोल्ड (Threshold) सेट किया ताकि हल्की आवाज़ पर शांत रहे, और तेज़ बेस पर एकदम से झटका मारे
+    if (bassValue > 50) {
+      // बेस वैल्यू को एक्सपोनेंशियल (पावर) बनाकर ज़ूम की "जान" बढ़ाना
+      const intensity = Math.pow((bassValue / 255), 2); 
       
-      // 2. ग्लोइंग इफ़ेक्ट को और हैवी और ब्राइट बनाया है
-      const glowFactor = (bassValue / 255) * 45;
+      // अब स्केल 1.15x तक जाएगा (यानी फुल स्क्रीन विजिबल झटका)
+      const scaleFactor = 1 + (intensity * 0.15); 
+      
+      // 3D पुश इफ़ेक्ट (यह इमेज को स्क्रीन से बाहर फेंकेगा)
+      const translateZ = intensity * 40; 
+      const glowFactor = intensity * 60;
+      const hueRotate = intensity * 150;
 
-      // 3. जादुई डायनामिक कलर - जैसे-जैसे बेस बढ़ेगा, नियॉन लाइट पर्पल से सियान/ब्लू में बदलेगी
-      const hueRotate = (bassValue / 255) * 120; 
-
-      // एप्लाइड विज़ुअल इफ़ेक्ट (बिना लैग के सीधा GPU पर रन होगा)
-      thumbBorder.style.transform = `scale(${scaleFactor})`;
-      thumbBorder.style.boxShadow = `0 0 ${glowFactor + 15}px rgba(0, 245, 255, 0.85), inset 0 0 ${glowFactor / 2}px rgba(189, 0, 255, 0.6)`;
-      thumbBorder.style.filter = `hue-rotate(${hueRotate}deg)`;
+      // 3D मैट्रिक्स ट्रांसफॉर्म का इस्तेमाल (मक्खन जैसी स्मूथनेस और खतरनाक झटका)
+      thumbBorder.style.transform = `scale(${scaleFactor}) translateZ(${translateZ}px)`;
+      thumbBorder.style.boxShadow = `0 0 ${glowFactor + 20}px rgba(0, 245, 255, 0.9), 
+                                     0 0 ${glowFactor / 2}px rgba(189, 0, 255, 0.7), 
+                                     inset 0 0 15px rgba(255, 255, 255, 0.5)`;
+      thumbBorder.style.filter = `hue-rotate(${hueRotate}deg) saturate(1.3)`;
       thumbBorder.style.borderColor = "#00f5ff";
     } else {
-      // बीट्स के बीच के खाली गैप में तुरंत रिस्टोर
-      thumbBorder.style.transform = "scale(1)";
+      // बीट खत्म होते ही स्प्रिंग की तरह अपनी जगह वापस
+      thumbBorder.style.transform = "matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)";
       thumbBorder.style.boxShadow = "none";
       thumbBorder.style.filter = "none";
       thumbBorder.style.borderColor = "rgba(189, 0, 255, 0.4)";
@@ -6395,7 +6397,6 @@ function initAudioAnalyzer() {
   renderBeat();
 }
 
-// प्लेयर के प्ले/पॉज़ इवेंट्स के साथ ऑटो-कनेक्ट
 window.addEventListener('DOMContentLoaded', () => {
   const audio = document.getElementById('SAudio');
   if (!audio) return;
@@ -6407,7 +6408,7 @@ window.addEventListener('DOMContentLoaded', () => {
     audio.addEventListener(evt, () => {
       const thumbBorder = document.querySelector('.thumbnail-border');
       if (thumbBorder) {
-        thumbBorder.style.transform = "scale(1)";
+        thumbBorder.style.transform = "matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)";
         thumbBorder.style.boxShadow = "none";
         thumbBorder.style.filter = "none";
         thumbBorder.style.borderColor = "rgba(189, 0, 255, 0.4)";
@@ -6416,5 +6417,5 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
-			  </script>
-			  
+					</script>
+					
