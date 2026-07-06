@@ -367,3 +367,72 @@ body {
 }
 
 #stop, br { display: none; }
+
+/* ==========================================================================
+   7. PURE CSS ULTRA-ADVANCED FAKE VISUALIZER
+   ========================================================================== */
+#fake-bars-visualizer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 3; /* इसे इमेज के ऊपर दिखाने के लिए */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vfy-bar {
+  position: absolute;
+  width: 5px; /* क्यूट पतली बार्स */
+  height: 14px;
+  background: linear-gradient(to top, #bd00ff, #00f5ff); /* पर्पल टू सियान नियॉन */
+  border-radius: 10px;
+  transform-origin: bottom center;
+  opacity: 0.6;
+  box-shadow: 0 0 8px rgba(0, 245, 255, 0.8);
+  transition: height 0.15s ease, opacity 0.3s ease;
+}
+
+/* 20 बार्स को थंबनेल के चारों तरफ गोल घुमाने के लिए (Math-based angles) */
+.vfy-bar:nth-child(1)  { transform: rotate(18deg) translateY(-138px); }
+.vfy-bar:nth-child(2)  { transform: rotate(36deg) translateY(-138px); }
+.vfy-bar:nth-complete(3)  { transform: rotate(54deg) translateY(-138px); }
+.vfy-bar:nth-child(4)  { transform: rotate(72deg) translateY(-138px); }
+.vfy-bar:nth-child(5)  { transform: rotate(90deg) translateY(-138px); }
+.vfy-bar:nth-child(6)  { transform: rotate(108deg) translateY(-138px); }
+.vfy-bar:nth-child(7)  { transform: rotate(126deg) translateY(-138px); }
+.vfy-bar:nth-child(8)  { transform: rotate(144deg) translateY(-138px); }
+.vfy-bar:nth-child(9)  { transform: rotate(162deg) translateY(-138px); }
+.vfy-bar:nth-child(10) { transform: rotate(180deg) translateY(-138px); }
+.vfy-bar:nth-child(11) { transform: rotate(198deg) translateY(-138px); }
+.vfy-bar:nth-child(12) { transform: rotate(216deg) translateY(-138px); }
+.vfy-bar:nth-child(13) { transform: rotate(234deg) translateY(-138px); }
+.vfy-bar:nth-child(14) { transform: rotate(252deg) translateY(-138px); }
+.vfy-bar:nth-child(15) { transform: rotate(270deg) translateY(-138px); }
+.vfy-bar:nth-child(16) { transform: rotate(288deg) translateY(-138px); }
+.vfy-bar:nth-child(17) { transform: rotate(306deg) translateY(-138px); }
+.vfy-bar:nth-child(18) { transform: rotate(324deg) translateY(-138px); }
+.vfy-bar:nth-child(19) { transform: rotate(342deg) translateY(-138px); }
+.vfy-bar:nth-child(20) { transform: rotate(360deg) translateY(-138px); }
+
+/* जब गाना बजेगा तब बार्स रैंडमली जंप करेंगी - सुपर एडवांस फेक एनिमेशन */
+.vfy-bar.vfy-dancing {
+  animation: fakeBeatJump 0.35s infinite alternate ease-in-out;
+}
+
+/* हर बार को अलग टाइमिंग देना ताकि वे एक साथ ऊपर-नीचे न हों, बल्कि असली वेव लगें */
+.vfy-bar.vfy-dancing:nth-child(odd) { animation-duration: 0.28s; animation-delay: 0.05s; }
+.vfy-bar.vfy-dancing:nth-child(3s)   { animation-duration: 0.42s; animation-delay: 0.1s; }
+.vfy-bar.vfy-dancing:nth-child(5s)   { animation-duration: 0.31s; animation-delay: 0.15s; }
+.vfy-bar.vfy-dancing:nth-child(4n)   { animation-duration: 0.25s; animation-delay: 0.02s; }
+
+@keyframes fakeBeatJump {
+  0% { height: 12px; opacity: 0.5; filter: hue-rotate(0deg); }
+  50% { height: 35px; opacity: 1; } /* बीट पर बार की मैक्स लंबाई */
+  100% { height: 8px; opacity: 0.4; filter: hue-rotate(45deg); }
+}
+
