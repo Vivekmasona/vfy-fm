@@ -5022,9 +5022,10 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
 </div> 
 
 <div id="audio-player">
-  <audio id="SAudio" controls style="display: none;">
-    <source src="your-audio-file.mp3" type="audio/mp3">
-  </audio>
+  <audio id="SAudio" crossorigin="anonymous" controls style="display: none;">
+  <source src="your-audio-file.mp3" type="audio/mp3">
+</audio>
+
 </div>
 	  
        
@@ -6305,6 +6306,117 @@ document.addEventListener('visibilitychange', () => {
 });
 </script>
            
+ <script >
+	 let audioCtx;
+let audioSource;
+let analyser;
+let visualizerInitialized = false;
+
+// इस फ़ंक्शन को हम आपके ओरिजिनल प्ले बटन के क्लिक पर डायरेक्ट ट्रिगर करेंगे
+function startVisualizerEngine() {
+  const audio = document.getElementById('SAudio');
+  const canvas = document.getElementById('visualizer');
+  
+  if (!canvas || !audio) return;
+  
+  // 1. ब्राउज़र सुरक्षा बाईपास (अगर ऑडियो सस्पेंडेड मोड में है)
+  if (audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+
+  // 2. अगर एक बार इनिशियलाइज़ हो चुका है, तो दोबारा सेटअप न करें
+  if (visualizerInitialized) return;
+
+  try {
+    const ctx = canvas.getContext('2d');
+
+    // स्क्रीन के पिक्सल के हिसाब से कैनवास को शार्प करना
+    canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+    canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+    // Audio Context का निर्माण
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // ऑडियो एलिमेंट को सोर्स बनाना
+    audioSource = audioCtx.createMediaElementSource(audio);
+    analyser = audioCtx.createAnalyser();
+    
+    // कनेक्शन जोड़ना: Audio -> Analyser -> Speakers
+    audioSource.connect(analyser);
+    analyser.connect(audioCtx.destination);
+
+    analyser.fftSize = 64; // बीट्स की संख्या (क्यूट और मोटी बार्स के लिए परफेक्ट)
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    const centerX = canvas.offsetWidth / 2;
+    const centerY = canvas.offsetHeight / 2;
+    const radius = (canvas.offsetWidth / 2) - 5; 
+
+    function draw() {
+      requestAnimationFrame(draw);
+      
+      // असली बीट्स का डेटा लेना
+      analyser.getByteFrequencyData(dataArray);
+
+      // पुराना फ्रेम साफ करना
+      ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
+
+      // अगर गाना पॉज़ है तो विजुअलाइज़र को धीरे से शांत करना
+      const isPlaying = !audio.paused;
+
+      for (let i = 0; i < bufferLength; i++) {
+        // अगर गाना बज रहा है तो असली वैल्यू, वर्ना 0
+        const value = isPlaying ? dataArray[i] : 0;
         
+        // बीट्स की लंबाई (Cute Scale)
+        const barLen = (value / 255) * 25; 
+
+        const angle = (i * 2 * Math.PI) / bufferLength;
+        const x1 = centerX + Math.cos(angle) * radius;
+        const y1 = centerY + Math.sin(angle) * radius;
+        const x2 = centerX + Math.cos(angle) * (radius + barLen);
+        const y2 = centerY + Math.sin(angle) * (radius + barLen);
+
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        
+        // क्यूट नियोन कलर्स (Cyan & Purple)
+        ctx.strokeStyle = i % 2 === 0 ? '#00f5ff' : '#bd00ff';
+        ctx.lineWidth = 5;       // मोटी पिल्स जैसी डिज़ाइन
+        ctx.lineCap = 'round';   // क्यूट राउंडेड किनारे
+        ctx.stroke();
+      }
+    }
+
+    draw();
+    visualizerInitialized = true;
+    console.log("Visualizer Successfully Connected!");
+  } catch (error) {
+    console.log("Audio Context Setup Wait: User interaction required or stream issue.", error);
+  }
+}
+
+// ==========================================================================
+// आपके प्लेयर के क्लिक इवेंट्स के साथ इंटीग्रेशन (FORCE ATTACHMENT)
+// ==========================================================================
+window.addEventListener('DOMContentLoaded', () => {
+  // आपके सभी संभावित प्ले बटन्स की लिस्ट
+  const playElements = ['play', 'playvfy', 'SThumb', 'playButtonOverlay'];
+  
+  playElements.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('click', () => {
+        // गाने के प्ले होते ही विजुअलाइज़र शुरू करने की कोशिश करें
+        setTimeout(startVisualizerEngine, 100);
+      });
+    }
+  });
+});
+	 
+ </script>      
           
         
