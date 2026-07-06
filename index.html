@@ -4969,16 +4969,17 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
     </div>
     
     <div class="thumbnail-border">
-      <!-- असली बीट्स के लिए क्यूट नियोन विजुअलाइज़र कैनवास -->
-      <canvas id="visualizer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; pointer-events: none; z-index: 1; transform: scale(1.15); filter: drop-shadow(0 0 8px rgba(0, 245, 255, 0.6)) drop-shadow(0 0 15px rgba(189, 0, 255, 0.4));"></canvas>
-      
-      <div class="audio-player" style="position: relative; z-index: 2;">
-        <div id="thumbnailContainer">
-          <img id="SThumb" src="" alt="/img/newdp.png" onclick="clickButton()">
-          <div id="playButtonOverlay" onclick="playPause()"></div>
-        </div>
-      </div>  
-    </div> 
+  <!-- एडवांस स्मार्ट सिम्युलेटेड विजुअलाइज़र कैनवास -->
+  <canvas id="visualizer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; pointer-events: none; z-index: 1; transform: scale(1.15); filter: drop-shadow(0 0 8px rgba(0, 245, 255, 0.6)) drop-shadow(0 0 15px rgba(189, 0, 255, 0.4));"></canvas>
+  
+  <div class="audio-player" style="position: relative; z-index: 2;">
+    <div id="thumbnailContainer">
+      <img id="SThumb" src="" alt="/img/newdp.png" onclick="clickButton()">
+      <div id="playButtonOverlay" onclick="playPause()"></div>
+    </div>
+  </div>  
+</div> 
+
     
     <div class="bottom-console-pod">
       
@@ -6306,86 +6307,78 @@ document.addEventListener('visibilitychange', () => {
 });
 </script>
            
- <script >
-	 let audioCtx;
-let audioSource;
-let analyser;
+    <script>
 let visualizerInitialized = false;
+let animationId;
+const barsCount = 48; // विजुअलाइज़र लाइनों की संख्या (क्यूट घनी डिज़ाइन के लिए)
+let barHeights = new Float32Array(barsCount);
+let targetHeights = new Float32Array(barsCount);
 
-// इस फ़ंक्शन को हम आपके ओरिजिनल प्ले बटन के क्लिक पर डायरेक्ट ट्रिगर करेंगे
+// सिम्युलेटेड विजुअलाइज़र इंजन (100% लैग फ्री और असली जैसा लुक)
 function startVisualizerEngine() {
   const audio = document.getElementById('SAudio');
   const canvas = document.getElementById('visualizer');
   
   if (!canvas || !audio) return;
   
-  // 1. ब्राउज़र सुरक्षा बाईपास (अगर ऑडियो सस्पेंडेड मोड में है)
-  if (audioCtx && audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
-
-  // 2. अगर एक बार इनिशियलाइज़ हो चुका है, तो दोबारा सेटअप न करें
+  // अगर एक बार इनिशियलाइज़ हो चुका है, तो दोबारा सेटअप न करें
   if (visualizerInitialized) return;
 
   try {
     const ctx = canvas.getContext('2d');
 
-    // स्क्रीन के पिक्सल के हिसाब से कैनवास को शार्प करना
+    // स्क्रीन के पिक्सल के हिसाब से कैनवास को क्रिस्टल क्लियर और शार्प करना
     canvas.width = canvas.offsetWidth * window.devicePixelRatio;
     canvas.height = canvas.offsetHeight * window.devicePixelRatio;
     ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-
-    // Audio Context का निर्माण
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    
-    // ऑडियो एलिमेंट को सोर्स बनाना
-    audioSource = audioCtx.createMediaElementSource(audio);
-    analyser = audioCtx.createAnalyser();
-    
-    // कनेक्शन जोड़ना: Audio -> Analyser -> Speakers
-    audioSource.connect(analyser);
-    analyser.connect(audioCtx.destination);
-
-    analyser.fftSize = 64; // बीट्स की संख्या (क्यूट और मोटी बार्स के लिए परफेक्ट)
-    const bufferLength = analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
 
     const centerX = canvas.offsetWidth / 2;
     const centerY = canvas.offsetHeight / 2;
     const radius = (canvas.offsetWidth / 2) - 5; 
 
     function draw() {
-      requestAnimationFrame(draw);
+      animationId = requestAnimationFrame(draw);
       
-      // असली बीट्स का डेटा लेना
-      analyser.getByteFrequencyData(dataArray);
+      // सीधे ऑडियो एलिमेंट के स्टेटस को ट्रैक करना
+      const isPlaying = audio && !audio.paused && !audio.ended;
 
       // पुराना फ्रेम साफ करना
       ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight);
 
-      // अगर गाना पॉज़ है तो विजुअलाइज़र को धीरे से शांत करना
-      const isPlaying = !audio.paused;
+      for (let i = 0; i < barsCount; i++) {
+        if (isPlaying) {
+          // जब गाना चल रहा हो: बीट्स को रियलिस्टिक एडवांस लुक देने के लिए साइन-वेव और मैथ का कॉम्बिनेशन
+          if (Math.random() > 0.88) {
+            // अचानक आने वाली ऊंची बीट्स (Spikes)
+            targetHeights[i] = Math.random() * 24 + 4; 
+          } else {
+            // स्मूथ नेचुरल डांसिंग वेव फॉर्म
+            targetHeights[i] = (Math.sin(Date.now() * 0.006 + i * 0.3) * 8) + 12;
+          }
+          // बास इफ़ेक्ट के लिए कुछ रैंडम वाइब्रेशन जोड़ना
+          targetHeights[i] += Math.sin(Date.now() * 0.012) * 3;
+        } else {
+          // जब गाना रुक जाए: सभी बार्स को बिना किसी झटके के धीरे से वापस जीरो पर लाना
+          targetHeights[i] = 0;
+        }
 
-      for (let i = 0; i < bufferLength; i++) {
-        // अगर गाना बज रहा है तो असली वैल्यू, वर्ना 0
-        const value = isPlaying ? dataArray[i] : 0;
-        
-        // बीट्स की लंबाई (Cute Scale)
-        const barLen = (value / 255) * 25; 
+        // लिनियर इंटरपोलेशन (स्मूथ ट्रांज़िशन के लिए ताकि बार्स कूदती हुई न लगें)
+        barHeights[i] += (targetHeights[i] - barHeights[i]) * 0.22;
 
-        const angle = (i * 2 * Math.PI) / bufferLength;
+        // गोल घुमावदार एंगल्स की गणना
+        const angle = (i * 2 * Math.PI) / barsCount;
         const x1 = centerX + Math.cos(angle) * radius;
         const y1 = centerY + Math.sin(angle) * radius;
-        const x2 = centerX + Math.cos(angle) * (radius + barLen);
-        const y2 = centerY + Math.sin(angle) * (radius + barLen);
+        const x2 = centerX + Math.cos(angle) * (radius + Math.max(0, barHeights[i]));
+        const y2 = centerY + Math.sin(angle) * (radius + Math.max(0, barHeights[i]));
 
         ctx.beginPath();
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
         
-        // क्यूट नियोन कलर्स (Cyan & Purple)
+        // क्यूट नियोन कलर्स जो आपकी '1000246675.jpg' इमेज की थीम से मैच करते हैं (Cyan & Purple)
         ctx.strokeStyle = i % 2 === 0 ? '#00f5ff' : '#bd00ff';
-        ctx.lineWidth = 5;       // मोटी पिल्स जैसी डिज़ाइन
+        ctx.lineWidth = 4;       // मोटी पिल्स जैसी प्रीमियम डिज़ाइन
         ctx.lineCap = 'round';   // क्यूट राउंडेड किनारे
         ctx.stroke();
       }
@@ -6393,14 +6386,14 @@ function startVisualizerEngine() {
 
     draw();
     visualizerInitialized = true;
-    console.log("Visualizer Successfully Connected!");
+    console.log("Advanced Simulated Visualizer Successfully Connected!");
   } catch (error) {
-    console.log("Audio Context Setup Wait: User interaction required or stream issue.", error);
+    console.log("Visualizer Engine Error:", error);
   }
 }
 
 // ==========================================================================
-// आपके प्लेयर के क्लिक इवेंट्स के साथ इंटीग्रेशन (FORCE ATTACHMENT)
+// आपके प्लेयर के क्लिक इवेंट्स के साथ ऑटो-ट्रिगर इंटीग्रेशन
 // ==========================================================================
 window.addEventListener('DOMContentLoaded', () => {
   // आपके सभी संभावित प्ले बटन्स की लिस्ट
@@ -6410,13 +6403,19 @@ window.addEventListener('DOMContentLoaded', () => {
     const el = document.getElementById(id);
     if (el) {
       el.addEventListener('click', () => {
-        // गाने के प्ले होते ही विजुअलाइज़र शुरू करने की कोशिश करें
-        setTimeout(startVisualizerEngine, 100);
+        // बटन क्लिक होते ही तुरंत विजुअलाइज़र शुरू करें
+        setTimeout(startVisualizerEngine, 50);
       });
     }
   });
+
+  // बैकअप सेफ्टी: अगर गाना किसी और तरीके से भी प्ले होता है, तो विजुअलाइज़र एक्टिव हो जाएगा
+  const audio = document.getElementById('SAudio');
+  if (audio) {
+    audio.addEventListener('play', startVisualizerEngine);
+  }
 });
-	 
- </script>      
-          
+	</script>
+	
+
         
