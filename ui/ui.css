@@ -369,16 +369,63 @@ body {
 #stop, br { display: none; }
 
 /* ==========================================================================
-   7. ULTRA-RESPONSIVE 3D SPRING PUMP EFFECT
+   7. STYLISH CIRCULAR COLORFUL VISUALIZER
    ========================================================================== */
-.thumbnail-border {
-  /* 3D गहराई देने के लिए */
-  transform-style: preserve-3d;
-  perspective: 500px;
-  will-change: transform, box-shadow, filter;
-  
-  /* बेहद जरूरी: 0.05s का सुपरफास्ट टाइमिंग जो बीट पर तुरंत झटका (Snap) देगा */
-  transition: transform 0.05s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
-              box-shadow 0.05s ease, 
-              filter 0.1s ease;
+#stylish-bars-visualizer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1; /* थंबनेल बॉर्डर के ठीक पीछे रखने के लिए */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+.s-bar {
+  position: absolute;
+  width: 4px; /* पतली और एकदम प्रीमियम सुई जैसी बार्स */
+  height: 4px; /* डिफॉल्ट रूप से नन्ही बिंदी जैसी, ताकि गाना रुकने पर फालतू न लगे */
+  background: linear-gradient(to top, #00f5ff, #bd00ff, #ff007c); /* कलरफुल मैजिक */
+  border-radius: 4px;
+  transform-origin: bottom center;
+  will-change: height, box-shadow;
+  transition: height 0.05s cubic-bezier(0.1, 0.8, 0.3, 1);
+}
+
+/* 32 बार्स को 360 डिग्री पर एकदम सटीक बिछाने का Math-based फार्मूला */
+.s-bar:nth-child(1)  { transform: rotate(11.25deg)  translateY(-138px); }
+.s-bar:nth-child(2)  { transform: rotate(22.5deg)   translateY(-138px); }
+.s-bar:nth-child(3)  { transform: rotate(33.75deg)  translateY(-138px); }
+.s-bar:nth-child(4)  { transform: rotate(45deg)     translateY(-138px); }
+.s-bar:nth-child(5)  { transform: rotate(56.25deg)  translateY(-138px); }
+.s-bar:nth-child(6)  { transform: rotate(67.5deg)   translateY(-138px); }
+.s-bar:nth-child(7)  { transform: rotate(78.75deg)  translateY(-138px); }
+.s-bar:nth-child(8)  { transform: rotate(90deg)     translateY(-138px); }
+.s-bar:nth-child(9)  { transform: rotate(101.25deg) translateY(-138px); }
+.s-bar:nth-child(10) { transform: rotate(112.5deg)  translateY(-138px); }
+.s-bar:nth-child(11) { transform: rotate(123.75deg) translateY(-138px); }
+.s-bar:nth-child(12) { transform: rotate(135deg)    translateY(-138px); }
+.s-bar:nth-child(13) { transform: rotate(146.25deg) translateY(-138px); }
+.s-bar:nth-child(14) { transform: rotate(157.5deg)  translateY(-138px); }
+.s-bar:nth-child(15) { transform: rotate(168.75deg) translateY(-138px); }
+.s-bar:nth-child(16) { transform: rotate(180deg)    translateY(-138px); }
+.s-bar:nth-child(17) { transform: rotate(191.25deg) translateY(-138px); }
+.s-bar:nth-child(18) { transform: rotate(202.5deg)  translateY(-138px); }
+.s-bar:nth-child(19) { transform: rotate(213.75deg) translateY(-138px); }
+.s-bar:nth-child(20) { transform: rotate(225deg)    translateY(-138px); }
+.s-bar:nth-child(21) { transform: rotate(236.25deg) translateY(-138px); }
+.s-bar:nth-child(22) { transform: rotate(247.5deg)  translateY(-138px); }
+.s-bar:nth-child(23) { transform: rotate(258.75deg) translateY(-138px); }
+.s-bar:nth-child(24) { transform: rotate(270deg)    translateY(-138px); }
+.s-bar:nth-child(25) { transform: rotate(281.25deg) translateY(-138px); }
+.s-bar:nth-child(26) { transform: rotate(292.5deg)  translateY(-138px); }
+.s-bar:nth-child(27) { transform: rotate(303.75deg) translateY(-138px); }
+.s-bar:nth-child(28) { transform: rotate(315deg)    translateY(-138px); }
+.s-bar:nth-child(29) { transform: rotate(326.25deg) translateY(-138px); }
+.s-bar:nth-child(30) { transform: rotate(337.5deg)  translateY(-138px); }
+.s-bar:nth-child(31) { transform: rotate(348.75deg) translateY(-138px); }
+.s-bar:nth-child(32) { transform: rotate(360deg)    translateY(-138px); }
