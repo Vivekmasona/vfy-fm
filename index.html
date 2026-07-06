@@ -6320,15 +6320,15 @@ document.addEventListener('visibilitychange', () => {
 
 
 
-        <script>
+                <script>
 let audioCtx = null;
 let analyser = null;
 let dataArray = null;
 let source = null;
 let animationFrameId = null;
-let useFallback = false; // CORS सुरक्षा कवच
+let useFallback = false;
 
-function initNeonCircularVisualizer() {
+function initFluidVisualizer() {
   const audio = document.getElementById('SAudio');
   const canvas = document.getElementById('fluid-wave-visualizer');
   const thumbBorder = document.querySelector('.thumbnail-border');
@@ -6336,12 +6336,12 @@ function initNeonCircularVisualizer() {
 
   const ctx = canvas.getContext('2d');
   
-  // डिस्प्ले को एकदम क्रिस्टल क्लियर (HD) रखने के लिए साइजिंग
-  canvas.width = 540;
-  canvas.height = 540;
+  // हाई-डेफिनिशन (HD) रेंडरिंग सेटिंग्स
+  canvas.width = 500;
+  canvas.height = 500;
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
-  const baseRadius = 135; // थंबनेल इमेज के बॉर्डर के ठीक बाहर सेट
+  const baseRadius = 132; // आपकी थंबनेल रिंग के हिसाब से सेट
 
   audio.crossOrigin = "anonymous";
 
@@ -6353,121 +6353,114 @@ function initNeonCircularVisualizer() {
       source.connect(analyser);
       analyser.connect(audioCtx.destination);
 
-      analyser.smoothingTimeConstant = 0.80; // बार्स के बाउंस को मखमली स्मूथ बनाने के लिए
-      analyser.fftSize = 256; // 1000246707_2.jpg जैसी घनी बार्स के लिए परफेक्ट
+      analyser.smoothingTimeConstant = 0.78; // एग्रेसिव और स्मूथ बाउंस के लिए
+      analyser.fftSize = 128; 
       dataArray = new Uint8Array(analyser.frequencyBinCount);
     } catch (e) {
-      console.log("CORS Blocked or Audio Error! Switching to Safe Neon Fallback Mode.");
+      console.log("CORS Blocked or Audio Error! Using Bulletproof Fallback Engine.");
       useFallback = true;
     }
   }
 
   canvas.classList.add('wave-active');
 
-  function drawSpectrum() {
+  function drawWave() {
     if (audio.paused || audio.ended) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       canvas.classList.remove('wave-active');
       thumbBorder.style.transform = "scale(1) translateZ(0px)";
+      thumbBorder.style.boxShadow = "none";
       return;
     }
 
-    animationFrameId = requestAnimationFrame(drawSpectrum);
+    animationFrameId = requestAnimationFrame(drawWave);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // कुल बार्स की संख्या (1000246707_2.jpg के हिसाब से डेंसिटी सेट)
-    const totalBars = 96; 
+    const pointsCount = 72; // यूट्यूब जैसी घनी लहरों के लिए पॉइंट्स बढ़ाए
     let bassSum = 0;
 
     if (!useFallback && analyser) {
       analyser.getByteFrequencyData(dataArray);
       bassSum = (dataArray[0] + dataArray[1] + dataArray[2]) / 3;
     } else {
-      // फॉलबैक बैकअप बीट जनरेटर
+      // फॉलबैक बैकअप मोड के लिए बास जनरेटर
       let curTime = audio.currentTime;
       let rawBeat = Math.sin(curTime * 9.8) * Math.cos(curTime * 4.3) * Math.sin(Date.now() * 0.015);
-      if (rawBeat > 0.25) bassSum = ((rawBeat - 0.25) / 0.75) * 180;
+      if (rawBeat > 0.25) bassSum = ((rawBeat - 0.25) / 0.75) * 200;
     }
 
     // ==========================================
-    // पार्ट A: थंबनेल इमेज का कड़क बास पंप
+    // पार्ट A: बीच की इमेज का हैवी पंप (Logo Pump)
     // ==========================================
     if (bassSum > 45) {
       const norm = bassSum / 255;
-      const scaleFactor = 1 + (norm * 0.12); // कड़क स्प्रिंग झटका
-      thumbBorder.style.transform = `scale(${scaleFactor}) translateZ(${norm * 30}px)`;
+      const scaleFactor = 1 + (norm * 0.14); // 1.14x तक कड़क झटका
+      const translateZ = norm * 40;
+      thumbBorder.style.transform = `scale(${scaleFactor}) translateZ(${translateZ}px)`;
+      thumbBorder.style.boxShadow = `0 0 ${norm * 60 + 20}px rgba(255, 0, 0, 0.6)`;
     } else {
       thumbBorder.style.transform = "scale(1) translateZ(0px)";
+      thumbBorder.style.boxShadow = "none";
     }
 
     // ==========================================
-    // पार्ट B: 1000246707_2.jpg जैसी बार्स रेंडरिंग
+    // पार्ट B: 1000246738.jpg जैसा यूट्यूब ग्रेडिएंट वेव
     // ==========================================
-    for (let i = 0; i < totalBars; i++) {
-      // 360 डिग्री पर बार्स को घुमाना
-      let angle = (i / totalBars) * Math.PI * 2;
-      
-      // फ्रीक्वेंसी मैपिंग ताकि वेव ऊपर-नीचे अलग शेप ले
-      let audioIndex = Math.floor((i / totalBars) * (dataArray ? dataArray.length * 0.6 : 1));
+    let gradient = ctx.createRadialGradient(centerX, centerY, baseRadius, centerX, centerY, baseRadius + 90);
+    gradient.addColorStop(0, '#ffffff'); // अंदर एकदम चमकदार सफ़ेद (White)
+    gradient.addColorStop(0.2, '#ffea00'); // बीच में चटक पीला (Yellow)
+    gradient.addColorStop(0.6, '#ff0000'); // बाहर की तरफ गहरा लाल (Red)
+    gradient.addColorStop(1, 'rgba(255, 0, 0, 0)'); // अंत में गायब
+
+    ctx.beginPath();
+
+    for (let i = 0; i < pointsCount; i++) {
+      let angle = (i / pointsCount) * Math.PI * 2;
+      let audioIndex = i < pointsCount / 2 ? i : pointsCount - i;
       
       let rawValue = 0;
       if (!useFallback && analyser) {
-        rawValue = dataArray[audioIndex];
+        rawValue = dataArray[audioIndex % dataArray.length];
       } else {
-        // बैकअप मोड में हर बार के लिए अलग वेव पोजीशन कैलकुलेशन
         let curTime = audio.currentTime;
-        rawValue = (Math.sin(curTime * 5 + i * 0.4) * Math.cos(curTime * 2 + i * 0.2) + 1) * 80;
+        rawValue = (Math.sin(curTime * 6 + i * 0.3) * Math.cos(curTime * 2 + i * 0.5) + 1) * 75;
       }
 
-      // बार्स की लंबाई सेट करना (मैक्सिमम 65px तक बाहर उछलेगी)
-      let barLength = (rawValue / 255) * 65;
-      if (rawValue < 10) barLength = 2; // बेस पर नन्ही बिंदी बनाए रखने के लिए
+      // यूट्यूब स्टाइल ऊंची लहरों के लिए लंबाई बढ़ाकर 85px की
+      let waveHeight = (rawValue / 255) * 85;
+      if (rawValue < 15) waveHeight = 0;
 
-      // बार की शुरुआती पोजीशन (इमेज के बॉर्डर से)
-      let startX = centerX + Math.cos(angle) * baseRadius;
-      let startY = centerY + Math.sin(angle) * baseRadius;
+      let r = baseRadius + waveHeight;
+      let x = centerX + Math.cos(angle) * r;
+      let y = centerY + Math.sin(angle) * r;
 
-      // बार की आखरी पोजीशन (बाहर की तरफ)
-      let endX = centerX + Math.cos(angle) * (baseRadius + barLength);
-      let endY = centerY + Math.sin(angle) * (baseRadius + barLength);
-
-      // 1000246707_2.jpg जैसी प्रीमियम शेडिंग (Cyan -> Blue -> Magenta)
-      let barGradient = ctx.createLinearGradient(startX, startY, endX, endY);
-      barGradient.addColorStop(0, '#00f5ff');   // अंदर की तरफ एकदम ब्राइट सियान (Cyan)
-      barGradient.addColorStop(0.5, '#3b82f6'); // बीच में स्मूथ लाइट ब्लू
-      barGradient.addColorStop(1, '#ff00ac');   // बाहरी टिप्स पर हॉट मैजेंटा/पिंक
-
-      // डार्क मोड यूआई पर चमकीला दिखाने के लिए ग्लो सेटिंग्स
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(startX, startY);
-      ctx.lineTo(endX, endY);
-      
-      ctx.lineWidth = 3.5; // बार्स की प्रीमियम मोटाई
-      ctx.lineCap = 'round'; // कैप्सूल जैसी गोल फिनिशिंग
-      ctx.strokeStyle = barGradient;
-      
-      // सॉफ्ट ग्लो इफ़ेक्ट
-      ctx.shadowBlur = 12;
-      ctx.shadowColor = '#00f5ff';
-      
-      ctx.stroke();
-      ctx.restore();
+      if (i === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
     }
+
+    ctx.closePath();
+    ctx.lineWidth = 5; // थोड़ी मोटी और कड़क लाइनें
+    ctx.strokeStyle = gradient;
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = '#ff3300'; // लाल-नारंगी नियॉन ग्लो
+    ctx.stroke();
   }
 
   if (audioCtx && audioCtx.state === 'suspended') {
     audioCtx.resume();
   }
-  drawSpectrum();
+  drawWave();
 }
 
-// प्लेयर इवेंट्स बाइंडिंग
+// इवेंट्स सिंकिंग
 window.addEventListener('DOMContentLoaded', () => {
   const audio = document.getElementById('SAudio');
   if (!audio) return;
 
-  audio.addEventListener('playing', initNeonCircularVisualizer);
+  audio.addEventListener('playing', initFluidVisualizer);
   audio.addEventListener('error', () => { useFallback = true; });
 
   const stopEvents = ['pause', 'ended', 'waiting'];
@@ -6482,13 +6475,11 @@ window.addEventListener('DOMContentLoaded', () => {
       }
       if (thumbBorder) {
         thumbBorder.style.transform = "scale(1) translateZ(0px)";
+        thumbBorder.style.boxShadow = "none";
       }
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
     });
   });
 });
-</script>
-
-      
-
+				</script>
 	
