@@ -6325,29 +6325,41 @@ document.addEventListener('visibilitychange', () => {
 	      <script>
 document.addEventListener('DOMContentLoaded', () => {
   const playIcon = document.getElementById('playvfy');
+  const audio = document.getElementById('SAudio');
   const bars = document.querySelectorAll('.vfy-bar');
 
   function updateVisualizerState() {
-    if (!playIcon || bars.length === 0) return;
+    if (!bars.length) return;
 
-    // आपके बटन की क्लास को चेक करना (fa-pause मतलब गाना बज रहा है)
-    const isPlaying = playIcon.classList.contains('fa-pause');
+    // डबल सिक्योरिटी चेक: बटन में पॉज़ का आइकन हो और ऑडियो सच में बज रहा हो
+    const isPlaying = playIcon && playIcon.classList.contains('fa-pause') && audio && !audio.paused && !audio.ended;
 
     bars.forEach(bar => {
       if (isPlaying) {
+        // गाना चलने पर क्लास जोड़ो (बार्स दिखेंगी और नाचेंगी)
         bar.classList.add('vfy-dancing');
       } else {
+        // गाना रुकते ही क्लास हटाओ (बार्स तुरंत 100% गायब हो जाएंगी)
         bar.classList.remove('vfy-dancing');
       }
     });
   }
 
-  // 1. जब भी यूजर कहीं भी क्लिक करे, तुरंत बटन का रूप चेक करो
+  // यूजर के हर क्लिक पर तुरंत रिस्पॉन्स
   document.addEventListener('click', () => {
     setTimeout(updateVisualizerState, 50);
   });
 
-  // 2. बैकअप सेफ्टी टाइमर (हर 200ms पर बैकग्राउंड में चेक करेगा ताकि मिस न हो)
+  // ऑडियो के खुद के प्ले/पॉज होने पर रिस्पॉन्स (जैसे नेटवर्क स्लो होने पर या गाना खत्म होने पर)
+  if (audio) {
+    audio.addEventListener('play', updateVisualizerState);
+    audio.addEventListener('playing', updateVisualizerState);
+    audio.addEventListener('pause', updateVisualizerState);
+    audio.addEventListener('ended', updateVisualizerState);
+    audio.addEventListener('waiting', updateVisualizerState); // बफरिंग होने पर भी गायब हो जाएगा
+  }
+
+  // बैकअप सेफ्टी रनर (200ms) ताकि कोई लैग न हो
   setInterval(updateVisualizerState, 200);
 });
 		  </script>
