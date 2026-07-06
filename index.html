@@ -4969,16 +4969,24 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
     </div>
     
     <div class="thumbnail-border">
-  <!-- एडवांस स्मार्ट सिम्युलेटेड विजुअलाइज़र कैनवास -->
-  <canvas id="visualizer" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; pointer-events: none; z-index: 1; transform: scale(1.15); filter: drop-shadow(0 0 8px rgba(0, 245, 255, 0.6)) drop-shadow(0 0 15px rgba(189, 0, 255, 0.4));"></canvas>
   
-  <div class="audio-player" style="position: relative; z-index: 2;">
+  <!-- ये रहा आपका नया एडवांस फेक विजुअलाइज़र बार कंटेनर -->
+  <div id="fake-bars-visualizer">
+    <!-- 20 क्यूट नन्ही नियॉन बार्स -->
+    <div class="vfy-bar"></div><div class="vfy-bar"></div><div class="vfy-bar"></div><div class="vfy-bar"></div><div class="vfy-bar"></div>
+    <div class="vfy-bar"></div><div class="vfy-bar"></div><div class="vfy-bar"></div><div class="vfy-bar"></div><div class="vfy-bar"></div>
+    <div class="vfy-bar"></div><div class="vfy-bar"></div><div class="vfy-bar"></div><div class="vfy-bar"></div><div class="vfy-bar"></div>
+    <div class="vfy-bar"></div><div class="vfy-bar"></div><div class="vfy-bar"></div><div class="vfy-bar"></div><div class="vfy-bar"></div>
+  </div>
+
+  <div class="audio-player">
     <div id="thumbnailContainer">
       <img id="SThumb" src="" alt="/img/newdp.png" onclick="clickButton()">
       <div id="playButtonOverlay" onclick="playPause()"></div>
     </div>
   </div>  
 </div> 
+
 
     
     <div class="bottom-console-pod">
@@ -6316,41 +6324,31 @@ document.addEventListener('visibilitychange', () => {
 
 	      <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const audio = document.getElementById('SAudio');
-  const thumbBorder = document.querySelector('.thumbnail-border');
+  const playIcon = document.getElementById('playvfy');
+  const bars = document.querySelectorAll('.vfy-bar');
 
-  if (!audio || !thumbBorder) return;
+  function updateVisualizerState() {
+    if (!playIcon || bars.length === 0) return;
 
-  // विजुअलाइज़र स्टेट को सिंक करने वाला मास्टर फंक्शन
-  function syncVisualizer() {
-    // अगर गाना बज रहा है तो नियॉन डांस चालू करो, वरना बंद करो
-    if (audio && !audio.paused && !audio.ended) {
-      thumbBorder.classList.add('vfy-playing');
-    } else {
-      thumbBorder.classList.remove('vfy-playing');
-    }
+    // आपके बटन की क्लास को चेक करना (fa-pause मतलब गाना बज रहा है)
+    const isPlaying = playIcon.classList.contains('fa-pause');
+
+    bars.forEach(bar => {
+      if (isPlaying) {
+        bar.classList.add('vfy-dancing');
+      } else {
+        bar.classList.remove('vfy-dancing');
+      }
+    });
   }
 
-  // 1. ऑडियो एलिमेंट के असली प्ले/पॉज़ इवेंट्स को ट्रैक करना
-  audio.addEventListener('play', syncVisualizer);
-  audio.addEventListener('playing', syncVisualizer);
-  audio.addEventListener('pause', syncVisualizer);
-  audio.addEventListener('ended', syncVisualizer);
-
-  // 2. आपके सभी बटन्स के क्लिक पर फ़ोर्स चेक (ताकि लैग न हो)
-  const playElements = ['play', 'playvfy', 'SThumb', 'playButtonOverlay'];
-  playElements.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.addEventListener('click', () => {
-        // बटन क्लिक होने के तुरंत बाद स्थिति जांचें
-        setTimeout(syncVisualizer, 80);
-      });
-    }
+  // 1. जब भी यूजर कहीं भी क्लिक करे, तुरंत बटन का रूप चेक करो
+  document.addEventListener('click', () => {
+    setTimeout(updateVisualizerState, 50);
   });
 
-  // समय-समय पर बैकअप चेक (ताकि एनीमेशन कभी अटके नहीं)
-  setInterval(syncVisualizer, 300);
+  // 2. बैकअप सेफ्टी टाइमर (हर 200ms पर बैकग्राउंड में चेक करेगा ताकि मिस न हो)
+  setInterval(updateVisualizerState, 200);
 });
 		  </script>
 		  
