@@ -4970,16 +4970,17 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
     
     <div class="thumbnail-border">
   
-  <!-- ये रहा आपका सुपर-स्मूथ 3D वेव कैनवास -->
+  <!-- यूट्यूब स्टाइल एग्रेसिव वेव कैनवास -->
   <canvas id="fluid-wave-visualizer"></canvas>
 
   <div class="audio-player">
     <div id="thumbnailContainer">
-      <img id="SThumb" src="" alt="/img/newdp.png" onclick="clickButton()">
+      <img id="SThumb" src="YOUR_IMAGE_URL_HERE" alt="/img/newdp.png" onclick="clickButton()">
       <div id="playButtonOverlay" onclick="playPause()"></div>
     </div>
   </div>  
 </div> 
+
 	  
 
 
@@ -6319,7 +6320,7 @@ document.addEventListener('visibilitychange', () => {
 
 
 
-<script>
+      <script>
 let audioCtx = null;
 let analyser = null;
 let dataArray = null;
@@ -6330,16 +6331,17 @@ let useFallback = false;
 function initFluidVisualizer() {
   const audio = document.getElementById('SAudio');
   const canvas = document.getElementById('fluid-wave-visualizer');
-  if (!audio || !canvas) return;
+  const thumbBorder = document.querySelector('.thumbnail-border');
+  if (!audio || !canvas || !thumbBorder) return;
 
   const ctx = canvas.getContext('2d');
   
-  // डिस्प्ले को शार्प और हाई-डेफिनिशन बनाने के लिए साइजिंग फिक्स
-  canvas.width = 400;
-  canvas.height = 400;
+  // हाई-डेफिनिशन (HD) रेंडरिंग सेटिंग्स
+  canvas.width = 500;
+  canvas.height = 500;
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
-  const baseRadius = 135; // थंबनेल रिंग के ठीक ऊपर सेट करने के लिए रेडियस
+  const baseRadius = 132; // आपकी थंबनेल रिंग के हिसाब से सेट
 
   audio.crossOrigin = "anonymous";
 
@@ -6351,40 +6353,64 @@ function initFluidVisualizer() {
       source.connect(analyser);
       analyser.connect(audioCtx.destination);
 
-      analyser.smoothingTimeConstant = 0.82; // लहरों को पानी की तरह मखमली बहाव देने के लिए
-      analyser.fftSize = 128; // परफेक्ट वेव डेंसिटी
+      analyser.smoothingTimeConstant = 0.78; // एग्रेसिव और स्मूथ बाउंस के लिए
+      analyser.fftSize = 128; 
       dataArray = new Uint8Array(analyser.frequencyBinCount);
     } catch (e) {
-      console.log("Audio Context Error, switching to simulation mode.");
+      console.log("CORS Blocked or Audio Error! Using Bulletproof Fallback Engine.");
       useFallback = true;
     }
   }
 
-  // कैनवास को विजिबल करना
   canvas.classList.add('wave-active');
 
   function drawWave() {
     if (audio.paused || audio.ended) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       canvas.classList.remove('wave-active');
+      thumbBorder.style.transform = "scale(1) translateZ(0px)";
+      thumbBorder.style.boxShadow = "none";
       return;
     }
 
     animationFrameId = requestAnimationFrame(drawWave);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // कुल 64 पॉइंट्स से मिलकर बनेगा स्मूथ सर्कल
-    const pointsCount = 64; 
+    const pointsCount = 72; // यूट्यूब जैसी घनी लहरों के लिए पॉइंट्स बढ़ाए
+    let bassSum = 0;
 
     if (!useFallback && analyser) {
       analyser.getByteFrequencyData(dataArray);
+      bassSum = (dataArray[0] + dataArray[1] + dataArray[2]) / 3;
+    } else {
+      // फॉलबैक बैकअप मोड के लिए बास जनरेटर
+      let curTime = audio.currentTime;
+      let rawBeat = Math.sin(curTime * 9.8) * Math.cos(curTime * 4.3) * Math.sin(Date.now() * 0.015);
+      if (rawBeat > 0.25) bassSum = ((rawBeat - 0.25) / 0.75) * 200;
     }
 
-    // 1000246708.jpg की तरह सुंदर सियान-पर्पल ग्रेडिएंट बनाना
-    let gradient = ctx.createRadialGradient(centerX, centerY, baseRadius, centerX, centerY, baseRadius + 40);
-    gradient.addColorStop(0, '#00f5ff'); // अंदर सियान (Cyan)
-    gradient.addColorStop(0.5, '#bd00ff'); // बीच में पर्पल
-    gradient.addColorStop(1, 'rgba(255, 0, 124, 0)'); // बाहर जाते ही फेड आउट
+    // ==========================================
+    // पार्ट A: बीच की इमेज का हैवी पंप (Logo Pump)
+    // ==========================================
+    if (bassSum > 45) {
+      const norm = bassSum / 255;
+      const scaleFactor = 1 + (norm * 0.14); // 1.14x तक कड़क झटका
+      const translateZ = norm * 40;
+      thumbBorder.style.transform = `scale(${scaleFactor}) translateZ(${translateZ}px)`;
+      thumbBorder.style.boxShadow = `0 0 ${norm * 60 + 20}px rgba(255, 0, 0, 0.6)`;
+    } else {
+      thumbBorder.style.transform = "scale(1) translateZ(0px)";
+      thumbBorder.style.boxShadow = "none";
+    }
+
+    // ==========================================
+    // पार्ट B: 1000246738.jpg जैसा यूट्यूब ग्रेडिएंट वेव
+    // ==========================================
+    let gradient = ctx.createRadialGradient(centerX, centerY, baseRadius, centerX, centerY, baseRadius + 90);
+    gradient.addColorStop(0, '#ffffff'); // अंदर एकदम चमकदार सफ़ेद (White)
+    gradient.addColorStop(0.2, '#ffea00'); // बीच में चटक पीला (Yellow)
+    gradient.addColorStop(0.6, '#ff0000'); // बाहर की तरफ गहरा लाल (Red)
+    gradient.addColorStop(1, 'rgba(255, 0, 0, 0)'); // अंत में गायब
 
     ctx.beginPath();
 
@@ -6396,13 +6422,12 @@ function initFluidVisualizer() {
       if (!useFallback && analyser) {
         rawValue = dataArray[audioIndex % dataArray.length];
       } else {
-        // बैकअप मोड: टाइम बेस्ड सिम्युलेटेड लहर
         let curTime = audio.currentTime;
-        rawValue = (Math.sin(curTime * 6 + i * 0.3) * Math.cos(curTime * 2 + i * 0.5) + 1) * 70;
+        rawValue = (Math.sin(curTime * 6 + i * 0.3) * Math.cos(curTime * 2 + i * 0.5) + 1) * 75;
       }
 
-      // लहर की ऊंचाई सेट करना (बास आने पर वेव बाहर उछलेगी)
-      let waveHeight = (rawValue / 255) * 45;
+      // यूट्यूब स्टाइल ऊंची लहरों के लिए लंबाई बढ़ाकर 85px की
+      let waveHeight = (rawValue / 255) * 85;
       if (rawValue < 15) waveHeight = 0;
 
       let r = baseRadius + waveHeight;
@@ -6417,10 +6442,10 @@ function initFluidVisualizer() {
     }
 
     ctx.closePath();
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 5; // थोड़ी मोटी और कड़क लाइनें
     ctx.strokeStyle = gradient;
-    ctx.shadowBlur = 18;
-    ctx.shadowColor = '#00f5ff'; // नियॉन ग्लो इफ़ेक्ट
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = '#ff3300'; // लाल-नारंगी नियॉन ग्लो
     ctx.stroke();
   }
 
@@ -6430,7 +6455,7 @@ function initFluidVisualizer() {
   drawWave();
 }
 
-// प्लेयर इवेंट्स सिंकिंग
+// इवेंट्स सिंकिंग
 window.addEventListener('DOMContentLoaded', () => {
   const audio = document.getElementById('SAudio');
   if (!audio) return;
@@ -6442,14 +6467,19 @@ window.addEventListener('DOMContentLoaded', () => {
   stopEvents.forEach(evt => {
     audio.addEventListener(evt, () => {
       const canvas = document.getElementById('fluid-wave-visualizer');
+      const thumbBorder = document.querySelector('.thumbnail-border');
       if (canvas) {
         canvas.classList.remove('wave-active');
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
+      if (thumbBorder) {
+        thumbBorder.style.transform = "scale(1) translateZ(0px)";
+        thumbBorder.style.boxShadow = "none";
+      }
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
     });
   });
 });
-</script>
-	
+	  </script>
+	  
