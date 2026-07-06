@@ -369,35 +369,11 @@ body {
 #stop, br { display: none; }
 
 /* ==========================================================================
-   7. ADVANCED CORE THUMBNAIL ZOOM & GLOW BEAT EFFECT
+   7. ULTRA-SMOOTH HARDWARE-ACCELERATED ZOOM
    ========================================================================== */
-@keyframes dynamicTrackZoom {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 40px rgba(189, 0, 255, 0.15), inset 0 0 10px rgba(189, 0, 255, 0.1);
-    border-color: rgba(0, 245, 255, 0.2);
-  }
-  50% {
-    transform: scale(1.04); /* हल्का और बेहद स्मूथ प्रीमियम ज़ूम इफ़ेक्ट */
-    box-shadow: 0 0 60px rgba(0, 245, 255, 0.6), 0 0 25px rgba(189, 0, 255, 0.4), inset 0 0 20px rgba(0, 255, 136, 0.3);
-    border-color: #00f5ff; /* बीट पर बॉर्डर पूरी चमकेगी */
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 40px rgba(189, 0, 255, 0.15), inset 0 0 10px rgba(189, 0, 255, 0.1);
-    border-color: rgba(189, 0, 255, 0.4);
-  }
-}
-
-/* गाना बजने पर थंबनेल बॉर्डर और इमेज दोनों एक साथ ज़ूम और नियॉन पल्स करेंगे */
-.thumbnail-border.vfy-beat-active {
-  animation: dynamicTrackZoom 0.42s infinite cubic-bezier(0.25, 0.8, 0.25, 1);
-  transition: all 0.3s ease;
-}
-
-/* गाना बजने पर बाहरी ग्रीन लेज़र रिंग को भी और चमकीला और ज़ूम करने के लिए */
-.thumbnail-border.vfy-beat-active::before {
-  border-style: solid;
-  border-color: #00ff88 !important;
-  box-shadow: 0 0 20px #00ff88;
+.thumbnail-border {
+  /* मोबाइल में लैग खत्म करने के लिए हार्डवेयर एक्सीलरेशन */
+  will-change: transform, box-shadow;
+  transform: scale(1);
+  transition: transform 0.08s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.08s ease;
 }
