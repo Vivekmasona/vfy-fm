@@ -369,71 +369,35 @@ body {
 #stop, br { display: none; }
 
 /* ==========================================================================
-   7. PREMIUM HIDDEN-UNTIL-PLAY VISUALIZER (FIXED)
+   7. ADVANCED CORE THUMBNAIL ZOOM & GLOW BEAT EFFECT
    ========================================================================== */
-#fake-bars-visualizer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+@keyframes dynamicTrackZoom {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 40px rgba(189, 0, 255, 0.15), inset 0 0 10px rgba(189, 0, 255, 0.1);
+    border-color: rgba(0, 245, 255, 0.2);
+  }
+  50% {
+    transform: scale(1.04); /* हल्का और बेहद स्मूथ प्रीमियम ज़ूम इफ़ेक्ट */
+    box-shadow: 0 0 60px rgba(0, 245, 255, 0.6), 0 0 25px rgba(189, 0, 255, 0.4), inset 0 0 20px rgba(0, 255, 136, 0.3);
+    border-color: #00f5ff; /* बीट पर बॉर्डर पूरी चमकेगी */
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 40px rgba(189, 0, 255, 0.15), inset 0 0 10px rgba(189, 0, 255, 0.1);
+    border-color: rgba(189, 0, 255, 0.4);
+  }
 }
 
-.vfy-bar {
-  position: absolute;
-  width: 5px;
-  height: 14px;
-  background: linear-gradient(to top, #bd00ff, #00f5ff);
-  border-radius: 10px;
-  transform-origin: bottom center;
-  
-  /* सबसे ज़रूरी: गाना बंद होने पर बार्स पूरी तरह गायब रहेंगी */
-  opacity: 0; 
-  transform: scaleY(0);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+/* गाना बजने पर थंबनेल बॉर्डर और इमेज दोनों एक साथ ज़ूम और नियॉन पल्स करेंगे */
+.thumbnail-border.vfy-beat-active {
+  animation: dynamicTrackZoom 0.42s infinite cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: all 0.3s ease;
 }
 
-/* 20 बार्स को थंबनेल के चारों तरफ गोल रोटेट करने का फिक्स कोड */
-.vfy-bar:nth-child(1)  { transform: rotate(18deg) translateY(-138px); }
-.vfy-bar:nth-child(2)  { transform: rotate(36deg) translateY(-138px); }
-.vfy-bar:nth-child(3)  { transform: rotate(54deg) translateY(-138px); }
-.vfy-bar:nth-child(4)  { transform: rotate(72deg) translateY(-138px); }
-.vfy-bar:nth-child(5)  { transform: rotate(90deg) translateY(-138px); }
-.vfy-bar:nth-child(6)  { transform: rotate(108deg) translateY(-138px); }
-.vfy-bar:nth-child(7)  { transform: rotate(126deg) translateY(-138px); }
-.vfy-bar:nth-child(8)  { transform: rotate(144deg) translateY(-138px); }
-.vfy-bar:nth-child(9)  { transform: rotate(162deg) translateY(-138px); }
-.vfy-bar:nth-child(10) { transform: rotate(180deg) translateY(-138px); }
-.vfy-bar:nth-child(11) { transform: rotate(198deg) translateY(-138px); }
-.vfy-bar:nth-child(12) { transform: rotate(216deg) translateY(-138px); }
-.vfy-bar:nth-child(13) { transform: rotate(234deg) translateY(-138px); }
-.vfy-bar:nth-child(14) { transform: rotate(252deg) translateY(-138px); }
-.vfy-bar:nth-child(15) { transform: rotate(270deg) translateY(-138px); }
-.vfy-bar:nth-child(16) { transform: rotate(288deg) translateY(-138px); }
-.vfy-bar:nth-child(17) { transform: rotate(306deg) translateY(-138px); }
-.vfy-bar:nth-child(18) { transform: rotate(324deg) translateY(-138px); }
-.vfy-bar:nth-child(19) { transform: rotate(342deg) translateY(-138px); }
-.vfy-bar:nth-child(20) { transform: rotate(360deg) translateY(-138px); }
-
-/* जब गाना बजेगा, तब यह क्लास बार्स को दिखाएगी और एनीमेशन चालू करेगी */
-.vfy-bar.vfy-dancing {
-  opacity: 1;
-  animation: fakeBeatJump 0.35s infinite alternate ease-in-out;
-}
-
-/* हर लाइन को अलग-अलग टाइमिंग ताकि वे रैंडम वेव जैसी लगें */
-.vfy-bar.vfy-dancing:nth-child(odd) { animation-duration: 0.25s; animation-delay: 0.02s; }
-.vfy-bar.vfy-dancing:nth-child(3n)   { animation-duration: 0.38s; animation-delay: 0.07s; }
-.vfy-bar.vfy-dancing:nth-child(5n)   { animation-duration: 0.31s; animation-delay: 0.12s; }
-.vfy-bar.vfy-dancing:nth-child(4n)   { animation-duration: 0.22s; animation-delay: 0.04s; }
-
-@keyframes fakeBeatJump {
-  0% { height: 10px; transform: scaleY(0.8); filter: drop-shadow(0 0 5px #bd00ff); }
-  100% { height: 38px; transform: scaleY(1.3); filter: drop-shadow(0 0 12px #00f5ff); }
+/* गाना बजने पर बाहरी ग्रीन लेज़र रिंग को भी और चमकीला और ज़ूम करने के लिए */
+.thumbnail-border.vfy-beat-active::before {
+  border-style: solid;
+  border-color: #00ff88 !important;
+  box-shadow: 0 0 20px #00ff88;
 }
