@@ -72,12 +72,12 @@ function initNeonCircularVisualizer() {
       
       // नियॉन ग्लो इफ़ेक्ट लोडर के लिए
       ctx.shadowBlur = 15;
-      ctx.shadowColor = '#ff0000';
+      ctx.shadowColor = '#000000';
       
       // एक सुंदर कट-आउट (अधूरा) घूमता हुआ सर्कल बनाना
       ctx.beginPath();
       ctx.arc(centerX, centerY, 50, loadingAngle, loadingAngle + (Math.PI * 1.5));
-      ctx.strokeStyle = '#00f5ff';
+      ctx.strokeStyle = '#ffffff';
       ctx.stroke();
       ctx.restore();
       
