@@ -3425,25 +3425,31 @@ document.getElementById("repeat").addEventListener("click", function() {
 
 // Listen for the 'error' event
 var alternativeAudioSources = [
-    // Naya Tiekoetter Invidious Server (Saare Audio Formats + &check=)
+    // 1. F5 Invidious Server
+    "https://jp1-cmp.invidious.f5.si/companion/latest_version?id=" + id + "&itag=140&local=true&check=",
+    "https://jp1-cmp.invidious.f5.si/companion/latest_version?id=" + id + "&itag=251&local=true&check=",
+    "https://jp1-cmp.invidious.f5.si/companion/latest_version?id=" + id + "&itag=250&local=true&check=",
+    "https://jp1-cmp.invidious.f5.si/companion/latest_version?id=" + id + "&itag=249&local=true&check=",
+
+    // 2. Tiekoetter Invidious Server
     "https://eu-de1.companion.invidious.tiekoetter.com/companion/latest_version?id=" + id + "&itag=140&local=true&check=",
     "https://eu-de1.companion.invidious.tiekoetter.com/companion/latest_version?id=" + id + "&itag=251&local=true&check=",
     "https://eu-de1.companion.invidious.tiekoetter.com/companion/latest_version?id=" + id + "&itag=250&local=true&check=",
     "https://eu-de1.companion.invidious.tiekoetter.com/companion/latest_version?id=" + id + "&itag=249&local=true&check=",
 
-    // Nerdvpn Invidious Server (+ &check=)
+    // 3. Nerdvpn Invidious Server
     "https://invidious.nerdvpn.de/companion/latest_version?id=" + id + "&itag=140&local=true&check=",
     "https://invidious.nerdvpn.de/companion/latest_version?id=" + id + "&itag=251&local=true&check=",
     "https://invidious.nerdvpn.de/companion/latest_version?id=" + id + "&itag=250&local=true&check=",
     "https://invidious.nerdvpn.de/companion/latest_version?id=" + id + "&itag=249&local=true&check=",
     
-    // Backup Vercel Server (+ &check=)
+    // 4. Backup Vercel Server
     "https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/" + id + "&check=",
     "https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + id + "&check="
 ];
 
 var currentAlternativeIndex = 0;
-var isSwapping = false; // Ye track karega ki swap chal raha hai ya nahi
+var isSwapping = false; 
 
 function showToast(message) {
     var toast = document.getElementById("audio-error-toast");
@@ -3457,32 +3463,49 @@ function showToast(message) {
 }
 
 audio.addEventListener("error", function () {
-    // Agar pehle se hi swapping chal rahi hai, toh naya loop mat shuru karo
     if (isSwapping) return; 
     
     isSwapping = true;
-    showToast("Server busy! Swapping to alternative source...");
+    
+    // 1. Current URL uthao jo hum abhi load karne wale hain
+    var nextUrl = alternativeAudioSources[currentAlternativeIndex];
+    
+    // 2. URL se Domain Name nikalo (e.g., jp1-cmp.invidious.f5.si)
+    var domain = "Unknown Server";
+    try {
+        var urlObject = new URL(nextUrl);
+        domain = urlObject.hostname; 
+    } catch(e) {
+        // Fallback agar URL object na bane
+        var match = nextUrl.match(/^https?:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
+        if (match) domain = match[1];
+    }
+    
+    // 3. URL se itag nikalne ka logic
+    var itagMatch = nextUrl.match(/[?&]itag=([^&]+)/);
+    var itag = itagMatch ? itagMatch[1] : "N/A";
+
+    // 4. Notification mein Domain aur Itag dono show karo
+    showToast("Swapping to: " + domain + " (itag: " + itag + ")");
 
     setTimeout(function () {
-        audio.src = alternativeAudioSources[currentAlternativeIndex];
+        audio.src = nextUrl;
         audio.load();
         
-        // Gaana play karne ki koshish karein
         var playPromise = audio.play();
         
         if (playPromise !== undefined) {
             playPromise.then(function() {
-                // Agar successfully play ho gaya, toh loop reset kar do
                 isSwapping = false;
             }).catch(function(error) {
-                // Agar fir fail hua, tabhi agle source par jane ki ijazat do
                 isSwapping = false;
             });
         }
         
         currentAlternativeIndex = (currentAlternativeIndex + 1) % alternativeAudioSources.length;
-    }, 3000); // 3 second ka cooldown time
+    }, 3000); 
 });
+	
 
 
 
