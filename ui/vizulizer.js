@@ -1,4 +1,3 @@
-
 let audioCtx = null;
 let analyser = null;
 let dataArray = null;
@@ -14,12 +13,16 @@ function initNeonCircularVisualizer() {
 
   const ctx = canvas.getContext('2d');
   
-  // कैनवास साइजिंग और रेडियस एडजस्टमेंट (ताकि बार्स इमेज के बाहर रहें)
-  canvas.width = 540;
-  canvas.height = 540;
+  // कैनवास साइज को बढ़ा दिया ताकि दूर तक जाने वाली बार्स कटें नहीं
+  canvas.width = 600;
+  canvas.height = 600;
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
-  const baseRadius = 168; // 1000246980.jpg की प्रॉब्लम सॉल्व करने के लिए परफेक्ट रेडियस
+  
+  // =======================================================
+  // यहाँ जादू है: इसे 168 से बढ़ाकर 195 कर दिया ताकि बार्स इमेज से काफी दूर रहें
+  // =======================================================
+  const baseRadius = 195; 
 
   audio.crossOrigin = "anonymous";
 
@@ -31,7 +34,7 @@ function initNeonCircularVisualizer() {
       source.connect(analyser);
       analyser.connect(audioCtx.destination);
 
-      analyser.smoothingTimeConstant = 0.75; // बीट्स को ज्यादा तेज़ और रिस्पॉन्सिव रखने के लिए
+      analyser.smoothingTimeConstant = 0.70; // बार्स को और ज्यादा फुर्तीला (Snappy) बनाने के लिए
       analyser.fftSize = 256; 
       dataArray = new Uint8Array(analyser.frequencyBinCount);
     } catch (e) {
@@ -41,11 +44,11 @@ function initNeonCircularVisualizer() {
 
   canvas.classList.add('wave-active');
 
-  // लूप से बाहर स्मूथ ग्लोबल ग्रेडिएंट
-  let globalGradient = ctx.createRadialGradient(centerX, centerY, baseRadius, centerX, centerY, baseRadius + 70);
-  globalGradient.addColorStop(0, '#00f5ff');   // अंदर सियान
-  globalGradient.addColorStop(0.5, '#3b82f6'); // बीच में ब्लू
-  globalGradient.addColorStop(1, '#ff00ac');   // बाहर हॉट पिंक
+  // नए रेडियस के हिसाब से चमकीला ग्रेडिएंट रेंज बढ़ा दिया
+  let globalGradient = ctx.createRadialGradient(centerX, centerY, baseRadius, centerX, centerY, baseRadius + 75);
+  globalGradient.addColorStop(0, '#00f5ff');   // अंदर प्योर नियॉन सियान
+  globalGradient.addColorStop(0.4, '#3b82f6'); // बीच में डीप ब्लू
+  globalGradient.addColorStop(1, '#ff00ac');   // बाहरी नोक पर लेज़र पिंक
 
   function drawSpectrum() {
     if (audio.paused || audio.ended) {
@@ -58,25 +61,26 @@ function initNeonCircularVisualizer() {
     animationFrameId = requestAnimationFrame(drawSpectrum);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const totalBars = 76; // परफेक्ट डेंसिटी
+    const totalBars = 84; 
     let bassSum = 0;
 
     if (!useFallback && analyser) {
       analyser.getByteFrequencyData(dataArray);
-      // शुरुआती लो-फ्रीक्वेंसी को टारगेट किया ताकि सिर्फ बास/किक पर ही ज़ूम हो
+      // सिर्फ सबसे भारी बास फ्रीक्वेंसी (0 से 3) को लिया
       bassSum = (dataArray[0] + dataArray[1] + dataArray[2] + dataArray[3]) / 4;
     } else {
       let curTime = audio.currentTime;
-      let rawBeat = Math.sin(curTime * 9.8) * Math.cos(curTime * 4.3) * Math.sin(Date.now() * 0.015);
-      if (rawBeat > 0.20) bassSum = ((rawBeat - 0.20) / 0.80) * 220;
+      let rawBeat = Math.sin(curTime * 11) * Math.cos(curTime * 5) * Math.sin(Date.now() * 0.02);
+      if (rawBeat > 0.15) bassSum = ((rawBeat - 0.15) / 0.85) * 240;
     }
 
-    // ==========================================
-    // एकदम तगड़ा ज़ूम फील बीट पंप (Extreme Zoom)
-    // ==========================================
-    if (bassSum > 40) {
+    // =======================================================
+    // महा-पंप ज़ूम इफेक्ट (Hyper Bass Zoom Feel)
+    // =======================================================
+    if (bassSum > 35) {
       const norm = bassSum / 255;
-      const scaleFactor = 1 + (norm * 0.25); // 1.25x तक का ज़बर्दस्त ज़ूम झटका
+      // स्केल फैक्टर को बढ़ाकर 0.38 कर दिया (यानी 1.38x तक का तगड़ा झटका)
+      const scaleFactor = 1 + (norm * 0.38); 
       thumbBorder.style.transform = `scale(${scaleFactor})`;
     } else {
       thumbBorder.style.transform = "scale(1)";
@@ -85,12 +89,12 @@ function initNeonCircularVisualizer() {
     ctx.strokeStyle = globalGradient;
     ctx.lineCap = 'round';
 
-    // ==========================================
-    // बार्स रेंडरिंग (इमेज के बॉर्डर से बाहर की तरफ)
-    // ==========================================
+    // =======================================================
+    // बार्स ड्राइंग - बिल्कुल साफ बॉर्डर एरिया से बाहर की तरफ
+    // =======================================================
     for (let i = 0; i < totalBars; i++) {
       let angle = (i / totalBars) * Math.PI * 2;
-      let audioIndex = Math.floor((i / totalBars) * (dataArray ? dataArray.length * 0.55 : 1));
+      let audioIndex = Math.floor((i / totalBars) * (dataArray ? dataArray.length * 0.50 : 1));
       
       let rawValue = 0;
       if (!useFallback && analyser) {
@@ -100,31 +104,32 @@ function initNeonCircularVisualizer() {
         rawValue = (Math.sin(curTime * 5 + i * 0.4) * Math.cos(curTime * 2 + i * 0.2) + 1) * 75;
       }
 
-      // बार्स की लंबाई (मैक्सिमम 60px)
-      let barLength = (rawValue / 255) * 60;
-      if (rawValue < 8) barLength = 2; // बेस डॉट
+      // बार की लंबाई (मैक्सिमम 65px बाहर फेंकेगी)
+      let barLength = (rawValue / 255) * 65;
+      if (rawValue < 6) barLength = 2; // शांत होने पर सिर्फ नन्ही बिंदी दिखेगी
 
       let cosA = Math.cos(angle);
       let sinA = Math.sin(angle);
 
-      // बार्स अब सीधे baseRadius (168px) से शुरू होकर बाहर की तरफ भागेंगी
+      // अब ये पॉइंट्स इमेज से काफी दूरी पर (195px रेडियस से) शुरू होंगे
       let startX = centerX + cosA * baseRadius;
       let startY = centerY + sinA * baseRadius;
       let endX = centerX + cosA * (baseRadius + barLength);
       let endY = centerY + sinA * (baseRadius + barLength);
 
-      // ऑप्टिमाइज्ड फेक नियॉन ग्लो इफ़ेक्ट
+      // बिना लैग वाला हैवी नियॉन इफ़ेक्ट
       ctx.beginPath();
       ctx.moveTo(startX, startY);
       ctx.lineTo(endX, endY);
       
-      ctx.lineWidth = 7.5; 
-      ctx.globalAlpha = 0.22; 
+      // बैकग्राउंड नियॉन ग्लो लेयर
+      ctx.lineWidth = 8.5; 
+      ctx.globalAlpha = 0.25; 
       ctx.stroke();
 
-      // तीखी कोर बार्स
+      // सामने की तीखी चमकदार मेन बार
       ctx.globalAlpha = 1.0; 
-      ctx.lineWidth = 3.5; 
+      ctx.lineWidth = 4.0; 
       ctx.stroke();
     }
   }
@@ -135,7 +140,7 @@ function initNeonCircularVisualizer() {
   drawSpectrum();
 }
 
-// प्लेयर इवेंट्स लिस्नर्स
+// इवेंट बाइंडिंग्स
 window.addEventListener('DOMContentLoaded', () => {
   const audio = document.getElementById('SAudio');
   if (!audio) return;
