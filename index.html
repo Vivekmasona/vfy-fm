@@ -3233,39 +3233,39 @@ function loadSong(song, ind) {
 }
 
 // ---- RESUME LAST SONG ON PAGE LOAD ----
-//window.addEventListener("load", function () {
-    //var lastId = localStorage.getItem("lastPlayedId");
-  //  if (!lastId) return;
+window.addEventListener("load", function () {
+    var lastId = localStorage.getItem("lastPlayedId");
+    if (!lastId) return;
 
-//    var songsCache = JSON.parse(localStorage.getItem("songsCache") || "{}");
-   // var songInfo = songsCache[lastId];
+    var songsCache = JSON.parse(localStorage.getItem("songsCache") || "{}");
+    var songInfo = songsCache[lastId];
 
-   // if (songInfo) {
-       // var dummy = $('<div>')
-          //  .attr("vid", lastId)
-          //  .attr("index", 0)
-        //    .text(songInfo.title);
+    if (songInfo) {
+        var dummy = $('<div>')
+            .attr("vid", lastId)
+            .attr("index", 0)
+            .text(songInfo.title);
 
-    //  loadSong(dummy, 0);
+      loadSong(dummy, 0);
 
-       // var audio = document.getElementById("SAudio");
-     //   var savedTime = parseFloat(localStorage.getItem("lastSongTime")) || 0;
+        var audio = document.getElementById("SAudio");
+        var savedTime = parseFloat(localStorage.getItem("lastSongTime")) || 0;
 
-      //  if (audio) {
-      //      audio.addEventListener("loadedmetadata", function () {
+        if (audio) {
+            audio.addEventListener("loadedmetadata", function () {
                 // ✅ Resume only last song
-               // if (savedTime && lastId === localStorage.getItem("lastPlayedId")) {
-                    //if (savedTime < audio.duration) {
-                      //  audio.currentTime = savedTime;
-                  //  }
-              //  } else {
-                   // audio.currentTime = 0;
-               // }
-             //   audio.play().catch(e => console.log("Autoplay blocked:", e));
-           // }, { once: true });
-       // }
-   // }
-//});
+                if (savedTime && lastId === localStorage.getItem("lastPlayedId")) {
+                    if (savedTime < audio.duration) {
+                        audio.currentTime = savedTime;
+                   }
+               } else {
+                    audio.currentTime = 0;
+             }
+                audio.play().catch(e => console.log("Autoplay blocked:", e));
+            }, { once: true });
+        }
+    }
+});
 
 
 
@@ -3306,7 +3306,7 @@ function play(id,Sid){
       //data = "https://vivekfy.vercel.app/api-play?url=https://youtu.be/"+id;
     //data = "https://vivekfy.vercel.app/inv?id="+id;
       //data = "https://vivekfy.vercel.app/mp3?url=https://vkrdownloader.xyz/download.php?vkr=https://youtu.be/"+id;
-     data = "https://2invidious.nerdvpn.de/companion/latest_version?id="+id+"&itag=140&local=true&check=";
+     data = "https://invidious.nerdvpn.de/companion/latest_version?id="+id+"&itag=140&local=true&check=";
      //data = "https://myserver-dev-atmq.2.ie-1.fl0.io/audio?url=https://youtu.be/"+id;
      //data = "https://audioserver-dev-cgen.2.sg-1.fl0.io/"+id;
     document.getElementById("SThumb").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
