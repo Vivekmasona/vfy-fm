@@ -3397,31 +3397,45 @@ var alternativeAudioSources = [
 ];
 
 var currentAlternativeIndex = 0;
+var isSwapping = false; // Ye track karega ki swap chal raha hai ya nahi
 
-// Message dikhane ka function
 function showToast(message) {
     var toast = document.getElementById("audio-error-toast");
     if (toast) {
         toast.innerText = message;
-        toast.style.display = "block"; // Message dikhao
-        
+        toast.style.display = "block";
         setTimeout(function () {
-            toast.style.display = "none"; // 2 second baad chupa do
+            toast.style.display = "none";
         }, 2000); 
     }
 }
 
-// Listen for the 'error' event
 audio.addEventListener("error", function () {
-    // Jaise hi error aaye, toast message trigger karein
-    showToast("Server busy! Swapping to alternative source " + (currentAlternativeIndex + 1) + "...");
+    // Agar pehle se hi swapping chal rahi hai, toh naya loop mat shuru karo
+    if (isSwapping) return; 
+    
+    isSwapping = true;
+    showToast("Server busy! Swapping to alternative source...");
 
     setTimeout(function () {
         audio.src = alternativeAudioSources[currentAlternativeIndex];
         audio.load();
-        audio.play();
+        
+        // Gaana play karne ki koshish karein
+        var playPromise = audio.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.then(function() {
+                // Agar successfully play ho gaya, toh loop reset kar do
+                isSwapping = false;
+            }).catch(function(error) {
+                // Agar fir fail hua, tabhi agle source par jane ki ijazat do
+                isSwapping = false;
+            });
+        }
+        
         currentAlternativeIndex = (currentAlternativeIndex + 1) % alternativeAudioSources.length;
-    }, 1000);
+    }, 3000); // 3 second ka cooldown time
 });
 
 
