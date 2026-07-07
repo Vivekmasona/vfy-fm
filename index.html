@@ -91,22 +91,33 @@
 </div>
 
 
+
+
+
 <div id="audio-error-toast" style="
   display: none; 
   position: fixed; 
-  top: 10px; /* Top par notch area ke pass */
+  top: 10px; /* Top par notch area ke paas */
   left: 50%; 
   transform: translateX(-50%); 
-  background-color: black; 
+  
+  /* Glassmorphism Styling */
+  background: rgba(255, 255, 255, 0.1); /* Halka translucent background */
+  -webkit-backdrop-filter: blur(10px); /* Safari ke liye background blur */
+  backdrop-filter: blur(10px); /* Background blur effect */
   color: white; 
   padding: 8px 16px; 
   border-radius: 20px; /* iPhone jaisa gol notch style */
+  
+  /* Border aur Shadow glass effect ke liye */
+  border: 1px solid rgba(255, 255, 255, 0.18); /* Halka border glass edges ke liye */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), inset 0 0 10px rgba(255, 255, 255, 0.05); /* Shadow glass deepness ke liye */
+  
   z-index: 2147483647; /* Sabse upar */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; /* iPhone default font style */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); 
   text-align: center;
   max-width: 90%;
-  border: 1px solid rgba(255, 255, 255, 0.15); /* Haldi si dynamic line */
+  
   animation: dynamic-island-enter 0.5s ease-out; /* Notification entrance animation */
 ">
   Server busy! Swapping to alternative source...
@@ -125,6 +136,7 @@
   }
 }
 </style>
+
 
 
 
@@ -3423,7 +3435,8 @@ document.getElementById("repeat").addEventListener("click", function() {
 });
 
 
-// Listen for the 'error' event
+
+    // Listen for the 'error' event
 var alternativeAudioSources = [
     // 1. F5 Invidious Server
     "https://jp1-cmp.invidious.f5.si/companion/latest_version?id=" + id + "&itag=140&local=true&check=",
@@ -3462,31 +3475,38 @@ function showToast(message) {
     }
 }
 
+// Privacy ke liye domain ko mask/hide karne ka function
+function maskDomain(domain) {
+    if (domain.length <= 8) return domain; // Agar chota domain ho
+    return domain.substring(0, 6) + "***" + domain.substring(domain.length - 4);
+}
+
 audio.addEventListener("error", function () {
     if (isSwapping) return; 
     
     isSwapping = true;
     
-    // 1. Current URL uthao jo hum abhi load karne wale hain
     var nextUrl = alternativeAudioSources[currentAlternativeIndex];
     
-    // 2. URL se Domain Name nikalo (e.g., jp1-cmp.invidious.f5.si)
+    // Domain nikalne ka logic
     var domain = "Unknown Server";
     try {
         var urlObject = new URL(nextUrl);
         domain = urlObject.hostname; 
     } catch(e) {
-        // Fallback agar URL object na bane
         var match = nextUrl.match(/^https?:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
         if (match) domain = match[1];
     }
     
-    // 3. URL se itag nikalne ka logic
+    // itag nikalne ka logic
     var itagMatch = nextUrl.match(/[?&]itag=([^&]+)/);
     var itag = itagMatch ? itagMatch[1] : "N/A";
 
-    // 4. Notification mein Domain aur Itag dono show karo
-    showToast("Swapping to: " + domain + " (itag: " + itag + ")");
+    // Privacy mask apply karna
+    var privateDomain = maskDomain(domain);
+
+    // Ab notification mein safe domain dikhega
+    showToast("Connecting: " + privateDomain + " (itag: " + itag + ")");
 
     setTimeout(function () {
         audio.src = nextUrl;
@@ -3505,6 +3525,7 @@ audio.addEventListener("error", function () {
         currentAlternativeIndex = (currentAlternativeIndex + 1) % alternativeAudioSources.length;
     }, 3000); 
 });
+	
 	
 
 
