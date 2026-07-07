@@ -91,6 +91,9 @@
 </div>
 
 
+<div id="audio-error-toast" style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 10px 20px;订 border-radius: 5px; z-index: 1000;">
+  Server busy! Swapping to alternative source...
+</div>
 
 
 
@@ -3389,24 +3392,30 @@ document.getElementById("repeat").addEventListener("click", function() {
 
 // Listen for the 'error' event
 var alternativeAudioSources = [
-//"https://vivekfy.vercel.app/tokyo?id=" + id,
-//"https://vivekfy.vercel.app/audio-dl?url=https://youtu.be/" + id,
-//"https://vivekfy.vercel.app/inv1?id=" + id,
-//"https://vivekfy.vercel.app/inv2?id=" + id,
-//"https://vivekfy.vercel.app/stream?url=https://youtu.be/" + id,
-//"https://vivekfy.vercel.app/tokyo?id=" + id,   
-//"https://vivekfy.vercel.app/mp3?url=https://vkrdownloader.xyz/download.php?vkr=https://youtu.be/" + id,
-//"https://vivekfy.vercel.app/mp3?url=https://vkrdownloader.xyz/download.php?vkr=https://youtu.be/" + id,
-//"https://distinctive-netta-vivekfy-608ee81c.koyeb.app/play?url=https://youtu.be/" + id,	
-//"https://distinctive-netta-vivekfy-608ee81c.koyeb.app/play?url=https://youtu.be/" + id,
-"https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/" + id,
-"https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + id,
-    
+    "https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/" + id,
+    "https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + id,
 ];
 
 var currentAlternativeIndex = 0;
 
+// Message dikhane ka function
+function showToast(message) {
+    var toast = document.getElementById("audio-error-toast");
+    if (toast) {
+        toast.innerText = message;
+        toast.style.display = "block"; // Message dikhao
+        
+        setTimeout(function () {
+            toast.style.display = "none"; // 2 second baad chupa do
+        }, 2000); 
+    }
+}
+
+// Listen for the 'error' event
 audio.addEventListener("error", function () {
+    // Jaise hi error aaye, toast message trigger karein
+    showToast("Server busy! Swapping to alternative source " + (currentAlternativeIndex + 1) + "...");
+
     setTimeout(function () {
         audio.src = alternativeAudioSources[currentAlternativeIndex];
         audio.load();
@@ -3414,6 +3423,7 @@ audio.addEventListener("error", function () {
         currentAlternativeIndex = (currentAlternativeIndex + 1) % alternativeAudioSources.length;
     }, 1000);
 });
+
 
 
 // butto click event
