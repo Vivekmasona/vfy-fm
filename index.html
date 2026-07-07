@@ -97,45 +97,44 @@
 <div id="audio-error-toast" style="
   display: none; 
   position: fixed; 
-  top: 10px; /* Top par notch area ke paas */
+  top: 10px; 
   left: 50%; 
   transform: translateX(-50%); 
-  
-  /* Glassmorphism Styling */
-  background: rgba(255, 255, 255, 0.1); /* Halka translucent background */
-  -webkit-backdrop-filter: blur(10px); /* Safari ke liye background blur */
-  backdrop-filter: blur(10px); /* Background blur effect */
+  background: rgba(255, 255, 255, 0.1); 
+  backdrop-filter: blur(10px); 
+  -webkit-backdrop-filter: blur(10px);
   color: white; 
-  padding: 8px 16px; 
-  border-radius: 20px; /* iPhone jaisa gol notch style */
-  
-  /* Border aur Shadow glass effect ke liye */
-  border: 1px solid rgba(255, 255, 255, 0.18); /* Halka border glass edges ke liye */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), inset 0 0 10px rgba(255, 255, 255, 0.05); /* Shadow glass deepness ke liye */
-  
-  z-index: 2147483647; /* Sabse upar */
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; /* iPhone default font style */
+  padding: 10px 20px; 
+  border-radius: 20px; 
+  border: 1px solid rgba(255, 255, 255, 0.2); 
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  z-index: 2147483647; 
+  font-family: -apple-system, sans-serif; 
   text-align: center;
   max-width: 90%;
-  
-  animation: dynamic-island-enter 0.5s ease-out; /* Notification entrance animation */
+  transition: background 0.4s ease, border-color 0.4s ease; /* Smooth color change */
 ">
-  Server busy! Swapping to alternative source...
+  Server busy! Swapping...
 </div>
 
-<!-- Simple animation logic, separate stylesheet use karne ki zarurat nahi hai, yahan embedded hai -->
 <style>
-@keyframes dynamic-island-enter {
+/* Smoothly upar gayab hone ki class */
+.island-exit {
+  animation: dynamic-island-exit 0.5s forwards ease-in !important;
+}
+
+@keyframes dynamic-island-exit {
   0% {
-    top: -20px; /* Thoda bahar se start hoga */
-    border-radius: 4px; /* Shuru mein thoda chauras ho sakta hai */
+    top: 10px;
+    opacity: 1;
   }
   100% {
-    top: 10px; /* Position par settle hoga */
-    border-radius: 20px; /* Gol Dynamic Island style mein change hoga */
+    top: -60px; /* Upar ke side smoothly slide out */
+    opacity: 0;
   }
 }
 </style>
+
 
 
 
@@ -3436,96 +3435,96 @@ document.getElementById("repeat").addEventListener("click", function() {
 
 
 
-    // Listen for the 'error' event
-var alternativeAudioSources = [
-    // 1. F5 Invidious Server
-    "https://jp1-cmp.invidious.f5.si/companion/latest_version?id=" + id + "&itag=140&local=true&check=",
-    "https://jp1-cmp.invidious.f5.si/companion/latest_version?id=" + id + "&itag=251&local=true&check=",
-    "https://jp1-cmp.invidious.f5.si/companion/latest_version?id=" + id + "&itag=250&local=true&check=",
-    "https://jp1-cmp.invidious.f5.si/companion/latest_version?id=" + id + "&itag=249&local=true&check=",
-
-    // 2. Tiekoetter Invidious Server
-    "https://eu-de1.companion.invidious.tiekoetter.com/companion/latest_version?id=" + id + "&itag=140&local=true&check=",
-    "https://eu-de1.companion.invidious.tiekoetter.com/companion/latest_version?id=" + id + "&itag=251&local=true&check=",
-    "https://eu-de1.companion.invidious.tiekoetter.com/companion/latest_version?id=" + id + "&itag=250&local=true&check=",
-    "https://eu-de1.companion.invidious.tiekoetter.com/companion/latest_version?id=" + id + "&itag=249&local=true&check=",
-
-    // 3. Nerdvpn Invidious Server
-    "https://invidious.nerdvpn.de/companion/latest_version?id=" + id + "&itag=140&local=true&check=",
-    "https://invidious.nerdvpn.de/companion/latest_version?id=" + id + "&itag=251&local=true&check=",
-    "https://invidious.nerdvpn.de/companion/latest_version?id=" + id + "&itag=250&local=true&check=",
-    "https://invidious.nerdvpn.de/companion/latest_version?id=" + id + "&itag=249&local=true&check=",
-    
-    // 4. Backup Vercel Server
-    "https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/" + id + "&check=",
-    "https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + id + "&check="
+    // Servers aur Formats
+var servers = [
+    "https://jp1-cmp.invidious.f5.si/companion/latest_version?id=" + id,
+    "https://eu-de1.companion.invidious.tiekoetter.com/companion/latest_version?id=" + id,
+    "https://invidious.nerdvpn.de/companion/latest_version?id=" + id
 ];
 
-var currentAlternativeIndex = 0;
-var isSwapping = false; 
+var formats = ["&itag=140&local=true&check=", "&itag=251&local=true&check=", "&itag=250&local=true&check=", "&itag=249&local=true&check="];
+var backupSources = [
+    "https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/" + id,
+    "https://vivekfy.vercel.app/audio?itag=251&url=https://youtu.be/" + id
+];
 
-function showToast(message) {
+var alternativeAudioSources = [];
+for (var f = 0; f < formats.length; f++) {
+    for (var s = 0; s < servers.length; s++) {
+        alternativeAudioSources.push(servers[s] + formats[f]);
+    }
+}
+alternativeAudioSources = alternativeAudioSources.concat(backupSources);
+
+var currentAlternativeIndex = 0;
+var isSwapping = false;
+var toastTimeout; // Toast hide karne ke liye reference tracking
+
+function showToast(message, isSuccess) {
     var toast = document.getElementById("audio-error-toast");
-    if (toast) {
+    if (!toast) return;
+
+    // Har baar naye fresh animation ke liye purani exit class hatao
+    toast.classList.remove("island-exit");
+    clearTimeout(toastTimeout);
+
+    if (isSuccess) {
+        // Green Glassmorphic success look
+        toast.innerText = "✓ " + message;
+        toast.style.background = "rgba(46, 204, 113, 0.3)"; /* Soft Glass Green */
+        toast.style.borderColor = "rgba(46, 204, 113, 0.5)";
+        
+        // 1.5 second tak green dikhao, fir smoothly upar bhej do
+        toastTimeout = setTimeout(function () {
+            toast.classList.add("island-exit");
+            setTimeout(function() { toast.style.display = "none"; }, 500); // Animation ke baad element hide
+        }, 1500);
+    } else {
+        // Normal Glassmorphic warning look
         toast.innerText = message;
+        toast.style.background = "rgba(255, 255, 255, 0.1)";
+        toast.style.borderColor = "rgba(255, 255, 255, 0.2)";
         toast.style.display = "block";
-        setTimeout(function () {
-            toast.style.display = "none";
-        }, 2000); 
     }
 }
 
-// Privacy ke liye domain ko mask/hide karne ka function
 function maskDomain(domain) {
-    if (domain.length <= 8) return domain; // Agar chota domain ho
+    if (domain.length <= 8) return domain;
     return domain.substring(0, 6) + "***" + domain.substring(domain.length - 4);
 }
 
 audio.addEventListener("error", function () {
-    if (isSwapping) return; 
-    
+    if (isSwapping) return;
     isSwapping = true;
     
     var nextUrl = alternativeAudioSources[currentAlternativeIndex];
     
-    // Domain nikalne ka logic
-    var domain = "Unknown Server";
-    try {
-        var urlObject = new URL(nextUrl);
-        domain = urlObject.hostname; 
-    } catch(e) {
-        var match = nextUrl.match(/^https?:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
-        if (match) domain = match[1];
-    }
-    
-    // itag nikalne ka logic
+    // Domain extract & Mask
+    var domain = "Server";
+    try { domain = new URL(nextUrl).hostname; } catch(e) {}
     var itagMatch = nextUrl.match(/[?&]itag=([^&]+)/);
     var itag = itagMatch ? itagMatch[1] : "N/A";
-
-    // Privacy mask apply karna
-    var privateDomain = maskDomain(domain);
-
-    // Ab notification mein safe domain dikhega
-    showToast("Connecting: " + privateDomain + " (itag: " + itag + ")");
+    
+    showToast("Trying: " + maskDomain(domain) + " (itag: " + itag + ")", false);
 
     setTimeout(function () {
         audio.src = nextUrl;
         audio.load();
         
-        var playPromise = audio.play();
-        
-        if (playPromise !== undefined) {
-            playPromise.then(function() {
-                isSwapping = false;
-            }).catch(function(error) {
-                isSwapping = false;
+        audio.play()
+            .then(function() { 
+                isSwapping = false; 
+                // Jaise hi play ho jaye, success toast show karo!
+                showToast("Connected: " + maskDomain(domain), true);
+            })
+            .catch(function() { 
+                isSwapping = false; 
             });
-        }
-        
+
         currentAlternativeIndex = (currentAlternativeIndex + 1) % alternativeAudioSources.length;
-    }, 3000); 
+    }, 2500);
 });
-	
+
 	
 
 
