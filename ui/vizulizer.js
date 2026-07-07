@@ -4,6 +4,8 @@ let dataArray = null;
 let source = null;
 let animationFrameId = null;
 let useFallback = false;
+let isLoading = false; // लोडिंग स्टेट ट्रैक करने के लिए
+let loadingAngle = 0;   // लोडर को घुमाने के लिए कोण
 
 function initNeonCircularVisualizer() {
   const audio = document.getElementById('SAudio');
@@ -13,15 +15,10 @@ function initNeonCircularVisualizer() {
 
   const ctx = canvas.getContext('2d');
   
-  // कैनवास साइज को बढ़ा दिया ताकि दूर तक जाने वाली बार्स कटें नहीं
   canvas.width = 600;
   canvas.height = 600;
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
-  
-  // =======================================================
-  // यहाँ जादू है: इसे 168 से बढ़ाकर 195 कर दिया ताकि बार्स इमेज से काफी दूर रहें
-  // =======================================================
   const baseRadius = 195; 
 
   audio.crossOrigin = "anonymous";
@@ -34,7 +31,7 @@ function initNeonCircularVisualizer() {
       source.connect(analyser);
       analyser.connect(audioCtx.destination);
 
-      analyser.smoothingTimeConstant = 0.70; // बार्स को और ज्यादा फुर्तीला (Snappy) बनाने के लिए
+      analyser.smoothingTimeConstant = 0.70; 
       analyser.fftSize = 256; 
       dataArray = new Uint8Array(analyser.frequencyBinCount);
     } catch (e) {
@@ -44,14 +41,14 @@ function initNeonCircularVisualizer() {
 
   canvas.classList.add('wave-active');
 
-  // नए रेडियस के हिसाब से चमकीला ग्रेडिएंट रेंज बढ़ा दिया
   let globalGradient = ctx.createRadialGradient(centerX, centerY, baseRadius, centerX, centerY, baseRadius + 75);
-  globalGradient.addColorStop(0, '#00f5ff');   // अंदर प्योर नियॉन सियान
-  globalGradient.addColorStop(0.4, '#3b82f6'); // बीच में डीप ब्लू
-  globalGradient.addColorStop(1, '#ff00ac');   // बाहरी नोक पर लेज़र पिंक
+  globalGradient.addColorStop(0, '#00f5ff');   // सियान
+  globalGradient.addColorStop(0.4, '#3b82f6'); // ब्लू
+  globalGradient.addColorStop(1, '#ff00ac');   // लेज़र पिंक
 
   function drawSpectrum() {
-    if (audio.paused || audio.ended) {
+    // अगर गाना पॉज़ है और लोड भी नहीं हो रहा, तो कैनवस साफ़ कर दो
+    if ((audio.paused || audio.ended) && !isLoading) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       canvas.classList.remove('wave-active');
       thumbBorder.style.transform = "scale(1)";
@@ -61,12 +58,40 @@ function initNeonCircularVisualizer() {
     animationFrameId = requestAnimationFrame(drawSpectrum);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // ==========================================
+    // केस 1: जब गाना लोड या बफर हो रहा हो (कैनवास लोडर)
+    // ==========================================
+    if (isLoading) {
+      thumbBorder.style.transform = "scale(1)"; // लोडिंग के समय थंबनेल शांत रहेगा
+      
+      loadingAngle += 0.05; // घूमने की स्पीड
+      
+      ctx.save();
+      ctx.lineWidth = 5;
+      ctx.lineCap = 'round';
+      
+      // नियॉन ग्लो इफ़ेक्ट लोडर के लिए
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = '#00f5ff';
+      
+      // एक सुंदर कट-आउट (अधूरा) घूमता हुआ सर्कल बनाना
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 50, loadingAngle, loadingAngle + (Math.PI * 1.5));
+      ctx.strokeStyle = '#00f5ff';
+      ctx.stroke();
+      ctx.restore();
+      
+      return; // यहाँ से लौट जाएँ ताकि पीछे बार्स न बनें
+    }
+
+    // ==========================================
+    // केस 2: जब गाना बज रहा हो (असली विजुअलाइज़र बार्स)
+    // ==========================================
     const totalBars = 84; 
     let bassSum = 0;
 
     if (!useFallback && analyser) {
       analyser.getByteFrequencyData(dataArray);
-      // सिर्फ सबसे भारी बास फ्रीक्वेंसी (0 से 3) को लिया
       bassSum = (dataArray[0] + dataArray[1] + dataArray[2] + dataArray[3]) / 4;
     } else {
       let curTime = audio.currentTime;
@@ -74,12 +99,9 @@ function initNeonCircularVisualizer() {
       if (rawBeat > 0.15) bassSum = ((rawBeat - 0.15) / 0.85) * 240;
     }
 
-    // =======================================================
-    // महा-पंप ज़ूम इफेक्ट (Hyper Bass Zoom Feel)
-    // =======================================================
+    // महा-पंप ज़ूम इफेक्ट
     if (bassSum > 35) {
       const norm = bassSum / 255;
-      // स्केल फैक्टर को बढ़ाकर 0.38 कर दिया (यानी 1.38x तक का तगड़ा झटका)
       const scaleFactor = 1 + (norm * 0.38); 
       thumbBorder.style.transform = `scale(${scaleFactor})`;
     } else {
@@ -89,9 +111,6 @@ function initNeonCircularVisualizer() {
     ctx.strokeStyle = globalGradient;
     ctx.lineCap = 'round';
 
-    // =======================================================
-    // बार्स ड्राइंग - बिल्कुल साफ बॉर्डर एरिया से बाहर की तरफ
-    // =======================================================
     for (let i = 0; i < totalBars; i++) {
       let angle = (i / totalBars) * Math.PI * 2;
       let audioIndex = Math.floor((i / totalBars) * (dataArray ? dataArray.length * 0.50 : 1));
@@ -104,30 +123,25 @@ function initNeonCircularVisualizer() {
         rawValue = (Math.sin(curTime * 5 + i * 0.4) * Math.cos(curTime * 2 + i * 0.2) + 1) * 75;
       }
 
-      // बार की लंबाई (मैक्सिमम 65px बाहर फेंकेगी)
       let barLength = (rawValue / 255) * 65;
-      if (rawValue < 6) barLength = 2; // शांत होने पर सिर्फ नन्ही बिंदी दिखेगी
+      if (rawValue < 6) barLength = 2; 
 
       let cosA = Math.cos(angle);
       let sinA = Math.sin(angle);
 
-      // अब ये पॉइंट्स इमेज से काफी दूरी पर (195px रेडियस से) शुरू होंगे
       let startX = centerX + cosA * baseRadius;
       let startY = centerY + sinA * baseRadius;
       let endX = centerX + cosA * (baseRadius + barLength);
       let endY = centerY + sinA * (baseRadius + barLength);
 
-      // बिना लैग वाला हैवी नियॉन इफ़ेक्ट
       ctx.beginPath();
       ctx.moveTo(startX, startY);
       ctx.lineTo(endX, endY);
       
-      // बैकग्राउंड नियॉन ग्लो लेयर
       ctx.lineWidth = 8.5; 
       ctx.globalAlpha = 0.25; 
       ctx.stroke();
 
-      // सामने की तीखी चमकदार मेन बार
       ctx.globalAlpha = 1.0; 
       ctx.lineWidth = 4.0; 
       ctx.stroke();
@@ -140,17 +154,38 @@ function initNeonCircularVisualizer() {
   drawSpectrum();
 }
 
-// इवेंट बाइंडिंग्स
+// लोडिंग स्टेट्स को कैप्चर करने के लिए इवेंट लिस्नर्स
 window.addEventListener('DOMContentLoaded', () => {
   const audio = document.getElementById('SAudio');
   if (!audio) return;
 
-  audio.addEventListener('playing', initNeonCircularVisualizer);
-  audio.addEventListener('error', () => { useFallback = true; });
+  // जैसे ही गाना लोड होना शुरू हो या बफ़रिंग करे
+  const startLoading = () => {
+    isLoading = true;
+    initNeonCircularVisualizer();
+  };
 
-  const stopEvents = ['pause', 'ended', 'waiting'];
+  // जैसे ही गाना प्ले होने के लिए तैयार हो जाए
+  const stopLoading = () => {
+    isLoading = false;
+  };
+
+  audio.addEventListener('loadstart', startLoading);
+  audio.addEventListener('waiting', startLoading);
+  
+  audio.addEventListener('playing', () => {
+    stopLoading();
+    initNeonCircularVisualizer();
+  });
+  audio.addEventListener('canplaythrough', stopLoading);
+  audio.addEventListener('seeking', startLoading);
+  audio.addEventListener('seeked', stopLoading);
+  audio.addEventListener('error', () => { useFallback = true; stopLoading(); });
+
+  const stopEvents = ['pause', 'ended'];
   stopEvents.forEach(evt => {
     audio.addEventListener(evt, () => {
+      isLoading = false;
       const canvas = document.getElementById('fluid-wave-visualizer');
       const thumbBorder = document.querySelector('.thumbnail-border');
       if (canvas) {
@@ -163,4 +198,5 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
 
