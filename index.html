@@ -5143,18 +5143,19 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
       <i id="volume100" class="fa fa-volume-up"></i>
     </div>
     
-    <div class="thumbnail-border">
-  
-  <!-- यूट्यूब स्टाइल एग्रेसिव वेव कैनवास -->
-  <canvas id="fluid-wave-visualizer"></canvas>
+    <div class="visualizer-wrapper">
+    <!-- कैनवस बैकग्राउंड (z-index: 1) -->
+    <canvas id="fluid-wave-visualizer"></canvas>
 
-  <div class="audio-player">
-    <div id="thumbnailContainer">
-      <img id="SThumb" src="YOUR_IMAGE_URL_HERE" alt="/img/newdp.png" onclick="clickButton()">
-      <div id="playButtonOverlay" onclick="playPause()"></div>
+    <!-- थंबनेल फोरग्राउंड (z-index: 5) -->
+    <div class="thumbnail-border">
+        <div id="thumbnailContainer">
+            <img id="SThumb" src="your-image.jpg" alt="Thumbnail">
+            <div id="playButtonOverlay"></div>
+        </div>
     </div>
-  </div>  
-</div> 
+</div>
+
 
 	  
 
