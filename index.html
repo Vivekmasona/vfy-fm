@@ -3338,6 +3338,61 @@ function play(videoId, index) {
 
 
 
+function play(id,Sid){
+  // data = "https://distinctive-netta-vivekfy-608ee81c.koyeb.app/play?url=https://youtu.be/"+id;
+    //data = "https://vivekfy.vercel.app/hack?url=https://vkrdownloader.xyz/download.php?vkr=https://youtu.be/"+id+"&redirect=1";
+      //data = "https://vivekfy.vercel.app/audio?itag=249&url=https://youtu.be/"+id;
+      //data = "https://vivekfy.vercel.app/api-play?url=https://youtu.be/"+id;
+    //data = "https://vivekfy.vercel.app/inv?id="+id;
+      //data = "https://vivekfy.vercel.app/mp3?url=https://vkrdownloader.xyz/download.php?vkr=https://youtu.be/"+id;
+     data = "https://invidious.nerdvpn.de/companion/latest_version?id="+id+"&itag=140&local=true&check=";
+     //data = "https://myserver-dev-atmq.2.ie-1.fl0.io/audio?url=https://youtu.be/"+id;
+     //data = "https://audioserver-dev-cgen.2.sg-1.fl0.io/"+id;
+    document.getElementById("SThumb").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
+    document.getElementById("Fimg").src = "https://i.ytimg.com/vi/"+id+"/mqdefault.jpg";
+     document.getElementById("pahilagana").onclick = ()=>{
+       location.href= "https://vivekfy.vercel.app/dl?url=https://youtu.be/"+id;
+        //location.href= "https://vivekfy.vercel.app/download/audio?url=https://youtu.be/"+id;
+        //location.href= "https://vivekfy-server.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
+    };
+	document.getElementById("VFYmp3").onclick = ()=>{
+        //location.href= "https://vivekfy-server.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
+        location.href= "https://vivekfy.vercel.app/stream?url=https://youtu.be/"+id;
+        //location.href= "https://vivekdl.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
+    };
+
+document.getElementById("VFYshare").onclick = () => {
+    let shareUrl = "https://vidofy.vercel.app?q=" + id;
+
+    if (navigator.share) {
+        navigator.share({
+            title: title,  // yaha video ka title jayega
+            text: `Check out: ${title}`,
+            url: shareUrl
+        }).then(() => {
+            console.log("✅ Shared successfully");
+        }).catch(err => {
+            console.log("❌ Share failed:", err);
+        });
+    } else {
+        // Agar browser support nahi karta toh sidha link open
+        location.href = shareUrl;
+    }
+};
+	
+	document.getElementById("VFYmp3v2").onclick = ()=>{
+        location.href= "https://vivekfy.vercel.app/stream?url=https://youtu.be/"+id;
+        //location.href= "https://vivekfy.fanclub.rocks/audio?url=https://youtu.be/"+id;
+        //location.href= "https://vivekdl.000webhostapp.com/audio/download?url=https://youtu.be/"+id;
+    };
+document.getElementById("vivekmasona").onclick = ()=>{
+        location.href= "https://vivekfy.vercel.app/api?url=https://youtu.be/"+id;
+        //location.href= "https://myserver-dev-akkd.2.sg-1.fl0.io/mp4?url=https://youtu.be/"+id;
+        //location.href= "https://vivekfy-api-v2.onrender.com/video?url=https://youtu.be/"+id;
+     //location.href= "https://vivekfy-obg6.onrender.com/download/video?url=https://youtu.be/"+id;
+        };
+
+    
 var audio = document.getElementById("SAudio");  
 var isRepeat = false; // repeat flag
 
@@ -3347,32 +3402,18 @@ function playNextSong() {
     var playlistItems = document.getElementsByClassName("list");  
 
     if (nextSongIndex < playlistItems.length) {  
-        Sid = nextSongIndex; // update Sid  
+        playlistItems[nextSongIndex].click(); // Play the next song  
+        audio.play(); // Play the audio  
+
+        // Update the profile thumbnail and video ID for the next song  
         var nextSong = playlistItems[nextSongIndex];  
-        
-        // Background optimization: direct attributes extract karo (click par depend mat raho)
         var nextThumbnail = $(nextSong).children('img').attr("src");  
         var nextVideoId = $(nextSong).attr("vid");  
-        
-        // UI aur Media elements update karo
         $("#profileThumbnail").html('<img src="' + nextThumbnail + '" alt="Profile Thumbnail">');  
         $("#profileThumbnail").data("videoId", nextVideoId);  
-        document.getElementById("SThumb").src = nextThumbnail;
-        document.getElementById("Fimg").src = nextThumbnail;
 
-        // Base URL update karein (Taaki screen off hone par bhi direct trigger ho sake)
-        audio.src = "https://invidious.nerdvpn.de/companion/latest_version?id=" + nextVideoId + "&itag=140&local=true&check=";
-        audio.load();
-        
-        // Play wrapped in promise to handle browser security flags
-        audio.play()
-        .then(function() {
-            console.log('Automatically went to the next song and started playing.');  
-        })
-        .catch(function(err) {
-            console.log('Background source play failed, waiting for alternative servers...', err);
-        });
-        
+        Sid = nextSongIndex; // update Sid  
+        console.log('Automatically went to the next song and started playing.');  
     } else {  
         console.log('End of playlist');  
     }  
@@ -3384,35 +3425,28 @@ function playPreviousSong() {
     var playlistItems = document.getElementsByClassName("list");  
 
     if (prevSongIndex >= 0) {  
-        Sid = prevSongIndex; // update Sid  
+        playlistItems[prevSongIndex].click(); // Play the previous song  
+        audio.play(); // Play the audio  
+
+        // Update the profile thumbnail and video ID for the previous song  
         var prevSong = playlistItems[prevSongIndex];  
-        
         var prevThumbnail = $(prevSong).children('img').attr("src");  
         var prevVideoId = $(prevSong).attr("vid");  
-        
         $("#profileThumbnail").html('<img src="' + prevThumbnail + '" alt="Profile Thumbnail">');  
         $("#profileThumbnail").data("videoId", prevVideoId);  
-        document.getElementById("SThumb").src = prevThumbnail;
-        document.getElementById("Fimg").src = prevThumbnail;
 
-        audio.src = "https://invidious.nerdvpn.de/companion/latest_version?id=" + prevVideoId + "&itag=140&local=true&check=";
-        audio.load();
-        
-        audio.play()
-        .then(function() {
-            console.log('Automatically went to the previous song and started playing.');  
-        })
-        .catch(function(err) {
-            console.log('Previous song playback blocked/failed.', err);
-        });
+        Sid = prevSongIndex; // update Sid  
+        console.log('Automatically went to the previous song and started playing.');  
     } else {  
         console.log('Start of playlist');  
     }  
 }  
 
 function playPause() {  
+   var audio = document.getElementById("SAudio");  
+
    if (audio.paused) {  
-      audio.play().catch(function(e){ console.log(e); });  
+      audio.play();  
    } else {  
       audio.pause();  
    }  
@@ -3422,7 +3456,7 @@ function playPause() {
 audio.addEventListener("ended", function() {  
     if (isRepeat) {  
         audio.currentTime = 0;  
-        audio.play().catch(function(e){ console.log(e); });  
+        audio.play();  
         console.log("Song repeated.");  
     } else {  
         playNextSong();  
@@ -3432,12 +3466,17 @@ audio.addEventListener("ended", function() {
 // Pichhe button listener  
 document.getElementById("pichhe").addEventListener("click", playPreviousSong);  
   
+
 document.getElementById("repeat").addEventListener("click", function() {  
     isRepeat = !isRepeat; // toggle repeat  
     console.log("Repeat mode: " + (isRepeat ? "ON" : "OFF"));  
 });
 
-// Servers aur Formats
+
+
+    
+
+    // Servers aur Formats
 var servers = [
     "https://jp1-cmp.invidious.f5.si/companion/latest_version?id=" + id,
     "https://eu-de1.companion.invidious.tiekoetter.com/companion/latest_version?id=" + id,
@@ -5132,7 +5171,7 @@ setInterval(changePlaceholder, 1000); // Change placeholder every 1 second
       </div>
 
       <div id="time-slider">
-        <div id="currentSongTitle">MATRIX DECODING LIVE STREAM</div>
+        <div id="currentSongTitle">Your shared song </div>
         <div class="slider-times">
           <span id="current-time"></span> 
           <span id="total-time"></span> 
@@ -6459,4 +6498,6 @@ document.addEventListener('visibilitychange', () => {
 	
 
                     
- 
+
+
+
