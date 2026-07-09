@@ -8,45 +8,46 @@
 }
 
 html, body {
-  background: #1a1a1a; /* सॉलिड प्रीमियम मैट ब्लैक */
+  background: #121212; /* सॉलिड प्रीमियम मैट ब्लैक */
   font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
   min-height: 100vh;  
-  height: 100%;
+  height: auto;
   overflow-x: hidden; 
-  color: #c5a880; /* डल लक्ज़री गोल्ड टेक्स्ट कलर */
+  color: #c5a880; /* लक्ज़री गोल्ड टेक्स्ट कलर */
 }
 
 /* ==========================================================================
    2. IMMERSIVE CONTAINER & DISPLACEMENT
    ========================================================================== */
 .modal-container1 {
-  display: block;
-  position: fixed;
-  z-index: 99999;
-  left: 0;
-  top: 0;
-  width: 100vw;
-  height: 100vh;
-  background: #151515;
+  display: block; /* पेज ओपन होते ही प्लेयर चालू रहेगा */
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: #121212;
 }
 
 .modal-content1 {
   width: 100%;
   height: 100%;
-  position: relative;
   display: flex;
   flex-direction: column;
 }
 
-/* क्लोज बटन को स्क्रीनशॉट की तरह हाइड या टॉप कॉर्नर में सेट रखें */
+/* क्लोज बटन को टॉप कॉर्नर में सेट किया */
 .modal-content1 > span[onclick="closeModal()"] {
   position: absolute;
-  right: 20px;
-  top: 20px;
+  right: 25px;
+  top: 25px;
   z-index: 100;
   cursor: pointer;
   color: #c5a880;
-  opacity: 0.5;
+  opacity: 0.6;
+  font-size: 1.2rem;
+  transition: opacity 0.3s;
+}
+.modal-content1 > span[onclick="closeModal()"]:hover {
+  opacity: 1;
 }
 .modal-content1 > span[onclick="closeModal()"]::before {
   content: "\f00d";
@@ -56,22 +57,20 @@ html, body {
 
 .container {
   width: 100%;
-  height: 100%;
   max-width: 450px;
   margin: 0 auto;
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 #phone {
   width: 100%;
-  height: 100vh;
-  padding: 40px 25px 20px 25px;
+  padding: 30px 22px 10px 22px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  gap: 20px;
-  position: relative;
-  z-index: 10;
+  gap: 22px;
+  flex-grow: 1;
 }
 
 /* ==========================================================================
@@ -80,12 +79,12 @@ html, body {
 #top-menu {
   display: flex;
   align-items: center;
-  background: #181818;
+  background: #161616;
   padding: 18px 24px;
   border-radius: 30px;
-  /* इनसेट शैडो जिससे यह अंदर धंसा हुआ (Depressed) दिखे */
-  box-shadow: inset 6px 6px 12px #0d0d0d, inset -6px -6px 12px #232323;
-  border: 1px solid rgba(255, 255, 255, 0.02);
+  box-shadow: inset 4px 4px 10px #080808, inset -4px -4px 10px #242424;
+  border: 1px solid rgba(255, 255, 255, 0.01);
+  margin-top: 15px;
 }
 
 #top-menu i {
@@ -105,9 +104,8 @@ html, body {
   -webkit-appearance: none;
   width: 100%;
   height: 4px;
-  background: #101010;
+  background: #0d0d0d;
   border-radius: 10px;
-  box-shadow: inset 1px 1px 3px #000;
   outline: none;
 }
 
@@ -117,7 +115,7 @@ html, body {
   height: 14px;
   border-radius: 50%;
   background: linear-gradient(135deg, #e5cb9e, #967d56); /* मेटालिक गोल्ड नोब */
-  box-shadow: 2px 2px 5px #000;
+  box-shadow: 1px 1px 4px #000;
   cursor: pointer;
 }
 
@@ -125,12 +123,12 @@ html, body {
    4. THE MAIN CONTROL CENTER (प्रीमियम कंसोल पॉड)
    ========================================================================== */
 .bottom-console-pod {
-  background: #181818;
+  background: #161616;
   border-radius: 35px;
-  padding: 30px 25px;
-  /* बाहर की तरफ सॉफ्ट शैडो */
-  box-shadow: 10px 10px 25px #0d0d0d, -10px -10px 25px #232323;
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  padding: 28px 24px;
+  box-shadow: 8px 8px 20px #080808, -8px -8px 20px #242424;
+  border: 1px solid rgba(255, 255, 255, 0.02);
+  z-index: 10;
 }
 
 #currentSongTitle {
@@ -139,40 +137,40 @@ html, body {
   opacity: 0.6;
   letter-spacing: 3px;
   font-weight: 600;
-  margin-bottom: 25px;
+  margin-bottom: 22px;
   text-transform: uppercase;
   text-align: center;
 }
 
 #song-details {
   text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: 22px;
 }
 
 .song-title {
-  font-size: 0.9rem; /* स्क्रीनशॉट की तरह छोटा और एलिगेंट */
+  font-size: 0.9rem; /* स्क्रीनशॉट की तरह छोटा और क्लासिक */
   font-weight: 500;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
   color: #e5cb9e;
   text-transform: uppercase;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
-/* आर्टिस्ट नेम की कोई जरूरत नहीं क्योंकि थंबनेल ही आर्टिस्ट नेम है */
+/* आर्टिस्ट नेम की कोई ज़रूरत नहीं क्योंकि थंबनेल ही आर्टिस्ट नेम है */
 .artist { display: none; }
 
 /* TIME & SEEKBAR DEPLOYMENT */
 #time-slider {
-  margin-bottom: 35px;
+  margin-bottom: 25px;
 }
 
 .slider-times {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   color: #e5cb9e;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
   font-weight: 300;
 }
 
@@ -181,27 +179,18 @@ html, body {
   width: 100%;
   height: 4px;
   border-radius: 10px;
-  background: #101010;
+  background: #0d0d0d;
   outline: none;
-  position: relative;
-}
-
-/* सीकबार की बीती हुई प्रोग्रेस को गोल्ड दिखाने के लिए ट्रिक */
-#seekbar::-webkit-slider-runnable-track {
-  width: 100%;
-  height: 4px;
-  cursor: pointer;
 }
 
 #seekbar::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background: #e5cb9e;
-  box-shadow: 0 0 8px #e5cb9e;
+  box-shadow: 0 0 6px #e5cb9e;
   cursor: pointer;
-  margin-top: -3px;
 }
 
 /* BUTTONS ARCHITECTURE (सर्कुलर आउटलाइन बटन्स) */
@@ -213,22 +202,22 @@ html, body {
 }
 
 #song-controls .button {
-  width: 54px;
-  height: 54px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
-  background: #181818;
-  border: 2px solid rgba(197, 168, 128, 0.3); /* लाइट गोल्ड बॉर्डर */
+  background: #161616;
+  border: 2px solid rgba(197, 168, 128, 0.25); /* लाइट गोल्ड बॉर्डर */
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 4px 4px 10px #0d0d0d, -4px -4px 10px #232323;
+  box-shadow: 4px 4px 10px #080808, -4px -4px 10px #242424;
   transition: all 0.2s ease;
 }
 
 #song-controls .button:hover {
   border-color: #e5cb9e;
-  box-shadow: 0 0 15px rgba(229, 203, 158, 0.2);
-  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(229, 203, 158, 0.15);
+  transform: scale(1.04);
 }
 
 #song-controls i {
@@ -238,12 +227,12 @@ html, body {
 
 /* प्ले/पॉज बटन भी बाकी बटन्स जैसा ही गोल है */
 #play {
-  background: #181818 !important;
-  width: 54px !important;
-  height: 54px !important;
+  background: #161616 !important;
+  width: 52px !important;
+  height: 52px !important;
   border-radius: 50% !important;
-  border: 2px solid rgba(197, 168, 128, 0.3) !important;
-  box-shadow: 4px 4px 10px #0d0d0d, -4px -4px 10px #232323 !important;
+  border: 2px solid rgba(197, 168, 128, 0.25) !important;
+  box-shadow: 4px 4px 10px #080808, -4px -4px 10px #242424 !important;
 }
 #play i {
   color: #e5cb9e !important;
@@ -256,38 +245,34 @@ html, body {
    5. BACKGROUND FULL HEIGHT THUMBNAIL DEPLOYMENT (निचला हिस्सा)
    ========================================================================== */
 .thumbnail-border {
-  position: absolute !important;
-  bottom: 0;
-  left: 0;
-  width: 100vw !important;
-  height: 50vh !important; /* स्क्रीन के नीचे आधे हिस्से में इमेज फैलेगी */
-  max-width: 100% !important;
-  max-height: 100% !important;
-  border-radius: 0 !important;
-  padding: 0 !important;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  z-index: 1 !important;
+  position: relative;
+  width: 100%;
+  height: 320px; /* मोबाइल स्क्रीन के नीचे सेट करने के लिए सटीक हाइट */
+  margin-top: auto; /* इसे हमेशा नीचे धकेलेगा */
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  z-index: 1;
   overflow: hidden;
-  transform: none !important;
+  border-radius: 0;
+  padding: 0;
 }
 
 #thumbnailContainer {
-  width: 100% !important;
-  height: 100% !important;
-  border-radius: 0 !important;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
 }
 
 #SThumb {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 0 !important;
-  /* ऊपर की तरफ ब्लैक फेड करने के लिए ग्रेडिएंट मास्क */
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 15%, black 40%);
-  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 15%, black 40%);
-  filter: grayscale(20%) contrast(1.1);
+  border-radius: 0;
+  /* ऊपर की तरफ डार्क फेड इफ़ेक्ट देने के लिए */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.4) 15%, black 50%);
+  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.4) 15%, black 50%);
+  filter: grayscale(15%) contrast(1.05);
 }
 
 /* ==========================================================================
@@ -295,12 +280,12 @@ html, body {
    ========================================================================== */
 #fluid-wave-visualizer {
   position: absolute;
-  bottom: 5%; /* इमेज के ऊपर परफेक्टली सेट करने के लिए */
+  bottom: 0px; 
   left: 50%;
   transform: translateX(-50%) !important;
   width: 100% !important;
-  height: 180px !important;
+  height: 160px !important;
   pointer-events: none;
-  z-index: 2 !important; /* इमेज के ऊपर रहेगा */
+  z-index: 2; /* इमेज के ऊपर तैरने के लिए */
   opacity: 0.85;
 }
