@@ -154,21 +154,44 @@ body {
 }
 
 /* ==========================================================================
-   4. HOLOGRAPHIC CYBER ORBIT (VINYL IMAGE)
+   4. NEW CO-ORDINATION WRAPPER (कैनवस और थंबनेल को एक साथ अलाइन रखने के लिए)
+   ========================================================================== */
+.visualizer-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  padding: 40px 0;
+}
+
+/* ==========================================================================
+   5. HOLOGRAPHIC CYBER ORBIT (VINYL IMAGE) - LAYER FIXED
    ========================================================================== */
 .thumbnail-border {
   width: 68vw;
   height: 68vw;
   max-width: 270px;
   max-height: 270px;
-  margin: auto;
   border-radius: 50%;
   padding: 12px;
-  background: transparent;
+  /* सॉलिड डार्क बैकग्राउंड देना जरूरी है ताकि इसके पीछे की लेयर (कैनवस) का रंग ऊपर न चढ़े */
+  background: #060814; 
   border: 2px solid rgba(0, 245, 255, 0.2);
   border-bottom-color: rgba(189, 0, 255, 0.4);
-  position: relative; /* विजुअलाइज़र कैनवास के लिए आवश्यक */
+  position: relative; 
   box-shadow: 0 0 40px rgba(189, 0, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  perspective: 500px;
+  will-change: transform, box-shadow;
+  transition: transform 0.05s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.05s ease;
+  
+  /* कैनवस (z-index: 1) से ऊपर रखने के लिए */
+  z-index: 5 !important; 
 }
 
 .thumbnail-border::before {
@@ -177,6 +200,7 @@ body {
   top: -6px; left: -6px; right: -6px; bottom: -6px;
   border-radius: 50%;
   border: 1px dashed rgba(0, 255, 136, 0.4); 
+  z-index: 6;
 }
 
 .audio-player #thumbnailContainer {
@@ -186,6 +210,7 @@ body {
   border-radius: 50%;
   overflow: hidden;
   cursor: pointer;
+  z-index: 7;
 }
 
 #SThumb {
@@ -208,6 +233,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 8;
 }
 
 #playButtonOverlay::after {
@@ -224,7 +250,31 @@ body {
 }
 
 /* ==========================================================================
-   5. GLASS-CONSOLE & INFRASTRUCTURE
+   6. FLUID BLOB CANVAS (BACKGROUND DEPLOYMENT) - LAYER FIXED
+   ========================================================================== */
+#fluid-wave-visualizer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  /* लिक्विड फ्लूइड को थंबनेल के पीछे चारों तरफ फैलने के लिए पर्याप्त जगह */
+  width: 550px; 
+  height: 550px;
+  transform: translate(-50%, -50%) !important;
+  pointer-events: none;
+  
+  /* इसे हमेशा थंबनेल (.thumbnail-border) के ठीक पीछे रखने के लिए */
+  z-index: 1 !important; 
+  
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+#fluid-wave-visualizer.wave-active {
+  opacity: 1;
+}
+
+/* ==========================================================================
+   7. GLASS-CONSOLE & INFRASTRUCTURE
    ========================================================================== */
 .bottom-console-pod {
   background: linear-gradient(135deg, rgba(20, 12, 38, 0.6) 0%, rgba(10, 15, 30, 0.4) 100%);
@@ -267,7 +317,7 @@ body {
 }
 
 /* ==========================================================================
-   6. CONTROLS & UTILITIES
+   8. CONTROLS & UTILITIES
    ========================================================================== */
 #currentSongTitle {
   font-size: 0.75rem;
@@ -367,35 +417,3 @@ body {
 }
 
 #stop, br { display: none; }
-
-/* ==========================================================================
-   7. YOUTUBE TRAP NATION STYLE CENTRED VISUALIZER
-   ========================================================================== */
-.thumbnail-border {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform-style: preserve-3d;
-  perspective: 500px;
-  will-change: transform, box-shadow;
-  /* 0.05s का स्प्रिंग टाइमिंग जो बीच के लोगो को कड़क झटका देगा */
-  transition: transform 0.05s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.05s ease;
-}
-
-#fluid-wave-visualizer {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 360px; /* लहरों को बड़ी स्क्रीन देने के लिए साइज थोड़ा बढ़ाया */
-  height: 360px;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-#fluid-wave-visualizer.wave-active {
-  opacity: 1;
-}
