@@ -6,30 +6,28 @@ let animationFrameId = null;
 let useFallback = false;
 let isLoading = false;
 let loadingAngle = 0;
-let wavePhase = 0; // वेव के तैरने की गति के लिए
 
-function initNeonFluidVisualizer() {
+// डांसर के लिए वेरिएबल्स
+let currentFrame = 0;
+let lastBeatTime = 0;
+let beatThreshold = 110; // बीट पकड़ने की सेंसिटिविटी (गाने के हिसाब से 90-130 सेट कर सकते हैं)
+
+function initNeonDancerVisualizer() {
   const audio = document.getElementById('SAudio');
   const canvas = document.getElementById('fluid-wave-visualizer');
-  // थंबनेल का बॉर्डर कंटेनर
   const thumbBorder = document.querySelector('.thumbnail-border'); 
   if (!audio || !canvas || !thumbBorder) return;
 
   const ctx = canvas.getContext('2d');
   
-  // कैनवस का साइज़ सेट करें
   canvas.width = 600;
   canvas.height = 600;
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
-  
-  // इमेज का रेडियस (इसे अपनी CSS के अनुसार एडजस्ट करें)
-  // पुराने 'baseRadius' से थोड़ा कम ताकि वेव्स पास रहें
-  const imgRadius = 180; 
+  const baseRadius = 180; // आपकी इमेज के चारों तरफ का रेडियस
 
   audio.crossOrigin = "anonymous";
 
-  // ऑडियो कॉन्टेक्स्ट सेटअप
   if (!audioCtx && !useFallback) {
     try {
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -37,21 +35,101 @@ function initNeonFluidVisualizer() {
       source = audioCtx.createMediaElementSource(audio);
       source.connect(analyser);
       analyser.connect(audioCtx.destination);
-
-      analyser.smoothingTimeConstant = 0.85; // वेव्स को स्मूथ रखने के लिए ज़्यादा
-      analyser.fftSize = 512; // बेहतर फ्रीक्वेंसी डिटेल के लिए
+      analyser.smoothingTimeConstant = 0.8; 
+      analyser.fftSize = 256; 
       dataArray = new Uint8Array(analyser.frequencyBinCount);
     } catch (e) {
-      console.error("AudioContext error, using fallback:", e);
       useFallback = true;
     }
   }
 
   canvas.classList.add('wave-active');
 
-  // ड्रा फ़ंक्शन - जो बार-बार कॉल होगा
-  function draw() {
-    // अगर गाना रुका है, तो सब साफ़ कर दो
+  // हेल्प फ़ंक्शन: लाइन से बनी लड़की के अलग-अलग डांस पोज़ (Frames)
+  // bH (beatHeight) से डांसर के हाथ-पैर बीट पर और ऊपर-नीचे होंगे
+  function drawDancerPose(frame, x, y, bH) {
+    ctx.save();
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = '#00f5ff'; // नियॉन सियान कलर
+    ctx.strokeStyle = '#00f5ff';
+
+    // 1. सिर (Head)
+    ctx.beginPath();
+    ctx.arc(x, y - 55 - (bH * 0.2), 10, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // 2. धड़ (Body/Torso)
+    ctx.beginPath();
+    ctx.moveTo(x, y - 45 - (bH * 0.2));
+    ctx.lineTo(x, y - 15);
+    ctx.stroke();
+
+    // फ्रेम के हिसाब से अलग-अलग डांस मूव्स (लाइन से बने हुए)
+    switch(frame) {
+      case 0: // पोज़ 1: दोनों हाथ हवा में, पैर नॉर्मल
+        // हाथ
+        ctx.beginPath();
+        ctx.moveTo(x, y - 40);
+        ctx.lineTo(x - 20, y - 60 - bH);
+        ctx.moveTo(x, y - 40);
+        ctx.lineTo(x + 20, y - 60 - bH);
+        // पैर
+        ctx.moveTo(x, y - 15);
+        ctx.lineTo(x - 15, y + 15);
+        ctx.moveTo(x, y - 15);
+        ctx.lineTo(x + 15, y + 15);
+        ctx.stroke();
+        break;
+
+      case 1: // पोज़ 2: एक हाथ ऊपर, एक कमर पर, एक पैर मुड़ा हुआ
+        // हाथ
+        ctx.beginPath();
+        ctx.moveTo(x, y - 40);
+        ctx.lineTo(x - 25, y - 55 - bH); // बायाँ हाथ ऊपर
+        ctx.moveTo(x, y - 40);
+        ctx.lineTo(x + 15, y - 25);      // दायाँ हाथ कमर पर
+        // पैर
+        ctx.moveTo(x, y - 15);
+        ctx.lineTo(x - 10, y + 15);
+        ctx.moveTo(x, y - 15);
+        ctx.lineTo(x + 20, y - 2); 
+        ctx.lineTo(x + 10, y + 15); // मुड़ा हुआ पैर
+        ctx.stroke();
+        break;
+
+      case 2: // पोज़ 3: दोनों हाथ नीचे लहराते हुए (Wave move)
+        ctx.beginPath();
+        ctx.moveTo(x, y - 40);
+        ctx.lineTo(x - 25, y - 30 + bH);
+        ctx.moveTo(x, y - 40);
+        ctx.lineTo(x + 25, y - 30 + bH);
+        ctx.moveTo(x, y - 15);
+        ctx.lineTo(x - 20, y + 15);
+        ctx.moveTo(x, y - 15);
+        ctx.lineTo(x + 20, y + 15);
+        ctx.stroke();
+        break;
+
+      case 3: // पोज़ 4: डिस्को स्टाइल (एक हाथ तिरछा ऊपर, एक नीचे)
+        ctx.beginPath();
+        ctx.moveTo(x, y - 40);
+        ctx.lineTo(x - 20, y - 15);      // बायाँ हाथ नीचे
+        ctx.moveTo(x, y - 40);
+        ctx.lineTo(x + 25, y - 65 - bH); // दायाँ हाथ आसमान में
+        ctx.moveTo(x, y - 15);
+        ctx.lineTo(x - 15, y + 15);
+        ctx.moveTo(x, y - 15);
+        ctx.lineTo(x + 15, y + 15);
+        ctx.stroke();
+        break;
+    }
+    ctx.restore();
+  }
+
+  function drawSpectrum() {
     if ((audio.paused || audio.ended) && !isLoading) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       canvas.classList.remove('wave-active');
@@ -59,171 +137,99 @@ function initNeonFluidVisualizer() {
       return;
     }
 
-    animationFrameId = requestAnimationFrame(draw);
+    animationFrameId = requestAnimationFrame(drawSpectrum);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // ==========================================
-    // केस 1: लोडिंग स्टेट (घूमता हुआ नियॉन रिंग)
+    // केस 1: लोडिंग लोडर
     // ==========================================
     if (isLoading) {
-      thumbBorder.style.transform = "scale(1)"; 
-      
-      loadingAngle += 0.08; 
-      
+      thumbBorder.style.transform = "scale(1)";
+      loadingAngle += 0.05;
       ctx.save();
-      ctx.translate(centerX, centerY);
-      ctx.rotate(loadingAngle);
-      
       ctx.lineWidth = 4;
-      ctx.lineCap = 'round';
-      
-      // नियॉन ग्लो
-      ctx.shadowBlur = 15;
-      ctx.shadowColor = '#00f5ff';
-      
-      // दो अधूरे आर्क
       ctx.beginPath();
-      ctx.arc(0, 0, imgRadius + 10, 0, Math.PI * 0.8);
-      ctx.strokeStyle = '#00f5ff'; // सियान
+      ctx.arc(centerX, centerY, 50, loadingAngle, loadingAngle + (Math.PI * 1.5));
+      ctx.strokeStyle = '#ff00ac';
       ctx.stroke();
-      
-      ctx.beginPath();
-      ctx.arc(0, 0, imgRadius + 10, Math.PI, Math.PI * 1.8);
-      ctx.strokeStyle = '#ff00ac'; // पिंक
-      ctx.stroke();
-      
       ctx.restore();
-      return; 
+      return;
     }
 
     // ==========================================
-    // केस 2: प्लेइंग स्टेट (फ्लूइड नियॉन वेव्स)
+    // केस 2: प्लेइंग (डांसिंग बीट इफ़ेक्ट)
     // ==========================================
-    let bass = 0;
-    let mid = 0;
+    let bassSum = 0;
 
-    // ऑडियो डेटा प्राप्त करें
     if (!useFallback && analyser) {
       analyser.getByteFrequencyData(dataArray);
-      // बास (low frequencies)
-      bass = (dataArray[0] + dataArray[1] + dataArray[2] + dataArray[3]) / 4;
-      // मिड (mid frequencies)
-      mid = (dataArray[10] + dataArray[11] + dataArray[12] + dataArray[13]) / 4;
+      bassSum = (dataArray[0] + dataArray[1] + dataArray[2] + dataArray[3]) / 4;
     } else {
-      // फॉलबैक (सिर्फ टेस्ट के लिए, अगर ऑडियो काम न करे)
       let curTime = audio.currentTime;
-      bass = (Math.sin(curTime * 8) + 1) * 60;
-      mid = (Math.cos(curTime * 6) + 1) * 40;
+      let rawBeat = Math.sin(curTime * 10) * Math.sin(Date.now() * 0.02);
+      if (rawBeat > 0.2) bassSum = 150;
     }
 
-    // --- इमेज पंप इफेक्ट ---
-    // केवल तेज़ बास पर ही इमेज थोड़ी बड़ी होगी
-    if (bass > 100) {
-      const scaleFactor = 1 + (bass / 255) * 0.12; 
+    // इमेज पंप को थोड़ा कम और नॉर्मल रखा है ताकि ज्यादा बड़ी न हो
+    if (bassSum > 50) {
+      const norm = bassSum / 255;
+      const scaleFactor = 1 + (norm * 0.10); // मैक्सिमम 10% ज़ूम (एकदम नॉर्मल)
       thumbBorder.style.transform = `scale(${scaleFactor})`;
     } else {
       thumbBorder.style.transform = "scale(1)";
     }
 
-    // --- वेव पैरामीटर्स ---
-    wavePhase += 0.02; // वेव्स के तैरने की स्पीड
-
-    // वेव ड्रा करने का हेल्प फ़ंक्शन
-    // points: सर्कल में कितने पॉइंट होंगे, depth: वेव कितनी ऊंची होगी, color: वेव का रंग
-    function drawFluidWave(points, depth, color, phaseOffset) {
-      ctx.save();
-      
-      ctx.shadowBlur = 20; // नियॉन ग्लो
-      ctx.shadowColor = color;
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 5;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-
-      ctx.beginPath();
-      
-      for (let i = 0; i <= points; i++) {
-        let angle = (i / points) * Math.PI * 2;
-        
-        // ऑडियो के अनुसार वेव की ऊंचाई बदलें
-        // Sine waves को कंबाइन करके लिक्विड इफ़ेक्ट बनाना
-        let audioInfluence = (i < points / 2) ? bass : mid; // आधे सर्कल में बास, आधे में मिड
-        
-        let waveHeight = Math.sin(angle * 4 + wavePhase + phaseOffset) * 
-                         Math.cos(angle * 2 - wavePhase * 0.5) * 
-                         (depth + (audioInfluence / 255) * 40);
-
-        // वेव का रेडियस: इमेज के रेडियस से थोड़ा ज़्यादा + वेव की ऊंचाई
-        let r = imgRadius + 15 + waveHeight;
-        
-        let x = centerX + Math.cos(angle) * r;
-        let y = centerY + Math.sin(angle) * r;
-
-        if (i === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          ctx.lineTo(x, y);
-        }
-      }
-      
-      ctx.closePath();
-      ctx.stroke();
-      ctx.restore();
+    // --- बीट डिटेक्शन और डांस फ्रेम चेंज ---
+    let now = Date.now();
+    // अगर बेस थ्रेशोल्ड से ऊपर है और पिछली बीट से 250ms बीत चुके हैं
+    if (bassSum > beatThreshold && (now - lastBeatTime > 250)) {
+      currentFrame = (currentFrame + 1) % 4; // अगले डांस पोज़ पर जाएँ (कुल 4 फ्रेम्स हैं)
+      lastBeatTime = now;
     }
 
-    // --- दो अलग-अलग वेव्स ड्रा करें ---
-    
-    // 1. बाहरी वेव (सियान/ब्लू) - मिड फ्रीक्वेंसी पर ज़्यादा रिएक्ट करेगी
-    drawFluidWave(100, 10, '#00f5ff', 0); 
-    
-    // 2. अंदरूनी वेव (पिंक/मैजेंटा) - बास पर ज़्यादा रिएक्ट करेगी
-    drawFluidWave(80, 15, '#ff00ac', Math.PI); // PhaseOffset से दोनों वेव अलग दिखेंगी
+    // बीट के हिसाब से हाथ-पैर की एक्स्ट्रा मूवमेंट हाइट
+    let beatHeight = (bassSum / 255) * 25; 
 
+    // थंबनेल इमेज के ठीक ऊपर (Top) पर लड़की को खड़ा करने के लिए पोजीशन
+    // centerX (बीच में), centerY - baseRadius (इमेज के ऊपरी हिस्से पर)
+    let dancerX = centerX;
+    let dancerY = centerY - baseRadius - 10; 
+
+    // डांसर ड्रा करें
+    drawDancerPose(currentFrame, dancerX, dancerY, beatHeight);
+
+    // थंबनेल के पीछे एक हल्का नियॉन रिंग ग्लो (ताकि लुक खाली न लगे)
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, baseRadius + 2, 0, Math.PI * 2);
+    ctx.lineWidth = 3;
+    ctx.globalAlpha = 0.4;
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = '#ff00ac';
+    ctx.strokeStyle = '#ff00ac';
+    ctx.stroke();
+    ctx.restore();
   }
 
-  // शुरू करें
   if (audioCtx && audioCtx.state === 'suspended') {
     audioCtx.resume();
   }
-  draw();
+  drawSpectrum();
 }
 
-// ==========================================
-// इवेंट लिस्नर्स (पहले जैसे ही, थोड़े ऑप्टिमाइज़्ड)
-// ==========================================
+// इवेंट लिस्नर्स
 window.addEventListener('DOMContentLoaded', () => {
   const audio = document.getElementById('SAudio');
   if (!audio) return;
 
-  const startLoading = () => {
-    if (!isLoading) {
-      isLoading = true;
-      initNeonFluidVisualizer();
-    }
-  };
+  const startLoading = () => { isLoading = true; initNeonDancerVisualizer(); };
+  const stopLoading = () => { isLoading = false; };
 
-  const stopLoading = () => {
-    isLoading = false;
-  };
-
-  audio.addEventListener('loadstart', startLoading);
+  audio.addEventListener('playing', () => { stopLoading(); initNeonDancerVisualizer(); });
   audio.addEventListener('waiting', startLoading);
-  
-  audio.addEventListener('playing', () => {
-    stopLoading();
-    // सुनिश्चित करें कि विज़ुअलाइज़र शुरू हो गया है
-    initNeonFluidVisualizer(); 
-  });
-  
-  audio.addEventListener('canplaythrough', stopLoading);
   audio.addEventListener('seeking', startLoading);
   audio.addEventListener('seeked', stopLoading);
-  audio.addEventListener('error', () => { 
-    console.error("Audio error");
-    useFallback = true; 
-    stopLoading(); 
-  });
-
+  
   const stopEvents = ['pause', 'ended'];
   stopEvents.forEach(evt => {
     audio.addEventListener(evt, () => {
@@ -231,7 +237,6 @@ window.addEventListener('DOMContentLoaded', () => {
       const canvas = document.getElementById('fluid-wave-visualizer');
       const thumbBorder = document.querySelector('.thumbnail-border');
       if (canvas) {
-        canvas.classList.remove('wave-active');
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
