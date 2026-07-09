@@ -154,38 +154,35 @@ body {
 }
 
 /* ==========================================================================
-   4. NEW CO-ORDINATION WRAPPER (कैनवस को खुली जगह देने के लिए फिक्स)
+   4. VISUALIZER WRAPPER (फ्लेक्सबॉक्स की मदद से अब सब परफेक्ट सेंटर रहेगा)
    ========================================================================== */
 .visualizer-wrapper {
   position: relative;
   width: 100%;
-  height: 380px; /* फिक्स हाइट ताकि लहरें ऊपर-नीचे कटे नहीं */
+  height: 340px; /* मोबाइल के लिए एकदम सटीक हाइट */
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 20px auto;
-  overflow: visible; /* कोई भी चीज़ कटनी नहीं चाहिए */
+  margin: 10px auto;
+  overflow: visible; 
 }
 
 /* ==========================================================================
-   5. HOLOGRAPHIC CYBER ORBIT (VINYL IMAGE) - PERFECTLY CENTERED
+   5. HOLOGRAPHIC CYBER ORBIT (VINYL IMAGE) - FIXED CENTER
    ========================================================================== */
 .thumbnail-border {
   width: 68vw;
   height: 68vw;
-  max-width: 270px;
-  max-height: 270px;
+  max-width: 260px;
+  max-height: 260px;
   border-radius: 50%;
   padding: 12px;
   background: #060814; 
   border: 2px solid rgba(0, 245, 255, 0.2);
   border-bottom-color: rgba(189, 0, 255, 0.4);
   
-  /* थंबनेल को पैरेंट के एब्सोल्यूट सेंटर में लॉक करने के लिए */
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  /* फ्लेक्सबॉक्स एलाइनमेंट बनाए रखने के लिए एब्सोल्यूट हटाया */
+  position: relative; 
   
   box-shadow: 0 0 40px rgba(189, 0, 255, 0.1);
   display: flex;
@@ -194,10 +191,9 @@ body {
   transform-style: preserve-3d;
   perspective: 500px;
   will-change: transform, box-shadow;
-  
-  /* 0.05s का स्प्रिंग टाइमिंग जो बीच के लोगो को कड़क झटका देगा */
   transition: transform 0.05s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.05s ease;
   
+  /* कैनवस के ऊपर रखने के लिए */
   z-index: 5 !important; 
 }
 
@@ -257,20 +253,21 @@ body {
 }
 
 /* ==========================================================================
-   6. FLUID BLOB CANVAS (BACKGROUND DEPLOYMENT) - LARGE FIXED SIZE
+   6. FLUID BLOB CANVAS (BACKGROUND DEPLOYMENT) - STAY BEHIND FIXED
    ========================================================================== */
 #fluid-wave-visualizer {
   position: absolute;
+  /* पैरेंट (.visualizer-wrapper) के बिल्कुल बीचों-बीच फिक्स करने के लिए */
   top: 50%;
   left: 50%;
-  
-  /* कैनवस का साइज बिल्कुल फिक्स 600px ताकि रिस्पॉन्सिवनेस में ये सिकुड़े नहीं */
-  width: 600px !important; 
-  height: 600px !important;
-  
   transform: translate(-50%, -50%) !important;
+  
+  /* साइज थंबनेल से बड़ा ताकि इसके पीछे से इफ़ेक्ट निकले */
+  width: 500px !important; 
+  height: 500px !important;
   pointer-events: none;
   
+  /* थंबनेल के पीछे छुपाने के लिए */
   z-index: 1 !important; 
   opacity: 0;
   transition: opacity 0.4s ease;
