@@ -154,20 +154,21 @@ body {
 }
 
 /* ==========================================================================
-   4. NEW CO-ORDINATION WRAPPER (कैनवस और थंबनेल को एक साथ अलाइन रखने के लिए)
+   4. NEW CO-ORDINATION WRAPPER (कैनवस को खुली जगह देने के लिए फिक्स)
    ========================================================================== */
 .visualizer-wrapper {
   position: relative;
   width: 100%;
+  height: 380px; /* फिक्स हाइट ताकि लहरें ऊपर-नीचे कटे नहीं */
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: auto;
-  padding: 40px 0;
+  margin: 20px auto;
+  overflow: visible; /* कोई भी चीज़ कटनी नहीं चाहिए */
 }
 
 /* ==========================================================================
-   5. HOLOGRAPHIC CYBER ORBIT (VINYL IMAGE) - LAYER FIXED
+   5. HOLOGRAPHIC CYBER ORBIT (VINYL IMAGE) - PERFECTLY CENTERED
    ========================================================================== */
 .thumbnail-border {
   width: 68vw;
@@ -176,11 +177,16 @@ body {
   max-height: 270px;
   border-radius: 50%;
   padding: 12px;
-  /* सॉलिड डार्क बैकग्राउंड देना जरूरी है ताकि इसके पीछे की लेयर (कैनवस) का रंग ऊपर न चढ़े */
   background: #060814; 
   border: 2px solid rgba(0, 245, 255, 0.2);
   border-bottom-color: rgba(189, 0, 255, 0.4);
-  position: relative; 
+  
+  /* थंबनेल को पैरेंट के एब्सोल्यूट सेंटर में लॉक करने के लिए */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
   box-shadow: 0 0 40px rgba(189, 0, 255, 0.1);
   display: flex;
   align-items: center;
@@ -188,9 +194,10 @@ body {
   transform-style: preserve-3d;
   perspective: 500px;
   will-change: transform, box-shadow;
+  
+  /* 0.05s का स्प्रिंग टाइमिंग जो बीच के लोगो को कड़क झटका देगा */
   transition: transform 0.05s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.05s ease;
   
-  /* कैनवस (z-index: 1) से ऊपर रखने के लिए */
   z-index: 5 !important; 
 }
 
@@ -250,31 +257,70 @@ body {
 }
 
 /* ==========================================================================
-   6. FLUID BLOB CANVAS (BACKGROUND DEPLOYMENT) - CENTER LOCKED
+   6. FLUID BLOB CANVAS (BACKGROUND DEPLOYMENT) - LARGE FIXED SIZE
    ========================================================================== */
 #fluid-wave-visualizer {
   position: absolute;
   top: 50%;
   left: 50%;
-  /* 100% विड्थ-हाइट और मैक्स-साइज देने से यह थंबनेल के साथ परफेक्टली अलाइन रहेगा */
-  width: 100%; 
-  height: 100%;
-  max-width: 600px;
-  max-height: 600px;
   
-  /* परफेक्ट सेंटर लॉकिंग */
+  /* कैनवस का साइज बिल्कुल फिक्स 600px ताकि रिस्पॉन्सिवनेस में ये सिकुड़े नहीं */
+  width: 600px !important; 
+  height: 600px !important;
+  
   transform: translate(-50%, -50%) !important;
   pointer-events: none;
   
-  /* थंबनेल के पीछे रखने के लिए */
   z-index: 1 !important; 
-  
   opacity: 0;
   transition: opacity 0.4s ease;
 }
 
 #fluid-wave-visualizer.wave-active {
   opacity: 1;
+}
+
+/* ==========================================================================
+   7. GLASS-CONSOLE & INFRASTRUCTURE
+   ========================================================================== */
+.bottom-console-pod {
+  background: linear-gradient(135deg, rgba(20, 12, 38, 0.6) 0%, rgba(10, 15, 30, 0.4) 100%);
+  border: 1px solid rgba(0, 245, 255, 0.1);
+  border-radius: 35px;
+  padding: 25px 20px;
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  margin-bottom: 10px;
+}
+
+#song-details {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.song-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #ffffff;
+  margin-bottom: 6px;
+  text-shadow: 0 2px 12px rgba(0, 245, 255, 0.2);
+}
+
+.artist {
+  font-size: 0.85rem;
+  color: #00f5ff; 
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px rgba(0, 245, 255, 0.4);
+}
+.artist:empty::before { content: "</> Vivek Kushwaha "; }
+
+#time-slider {
+  padding: 0 5px;
+  margin-bottom: 25px;
 }
 
 /* ==========================================================================
@@ -378,3 +424,4 @@ body {
 }
 
 #stop, br { display: none; }
+
