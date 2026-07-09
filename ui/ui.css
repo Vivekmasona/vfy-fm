@@ -1,5 +1,5 @@
 /* ==========================================================================
-   1. RESET & SYSTEM CORE
+   1. DIGITAL RESET & FUTURE CORE
    ========================================================================== */
 * {
   box-sizing: border-box;
@@ -14,15 +14,16 @@ html {
 }
 
 body {
-  background: #060814; 
-  font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
+  background: radial-gradient(circle at 50% 20%, #0d0b21 0%, #05050d 70%, #010103 100%);
+  font-family: 'Cabinet Grotesk', 'Segoe UI', -apple-system, sans-serif;
   min-height: 100vh;  
   height: auto;
   overflow-x: hidden; 
+  color: #ffffff;
 }
 
 /* ==========================================================================
-   2. IMMERSIVE MODAL & LAYER ARCHITECTURE
+   2. NEXT-GEN MODAL CONTAINER
    ========================================================================== */
 .modal-container1 {
   display: none;
@@ -32,7 +33,7 @@ body {
   top: 0;
   width: 100vw;
   height: 100vh;
-  background: radial-gradient(circle at 50% 30%, #120e2e 0%, #060919 60%, #02040a 100%);
+  background: radial-gradient(circle at 50% 30%, #151136 0%, #070714 60%, #000000 100%);
   overflow: hidden;
 }
 
@@ -50,16 +51,16 @@ body {
   top: 25px;
   z-index: 100;
   cursor: pointer;
-  width: 44px;
-  height: 44px;
-  background: rgba(186, 12, 247, 0.05);
-  border: 1px solid rgba(0, 245, 255, 0.2);
-  border-radius: 16px;
+  width: 46px;
+  height: 46px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(0, 245, 255, 0.25);
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 15px rgba(0, 245, 255, 0.1);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 15px rgba(0, 245, 255, 0.15);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .modal-content1 > span[onclick="closeModal()"]::before {
@@ -67,29 +68,29 @@ body {
   font-family: "Font Awesome 6 Free";
   font-weight: 900;
   color: #00f5ff; 
-  font-size: 1.1rem;
+  font-size: 1rem;
   text-shadow: 0 0 8px #00f5ff;
 }
 
 .modal-content1 > span[onclick="closeModal()"]:hover {
-  background: rgba(255, 11, 100, 0.2);
-  border-color: #ff0b64;
-  box-shadow: 0 0 20px rgba(255, 11, 100, 0.5);
-  transform: rotate(90deg);
+  background: linear-gradient(135deg, #ff0b64, #ff00c8);
+  border-color: transparent;
+  box-shadow: 0 0 25px rgba(255, 11, 100, 0.6);
+  transform: rotate(180deg);
 }
 
 .modal-content1 > span[onclick="closeModal()"]:hover::before {
-  color: #ff0b64;
-  text-shadow: 0 0 8px #ff0b64;
+  color: #ffffff;
+  text-shadow: none;
 }
 
 /* ==========================================================================
-   3. CONTAINER & CORE LAYOUT
+   3. HOLOGRAPHIC LAYOUT ENGINE
    ========================================================================== */
 .container {
   width: 100%;
   height: 100%;
-  max-width: 450px;
+  max-width: 430px;
   margin: 0 auto;
 }
 
@@ -97,7 +98,7 @@ body {
   width: 100%;
   min-height: 100vh; 
   height: auto;
-  padding: 30px 25px;
+  padding: 25px 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -106,25 +107,26 @@ body {
 #top-menu {
   display: flex;
   align-items: center;
-  background: rgba(20, 15, 38, 0.4);
-  padding: 12px 20px;
-  border-radius: 20px;
-  border: 1px solid rgba(0, 245, 255, 0.15);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  margin-top: 40px;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 14px 22px;
+  border-radius: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  margin-top: 25px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 #top-menu i {
-  color: #7b8fa9;
-  font-size: 0.95rem;
+  color: #8da4c4;
+  font-size: 1rem;
   cursor: pointer;
-  transition: color 0.3s;
+  transition: all 0.3s;
 }
 
 #top-menu i:hover { 
-  color: #bd00ff; 
-  text-shadow: 0 0 10px #bd00ff;
+  color: #00f5ff; 
+  text-shadow: 0 0 12px #00f5ff;
 }
 
 #volumeSliderContainer {
@@ -137,73 +139,78 @@ body {
 #volumeSlider {
   -webkit-appearance: none;
   width: 100%;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.08);
+  height: 3px;
+  background: rgba(255, 255, 255, 0.06);
   outline: none;
   border-radius: 10px;
 }
 
 #volumeSlider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #00f5ff, #bd00ff); 
-  box-shadow: 0 0 10px #00f5ff;
+  background: #00f5ff; 
+  box-shadow: 0 0 15px #00f5ff;
   cursor: pointer;
+  transition: transform 0.2s;
+}
+#volumeSlider::-webkit-slider-thumb:hover {
+  transform: scale(1.3);
 }
 
 /* ==========================================================================
-   4. VISUALIZER WRAPPER (फ्लेक्सबॉक्स की मदद से अब सब परफेक्ट सेंटर रहेगा)
+   4. THE STAGE (CENTERING ENGINE)
    ========================================================================== */
 .visualizer-wrapper {
   position: relative;
   width: 100%;
-  height: 340px; /* मोबाइल के लिए एकदम सटीक हाइट */
+  height: 350px; 
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 10px auto;
+  margin: 5px auto;
   overflow: visible; 
 }
 
 /* ==========================================================================
-   5. HOLOGRAPHIC CYBER ORBIT (VINYL IMAGE) - FIXED CENTER
+   5. FLOATING CYBER ORBIT (THUMBNAIL)
    ========================================================================== */
 .thumbnail-border {
-  width: 68vw;
-  height: 68vw;
-  max-width: 260px;
-  max-height: 260px;
+  width: 66vw;
+  height: 66vw;
+  max-width: 250px;
+  max-height: 250px;
   border-radius: 50%;
-  padding: 12px;
-  background: #060814; 
-  border: 2px solid rgba(0, 245, 255, 0.2);
-  border-bottom-color: rgba(189, 0, 255, 0.4);
-  
-  /* फ्लेक्सबॉक्स एलाइनमेंट बनाए रखने के लिए एब्सोल्यूट हटाया */
+  padding: 10px;
+  background: #05050b; 
+  border: 1px solid rgba(255, 255, 255, 0.08);
   position: relative; 
-  
-  box-shadow: 0 0 40px rgba(189, 0, 255, 0.1);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1);
   display: flex;
   align-items: center;
   justify-content: center;
   transform-style: preserve-3d;
-  perspective: 500px;
-  will-change: transform, box-shadow;
-  transition: transform 0.05s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.05s ease;
-  
-  /* कैनवस के ऊपर रखने के लिए */
+  perspective: 600px;
+  will-change: transform;
+  transition: transform 0.1s cubic-bezier(0.25, 1, 0.5, 1);
   z-index: 5 !important; 
 }
 
+/* आउटर नियॉन रिंग */
 .thumbnail-border::before {
   content: '';
   position: absolute;
-  top: -6px; left: -6px; right: -6px; bottom: -6px;
+  top: -3px; left: -3px; right: -3px; bottom: -3px;
   border-radius: 50%;
-  border: 1px dashed rgba(0, 255, 136, 0.4); 
-  z-index: 6;
+  background: linear-gradient(135deg, #00f5ff, #bd00ff, #00ff88);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 2px;
+  pointer-events: none;
+  opacity: 0.7;
 }
 
 .audio-player #thumbnailContainer {
@@ -221,7 +228,7 @@ body {
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
-  background: #0d1527;
+  filter: saturate(1.1) contrast(1.05);
 }
 
 #playButtonOverlay {
@@ -230,7 +237,9 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(4, 6, 14, 0.75);
+  background: rgba(5, 5, 15, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   opacity: 0;
   transition: opacity 0.3s ease;
   display: flex;
@@ -240,12 +249,12 @@ body {
 }
 
 #playButtonOverlay::after {
-  content: "\f144";
+  content: "\f04b";
   font-family: "Font Awesome 6 Free";
   font-weight: 900;
-  color: #00ff88;
-  font-size: 2.8rem;
-  text-shadow: 0 0 15px #00ff88;
+  color: #ffffff;
+  font-size: 2.2rem;
+  text-shadow: 0 0 20px rgba(0, 245, 255, 0.8);
 }
 
 #thumbnailContainer:hover #playButtonOverlay { 
@@ -253,24 +262,19 @@ body {
 }
 
 /* ==========================================================================
-   6. FLUID BLOB CANVAS (BACKGROUND DEPLOYMENT) - STAY BEHIND FIXED
+   6. FLUID CANVAS (BACKGROUND ARCHITECTURE)
    ========================================================================== */
 #fluid-wave-visualizer {
   position: absolute;
-  /* पैरेंट (.visualizer-wrapper) के बिल्कुल बीचों-बीच फिक्स करने के लिए */
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) !important;
-  
-  /* साइज थंबनेल से बड़ा ताकि इसके पीछे से इफ़ेक्ट निकले */
-  width: 500px !important; 
-  height: 500px !important;
+  width: 480px !important; 
+  height: 480px !important;
   pointer-events: none;
-  
-  /* थंबनेल के पीछे छुपाने के लिए */
   z-index: 1 !important; 
   opacity: 0;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.5s ease;
 }
 
 #fluid-wave-visualizer.wave-active {
@@ -278,57 +282,56 @@ body {
 }
 
 /* ==========================================================================
-   7. GLASS-CONSOLE & INFRASTRUCTURE
+   7. NEO-GLASSMORPHISM CONSOLE
    ========================================================================== */
 .bottom-console-pod {
-  background: linear-gradient(135deg, rgba(20, 12, 38, 0.6) 0%, rgba(10, 15, 30, 0.4) 100%);
-  border: 1px solid rgba(0, 245, 255, 0.1);
-  border-radius: 35px;
-  padding: 25px 20px;
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.05);
-  margin-bottom: 10px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 30px;
+  padding: 28px 24px;
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  margin-bottom: 5px;
 }
 
 #song-details {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 .song-title {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 800;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.3px;
   color: #ffffff;
   margin-bottom: 6px;
-  text-shadow: 0 2px 12px rgba(0, 245, 255, 0.2);
+  line-height: 1.3;
 }
 
 .artist {
-  font-size: 0.85rem;
-  color: #00f5ff; 
-  font-weight: 600;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4); 
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 2px;
-  text-shadow: 0 0 8px rgba(0, 245, 255, 0.4);
 }
-.artist:empty::before { content: "</> Vivek Kushwaha "; }
+.artist:empty::before { content: "Vivek Kushwaha"; }
 
 #time-slider {
-  padding: 0 5px;
+  padding: 0 2px;
   margin-bottom: 25px;
 }
 
 /* ==========================================================================
-   8. CONTROLS & UTILITIES
+   8. INTERACTIVE UTILITIES (SEEKBAR & BTNS)
    ========================================================================== */
 #currentSongTitle {
-  font-size: 0.75rem;
-  color: #8fa2bc;
-  letter-spacing: 1.5px;
-  font-weight: 600;
-  margin-bottom: 12px;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 2px;
+  font-weight: 700;
+  margin-bottom: 15px;
   text-transform: uppercase;
   text-align: center;
 }
@@ -337,8 +340,8 @@ body {
   display: flex;
   justify-content: space-between;
   font-size: 0.75rem;
-  color: #7287a5;
-  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 10px;
   font-family: monospace;
 }
 #current-time:empty::before { content: "00:00"; }
@@ -347,30 +350,31 @@ body {
 #seekbar {
   -webkit-appearance: none;
   width: 100%;
-  height: 4px;
+  height: 3px;
   border-radius: 10px;
-  background: linear-gradient(90deg, #bd00ff 0%, #00f5ff 100%);
-  opacity: 0.3;
+  background: rgba(255, 255, 255, 0.08);
   outline: none;
   cursor: pointer;
-  transition: opacity 0.2s;
 }
-#seekbar:hover { opacity: 0.8; }
 
 #seekbar::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: #ffffff;
-  box-shadow: 0 0 12px #ffffff, 0 0 6px #00f5ff;
-  border: 2px solid #bd00ff;
+  box-shadow: 0 0 15px #ffffff;
+  transition: transform 0.2s;
+}
+#seekbar:hover::-webkit-slider-thumb {
+  transform: scale(1.4);
 }
 
 #song-controls {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
+  padding: 0 10px;
 }
 
 #song-controls .button {
@@ -378,47 +382,43 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
-#song-controls .button:hover { transform: scale(1.15); }
+#song-controls .button:hover { 
+  transform: translateY(-2px);
+}
 
 #song-controls i {
-  font-size: 1.25rem;
-  color: #7287a5;
-  transition: all 0.3s;
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.5);
+  transition: color 0.3s;
 }
 #song-controls i:hover {
-  color: #00f5ff;
-  text-shadow: 0 0 10px #00f5ff, 0 0 20px #bd00ff;
+  color: #ffffff;
 }
 
+/* अल्ट्रा-मॉडर्न मिनिमल प्ले बटन */
 #play {
-  background: #0b091a;
-  width: 65px;
-  height: 65px;
+  background: #ffffff;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #00ff88; 
-  box-shadow: 0 0 20px rgba(0, 255, 136, 0.3), inset 0 0 10px rgba(189, 0, 255, 0.2);
-  position: relative;
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.25);
 }
 
 #play i {
-  color: #00ff88 !important;
-  font-size: 1.35rem;
-  text-shadow: 0 0 10px #00ff88;
+  color: #000000 !important;
+  font-size: 1.2rem;
+  text-shadow: none;
 }
 
 #play:hover {
-  border-color: #00f5ff; 
-  box-shadow: 0 0 25px rgba(0, 245, 255, 0.6);
-}
-#play:hover i {
-  color: #00f5ff !important;
-  text-shadow: 0 0 10px #00f5ff;
+  transform: scale(1.08) translateY(-2px) !important;
+  box-shadow: 0 15px 30px rgba(0, 245, 255, 0.4);
+  background: #00f5ff;
 }
 
 #stop, br { display: none; }
-
