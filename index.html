@@ -25,7 +25,6 @@
 <link rel="stylesheet" href="footer/footer.css" />
 <link rel="stylesheet" href="mode/ytcontrol.css" />
 <link rel="stylesheet" href="mode/mode.css" />
-<link rel="stylesheet" href="lock/lc.css" />
 <link rel="stylesheet" href="setting/setting.css" />
 <link rel="stylesheet" href="menu/sidemenu.css" />
 <link rel="stylesheet" href="detail/detail.css" />
@@ -39,7 +38,6 @@
 
   <script src="gesture/control.js" defer></script>
 <script src="ui/vizulizer.js" defer></script>
-<script src="lock/lc2.js" defer></script>
   <script src="connect/player.js" defer></script>
 <script src="autocomplate/suggestion.js" defer></script>
 <script src="fullscreen/fs.js" defer></script>
@@ -5579,32 +5577,6 @@ document.getElementById('search-btn').addEventListener('click', function() {
 </div>
 </center>
 
-
-
-
-
-
-<!-- Cyber Settings Toggle Section -->
-<div class="settings-group">
-  <div class="settings-row">
-    <div class="settings-meta">
-      <span class="settings-title">AMOLED Lock Screen</span>
-      <p class="settings-desc">Idle hone par visualizer lock screen activate karein</p>
-    </div>
-    <label class="cyber-switch">
-      <!-- Is ID ko logic ke sath link kiya gaya hai -->
-      <input type="checkbox" id="modeToggleBtn" checked>
-      <span class="switch-slider"></span>
-    </label>
-  </div>
-</div>
-	
-
-
-
-
-	
-
     <button class="close-btn" onclick="closePopup()">Close</button>
 </div>
 
@@ -6076,12 +6048,8 @@ setInterval(updateClock, 1000);
 updateClock();
 </script>
 
-	
-
 <script>
-
-
-	/* ---------------- GLOBAL ELEMENTS & VISUALIZER CONFIG ---------------- */
+/* ---------------- GLOBAL ELEMENTS & VISUALIZER CONFIG ---------------- */
 const footer = document.querySelector('.fixed-footer');
 const progressBar = document.getElementById('progressBarContainer');
 const audioPlayerContainer = document.getElementById('audioPlayerContainer');
@@ -6149,13 +6117,17 @@ function renderLockVisuals() {
     return;
   }
 
+  // --- REAL FEEL LOGIC: चेक करें कि क्या गाना बफर हो रहा है या अटका हुआ है ---
+  // HTML5 Audio में readyState < 3 (HAVE_FUTURE_DATA) का मतलब डेटा लोड हो रहा है
   let isActuallyPlaying = audioPlayer.readyState >= 3;
 
   if (!isActuallyPlaying) {
+    // अगर गाना अटक गया है, तो म्यूटेशन वैल्यू को मत बढ़ाओ और ऐनिमेशन को यहीं फ्रीज कर दो
     if(overlayThumb) overlayThumb.style.transform = `scale(1)`;
     return; 
   }
 
+  // गाना स्मूथ चल रहा हो तभी ऐनिमेशन टाइमर आगे बढ़ेगा
   globalMutationTracker += 0.025; 
 
   let bassPulse = 25 + Math.sin(globalMutationTracker * 1.8) * 12 
@@ -6175,6 +6147,7 @@ function renderLockVisuals() {
      overlayThumb.style.transform = `scale(${lSmoothZoom / minR})`;
   }
 
+  // Pure clean clear rect paths ensuring true deep blacks
   lCtx.clearRect(0, 0, w, h);
   lCtx.fillStyle = "#000000";
   lCtx.fillRect(0, 0, w, h);
@@ -6220,6 +6193,7 @@ function renderLockVisuals() {
     lCtx.arc(px, py, p.size * (1 + bassPulse * 0.02), 0, Math.PI * 2);
     lCtx.fill();
 
+    // Neural Connective Matrix Links
     amoledParticles.forEach((p2) => {
        let p2Dist = lSmoothZoom + 5 + (maxReach * p2.distanceRatio) + Math.sin(globalMutationTracker + p2.seed) * 15;
        let p2x = cx + Math.cos(p2.angle) * p2Dist;
@@ -6277,15 +6251,16 @@ function setStatusBarColor(color) {
     if (themeMeta) themeMeta.setAttribute("content", color);
 }
 
+// बफरिंग स्टेट क्लासेस रीसेट करने के लिए हेल्पर
 function clearBufferingState() {
     document.querySelector('.visualizer-core-wrap')?.classList.remove('audio-buffering');
 }
 
 function showOverlay() {
-    // Agar mode toggle unchecked (OFF) hai, to overlay show hi nahi hona chahiye
-    if (modeToggleBtn && !modeToggleBtn.checked) return;
-
     if (audioPlayer && !audioPlayer.paused) {
+        if (modeToggleBtn && modeToggleBtn.checked) return; 
+        
+        // SECURITY TWEAK: Request Fullscreen standard to cover device browser limits
         if (document.documentElement.requestFullscreen) {
             document.documentElement.requestFullscreen().catch(() => {});
         } else if (document.documentElement.webkitRequestFullscreen) {
@@ -6306,6 +6281,7 @@ function hideOverlay() {
     resetOverlayTimer();
     clearBufferingState();
     
+    // Exit Fullscreen Mode smoothly
     if (document.fullscreenElement || document.webkitFullscreenElement) {
         if (document.exitFullscreen) {
             document.exitFullscreen().catch(() => {});
@@ -6334,7 +6310,7 @@ function handleSecureLockStart(e) {
     holdTimer = setTimeout(() => {
         hideOverlay();
         handleSecureLockEnd();
-    }, 1000);
+    }, 1000); // Exquisite 1000ms delay verification
 }
 
 function handleSecureLockEnd() {
@@ -6349,6 +6325,7 @@ function handleSecureLockEnd() {
     }
 }
 
+// Multi-touch response tracking layers
 unlockBtn.addEventListener("mousedown", handleSecureLockStart);
 unlockBtn.addEventListener("mouseup", handleSecureLockEnd);
 unlockBtn.addEventListener("mouseleave", handleSecureLockEnd);
@@ -6364,8 +6341,7 @@ function resetOverlayTimer(e) {
     if (e && e.type === "scroll") return;
     if (overlayTimer) clearTimeout(overlayTimer);
     
-    // UPDATED LOGIC: Jab feature switch ON (checked) ho, sirf tabhi timer chalega
-    if (audioPlayer && !audioPlayer.paused && modeToggleBtn && modeToggleBtn.checked) {
+    if (audioPlayer && !audioPlayer.paused && modeToggleBtn && !modeToggleBtn.checked) {
         overlayTimer = setTimeout(showOverlay, 12000); 
     }
 }
@@ -6406,6 +6382,7 @@ if (audioPlayer) {
     audioPlayer.addEventListener('pause', hideOverlay);
     audioPlayer.addEventListener('ended', hideOverlay);
 
+    // --- REAL FEEL LISTENERS: गाना रुकने (Waiting) और वापस चालू होने (Playing) को कैच करना ---
     audioPlayer.addEventListener('waiting', () => {
         document.querySelector('.visualizer-core-wrap')?.classList.add('audio-buffering');
     });
@@ -6425,16 +6402,13 @@ function toggleFooterVisibility(hide) {
     if(audioPlayerContainer) audioPlayerContainer.classList[action]("hide");
 }
 
-// SWITCH ON / OFF ACTION DETECTOR
 if(modeToggleBtn) {
     modeToggleBtn.addEventListener("change", () => {
-        if (!modeToggleBtn.checked) {
-            // Agar switch OFF ho jaye to chalte huye lockscreen ko instantly close karein
-            hideOverlay();
+        if (modeToggleBtn.checked) {
+            toggleFooterVisibility(true);
             if (overlayTimer) clearTimeout(overlayTimer);
-            toggleFooterVisibility(false);
         } else {
-            // ON hote hi dubara idle condition check active karein
+            toggleFooterVisibility(false);
             resetOverlayTimer();
         }
     });
@@ -6444,32 +6418,36 @@ if(modeToggleBtn) {
 let touchStartY = 0;
 let touchEndY = 0;
 
+// 1. मोबाइल और टच डिवाइसेस के लिए (Swipe Tracking)
 document.addEventListener('touchstart', (e) => {
     touchStartY = e.changedTouches[0].screenY;
 }, { passive: true });
 
 document.addEventListener('touchend', (e) => {
-    // Agar lock settings hi disabled hai, to extra footer shifts rok do
-    if (modeToggleBtn && !modeToggleBtn.checked) return;
+    if (modeToggleBtn && modeToggleBtn.checked) return;
     
     touchEndY = e.changedTouches[0].screenY;
     let swipeDistance = touchStartY - touchEndY;
 
+    // अगर उंगली ऊपर की तरफ स्वाइप हुई (मतलब यूजर नीचे जा रहा है) -> फुटर छुपाओ
     if (swipeDistance > 40) { 
         toggleFooterVisibility(true); 
     }
+    // अगर उंगली नीचे की तरफ स्वाइप हुई (मतलब यूजर ऊपर जा रहा है) -> फुटर दिखाओ
     else if (swipeDistance < -40) { 
         toggleFooterVisibility(false); 
     }
 }, { passive: true });
 
+
+// 2. डेस्कटॉप और माउस वाले यूजर्स के लिए (Wheel Tracking)
 window.addEventListener('wheel', (e) => {
-    if (modeToggleBtn && !modeToggleBtn.checked) return;
+    if (modeToggleBtn && modeToggleBtn.checked) return;
 
     if (e.deltaY > 0) {
-        toggleFooterVisibility(true);
+        toggleFooterVisibility(true);  // Mouse Wheel Down -> Hide Footer
     } else {
-        toggleFooterVisibility(false);
+        toggleFooterVisibility(false); // Mouse Wheel Up -> Show Footer
     }
 }, { passive: true });
 
@@ -6509,5 +6487,17 @@ document.addEventListener('visibilitychange', () => {
         keepScreenOn();
     }
 });
-
 </script>
+           
+
+
+
+
+
+      
+	
+
+                    
+
+
+
