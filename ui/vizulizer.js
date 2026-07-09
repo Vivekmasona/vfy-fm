@@ -8,7 +8,7 @@ let isLoading = false;
 let loadingAngle = 0;
 let wavePhase = 0;
 
-// स्मूथ थंबनेल पंप के लिए वेरिएबल
+// थंबनेल बीट पंप के लिए वेरिएबल
 let currentScale = 1;
 
 function initNeonFluidVisualizer() {
@@ -19,7 +19,7 @@ function initNeonFluidVisualizer() {
 
   const ctx = canvas.getContext('2d');
   
-  // एक बार साइज सेट करें
+  // कैन्वस साइज सेटअप
   canvas.width = 600;
   canvas.height = 600;
   const centerX = canvas.width / 2;
@@ -28,7 +28,7 @@ function initNeonFluidVisualizer() {
 
   audio.crossOrigin = "anonymous";
 
-  // ऑडियो कॉन्टेक्स्ट सेटअप (सिर्फ एक बार)
+  // ऑडियो कॉन्टेक्स्ट सेटअप
   if (!audioCtx && !useFallback) {
     try {
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -37,8 +37,8 @@ function initNeonFluidVisualizer() {
       source.connect(analyser);
       analyser.connect(audioCtx.destination);
 
-      analyser.smoothingTimeConstant = 0.8; // वेव्स की स्मूथनेस के लिए बैलेंस्ड
-      analyser.fftSize = 256; // परफॉर्मेंस बढ़ाने और बास को सटीक पकड़ने के लिए 256 बेहतर है
+      analyser.smoothingTimeConstant = 0.82; 
+      analyser.fftSize = 256; 
       dataArray = new Uint8Array(analyser.frequencyBinCount);
     } catch (e) {
       console.error("AudioContext error, using fallback:", e);
@@ -46,7 +46,6 @@ function initNeonFluidVisualizer() {
     }
   }
 
-  // अगर पहले से लूप चल रहा है तो उसे रोकें ताकि डुप्लिकेट लूप न बने (लैग से बचाव)
   if (animationFrameId) {
     cancelAnimationFrame(animationFrameId);
   }
@@ -54,7 +53,6 @@ function initNeonFluidVisualizer() {
   canvas.classList.add('wave-active');
 
   function draw() {
-    // अगर ऑडियो बंद है और लोड भी नहीं हो रहा, तो लूप रोकें
     if ((audio.paused || audio.ended) && !isLoading) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       canvas.classList.remove('wave-active');
@@ -66,7 +64,7 @@ function initNeonFluidVisualizer() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // ==========================================
-    // केस 1: लोडिंग स्टेट (वही पुराना एनीमेशन)
+    // केस 1: लोडिंग स्टेट (रिंग एनीमेशन)
     // ==========================================
     if (isLoading) {
       thumbBorder.style.transform = "scale(1)"; 
@@ -95,54 +93,52 @@ function initNeonFluidVisualizer() {
     }
 
     // ==========================================
-    // केस 2: प्लेइंग स्टेट (ऑप्टिमाइज़्ड और पल्सिंग)
+    // केस 2: प्लेइंग स्टेट (Fluid Smoke/Blob Visualizer)
     // ==========================================
     let bass = 0;
     let mid = 0;
 
     if (!useFallback && analyser) {
       analyser.getByteFrequencyData(dataArray);
-      // शुरुआती कुछ बिन सबसे हैवी बास (sub-bass/kick) के होते हैं
+      // इमेज में लेफ्ट साइड में ब्लू/सियान है और राइट में ऑरेंज/पिंक, उसी हिसाब से फ्रीक्वेंसी कैप्चर करेंगे
       bass = (dataArray[0] + dataArray[1] + dataArray[2] + dataArray[3]) / 4;
-      mid = (dataArray[8] + dataArray[9] + dataArray[10] + dataArray[11]) / 4;
+      mid = (dataArray[6] + dataArray[7] + dataArray[8] + dataArray[9]) / 4;
     } else {
       let curTime = audio.currentTime;
-      bass = (Math.sin(curTime * 8) + 1) * 60;
-      mid = (Math.cos(curTime * 6) + 1) * 40;
+      bass = (Math.sin(curTime * 8) + 1) * 70;
+      mid = (Math.cos(curTime * 6) + 1) * 50;
     }
 
-    // --- दमदार और स्मूथ थंबनेल पंप इफ़ेक्ट (Lerp) ---
-    // बास की वैल्यू को 0 से 1 के स्केल में बदलें
-    let targetScale = 1 + (bass / 255) * 0.15; // 0.15 का मतलब अधिकतम 15% ज़ूम (इसे बढ़ा भी सकते हैं)
-    
-    // Lerp फ़ॉर्मूला: धीरे-धीरे टारगेट स्केल की तरफ बढ़ना (स्मूथनेस का राज)
-    // बीट पर तेजी से बढ़ेगा, पर खाली जगह में स्मूथली सिकुड़ेगा
-    currentScale += (targetScale - currentScale) * 0.2; 
+    // --- थंबनेल सिंक बीट पंप (Lerp) ---
+    let targetScale = 1 + (bass / 255) * 0.14; 
+    currentScale += (targetScale - currentScale) * 0.25; // बीट पर और ज्यादा रिस्पॉन्सिव जर्क
     thumbBorder.style.transform = `scale(${currentScale})`;
 
-    // --- वेव पैरामीटर्स ---
-    wavePhase += 0.04; // वेव की तैरने की स्पीड थोड़ी बढ़ाई ताकि डायनामिक लगे
+    wavePhase += 0.025; // तैरने की स्मूथ स्पीड
 
-    function drawFluidWave(points, depth, color, phaseOffset, audioVal) {
+    // इमेज जैसा "Fluid Blob" धुंधला लुक बनाने के लिए हेल्प फ़ंक्शन
+    function drawFluidBlob(points, baseDepth, color, phaseOffset, audioVal) {
       ctx.save();
-      ctx.shadowBlur = 25; // नियॉन ग्लो थोड़ा और गहरा किया
-      ctx.shadowColor = color;
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 5;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-
+      
+      // इमेज की तरह सॉफ्ट फ्लूइड लुक देने के लिए 30px का ब्लर फ़िल्टर (यह इसे धुएँ जैसा बनाएगा)
+      ctx.filter = 'blur(30px)';
+      
+      // कलर्स को आपस में मिक्स करने की सेटिंग ताकि नियॉन लाइट फील हो
+      ctx.globalCompositeOperation = 'screen';
+      
+      ctx.fillStyle = color;
       ctx.beginPath();
       
       for (let i = 0; i <= points; i++) {
         let angle = (i / points) * Math.PI * 2;
         
-        // पूरी वेव पर ऑडियो का प्रभाव और बेहतर लिक्विड मूवमेंट
-        let waveHeight = Math.sin(angle * 3 + wavePhase + phaseOffset) * 
-                         Math.cos(angle * 2 - wavePhase * 0.3) * 
-                         (depth + (audioVal / 255) * 55); // वेव का बाउंस बढ़ाया
+        // आर्गेनिक लिक्विड वेव बनाने के लिए Sine और Cosine का कॉम्बिनेशन
+        let blobMovement = Math.sin(angle * 2 + wavePhase + phaseOffset) * 
+                           Math.cos(angle * 1.5 - wavePhase) * 
+                           (baseDepth + (audioVal / 255) * 85); // बीट पर फ्लूइड का फैलाव
 
-        let r = imgRadius + 15 + waveHeight;
+        // थंबनेल के पीछे से लिक्विड बाहर निकलेगा
+        let r = imgRadius + 20 + blobMovement;
         let x = centerX + Math.cos(angle) * r;
         let y = centerY + Math.sin(angle) * r;
 
@@ -151,15 +147,18 @@ function initNeonFluidVisualizer() {
       }
       
       ctx.closePath();
-      ctx.stroke();
+      ctx.fill(); // स्ट्रोक की जगह 'fill' जिससे सॉलिड रंगीन धुआँ बने
       ctx.restore();
     }
 
-    // 1. बाहरी वेव (सियान) - मिड फ्रीक्वेंसी
-    drawFluidWave(70, 10, '#00f5ff', 0, mid); // पॉइंट्स 100 से 70 किए (परफॉर्मेंस बूस्ट)
+    // --- इमेज कलर थीम के अनुसार दो फ्लूइड लेयर्स ---
     
-    // 2. अंदरूनी वेव (पिंक) - बास फ्रीक्वेंसी (यह थंबनेल के पंप के साथ सिंक होगी)
-    drawFluidWave(60, 15, '#ff00ac', Math.PI, bass); // पॉइंट्स 80 से 60 किए
+    // 1. लेफ्ट साइड के लिए डीप ब्लू/सियान फ्लूइड (मिड-लो फ्रीक्वेंसी पर रिएक्ट करेगा)
+    drawFluidBlob(40, 20, 'rgba(0, 110, 255, 0.85)', 0, mid); 
+    
+    // 2. राइट साइड के लिए नियॉन ऑरेंज/गोल्डन फ्लूइड (यह हैवी बास पर तेजी से फैलेगा)
+    drawFluidBlob(35, 25, 'rgba(255, 136, 0, 0.9)', Math.PI, bass);
+
   }
 
   if (audioCtx && audioCtx.state === 'suspended') {
@@ -169,7 +168,7 @@ function initNeonFluidVisualizer() {
 }
 
 // ==========================================
-// ऑप्टिमाइज़्ड इवेंट लिस्नर्स
+// इवेंट लिस्नर्स
 // ==========================================
 window.addEventListener('DOMContentLoaded', () => {
   const audio = document.getElementById('SAudio');
@@ -224,4 +223,3 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
-
