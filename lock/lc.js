@@ -1,33 +1,52 @@
-/* ---------------- OPTIMIZED TIMER & TOGGLE LOGIC ---------------- */
-
-function resetOverlayTimer(e) {
-    if (e && e.type === "scroll") return;
-    if (overlayTimer) clearTimeout(overlayTimer);
+/**
+ * AMOLED Lockscreen Controller Widget Extensions
+ * (Plugs into existing visualizer engine without modifying old source code)
+ */
+document.addEventListener("DOMContentLoaded", () => {
+    const toggleBtn = document.getElementById("modeToggleBtn");
     
-    // CORRECTION: Agar modeToggleBtn CHECKED hai (Yani Feature ON hai), tabhi 12s baad lockscreen dikhao
-    if (audioPlayer && !audioPlayer.paused && modeToggleBtn && modeToggleBtn.checked) {
-        overlayTimer = setTimeout(showOverlay, 12000); 
+    if (!toggleBtn) return;
+
+    // 1. Initial State Sync: Pehle se check karein ki user kya chahta hai
+    // Purane code ke toggle logic ko instantly invert karne ke liye switch state check:
+    function enforceUserPreference() {
+        if (!toggleBtn.checked) {
+            // Agar toggle unchecked (OFF) hai, to purani script ko overlay dikhane se rokein
+            if (typeof hideOverlay === "function") {
+                hideOverlay();
+            }
+            if (typeof overlayTimer !== "undefined") {
+                clearTimeout(overlayTimer);
+            }
+        }
     }
-}
 
-/* -------- MODE TOGGLE HANDLER -------- */
-function toggleFooterVisibility(hide) {
-    const action = hide ? 'add' : 'remove';
-    if(footer) footer.classList[action]("hide");
-    if(progressBar) progressBar.classList[action]("hide");
-    if(audioPlayerContainer) audioPlayerContainer.classList[action]("hide");
-}
-
-if(modeToggleBtn) {
-    modeToggleBtn.addEventListener("change", () => {
-        if (!modeToggleBtn.checked) {
-            // Agar user ne setting OFF kar di, to chalta hua overlay turant chhupao aur timer clear karo
-            hideOverlay();
-            if (overlayTimer) clearTimeout(overlayTimer);
-            toggleFooterVisibility(false); // Footer visible rakho hamesha
-        } else {
-            // Agar user ne setting ON ki, to fresh timer chalu karo
+    // 2. Intercept Event Listeners: Jab user switch badle
+    toggleBtn.addEventListener("change", () => {
+        enforceUserPreference();
+        
+        // Agar user ne ON kiya hai, to purane timer ko manual call dekar reactive kar dein
+        if (toggleBtn.checked && typeof resetOverlayTimer === "function") {
             resetOverlayTimer();
         }
     });
-}
+
+    // 3. Automation Shield: Purane dynamic events ko overwrite kiye bina hijack karna
+    // Purana script har user action par resetOverlayTimer chalta hai, use hum monitor karenge
+    const originalResetTimer = window.resetOverlayTimer;
+    if (typeof originalResetTimer === 'function') {
+        window.resetOverlayTimer = function(e) {
+            // Agar toggle button unchecked (OFF) hai, to purane timer ko aage badhne hi mat do
+            if (toggleBtn && !toggleBtn.checked) {
+                if (typeof overlayTimer !== "undefined") clearTimeout(overlayTimer);
+                return; 
+            }
+            // Agar toggle ON hai, to normal chalne do
+            return originalResetTimer.apply(this, arguments);
+        };
+    }
+    
+    // Run once on load
+    setTimeout(enforceUserPreference, 100);
+});
+
