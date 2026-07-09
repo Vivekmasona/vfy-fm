@@ -8,7 +8,6 @@ let isLoading = false;
 let loadingAngle = 0;
 let wavePhase = 0;
 
-// थंबनेल बीट पंप के लिए वेरिएबल
 let currentScale = 1;
 
 function initNeonFluidVisualizer() {
@@ -19,7 +18,6 @@ function initNeonFluidVisualizer() {
 
   const ctx = canvas.getContext('2d');
   
-  // कैन्वस साइज सेटअप
   canvas.width = 600;
   canvas.height = 600;
   const centerX = canvas.width / 2;
@@ -28,7 +26,6 @@ function initNeonFluidVisualizer() {
 
   audio.crossOrigin = "anonymous";
 
-  // ऑडियो कॉन्टेक्स्ट सेटअप
   if (!audioCtx && !useFallback) {
     try {
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -64,7 +61,7 @@ function initNeonFluidVisualizer() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // ==========================================
-    // केस 1: लोडिंग स्टेट (रिंग एनीमेशन)
+    // केस 1: लोडिंग स्टेट
     // ==========================================
     if (isLoading) {
       thumbBorder.style.transform = "scale(1)"; 
@@ -75,17 +72,16 @@ function initNeonFluidVisualizer() {
       ctx.rotate(loadingAngle);
       ctx.lineWidth = 4;
       ctx.lineCap = 'round';
-      ctx.shadowBlur = 15;
-      ctx.shadowColor = '#00f5ff';
       
+      // हैवी shadowBlur हटाकर सिंपल ग्लो दिया है
+      ctx.strokeStyle = '#00f5ff';
       ctx.beginPath();
       ctx.arc(0, 0, imgRadius + 10, 0, Math.PI * 0.8);
-      ctx.strokeStyle = '#00f5ff'; 
       ctx.stroke();
       
+      ctx.strokeStyle = '#ff00ac';
       ctx.beginPath();
       ctx.arc(0, 0, imgRadius + 10, Math.PI, Math.PI * 1.8);
-      ctx.strokeStyle = '#ff00ac'; 
       ctx.stroke();
       
       ctx.restore();
@@ -93,14 +89,13 @@ function initNeonFluidVisualizer() {
     }
 
     // ==========================================
-    // केस 2: प्लेइंग स्टेट (Fluid Smoke/Blob Visualizer)
+    // केस 2: प्लेइंग स्टेट (Optimized Fluid Blob)
     // ==========================================
     let bass = 0;
     let mid = 0;
 
     if (!useFallback && analyser) {
       analyser.getByteFrequencyData(dataArray);
-      // इमेज में लेफ्ट साइड में ब्लू/सियान है और राइट में ऑरेंज/पिंक, उसी हिसाब से फ्रीक्वेंसी कैप्चर करेंगे
       bass = (dataArray[0] + dataArray[1] + dataArray[2] + dataArray[3]) / 4;
       mid = (dataArray[6] + dataArray[7] + dataArray[8] + dataArray[9]) / 4;
     } else {
@@ -109,56 +104,56 @@ function initNeonFluidVisualizer() {
       mid = (Math.cos(curTime * 6) + 1) * 50;
     }
 
-    // --- थंबनेल सिंक बीट पंप (Lerp) ---
     let targetScale = 1 + (bass / 255) * 0.14; 
-    currentScale += (targetScale - currentScale) * 0.25; // बीट पर और ज्यादा रिस्पॉन्सिव जर्क
+    currentScale += (targetScale - currentScale) * 0.25; 
     thumbBorder.style.transform = `scale(${currentScale})`;
 
-    wavePhase += 0.025; // तैरने की स्मूथ स्पीड
+    wavePhase += 0.025; 
 
-    // इमेज जैसा "Fluid Blob" धुंधला लुक बनाने के लिए हेल्प फ़ंक्शन
-    function drawFluidBlob(points, baseDepth, color, phaseOffset, audioVal) {
+    // OPTIMIZED: ब्लर फ़िल्टर की जगह 'Radial Gradient' का इस्तेमाल
+    function drawFluidBlob(points, baseDepth, colorStart, colorEnd, phaseOffset, audioVal) {
       ctx.save();
       
-      // इमेज की तरह सॉफ्ट फ्लूइड लुक देने के लिए 30px का ब्लर फ़िल्टर (यह इसे धुएँ जैसा बनाएगा)
-      ctx.filter = 'blur(30px)';
-      
-      // कलर्स को आपस में मिक्स करने की सेटिंग ताकि नियॉन लाइट फील हो
-      ctx.globalCompositeOperation = 'screen';
-      
-      ctx.fillStyle = color;
+      // भारी कंपोजिट और ब्लर हटा दिया गया है
       ctx.beginPath();
       
+      let maxRadius = 0;
+      let pointsArray = [];
+
       for (let i = 0; i <= points; i++) {
         let angle = (i / points) * Math.PI * 2;
-        
-        // आर्गेनिक लिक्विड वेव बनाने के लिए Sine और Cosine का कॉम्बिनेशन
         let blobMovement = Math.sin(angle * 2 + wavePhase + phaseOffset) * 
                            Math.cos(angle * 1.5 - wavePhase) * 
-                           (baseDepth + (audioVal / 255) * 85); // बीट पर फ्लूइड का फैलाव
+                           (baseDepth + (audioVal / 255) * 85);
 
-        // थंबनेल के पीछे से लिक्विड बाहर निकलेगा
         let r = imgRadius + 20 + blobMovement;
+        if (r > maxRadius) maxRadius = r; // ग्रेडिएंट साइज के लिए ट्रैक करना
+
         let x = centerX + Math.cos(angle) * r;
         let y = centerY + Math.sin(angle) * r;
 
+        pointsArray.push({x, y});
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       }
-      
       ctx.closePath();
-      ctx.fill(); // स्ट्रोक की जगह 'fill' जिससे सॉलिड रंगीन धुआँ बने
+
+      // यहाँ जादू है: यह बिना लैग के सॉफ्ट धुएँ जैसा (Fluid Neon) इफ़ेक्ट देगा
+      let gradient = ctx.createRadialGradient(centerX, centerY, imgRadius - 20, centerX, centerY, maxRadius);
+      gradient.addColorStop(0, colorStart);
+      gradient.addColorStop(0.4, colorStart);
+      gradient.addColorStop(1, colorEnd); // बाहर जाते ही ट्रांसपेरेंट (0 ओपेसिटी) हो जाएगा
+
+      ctx.fillStyle = gradient;
+      ctx.fill(); 
       ctx.restore();
     }
 
-    // --- इमेज कलर थीम के अनुसार दो फ्लूइड लेयर्स ---
+    // 1. लेफ्ट साइड: ब्लू फ्लूइड लेयर (सॉफ्ट ट्रांसपेरेंट एंडिंग के साथ)
+    drawFluidBlob(30, 20, 'rgba(0, 110, 255, 0.8)', 'rgba(0, 110, 255, 0)', 0, mid); 
     
-    // 1. लेफ्ट साइड के लिए डीप ब्लू/सियान फ्लूइड (मिड-लो फ्रीक्वेंसी पर रिएक्ट करेगा)
-    drawFluidBlob(40, 20, 'rgba(0, 110, 255, 0.85)', 0, mid); 
-    
-    // 2. राइट साइड के लिए नियॉन ऑरेंज/गोल्डन फ्लूइड (यह हैवी बास पर तेजी से फैलेगा)
-    drawFluidBlob(35, 25, 'rgba(255, 136, 0, 0.9)', Math.PI, bass);
-
+    // 2. राइट साइड: नियॉन ऑरेंज फ्लूइड लेयर
+    drawFluidBlob(25, 25, 'rgba(255, 136, 0, 0.85)', 'rgba(255, 136, 0, 0)', Math.PI, bass);
   }
 
   if (audioCtx && audioCtx.state === 'suspended') {
@@ -167,40 +162,21 @@ function initNeonFluidVisualizer() {
   draw();
 }
 
-// ==========================================
-// इवेंट लिस्नर्स
-// ==========================================
+// बाकी का इवेंट लिस्नर कोड बिल्कुल सेम रहेगा...
 window.addEventListener('DOMContentLoaded', () => {
   const audio = document.getElementById('SAudio');
   if (!audio) return;
 
-  const startLoading = () => {
-    if (!isLoading) {
-      isLoading = true;
-      initNeonFluidVisualizer();
-    }
-  };
-
-  const stopLoading = () => {
-    isLoading = false;
-  };
+  const startLoading = () => { if (!isLoading) { isLoading = true; initNeonFluidVisualizer(); } };
+  const stopLoading = () => { isLoading = false; };
 
   audio.addEventListener('loadstart', startLoading);
   audio.addEventListener('waiting', startLoading);
-  
-  audio.addEventListener('playing', () => {
-    stopLoading();
-    initNeonFluidVisualizer(); 
-  });
-  
+  audio.addEventListener('playing', () => { stopLoading(); initNeonFluidVisualizer(); });
   audio.addEventListener('canplaythrough', stopLoading);
   audio.addEventListener('seeking', startLoading);
   audio.addEventListener('seeked', stopLoading);
-  audio.addEventListener('error', () => { 
-    console.error("Audio error");
-    useFallback = true; 
-    stopLoading(); 
-  });
+  audio.addEventListener('error', () => { console.error("Audio error"); useFallback = true; stopLoading(); });
 
   const stopEvents = ['pause', 'ended'];
   stopEvents.forEach(evt => {
@@ -208,17 +184,8 @@ window.addEventListener('DOMContentLoaded', () => {
       isLoading = false;
       const canvas = document.getElementById('fluid-wave-visualizer');
       const thumbBorder = document.querySelector('.thumbnail-border');
-      
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-        animationFrameId = null;
-      }
-      
-      if (canvas) {
-        canvas.classList.remove('wave-active');
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
+      if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
+      if (canvas) { canvas.classList.remove('wave-active'); const ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, canvas.width, canvas.height); }
       if (thumbBorder) thumbBorder.style.transform = "scale(1)";
     });
   });
