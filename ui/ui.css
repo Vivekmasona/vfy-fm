@@ -1,5 +1,5 @@
 /* ==========================================================================
-   1. DIGITAL RESET & FUTURE CORE
+   1. LUXURY MATTE BLACK BASE
    ========================================================================== */
 * {
   box-sizing: border-box;
@@ -7,34 +7,27 @@
   padding: 0;
 }
 
-html {
-  scroll-behavior: smooth;
-  height: auto;
-  overflow-y: auto;
-}
-
-body {
-  background: radial-gradient(circle at 50% 20%, #0d0b21 0%, #05050d 70%, #010103 100%);
-  font-family: 'Cabinet Grotesk', 'Segoe UI', -apple-system, sans-serif;
+html, body {
+  background: #1a1a1a; /* सॉलिड प्रीमियम मैट ब्लैक */
+  font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
   min-height: 100vh;  
-  height: auto;
+  height: 100%;
   overflow-x: hidden; 
-  color: #ffffff;
+  color: #c5a880; /* डल लक्ज़री गोल्ड टेक्स्ट कलर */
 }
 
 /* ==========================================================================
-   2. NEXT-GEN MODAL CONTAINER
+   2. IMMERSIVE CONTAINER & DISPLACEMENT
    ========================================================================== */
 .modal-container1 {
-  display: none;
+  display: block;
   position: fixed;
   z-index: 99999;
   left: 0;
   top: 0;
   width: 100vw;
   height: 100vh;
-  background: radial-gradient(circle at 50% 30%, #151136 0%, #070714 60%, #000000 100%);
-  overflow: hidden;
+  background: #151515;
 }
 
 .modal-content1 {
@@ -45,88 +38,60 @@ body {
   flex-direction: column;
 }
 
+/* क्लोज बटन को स्क्रीनशॉट की तरह हाइड या टॉप कॉर्नर में सेट रखें */
 .modal-content1 > span[onclick="closeModal()"] {
   position: absolute;
-  right: 25px;
-  top: 25px;
+  right: 20px;
+  top: 20px;
   z-index: 100;
   cursor: pointer;
-  width: 46px;
-  height: 46px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(0, 245, 255, 0.25);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 15px rgba(0, 245, 255, 0.15);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #c5a880;
+  opacity: 0.5;
 }
-
 .modal-content1 > span[onclick="closeModal()"]::before {
   content: "\f00d";
   font-family: "Font Awesome 6 Free";
   font-weight: 900;
-  color: #00f5ff; 
-  font-size: 1rem;
-  text-shadow: 0 0 8px #00f5ff;
 }
 
-.modal-content1 > span[onclick="closeModal()"]:hover {
-  background: linear-gradient(135deg, #ff0b64, #ff00c8);
-  border-color: transparent;
-  box-shadow: 0 0 25px rgba(255, 11, 100, 0.6);
-  transform: rotate(180deg);
-}
-
-.modal-content1 > span[onclick="closeModal()"]:hover::before {
-  color: #ffffff;
-  text-shadow: none;
-}
-
-/* ==========================================================================
-   3. HOLOGRAPHIC LAYOUT ENGINE
-   ========================================================================== */
 .container {
   width: 100%;
   height: 100%;
-  max-width: 430px;
+  max-width: 450px;
   margin: 0 auto;
+  position: relative;
 }
 
 #phone {
   width: 100%;
-  min-height: 100vh; 
-  height: auto;
-  padding: 25px 20px;
+  height: 100vh;
+  padding: 40px 25px 20px 25px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 20px;
+  position: relative;
+  z-index: 10;
 }
 
+/* ==========================================================================
+   3. NEUMORPHIC TOP VOLUME CONSOLE (डिप इनसेट कार्ड)
+   ========================================================================== */
 #top-menu {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.02);
-  padding: 14px 22px;
-  border-radius: 100px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  margin-top: 25px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  background: #181818;
+  padding: 18px 24px;
+  border-radius: 30px;
+  /* इनसेट शैडो जिससे यह अंदर धंसा हुआ (Depressed) दिखे */
+  box-shadow: inset 6px 6px 12px #0d0d0d, inset -6px -6px 12px #232323;
+  border: 1px solid rgba(255, 255, 255, 0.02);
 }
 
 #top-menu i {
-  color: #8da4c4;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-#top-menu i:hover { 
-  color: #00f5ff; 
-  text-shadow: 0 0 12px #00f5ff;
+  color: #c5a880;
+  font-size: 0.9rem;
+  opacity: 0.8;
 }
 
 #volumeSliderContainer {
@@ -139,160 +104,44 @@ body {
 #volumeSlider {
   -webkit-appearance: none;
   width: 100%;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.06);
-  outline: none;
+  height: 4px;
+  background: #101010;
   border-radius: 10px;
+  box-shadow: inset 1px 1px 3px #000;
+  outline: none;
 }
 
 #volumeSlider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: #00f5ff; 
-  box-shadow: 0 0 15px #00f5ff;
+  background: linear-gradient(135deg, #e5cb9e, #967d56); /* मेटालिक गोल्ड नोब */
+  box-shadow: 2px 2px 5px #000;
   cursor: pointer;
-  transition: transform 0.2s;
-}
-#volumeSlider::-webkit-slider-thumb:hover {
-  transform: scale(1.3);
 }
 
 /* ==========================================================================
-   4. THE STAGE (CENTERING ENGINE)
-   ========================================================================== */
-.visualizer-wrapper {
-  position: relative;
-  width: 100%;
-  height: 350px; 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 5px auto;
-  overflow: visible; 
-}
-
-/* ==========================================================================
-   5. FLOATING CYBER ORBIT (THUMBNAIL)
-   ========================================================================== */
-.thumbnail-border {
-  width: 66vw;
-  height: 66vw;
-  max-width: 250px;
-  max-height: 250px;
-  border-radius: 50%;
-  padding: 10px;
-  background: #05050b; 
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  position: relative; 
-  box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform-style: preserve-3d;
-  perspective: 600px;
-  will-change: transform;
-  transition: transform 0.1s cubic-bezier(0.25, 1, 0.5, 1);
-  z-index: 5 !important; 
-}
-
-/* आउटर नियॉन रिंग */
-.thumbnail-border::before {
-  content: '';
-  position: absolute;
-  top: -3px; left: -3px; right: -3px; bottom: -3px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #00f5ff, #bd00ff, #00ff88);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  padding: 2px;
-  pointer-events: none;
-  opacity: 0.7;
-}
-
-.audio-player #thumbnailContainer {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  overflow: hidden;
-  cursor: pointer;
-  z-index: 7;
-}
-
-#SThumb {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-  filter: saturate(1.1) contrast(1.05);
-}
-
-#playButtonOverlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(5, 5, 15, 0.6);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 8;
-}
-
-#playButtonOverlay::after {
-  content: "\f04b";
-  font-family: "Font Awesome 6 Free";
-  font-weight: 900;
-  color: #ffffff;
-  font-size: 2.2rem;
-  text-shadow: 0 0 20px rgba(0, 245, 255, 0.8);
-}
-
-#thumbnailContainer:hover #playButtonOverlay { 
-  opacity: 1; 
-}
-
-/* ==========================================================================
-   6. FLUID CANVAS (BACKGROUND ARCHITECTURE)
-   ========================================================================== */
-#fluid-wave-visualizer {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) !important;
-  width: 480px !important; 
-  height: 480px !important;
-  pointer-events: none;
-  z-index: 1 !important; 
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-
-#fluid-wave-visualizer.wave-active {
-  opacity: 1;
-}
-
-/* ==========================================================================
-   7. NEO-GLASSMORPHISM CONSOLE
+   4. THE MAIN CONTROL CENTER (प्रीमियम कंसोल पॉड)
    ========================================================================== */
 .bottom-console-pod {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 30px;
-  padding: 28px 24px;
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.1);
-  margin-bottom: 5px;
+  background: #181818;
+  border-radius: 35px;
+  padding: 30px 25px;
+  /* बाहर की तरफ सॉफ्ट शैडो */
+  box-shadow: 10px 10px 25px #0d0d0d, -10px -10px 25px #232323;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+#currentSongTitle {
+  font-size: 0.75rem;
+  color: #c5a880;
+  opacity: 0.6;
+  letter-spacing: 3px;
+  font-weight: 600;
+  margin-bottom: 25px;
+  text-transform: uppercase;
+  text-align: center;
 }
 
 #song-details {
@@ -301,59 +150,46 @@ body {
 }
 
 .song-title {
-  font-size: 1.5rem;
-  font-weight: 800;
-  letter-spacing: -0.3px;
-  color: #ffffff;
-  margin-bottom: 6px;
-  line-height: 1.3;
-}
-
-.artist {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.4); 
+  font-size: 0.9rem; /* स्क्रीनशॉट की तरह छोटा और एलिगेंट */
   font-weight: 500;
+  letter-spacing: 1px;
+  color: #e5cb9e;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  line-height: 1.6;
 }
-.artist:empty::before { content: "Vivek Kushwaha"; }
 
+/* आर्टिस्ट नेम की कोई जरूरत नहीं क्योंकि थंबनेल ही आर्टिस्ट नेम है */
+.artist { display: none; }
+
+/* TIME & SEEKBAR DEPLOYMENT */
 #time-slider {
-  padding: 0 2px;
-  margin-bottom: 25px;
-}
-
-/* ==========================================================================
-   8. INTERACTIVE UTILITIES (SEEKBAR & BTNS)
-   ========================================================================== */
-#currentSongTitle {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.3);
-  letter-spacing: 2px;
-  font-weight: 700;
-  margin-bottom: 15px;
-  text-transform: uppercase;
-  text-align: center;
+  margin-bottom: 35px;
 }
 
 .slider-times {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.4);
-  margin-bottom: 10px;
-  font-family: monospace;
+  align-items: center;
+  font-size: 1.1rem;
+  color: #e5cb9e;
+  margin-bottom: 15px;
+  font-weight: 300;
 }
-#current-time:empty::before { content: "00:00"; }
-#total-time:empty::before { content: "03:50"; }
 
 #seekbar {
   -webkit-appearance: none;
   width: 100%;
-  height: 3px;
+  height: 4px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.08);
+  background: #101010;
   outline: none;
+  position: relative;
+}
+
+/* सीकबार की बीती हुई प्रोग्रेस को गोल्ड दिखाने के लिए ट्रिक */
+#seekbar::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 4px;
   cursor: pointer;
 }
 
@@ -362,63 +198,109 @@ body {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #ffffff;
-  box-shadow: 0 0 15px #ffffff;
-  transition: transform 0.2s;
-}
-#seekbar:hover::-webkit-slider-thumb {
-  transform: scale(1.4);
+  background: #e5cb9e;
+  box-shadow: 0 0 8px #e5cb9e;
+  cursor: pointer;
+  margin-top: -3px;
 }
 
+/* BUTTONS ARCHITECTURE (सर्कुलर आउटलाइन बटन्स) */
 #song-controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 10px;
+  padding: 0 5px;
 }
 
 #song-controls .button {
-  cursor: pointer;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #181818;
+  border: 2px solid rgba(197, 168, 128, 0.3); /* लाइट गोल्ड बॉर्डर */
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 4px 4px 10px #0d0d0d, -4px -4px 10px #232323;
+  transition: all 0.2s ease;
 }
-#song-controls .button:hover { 
-  transform: translateY(-2px);
+
+#song-controls .button:hover {
+  border-color: #e5cb9e;
+  box-shadow: 0 0 15px rgba(229, 203, 158, 0.2);
+  transform: scale(1.05);
 }
 
 #song-controls i {
-  font-size: 1.2rem;
-  color: rgba(255, 255, 255, 0.5);
-  transition: color 0.3s;
-}
-#song-controls i:hover {
-  color: #ffffff;
+  font-size: 1.1rem;
+  color: #e5cb9e;
 }
 
-/* अल्ट्रा-मॉडर्न मिनिमल प्ले बटन */
+/* प्ले/पॉज बटन भी बाकी बटन्स जैसा ही गोल है */
 #play {
-  background: #ffffff;
-  width: 58px;
-  height: 58px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.25);
+  background: #181818 !important;
+  width: 54px !important;
+  height: 54px !important;
+  border-radius: 50% !important;
+  border: 2px solid rgba(197, 168, 128, 0.3) !important;
+  box-shadow: 4px 4px 10px #0d0d0d, -4px -4px 10px #232323 !important;
 }
-
 #play i {
-  color: #000000 !important;
-  font-size: 1.2rem;
-  text-shadow: none;
+  color: #e5cb9e !important;
+  text-shadow: none !important;
 }
 
-#play:hover {
-  transform: scale(1.08) translateY(-2px) !important;
-  box-shadow: 0 15px 30px rgba(0, 245, 255, 0.4);
-  background: #00f5ff;
+#stop, br, #playButtonOverlay, .thumbnail-border::before { display: none; }
+
+/* ==========================================================================
+   5. BACKGROUND FULL HEIGHT THUMBNAIL DEPLOYMENT (निचला हिस्सा)
+   ========================================================================== */
+.thumbnail-border {
+  position: absolute !important;
+  bottom: 0;
+  left: 0;
+  width: 100vw !important;
+  height: 50vh !important; /* स्क्रीन के नीचे आधे हिस्से में इमेज फैलेगी */
+  max-width: 100% !important;
+  max-height: 100% !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  z-index: 1 !important;
+  overflow: hidden;
+  transform: none !important;
 }
 
-#stop, br { display: none; }
+#thumbnailContainer {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 0 !important;
+}
+
+#SThumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0 !important;
+  /* ऊपर की तरफ ब्लैक फेड करने के लिए ग्रेडिएंट मास्क */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 15%, black 40%);
+  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 15%, black 40%);
+  filter: grayscale(20%) contrast(1.1);
+}
+
+/* ==========================================================================
+   6. YOUTUBE STYLE GOLD VISUALIZER OVER THE IMAGE
+   ========================================================================== */
+#fluid-wave-visualizer {
+  position: absolute;
+  bottom: 5%; /* इमेज के ऊपर परफेक्टली सेट करने के लिए */
+  left: 50%;
+  transform: translateX(-50%) !important;
+  width: 100% !important;
+  height: 180px !important;
+  pointer-events: none;
+  z-index: 2 !important; /* इमेज के ऊपर रहेगा */
+  opacity: 0.85;
+}
