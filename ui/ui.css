@@ -1,5 +1,5 @@
 /* ==========================================================================
-   1. LUXURY MATTE BLACK BASE
+   1. DIGITAL RESET & FUTURE CORE
    ========================================================================== */
 * {
   box-sizing: border-box;
@@ -7,92 +7,126 @@
   padding: 0;
 }
 
-html, body {
-  background: #141414; /* शुद्ध प्रीमियम मैट ब्लैक */
-  font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
+html {
+  scroll-behavior: smooth;
+  height: auto;
+  overflow-y: auto;
+}
+
+body {
+  background: radial-gradient(circle at 50% 20%, #0d0b21 0%, #05050d 70%, #010103 100%);
+  font-family: 'Cabinet Grotesk', 'Segoe UI', -apple-system, sans-serif;
   min-height: 100vh;  
   height: auto;
   overflow-x: hidden; 
-  color: #c5a880; /* रॉयल गोल्ड टेक्स्ट थीम */
+  color: #ffffff;
 }
 
 /* ==========================================================================
-   2. IMMERSIVE PERFORMANCE CONTAINER
+   2. NEXT-GEN MODAL CONTAINER
    ========================================================================== */
 .modal-container1 {
-  display: block; /* सीधे ओपन रहेगा */
-  position: relative;
-  width: 100%;
-  min-height: 100vh;
-  background: #141414;
+  display: none;
+  position: fixed;
+  z-index: 99999;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at 50% 30%, #151136 0%, #070714 60%, #000000 100%);
+  overflow: hidden;
 }
 
 .modal-content1 {
   width: 100%;
   height: 100%;
+  position: relative;
   display: flex;
   flex-direction: column;
 }
 
-/* क्लोज बटन - डेलिकेट गोल्ड स्टाइल */
 .modal-content1 > span[onclick="closeModal()"] {
   position: absolute;
   right: 25px;
   top: 25px;
   z-index: 100;
   cursor: pointer;
-  color: #c5a880;
-  opacity: 0.5;
-  font-size: 1.1rem;
-  transition: opacity 0.3s, transform 0.3s;
+  width: 46px;
+  height: 46px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(0, 245, 255, 0.25);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(0, 245, 255, 0.15);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.modal-content1 > span[onclick="closeModal()"]:hover {
-  opacity: 1;
-  transform: scale(1.1);
-}
+
 .modal-content1 > span[onclick="closeModal()"]::before {
   content: "\f00d";
   font-family: "Font Awesome 6 Free";
   font-weight: 900;
+  color: #00f5ff; 
+  font-size: 1rem;
+  text-shadow: 0 0 8px #00f5ff;
 }
 
+.modal-content1 > span[onclick="closeModal()"]:hover {
+  background: linear-gradient(135deg, #ff0b64, #ff00c8);
+  border-color: transparent;
+  box-shadow: 0 0 25px rgba(255, 11, 100, 0.6);
+  transform: rotate(180deg);
+}
+
+.modal-content1 > span[onclick="closeModal()"]:hover::before {
+  color: #ffffff;
+  text-shadow: none;
+}
+
+/* ==========================================================================
+   3. HOLOGRAPHIC LAYOUT ENGINE
+   ========================================================================== */
 .container {
   width: 100%;
+  height: 100%;
   max-width: 430px;
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
 }
 
 #phone {
   width: 100%;
-  padding: 40px 22px 20px 22px;
+  min-height: 100vh; 
+  height: auto;
+  padding: 25px 20px;
   display: flex;
   flex-direction: column;
-  gap: 25px;
-  flex-grow: 1;
-  justify-content: flex-start;
+  justify-content: space-between;
 }
 
-/* ==========================================================================
-   3. NEUMORPHIC TOP VOLUME CONSOLE (अंदर धंसा हुआ प्रीमियम लुक)
-   ========================================================================== */
 #top-menu {
   display: flex;
   align-items: center;
-  background: #151515;
-  padding: 18px 24px;
-  border-radius: 30px;
-  /* इनसेट डार्क और लाइट शैडो जो गहराई (Depth) पैदा करती है */
-  box-shadow: inset 5px 5px 10px #0a0a0a, inset -5px -5px 10px #202020;
-  border: 1px solid rgba(255, 255, 255, 0.01);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 14px 22px;
+  border-radius: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  margin-top: 25px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 #top-menu i {
-  color: #c5a880;
-  font-size: 0.9rem;
-  opacity: 0.7;
+  color: #8da4c4;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+#top-menu i:hover { 
+  color: #00f5ff; 
+  text-shadow: 0 0 12px #00f5ff;
 }
 
 #volumeSliderContainer {
@@ -105,10 +139,10 @@ html, body {
 #volumeSlider {
   -webkit-appearance: none;
   width: 100%;
-  height: 4px;
-  background: #0a0a0a;
-  border-radius: 10px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.06);
   outline: none;
+  border-radius: 10px;
 }
 
 #volumeSlider::-webkit-slider-thumb {
@@ -116,33 +150,149 @@ html, body {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #e5cb9e, #967d56); /* सॉलिड मैटेलिक गोल्ड */
-  box-shadow: 1px 1px 5px #000;
+  background: #00f5ff; 
+  box-shadow: 0 0 15px #00f5ff;
   cursor: pointer;
+  transition: transform 0.2s;
+}
+#volumeSlider::-webkit-slider-thumb:hover {
+  transform: scale(1.3);
 }
 
 /* ==========================================================================
-   4. NEO-CONSOLED POD (उभरा हुआ मुख्य कंट्रोलर)
+   4. THE STAGE (CENTERING ENGINE)
    ========================================================================== */
-.bottom-console-pod {
-  background: #161616;
-  border-radius: 35px;
-  padding: 30px 24px;
-  /* बाहर की तरफ सॉफ्ट लक्ज़री शैडो */
-  box-shadow: 10px 10px 25px #0a0a0a, -10px -10px 25px #222222;
-  border: 1px solid rgba(255, 255, 255, 0.02);
-  z-index: 10;
+.visualizer-wrapper {
+  position: relative;
+  width: 100%;
+  height: 350px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 5px auto;
+  overflow: visible; 
 }
 
-#currentSongTitle {
-  font-size: 0.75rem;
-  color: #c5a880;
-  opacity: 0.5;
-  letter-spacing: 3px;
-  font-weight: 600;
-  margin-bottom: 25px;
-  text-transform: uppercase;
-  text-align: center;
+/* ==========================================================================
+   5. FLOATING CYBER ORBIT (THUMBNAIL)
+   ========================================================================== */
+.thumbnail-border {
+  width: 66vw;
+  height: 66vw;
+  max-width: 250px;
+  max-height: 250px;
+  border-radius: 50%;
+  padding: 10px;
+  background: #05050b; 
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative; 
+  box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  perspective: 600px;
+  will-change: transform;
+  transition: transform 0.1s cubic-bezier(0.25, 1, 0.5, 1);
+  z-index: 5 !important; 
+}
+
+/* आउटर नियॉन रिंग */
+.thumbnail-border::before {
+  content: '';
+  position: absolute;
+  top: -3px; left: -3px; right: -3px; bottom: -3px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00f5ff, #bd00ff, #00ff88);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 2px;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.audio-player #thumbnailContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  z-index: 7;
+}
+
+#SThumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  filter: saturate(1.1) contrast(1.05);
+}
+
+#playButtonOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(5, 5, 15, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 8;
+}
+
+#playButtonOverlay::after {
+  content: "\f04b";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  color: #ffffff;
+  font-size: 2.2rem;
+  text-shadow: 0 0 20px rgba(0, 245, 255, 0.8);
+}
+
+#thumbnailContainer:hover #playButtonOverlay { 
+  opacity: 1; 
+}
+
+/* ==========================================================================
+   6. FLUID CANVAS (BACKGROUND ARCHITECTURE)
+   ========================================================================== */
+#fluid-wave-visualizer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) !important;
+  width: 480px !important; 
+  height: 480px !important;
+  pointer-events: none;
+  z-index: 1 !important; 
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+#fluid-wave-visualizer.wave-active {
+  opacity: 1;
+}
+
+/* ==========================================================================
+   7. NEO-GLASSMORPHISM CONSOLE
+   ========================================================================== */
+.bottom-console-pod {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 30px;
+  padding: 28px 24px;
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  margin-bottom: 5px;
 }
 
 #song-details {
@@ -151,155 +301,124 @@ html, body {
 }
 
 .song-title {
-  font-size: 0.95rem; /* स्क्रीनशॉट जैसा मिनीमलिस्टिक और एलिगेंट आकार */
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  color: #e5cb9e;
-  text-transform: uppercase;
-  line-height: 1.6;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: #ffffff;
+  margin-bottom: 6px;
+  line-height: 1.3;
 }
 
-/* आर्टिस्ट नाम हिडन क्योंकि वो पहले से इमेज टेक्स्ट में शामिल है */
-.artist { display: none; }
+.artist {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4); 
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+.artist:empty::before { content: "Vivek Kushwaha"; }
 
-/* TIME & SEEKBAR ARCHITECTURE */
 #time-slider {
-  margin-bottom: 30px;
+  padding: 0 2px;
+  margin-bottom: 25px;
+}
+
+/* ==========================================================================
+   8. INTERACTIVE UTILITIES (SEEKBAR & BTNS)
+   ========================================================================== */
+#currentSongTitle {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 2px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  text-align: center;
 }
 
 .slider-times {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  font-size: 1.05rem;
-  color: #e5cb9e;
-  margin-bottom: 12px;
-  font-weight: 300;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 10px;
+  font-family: monospace;
 }
+#current-time:empty::before { content: "00:00"; }
+#total-time:empty::before { content: "03:50"; }
 
 #seekbar {
   -webkit-appearance: none;
   width: 100%;
-  height: 4px;
+  height: 3px;
   border-radius: 10px;
-  background: #0a0a0a;
+  background: rgba(255, 255, 255, 0.08);
   outline: none;
+  cursor: pointer;
 }
 
 #seekbar::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: #e5cb9e;
-  box-shadow: 0 0 8px #e5cb9e;
-  cursor: pointer;
+  background: #ffffff;
+  box-shadow: 0 0 15px #ffffff;
+  transition: transform 0.2s;
+}
+#seekbar:hover::-webkit-slider-thumb {
+  transform: scale(1.4);
 }
 
-/* BUTTONS POD - GOLD CIRCLES (स्क्रीनशॉट की तरह 100% मैच) */
 #song-controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 5px;
+  padding: 0 10px;
 }
 
 #song-controls .button {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: #161616;
-  border: 1.5px solid rgba(197, 168, 128, 0.3); /* स्मूथ थिन गोल्ड आउटलाइन */
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 4px 4px 10px #0a0a0a, -4px -4px 10px #222222;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-#song-controls .button:hover {
-  border-color: #e5cb9e;
-  box-shadow: 0 0 15px rgba(229, 203, 158, 0.2);
+#song-controls .button:hover { 
   transform: translateY(-2px);
 }
 
 #song-controls i {
-  font-size: 1.1rem;
-  color: #e5cb9e;
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.5);
+  transition: color 0.3s;
+}
+#song-controls i:hover {
+  color: #ffffff;
 }
 
-/* प्ले बटन को भी बाकी बटन्स जैसा ही गोल यूनिफॉर्म साइज दिया */
+/* अल्ट्रा-मॉडर्न मिनिमल प्ले बटन */
 #play {
-  background: #161616 !important;
-  width: 52px !important;
-  height: 52px !important;
-  border-radius: 50% !important;
-  border: 1.5px solid rgba(197, 168, 128, 0.3) !important;
-  box-shadow: 4px 4px 10px #0a0a0a, -4px -4px 10px #222222 !important;
-}
-#play i {
-  color: #e5cb9e !important;
-  text-shadow: none !important;
-}
-
-#stop, br, #playButtonOverlay, .thumbnail-border::before { display: none; }
-
-/* ==========================================================================
-   5. DEEP BACKGROUND THUMBNAIL DEPLOYMENT (स्क्रीन का निचला हिस्सा)
-   ========================================================================== */
-.visualizer-wrapper {
-  position: relative;
-  width: 100%;
-  height: 340px; /* मोबाइल व्यू के लिए बिल्कुल परफेक्ट स्पेसिंग */
-  margin-top: auto; /* इसे हमेशा ऑटोमैटिक नीचे पुश करेगा */
+  background: #ffffff;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: visible;
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.25);
 }
 
-.thumbnail-border {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  z-index: 1;
-  border-radius: 0;
-  padding: 0;
-  transform: none !important;
+#play i {
+  color: #000000 !important;
+  font-size: 1.2rem;
+  text-shadow: none;
 }
 
-#thumbnailContainer {
-  width: 100%;
-  height: 100%;
-  border-radius: 0;
-  overflow: hidden;
+#play:hover {
+  transform: scale(1.08) translateY(-2px) !important;
+  box-shadow: 0 15px 30px rgba(0, 245, 255, 0.4);
+  background: #00f5ff;
 }
 
-#SThumb {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 0;
-  /* टॉप फेड आउट ग्रेडिएंट मास्क—ताकि इमेज ऊपर के ब्लैक एरिया में मिक्स हो जाए */
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 15%, black 60%);
-  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 15%, black 60%);
-  filter: contrast(1.05) brightness(0.95);
-}
-
-/* ==========================================================================
-   6. ROYAL GOLD VISUALIZER (तैरती हुई लहरें)
-   ========================================================================== */
-#fluid-wave-visualizer {
-  position: absolute;
-  bottom: 0px; 
-  left: 50%;
-  transform: translateX(-50%) !important;
-  width: 100% !important;
-  height: 150px !important;
-  pointer-events: none;
-  z-index: 2; /* इमेज के ठीक ऊपर वेव चलेगी */
-  opacity: 0.85;
-}
+#stop, br { display: none; }
