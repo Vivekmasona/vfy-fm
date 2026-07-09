@@ -4,50 +4,54 @@ let dataArray = null;
 let source = null;
 let animationFrameId = null;
 let useFallback = false;
-let isLoading = false; // लोडिंग स्टेट ट्रैक करने के लिए
-let loadingAngle = 0; // लोडर को घुमाने के लिए कोण
+let isLoading = false;
+let loadingAngle = 0;
+let wavePhase = 0; // वेव के तैरने की गति के लिए
 
-function initNeonCircularVisualizer() {
+function initNeonFluidVisualizer() {
   const audio = document.getElementById('SAudio');
   const canvas = document.getElementById('fluid-wave-visualizer');
-  const thumbBorder = document.querySelector('.thumbnail-border');
+  // थंबनेल का बॉर्डर कंटेनर
+  const thumbBorder = document.querySelector('.thumbnail-border'); 
   if (!audio || !canvas || !thumbBorder) return;
 
   const ctx = canvas.getContext('2d');
-
+  
+  // कैनवस का साइज़ सेट करें
   canvas.width = 600;
   canvas.height = 600;
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
-  const baseRadius = 195;
+  
+  // इमेज का रेडियस (इसे अपनी CSS के अनुसार एडजस्ट करें)
+  // पुराने 'baseRadius' से थोड़ा कम ताकि वेव्स पास रहें
+  const imgRadius = 180; 
 
   audio.crossOrigin = "anonymous";
 
+  // ऑडियो कॉन्टेक्स्ट सेटअप
   if (!audioCtx && !useFallback) {
     try {
-      audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       analyser = audioCtx.createAnalyser();
       source = audioCtx.createMediaElementSource(audio);
       source.connect(analyser);
       analyser.connect(audioCtx.destination);
 
-      analyser.smoothingTimeConstant = 0.70;
-      analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = 0.85; // वेव्स को स्मूथ रखने के लिए ज़्यादा
+      analyser.fftSize = 512; // बेहतर फ्रीक्वेंसी डिटेल के लिए
       dataArray = new Uint8Array(analyser.frequencyBinCount);
     } catch (e) {
+      console.error("AudioContext error, using fallback:", e);
       useFallback = true;
     }
   }
 
   canvas.classList.add('wave-active');
 
-  let globalGradient = ctx.createRadialGradient(centerX, centerY, baseRadius, centerX, centerY, baseRadius + 75);
-  globalGradient.addColorStop(0, '#00f5ff'); // सियान
-  globalGradient.addColorStop(0.4, '#3b82f6'); // ब्लू
-  globalGradient.addColorStop(1, '#ff00ac'); // लेज़र पिंक
-
-  function drawSpectrum() {
-    // अगर गाना पॉज़ है और लोड भी नहीं हो रहा, तो कैनवस साफ़ कर दो
+  // ड्रा फ़ंक्शन - जो बार-बार कॉल होगा
+  function draw() {
+    // अगर गाना रुका है, तो सब साफ़ कर दो
     if ((audio.paused || audio.ended) && !isLoading) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       canvas.classList.remove('wave-active');
@@ -55,139 +59,169 @@ function initNeonCircularVisualizer() {
       return;
     }
 
-    animationFrameId = requestAnimationFrame(drawSpectrum);
+    animationFrameId = requestAnimationFrame(draw);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // ==========================================
-    // केस 1: जब गाना लोड या बफर हो रहा हो (कैनवास लोडर)
+    // केस 1: लोडिंग स्टेट (घूमता हुआ नियॉन रिंग)
     // ==========================================
     if (isLoading) {
-      thumbBorder.style.transform = "scale(1)"; // लोडिंग के समय थंबनेल शांत रहेगा
-
-      loadingAngle += 0.05; // घूमने की स्पीड
-
+      thumbBorder.style.transform = "scale(1)"; 
+      
+      loadingAngle += 0.08; 
+      
       ctx.save();
-      ctx.lineWidth = 5;
+      ctx.translate(centerX, centerY);
+      ctx.rotate(loadingAngle);
+      
+      ctx.lineWidth = 4;
       ctx.lineCap = 'round';
-
-      // नियॉन ग्लो इफ़ेक्ट लोडर के लिए
+      
+      // नियॉन ग्लो
       ctx.shadowBlur = 15;
-      ctx.shadowColor = '#000000';
-
-      // एक सुंदर कट-आउट (अधूरा) घूमता हुआ सर्कल बनाना
+      ctx.shadowColor = '#00f5ff';
+      
+      // दो अधूरे आर्क
       ctx.beginPath();
-      ctx.arc(centerX, centerY, 50, loadingAngle, loadingAngle + (Math.PI * 1.5));
-      ctx.strokeStyle = '#ffffff';
+      ctx.arc(0, 0, imgRadius + 10, 0, Math.PI * 0.8);
+      ctx.strokeStyle = '#00f5ff'; // सियान
       ctx.stroke();
+      
+      ctx.beginPath();
+      ctx.arc(0, 0, imgRadius + 10, Math.PI, Math.PI * 1.8);
+      ctx.strokeStyle = '#ff00ac'; // पिंक
+      ctx.stroke();
+      
       ctx.restore();
-
-      return; // यहाँ से लौट जाएँ ताकि पीछे बार्स न बनें
+      return; 
     }
 
     // ==========================================
-    // केस 2: जब गाना बज रहा हो (असली विजुअलाइज़र बार्स)
+    // केस 2: प्लेइंग स्टेट (फ्लूइड नियॉन वेव्स)
     // ==========================================
-    const totalBars = 84;
-    let bassSum = 0;
+    let bass = 0;
+    let mid = 0;
 
+    // ऑडियो डेटा प्राप्त करें
     if (!useFallback && analyser) {
       analyser.getByteFrequencyData(dataArray);
-      bassSum = (dataArray[0] + dataArray[1] + dataArray[2] + dataArray[3]) / 4;
+      // बास (low frequencies)
+      bass = (dataArray[0] + dataArray[1] + dataArray[2] + dataArray[3]) / 4;
+      // मिड (mid frequencies)
+      mid = (dataArray[10] + dataArray[11] + dataArray[12] + dataArray[13]) / 4;
     } else {
+      // फॉलबैक (सिर्फ टेस्ट के लिए, अगर ऑडियो काम न करे)
       let curTime = audio.currentTime;
-      let rawBeat = Math.sin(curTime * 11) * Math.cos(curTime * 5) * Math.sin(Date.now() * 0.02);
-      if (rawBeat > 0.15) bassSum = ((rawBeat - 0.15) / 0.85) * 240;
+      bass = (Math.sin(curTime * 8) + 1) * 60;
+      mid = (Math.cos(curTime * 6) + 1) * 40;
     }
 
-    // महा-पंप ज़ूम इफेक्ट
-    if (bassSum > 35) {
-      const norm = bassSum / 255;
-      const scaleFactor = 1 + (norm * 0.38);
+    // --- इमेज पंप इफेक्ट ---
+    // केवल तेज़ बास पर ही इमेज थोड़ी बड़ी होगी
+    if (bass > 100) {
+      const scaleFactor = 1 + (bass / 255) * 0.12; 
       thumbBorder.style.transform = `scale(${scaleFactor})`;
     } else {
       thumbBorder.style.transform = "scale(1)";
     }
 
-    ctx.strokeStyle = globalGradient;
-    ctx.lineCap = 'round';
+    // --- वेव पैरामीटर्स ---
+    wavePhase += 0.02; // वेव्स के तैरने की स्पीड
 
-    for (let i = 0; i < totalBars; i++) {
-      let angle = (i / totalBars) * Math.PI * 2;
-      let audioIndex = Math.floor((i / totalBars) * (dataArray ? dataArray.length * 0.50 : 1));
-
-      let rawValue = 0;
-      if (!useFallback && analyser) {
-        rawValue = dataArray[audioIndex];
-      } else {
-        let curTime = audio.currentTime;
-        rawValue = (Math.sin(curTime * 5 + i * 0.4) * Math.cos(curTime * 2 + i * 0.2) + 1) * 75;
-      }
-
-      let barLength = (rawValue / 255) * 65;
-      if (rawValue < 6) barLength = 2;
-
-      let cosA = Math.cos(angle);
-      let sinA = Math.sin(angle);
-
-      let startX = centerX + cosA * baseRadius;
-      let startY = centerY + sinA * baseRadius;
-      let endX = centerX + cosA * (baseRadius + barLength);
-      let endY = centerY + sinA * (baseRadius + barLength);
+    // वेव ड्रा करने का हेल्प फ़ंक्शन
+    // points: सर्कल में कितने पॉइंट होंगे, depth: वेव कितनी ऊंची होगी, color: वेव का रंग
+    function drawFluidWave(points, depth, color, phaseOffset) {
+      ctx.save();
+      
+      ctx.shadowBlur = 20; // नियॉन ग्लो
+      ctx.shadowColor = color;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 5;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
 
       ctx.beginPath();
-      ctx.moveTo(startX, startY);
-      ctx.lineTo(endX, endY);
+      
+      for (let i = 0; i <= points; i++) {
+        let angle = (i / points) * Math.PI * 2;
+        
+        // ऑडियो के अनुसार वेव की ऊंचाई बदलें
+        // Sine waves को कंबाइन करके लिक्विड इफ़ेक्ट बनाना
+        let audioInfluence = (i < points / 2) ? bass : mid; // आधे सर्कल में बास, आधे में मिड
+        
+        let waveHeight = Math.sin(angle * 4 + wavePhase + phaseOffset) * 
+                         Math.cos(angle * 2 - wavePhase * 0.5) * 
+                         (depth + (audioInfluence / 255) * 40);
 
-      // बार्स को इमेज के करीब लाने के लिए, startX और startY को थोड़ा संशोधित करें
-      let margin = 5; // इमेज और बार्स के बीच की दूरी
-      startX -= cosA * margin;
-      startY -= sinA * margin;
+        // वेव का रेडियस: इमेज के रेडियस से थोड़ा ज़्यादा + वेव की ऊंचाई
+        let r = imgRadius + 15 + waveHeight;
+        
+        let x = centerX + Math.cos(angle) * r;
+        let y = centerY + Math.sin(angle) * r;
 
-      ctx.lineWidth = 8.5;
-      ctx.globalAlpha = 0.25;
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      }
+      
+      ctx.closePath();
       ctx.stroke();
-
-      ctx.globalAlpha = 1.0;
-      ctx.lineWidth = 4.0;
-      ctx.stroke();
+      ctx.restore();
     }
+
+    // --- दो अलग-अलग वेव्स ड्रा करें ---
+    
+    // 1. बाहरी वेव (सियान/ब्लू) - मिड फ्रीक्वेंसी पर ज़्यादा रिएक्ट करेगी
+    drawFluidWave(100, 10, '#00f5ff', 0); 
+    
+    // 2. अंदरूनी वेव (पिंक/मैजेंटा) - बास पर ज़्यादा रिएक्ट करेगी
+    drawFluidWave(80, 15, '#ff00ac', Math.PI); // PhaseOffset से दोनों वेव अलग दिखेंगी
+
   }
 
+  // शुरू करें
   if (audioCtx && audioCtx.state === 'suspended') {
     audioCtx.resume();
   }
-  drawSpectrum();
+  draw();
 }
 
-// लोडिंग स्टेट्स को कैप्चर करने के लिए इवेंट लिस्नर्स
+// ==========================================
+// इवेंट लिस्नर्स (पहले जैसे ही, थोड़े ऑप्टिमाइज़्ड)
+// ==========================================
 window.addEventListener('DOMContentLoaded', () => {
   const audio = document.getElementById('SAudio');
   if (!audio) return;
 
-  // जैसे ही गाना लोड होना शुरू हो या बफ़रिंग करे
   const startLoading = () => {
-    isLoading = true;
-    initNeonCircularVisualizer();
+    if (!isLoading) {
+      isLoading = true;
+      initNeonFluidVisualizer();
+    }
   };
 
-  // जैसे ही गाना प्ले होने के लिए तैयार हो जाए
   const stopLoading = () => {
     isLoading = false;
   };
 
   audio.addEventListener('loadstart', startLoading);
   audio.addEventListener('waiting', startLoading);
-
+  
   audio.addEventListener('playing', () => {
     stopLoading();
-    initNeonCircularVisualizer();
+    // सुनिश्चित करें कि विज़ुअलाइज़र शुरू हो गया है
+    initNeonFluidVisualizer(); 
   });
+  
   audio.addEventListener('canplaythrough', stopLoading);
   audio.addEventListener('seeking', startLoading);
   audio.addEventListener('seeked', stopLoading);
-  audio.addEventListener('error', () => {
-    useFallback = true;
-    stopLoading();
+  audio.addEventListener('error', () => { 
+    console.error("Audio error");
+    useFallback = true; 
+    stopLoading(); 
   });
 
   const stopEvents = ['pause', 'ended'];
@@ -206,3 +240,4 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
