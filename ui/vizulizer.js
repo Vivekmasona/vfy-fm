@@ -5,7 +5,7 @@ let source = null;
 let animationFrameId = null;
 let useFallback = false;
 let isLoading = false; // लोडिंग स्टेट ट्रैक करने के लिए
-let loadingAngle = 0;   // लोडर को घुमाने के लिए कोण
+let loadingAngle = 0; // लोडर को घुमाने के लिए कोण
 
 function initNeonCircularVisualizer() {
   const audio = document.getElementById('SAudio');
@@ -14,25 +14,25 @@ function initNeonCircularVisualizer() {
   if (!audio || !canvas || !thumbBorder) return;
 
   const ctx = canvas.getContext('2d');
-  
+
   canvas.width = 600;
   canvas.height = 600;
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
-  const baseRadius = 195; 
+  const baseRadius = 195;
 
   audio.crossOrigin = "anonymous";
 
   if (!audioCtx && !useFallback) {
     try {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      audioCtx = new(window.AudioContext || window.webkitAudioContext)();
       analyser = audioCtx.createAnalyser();
       source = audioCtx.createMediaElementSource(audio);
       source.connect(analyser);
       analyser.connect(audioCtx.destination);
 
-      analyser.smoothingTimeConstant = 0.70; 
-      analyser.fftSize = 256; 
+      analyser.smoothingTimeConstant = 0.70;
+      analyser.fftSize = 256;
       dataArray = new Uint8Array(analyser.frequencyBinCount);
     } catch (e) {
       useFallback = true;
@@ -42,9 +42,9 @@ function initNeonCircularVisualizer() {
   canvas.classList.add('wave-active');
 
   let globalGradient = ctx.createRadialGradient(centerX, centerY, baseRadius, centerX, centerY, baseRadius + 75);
-  globalGradient.addColorStop(0, '#00f5ff');   // सियान
+  globalGradient.addColorStop(0, '#00f5ff'); // सियान
   globalGradient.addColorStop(0.4, '#3b82f6'); // ब्लू
-  globalGradient.addColorStop(1, '#ff00ac');   // लेज़र पिंक
+  globalGradient.addColorStop(1, '#ff00ac'); // लेज़र पिंक
 
   function drawSpectrum() {
     // अगर गाना पॉज़ है और लोड भी नहीं हो रहा, तो कैनवस साफ़ कर दो
@@ -63,31 +63,31 @@ function initNeonCircularVisualizer() {
     // ==========================================
     if (isLoading) {
       thumbBorder.style.transform = "scale(1)"; // लोडिंग के समय थंबनेल शांत रहेगा
-      
+
       loadingAngle += 0.05; // घूमने की स्पीड
-      
+
       ctx.save();
       ctx.lineWidth = 5;
       ctx.lineCap = 'round';
-      
+
       // नियॉन ग्लो इफ़ेक्ट लोडर के लिए
       ctx.shadowBlur = 15;
       ctx.shadowColor = '#000000';
-      
+
       // एक सुंदर कट-आउट (अधूरा) घूमता हुआ सर्कल बनाना
       ctx.beginPath();
       ctx.arc(centerX, centerY, 50, loadingAngle, loadingAngle + (Math.PI * 1.5));
       ctx.strokeStyle = '#ffffff';
       ctx.stroke();
       ctx.restore();
-      
+
       return; // यहाँ से लौट जाएँ ताकि पीछे बार्स न बनें
     }
 
     // ==========================================
     // केस 2: जब गाना बज रहा हो (असली विजुअलाइज़र बार्स)
     // ==========================================
-    const totalBars = 84; 
+    const totalBars = 84;
     let bassSum = 0;
 
     if (!useFallback && analyser) {
@@ -102,7 +102,7 @@ function initNeonCircularVisualizer() {
     // महा-पंप ज़ूम इफेक्ट
     if (bassSum > 35) {
       const norm = bassSum / 255;
-      const scaleFactor = 1 + (norm * 0.38); 
+      const scaleFactor = 1 + (norm * 0.38);
       thumbBorder.style.transform = `scale(${scaleFactor})`;
     } else {
       thumbBorder.style.transform = "scale(1)";
@@ -114,7 +114,7 @@ function initNeonCircularVisualizer() {
     for (let i = 0; i < totalBars; i++) {
       let angle = (i / totalBars) * Math.PI * 2;
       let audioIndex = Math.floor((i / totalBars) * (dataArray ? dataArray.length * 0.50 : 1));
-      
+
       let rawValue = 0;
       if (!useFallback && analyser) {
         rawValue = dataArray[audioIndex];
@@ -124,7 +124,7 @@ function initNeonCircularVisualizer() {
       }
 
       let barLength = (rawValue / 255) * 65;
-      if (rawValue < 6) barLength = 2; 
+      if (rawValue < 6) barLength = 2;
 
       let cosA = Math.cos(angle);
       let sinA = Math.sin(angle);
@@ -137,13 +137,18 @@ function initNeonCircularVisualizer() {
       ctx.beginPath();
       ctx.moveTo(startX, startY);
       ctx.lineTo(endX, endY);
-      
-      ctx.lineWidth = 8.5; 
-      ctx.globalAlpha = 0.25; 
+
+      // बार्स को इमेज के करीब लाने के लिए, startX और startY को थोड़ा संशोधित करें
+      let margin = 5; // इमेज और बार्स के बीच की दूरी
+      startX -= cosA * margin;
+      startY -= sinA * margin;
+
+      ctx.lineWidth = 8.5;
+      ctx.globalAlpha = 0.25;
       ctx.stroke();
 
-      ctx.globalAlpha = 1.0; 
-      ctx.lineWidth = 4.0; 
+      ctx.globalAlpha = 1.0;
+      ctx.lineWidth = 4.0;
       ctx.stroke();
     }
   }
@@ -172,7 +177,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   audio.addEventListener('loadstart', startLoading);
   audio.addEventListener('waiting', startLoading);
-  
+
   audio.addEventListener('playing', () => {
     stopLoading();
     initNeonCircularVisualizer();
@@ -180,7 +185,10 @@ window.addEventListener('DOMContentLoaded', () => {
   audio.addEventListener('canplaythrough', stopLoading);
   audio.addEventListener('seeking', startLoading);
   audio.addEventListener('seeked', stopLoading);
-  audio.addEventListener('error', () => { useFallback = true; stopLoading(); });
+  audio.addEventListener('error', () => {
+    useFallback = true;
+    stopLoading();
+  });
 
   const stopEvents = ['pause', 'ended'];
   stopEvents.forEach(evt => {
@@ -198,5 +206,3 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
-
-
