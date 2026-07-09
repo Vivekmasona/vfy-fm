@@ -94,45 +94,84 @@
 
 
 
-<div id="audio-error-toast" style="
-  display: none; 
-  position: fixed; 
-  top: 10px; 
-  left: 50%; 
-  transform: translateX(-50%); 
-  background: rgba(255, 255, 255, 0.1); 
-  backdrop-filter: blur(10px); 
-  -webkit-backdrop-filter: blur(10px);
-  color: white; 
-  padding: 10px 20px; 
-  border-radius: 20px; 
-  border: 1px solid rgba(255, 255, 255, 0.2); 
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  z-index: 2147483647; 
-  font-family: -apple-system, sans-serif; 
-  text-align: center;
-  max-width: 90%;
-  transition: background 0.4s ease, border-color 0.4s ease; /* Smooth color change */
-">
-  Server busy! Swapping...
-</div>
+<!-- Premium Bubble Toast Notification Element -->
+<div id="audio-error-toast">Server busy! Swapping...</div>
+
 
 <style>
-/* Smoothly upar gayab hone ki class */
-.island-exit {
-  animation: dynamic-island-exit 0.5s forwards ease-in !important;
+#audio-error-toast {
+    display: none; /* Default hidden, JS handles this */
+    position: fixed; 
+    top: 15px; /* Top par spacing */
+    left: 50%; 
+    transform: translateX(-50%) scale(0.3); /* Initial state: chhota dot jaisa */
+    opacity: 0;
+    
+    background: rgba(255, 255, 255, 0.1); 
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(10px);
+    color: white; 
+    padding: 10px 24px; 
+    border-radius: 50px; /* Pure round bubble/capsule look */
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    z-index: 2147483647; 
+    
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; 
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    max-width: 90%;
+    white-space: nowrap;
+    
+    /* Smooth color change (Success/Trying transition ke liye) */
+    transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease; 
 }
 
-@keyframes dynamic-island-exit {
-  0% {
-    top: 10px;
-    opacity: 1;
-  }
-  100% {
-    top: -60px; /* Upar ke side smoothly slide out */
-    opacity: 0;
-  }
+/* --- ANIMATION CLASSES (JS ke through trigger hoti hain) --- */
+
+/* Jab bubble pop hokar failega */
+.bubble-pop {
+    animation: bubblePopAndExpand 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
+
+/* Smoothly upar slide aur shrink hokar gayab hone ki class */
+.island-exit {
+    animation: dynamic-island-exit 0.4s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards !important;
+}
+
+/* --- KEYFRAMES --- */
+
+/* Chhote dot (scale 0.2) se start hokar thoda sa expand hoga fir normal size par snap hoga */
+@keyframes bubblePopAndExpand {
+    0% {
+        transform: translateX(-50%) scale(0.2);
+        opacity: 0;
+    }
+    65% {
+        transform: translateX(-50%) scale(1.08); /* Bounce back effect ke liye bubble halka sa phulega */
+        opacity: 0.9;
+    }
+    100% {
+        transform: translateX(-50%) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Wapas chhota (scale 0.5) hokar upar ki taraf smoothly drop aur fade out hoga */
+@keyframes dynamic-island-exit {
+    0% {
+        transform: translateX(-50%) scale(1);
+        top: 15px;
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(-50%) scale(0.5);
+        top: -60px; /* Upar ke side smoothly slide out */
+        opacity: 0;
+    }
+}
+
 </style>
 
 
@@ -3435,6 +3474,8 @@ document.getElementById("repeat").addEventListener("click", function() {
 
 
 
+    
+
     // Servers aur Formats
 var servers = [
     "https://jp1-cmp.invidious.f5.si/companion/latest_version?id=" + id,
@@ -3464,27 +3505,47 @@ function showToast(message, isSuccess) {
     var toast = document.getElementById("audio-error-toast");
     if (!toast) return;
 
-    // Har baar naye fresh animation ke liye purani exit class hatao
-    toast.classList.remove("island-exit");
+    // Pehle se chal rahe timeouts ko clear karein
     clearTimeout(toastTimeout);
+
+    // Old classes remove karein aur element ko show karein
+    toast.style.display = "block";
+    toast.classList.remove("island-exit", "bubble-pop");
+    
+    // Trigger reflow (is se animation har baar naye sire se reset hokar chalta hai)
+    void toast.offsetWidth; 
+    
+    // Bubble animation class add karein
+    toast.classList.add("bubble-pop");
 
     if (isSuccess) {
         // Green Glassmorphic success look
         toast.innerText = "✓ " + message;
-        toast.style.background = "rgba(46, 204, 113, 0.3)"; /* Soft Glass Green */
-        toast.style.borderColor = "rgba(46, 204, 113, 0.5)";
+        toast.style.background = "rgba(46, 204, 113, 0.25)"; /* Soft Glass Green */
+        toast.style.borderColor = "rgba(46, 204, 113, 0.4)";
+        toast.style.boxShadow = "0 8px 32px 0 rgba(46, 204, 113, 0.2)";
         
-        // 1.5 second tak green dikhao, fir smoothly upar bhej do
+        // Success case: 1.5 second tak dikhao, fir smoothly shrink karke hide karo
         toastTimeout = setTimeout(function () {
             toast.classList.add("island-exit");
-            setTimeout(function() { toast.style.display = "none"; }, 500); // Animation ke baad element hide
+            toastTimeout = setTimeout(function() { 
+                toast.style.display = "none"; 
+            }, 400); // Animation khatam hone ka wait karein (400ms)
         }, 1500);
     } else {
-        // Normal Glassmorphic warning look
-        toast.innerText = message;
+        // Normal Glassmorphic warning look (Trying server...)
+        toast.innerText = "⏳ " + message;
         toast.style.background = "rgba(255, 255, 255, 0.1)";
         toast.style.borderColor = "rgba(255, 255, 255, 0.2)";
-        toast.style.display = "block";
+        toast.style.boxShadow = "0 8px 32px 0 rgba(0, 0, 0, 0.2)";
+        
+        // FIX: Trying notification ko bhi 1.8 second baad automatically smoothly hide karo
+        toastTimeout = setTimeout(function () {
+            toast.classList.add("island-exit");
+            toastTimeout = setTimeout(function() { 
+                toast.style.display = "none"; 
+            }, 400); // Animation khatam hone ka wait karein (400ms)
+        }, 1800);
     }
 }
 
