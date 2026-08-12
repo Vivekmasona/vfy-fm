@@ -1,62 +1,39 @@
-// --- ROBUST AUTO-HIDE (Works even if script loads early) ---
-(function() {
-    let hideTimer;
+$(document).ready(function() {
+    // 1. CSS ko force inject karo, ye inline styles ko override kar dega
+    $("<style>").text(`
+        .vfy-controls-hide { opacity: 0 !important; visibility: hidden !important; transition: opacity 0.5s ease !important; }
+        .vfy-controls-show { opacity: 1 !important; visibility: visible !important; transition: opacity 0.3s ease !important; }
+    `).appendTo("head");
 
-    function activateAutoHide() {
-        const $player = $(".yt-mini-player");
-        const $panel = $(".photo-bottom-panel");
+    let inactivityTimer;
 
-        if ($player.length === 0 || $panel.length === 0) return;
-
-        // 1. Controls dikhane ka function
-        function showControls() {
-            // Sirf Video mode me (Rectangular)
-            if (typeof isRoundMusicMode !== 'undefined' && isRoundMusicMode === false) {
-                $panel.css({ 'opacity': '1', 'visibility': 'visible', 'transition': 'opacity 0.3s' });
-                clearTimeout(hideTimer);
-                
-                // 2 second ka timer
-                hideTimer = setTimeout(function() {
-                    hideControls();
-                }, 2000);
-            }
+    // 2. Event Delegation (Ye har baar kaam karega, player dynamic ho tab bhi)
+    $(document).on("mousemove touchstart", ".yt-mini-player", function(e) {
+        
+        // Agar Music Mode (Round) hai, to kuch mat karo
+        if (typeof isRoundMusicMode !== 'undefined' && isRoundMusicMode === true) {
+            $('.photo-bottom-panel').removeClass('vfy-controls-hide').addClass('vfy-show-ui');
+            return;
         }
 
-        // 2. Controls hide karne ka function
-        function hideControls() {
-            if (typeof isRoundMusicMode !== 'undefined' && isRoundMusicMode === false) {
-                $panel.css({ 'opacity': '0', 'visibility': 'hidden' });
-            }
-        }
-
-        // Events: Touch ya Mouse move hone par show karein
-        $player.off('mousemove touchstart').on('mousemove touchstart', function() {
-            showControls();
-        });
-
-        // Mode switch hone par bhi check karein
-        $("#mini-mode-toggle, #photo-mode-toggle").off('click').on('click', function() {
-             setTimeout(function() {
-                 if (isRoundMusicMode === false) {
-                     showControls();
-                 } else {
-                     // Music mode me hamesha dikhayein
-                     $panel.css({ 'opacity': '1', 'visibility': 'visible' });
-                 }
-             }, 300);
-        });
-
-        // Start timer automatically after page load
-        showControls();
-    }
-
-    // MutationObserver: Jab player DOM me aayega, tabhi script chalegi
-    const observer = new MutationObserver(function(mutations) {
-        if ($(".yt-mini-player").length > 0) {
-            activateAutoHide();
-            observer.disconnect(); // Ek baar chal gaya to band karo
-        }
+        // Agar Video Mode hai:
+        const $panel = $('.photo-bottom-panel');
+        
+        // Controls dikhao
+        $panel.removeClass('vfy-controls-hide').addClass('vfy-controls-show');
+        
+        // Timer restart karo
+        clearTimeout(inactivityTimer);
+        
+        inactivityTimer = setTimeout(function() {
+            $panel.addClass('vfy-controls-hide').removeClass('vfy-controls-show');
+        }, 2000); // 2 seconds delay
     });
 
-    observer.observe(document.body, { childList: true, subtree: true });
-})();
+    // 3. Player se mouse bahar jane par turant hide
+    $(document).on("mouseleave", ".yt-mini-player", function() {
+        if (typeof isRoundMusicMode !== 'undefined' && isRoundMusicMode === false) {
+            $('.photo-bottom-panel').addClass('vfy-controls-hide').removeClass('vfy-controls-show');
+        }
+    });
+});
