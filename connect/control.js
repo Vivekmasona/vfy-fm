@@ -1,46 +1,61 @@
-// --- AUTO HIDE VIDEO CONTROLS ONLY (Updated Logic) ---
+// === PERFECT AUTO-HIDE FIX FOR VIDEO MODE ===
 (function() {
-    // 1. CSS inject karo taaki sirf Video Mode ke controls fade hon
-    // Music mode ke controls ko hum touch nahi karenge.
+    // 1. Pure controls overlay ke liye custom CSS inject karein
     $("<style>")
         .text(`
-            .photo-bottom-panel { transition: opacity 0.5s ease-in-out !important; }
+            /* Smooth fade animation for bottom controls panel */
+            .photo-bottom-panel {
+                transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out !important;
+            }
+            /* Hidden State Class */
+            .vfy-controls-hidden {
+                opacity: 0 !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
+            }
         `)
         .appendTo("head");
 
-    let videoHideTimer = null;
+    let videoTimer = null;
 
-    // 2. Global Event Listener: Har baar mouse/touch chalne par trigger hoga
-    $(document).on("mousemove touchstart", ".yt-mini-player", function(e) {
+    function resetVideoTimer() {
+        const $panel = $(".photo-bottom-panel");
         
-        // Agar Music Mode (Round) hai, to kuch mat karo (sab visible rahega)
-        if (typeof isRoundMusicMode !== 'undefined' && isRoundMusicMode === true) {
-            $(".mini-control-bar").css("opacity", "1");
-            return; 
-        }
+        // Controls ko wapas dikhao
+        $panel.removeClass("vfy-controls-hidden");
+        
+        clearTimeout(videoTimer);
 
-        // Agar Video Mode (Rectangular) hai, tabhi logic chalega
+        // Sirf Rectangle Video Mode me hi hide timer chalega
         if (typeof isRoundMusicMode !== 'undefined' && isRoundMusicMode === false) {
-            
-            // Controls dikhao
-            $(".photo-bottom-panel").css("opacity", "1");
-            
-            // Purana timer saaf karo
-            clearTimeout(videoHideTimer);
-            
-            // 2.5 seconds baad hide karo
-            videoHideTimer = setTimeout(function() {
-                // Sirf video wale controls ko fade karo
-                $(".photo-bottom-panel").css("opacity", "0");
-            }, 2500);
+            videoTimer = setTimeout(function() {
+                // Check karo ki video chal raha hai ya nahi
+                if (typeof ytPlayer !== 'undefined' && ytPlayer && ytPlayer.getPlayerState) {
+                    if (ytPlayer.getPlayerState() === YT.PlayerState.PLAYING) {
+                        $panel.addClass("vfy-controls-hidden");
+                    }
+                } else {
+                    $panel.addClass("vfy-controls-hidden");
+                }
+            }, 2500); // 2.5 seconds timeout
         }
+    }
+
+    // 2. Continuous Event Listeners (Touch, Mouse Move, Click Sab Par Kam Karega)
+    $(document).on("mousemove touchstart touchmove click", ".yt-mini-player", function(e) {
+        resetVideoTimer();
     });
 
-    // 3. Player se cursor bahar jane par turant hide karo
-    $(document).on("mouseleave", ".yt-mini-player", function() {
+    // 3. Pause hone par controls hamesha dikhne chahiye
+    setInterval(function() {
         if (typeof isRoundMusicMode !== 'undefined' && isRoundMusicMode === false) {
-            clearTimeout(videoHideTimer);
-            $(".photo-bottom-panel").css("opacity", "0");
+            if (typeof ytPlayer !== 'undefined' && ytPlayer && ytPlayer.getPlayerState) {
+                if (ytPlayer.getPlayerState() === YT.PlayerState.PAUSED) {
+                    $(".photo-bottom-panel").removeClass("vfy-controls-hidden");
+                    clearTimeout(videoTimer);
+                }
+            }
         }
-    });
+    }, 500);
+
 })();
