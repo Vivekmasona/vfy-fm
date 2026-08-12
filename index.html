@@ -58,18 +58,16 @@
 <b onclick="alert('This is a stylish alert!')"></b>
 
 <script>
-  window.addEventListener("load", () => {
+  document.addEventListener("DOMContentLoaded", () => {
     const toggle = document.getElementById("modeToggleBtn");
 
-    setTimeout(() => {
-      // ensure starting state
-      toggle.checked = false;
-
-      // ab click karne par VIDEO side pe jayega
+    if (toggle) {
+      // Direct click bina kisi setTimeout delay ke
       toggle.click();
-    }, 200);
+    }
   });
 </script>
+
 
 
 
