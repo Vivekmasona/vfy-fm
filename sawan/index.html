@@ -92,7 +92,7 @@
   <div class="modal-overlay" id="profileModal" style="display:none;">
     <div class="modal-box">
       <h3 style="color:#06b6d4;"><i class="fa-solid fa-id-card"></i> Profile & HD DP</h3>
-      <p style="font-size: 12px; opacity: 0.7; margin-top: 4px;">Gallery</p>
+      <p style="font-size: 12px; opacity: 0.7; margin-top: 4px;">Gallery se photo chunein aur naam darj karein</p>
       
       <div style="margin-top: 15px;">
         <img id="modalAvatarPreview" class="avatar-preview" src="https://api.dicebear.com/7.x/bottts/svg?seed=Default">
@@ -111,7 +111,7 @@
 
   <div class="file-transfer-panel" id="transferSection">
     <p style="font-size: 13px; color: #10b981; font-weight: bold; margin-bottom: 10px;" id="connectionStatusText">
-      <i class="fa-solid fa-link"></i> Connected....!
+      <i class="fa-solid fa-link"></i> Connected to Peer!
     </p>
     <label class="file-label">
       <i class="fa-solid fa-folder-open"></i> File Chunein (Photo, Video, PDF, Audio)
@@ -134,7 +134,7 @@
       userId: myId
     });
 
-    const globalDiscoveryChannel = "p2p_live_radar_channel_v11";
+    const globalDiscoveryChannel = "p2p_live_radar_channel_v12";
     let peerConnection;
     let dataChannel;
     let isConnected = false;
@@ -264,6 +264,8 @@
     pubnub.addListener({
       message: async (event) => {
         const msg = event.message;
+        
+        // 🚨 VERY IMPORTANT: Khud ke message/id ko ignore karein taaki khud ka node radar par na dikhe
         if (msg.sender === myId) return;
 
         if (msg.type === 'DISCONNECT') {
@@ -385,6 +387,7 @@
       ctx.fill();
       ctx.restore();
 
+      // Center Node (My Self) - यह केवल आपका अपना केंद्र बिंदु है
       ctx.beginPath();
       ctx.arc(cx, cy, 18, 0, Math.PI * 2);
       ctx.strokeStyle = "#06b6d4";
@@ -502,7 +505,6 @@
 
     function createDataChannel(targetId) {
       if (dataChannel) { dataChannel.close(); dataChannel = null; }
-      // Reliable data channel configured with buffer optimizations
       dataChannel = peerConnection.createDataChannel("file-transfer", { ordered: true });
       bindDataChannelEvents();
     }
@@ -556,7 +558,6 @@
       const meta = { type: 'META', name: file.name, size: file.size, fileType: file.type };
       dataChannel.send(JSON.stringify(meta));
 
-      // Safe Chunk Size (8KB) to prevent buffer overflow & connection drops on mobile
       const CHUNK_SIZE = 8192;
       const reader = new FileReader();
       let offset = 0;
@@ -564,7 +565,6 @@
       reader.onload = (e) => {
         if (!dataChannel || dataChannel.readyState !== "open") return;
 
-        // Backpressure check to prevent sending faster than buffer can handle
         try {
           dataChannel.send(e.target.result);
           offset += e.target.result.byteLength;
@@ -582,7 +582,6 @@
       };
 
       function readNextChunk() {
-        // Prevent queue congestion by waiting if bufferedAmount is high
         if (dataChannel.bufferedAmount > 65536) {
           setTimeout(readNextChunk, 50);
           return;
@@ -622,13 +621,11 @@
           document.body.appendChild(autoAnchor);
 
           try {
-            // Attempt automatic download/save
             autoAnchor.click();
             document.body.removeChild(autoAnchor);
             document.getElementById('transferProgress').style.display = "none";
             document.getElementById('fileNameDisplay').innerText = `File "${incomingFileMeta.name}" received & auto-saved!`;
           } catch (e) {
-            // If browser blocks auto-download policy, explicitly show download button
             const a = document.createElement('a');
             a.href = url;
             a.download = incomingFileMeta.name;
@@ -653,4 +650,3 @@
   </script>
 </body>
 </html>
-
