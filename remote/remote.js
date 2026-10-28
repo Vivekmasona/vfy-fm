@@ -41,16 +41,19 @@ function createmodal(id) {
   document.body.append(modal);
   document.body.style.overflow = "hidden";
 
+  // --- 1. SABSE PEHELE DRAGGABLE HANDLE AAYEGA ---
+  const modalHandle = document.createElement("span");
+  modalHandle.classList.add("modal-handle");
+  modal.append(modalHandle);
+
+  // --- 2. USKE BAAD MODAL INNER CONTENT ---
   const modalInner = document.createElement("div");
-  
-  // Aapka original HTML content fetch kiya ja raha hai
   const sourceContent = document.querySelector(`[data-modal-id="${id}"]`);
   modalInner.innerHTML = sourceContent ? sourceContent.innerHTML : "";
   modalInner.className = "modal-inner";
   modal.append(modalInner);
 
-  // --- YAHAN CHANGE KIYA GAYA HAI ---
-  // Modal khulte hi iframe ke data-src ko src me convert kiya ja raha hai taaki wo load ho
+  // --- 3. IFRAME DATA-SRC FIX ---
   const iframe = modalInner.querySelector("iframe");
   if (iframe) {
     const dataSrc = iframe.getAttribute("data-src");
@@ -85,10 +88,6 @@ function createmodal(id) {
     modal.classList.remove("hidden");
   });
 
-  const modalHandle = document.createElement("span");
-  modalHandle.classList.add("modal-handle");
-  modal.prepend(modalHandle);
-
   let isDragging = false;
 
   modalHandle.addEventListener("mousedown", (event) => {
@@ -122,13 +121,17 @@ function createmodal(id) {
   });
 
   document.addEventListener("mouseup", () => {
-    isDragging = false;
-    handlemodalPosition();
+    if (isDragging) {
+      isDragging = false;
+      handlemodalPosition();
+    }
   });
 
   document.addEventListener("touchend", () => {
-    isDragging = false;
-    handlemodalPosition();
+    if (isDragging) {
+      isDragging = false;
+      handlemodalPosition();
+    }
   });
 
   function handlemodalPosition() {
