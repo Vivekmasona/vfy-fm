@@ -1,4 +1,4 @@
-Const modalContents = Array.from(
+const modalContents = Array.from(
   document.getElementsByClassName("modal-content")
 );
 
