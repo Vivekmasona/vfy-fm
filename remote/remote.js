@@ -1,40 +1,3 @@
-const modalContents = Array.from(
-  document.getElementsByClassName("modal-content")
-);
-
-const modalBtns = Array.from(document.getElementsByClassName("modal-btn"));
-
-modalBtns.forEach((modalBtn) => {
-  const buttonId = modalBtn.getAttribute("data-modal-btn-id");
-
-  modalBtn.addEventListener("click", () => {
-    removeAllmodals();
-    createmodal(buttonId);
-  });
-});
-
-function removeAllmodals() {
-  let modals = Array.from(document.getElementsByClassName("modal"));
-
-  modals.forEach((modal) => {
-    removemodal(modal);
-  });
-}
-
-function removemodal(modal) {
-  document.body.style.overflow = "";
-  modal.classList.add("hidden");
-
-  setTimeout(() => {
-    if (modal.parentNode) {
-      document.body.removeChild(
-        document.getElementsByClassName("modal-backdrop")[0]
-      );
-      document.body.removeChild(modal);
-    }
-  }, 400);
-}
-
 function createmodal(id) {
   const modal = document.createElement("div");
   modal.className = "modal hidden";
@@ -47,6 +10,13 @@ function createmodal(id) {
   ).innerHTML;
   modalInner.className = "modal-inner";
   modal.append(modalInner);
+
+  // === FIX: data-src ko src mein convert karna ===
+  const iframe = modalInner.querySelector("iframe");
+  if (iframe && iframe.getAttribute("data-src")) {
+    iframe.setAttribute("src", iframe.getAttribute("data-src"));
+  }
+  // ============================================
 
   const modalBackdrop = document.createElement("div");
   modalBackdrop.className = "modal-backdrop";
@@ -131,4 +101,3 @@ function createmodal(id) {
     }
   }
 }
-
