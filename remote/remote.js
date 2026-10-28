@@ -48,16 +48,9 @@ function createmodal(id) {
   modalInner.className = "modal-inner";
   modal.append(modalInner);
 
-  // --- YE FIX ADD KIYA GAYA HAI (data-src ko src banane ke liye) ---
-  const iframe = modalInner.querySelector("iframe");
-  if (iframe && iframe.getAttribute("data-src")) {
-    iframe.src = iframe.getAttribute("data-src");
-  }
-  // -------------------------------------------------------------
-
   const modalBackdrop = document.createElement("div");
   modalBackdrop.className = "modal-backdrop";
-  modalbackdrop.innerHTML = "";
+  modalBackdrop.innerHTML = "";
   document.body.append(modalBackdrop);
 
   let lastTop = null;
@@ -138,4 +131,5 @@ function createmodal(id) {
     }
   }
 }
+
 
