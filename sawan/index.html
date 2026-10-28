@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  
+  <title>Optimized HD P2P Radar Share</title>
   <!-- PubNub SDK -->
   <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js"></script>
   <!-- Font Awesome CDN Icons -->
@@ -123,7 +123,8 @@
   </div>
 
   <script>
-    const myId = "node_" + Math.random().toString(36).substring(7);
+    // 🛡️ Safe Unique ID Generation (Iframe safe check)
+    const myId = "node_" + Math.random().toString(36).substring(2, 9) + "_" + Date.now();
     let myName = localStorage.getItem("p2p_user_name") || "";
     let myAvatar = localStorage.getItem("p2p_user_avatar_base64") || "https://api.dicebear.com/7.x/bottts/svg?seed=Default";
     let tempAvatarBase64 = myAvatar;
@@ -134,7 +135,7 @@
       userId: myId
     });
 
-    const globalDiscoveryChannel = "p2p_live_radar_channel_v12";
+    const globalDiscoveryChannel = "p2p_live_radar_channel_v13_secure";
     let peerConnection;
     let dataChannel;
     let isConnected = false;
@@ -265,8 +266,8 @@
       message: async (event) => {
         const msg = event.message;
         
-        // 🚨 VERY IMPORTANT: Khud ke message/id ko ignore karein taaki khud ka node radar par na dikhe
-        if (msg.sender === myId) return;
+        // 🚨 Strict Check: Ignore own messages or any message originating from this exact instance/iframe
+        if (!msg || !msg.sender || msg.sender === myId) return;
 
         if (msg.type === 'DISCONNECT') {
           activePeers.delete(msg.sender);
@@ -387,7 +388,7 @@
       ctx.fill();
       ctx.restore();
 
-      // Center Node (My Self) - यह केवल आपका अपना केंद्र बिंदु है
+      // Center Node (My Self) - सिर्फ आपका अपना खुद का सेंटर पॉइंट
       ctx.beginPath();
       ctx.arc(cx, cy, 18, 0, Math.PI * 2);
       ctx.strokeStyle = "#06b6d4";
@@ -650,3 +651,6 @@
   </script>
 </body>
 </html>
+
+
+
