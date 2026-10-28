@@ -27,33 +27,38 @@ function removemodal(modal) {
 
   setTimeout(() => {
     if (modal.parentNode) {
-      document.body.removeChild(
-        document.getElementsByClassName("modal-backdrop")[0]
-      );
+      const backdrop = document.getElementsByClassName("modal-backdrop")[0];
+      if (backdrop) backdrop.remove();
       document.body.removeChild(modal);
     }
   }, 400);
 }
 
 function createmodal(id) {
+  // --- 1. SABSE PEHELE BACKDROP (OVERLAY) BANAYEIN AUR APPEND KAREIN ---
+  const modalBackdrop = document.createElement("div");
+  modalBackdrop.className = "modal-backdrop";
+  document.body.append(modalBackdrop);
+
+  // --- 2. USKE BAAD MODAL BANAYEIN TAAKI WOH OVERLAY KE UPAAR RAHE ---
   const modal = document.createElement("div");
   modal.className = "modal hidden";
   document.body.append(modal);
   document.body.style.overflow = "hidden";
 
-  // --- 1. SABSE PEHELE DRAGGABLE HANDLE AAYEGA ---
+  // --- 3. DRAGGABLE HANDLE ---
   const modalHandle = document.createElement("span");
   modalHandle.classList.add("modal-handle");
   modal.append(modalHandle);
 
-  // --- 2. USKE BAAD MODAL INNER CONTENT ---
+  // --- 4. MODAL INNER CONTENT ---
   const modalInner = document.createElement("div");
   const sourceContent = document.querySelector(`[data-modal-id="${id}"]`);
   modalInner.innerHTML = sourceContent ? sourceContent.innerHTML : "";
   modalInner.className = "modal-inner";
   modal.append(modalInner);
 
-  // --- 3. IFRAME DATA-SRC FIX ---
+  // --- 5. IFRAME DATA-SRC FIX (Sirf khulte hi load hoga) ---
   const iframe = modalInner.querySelector("iframe");
   if (iframe) {
     const dataSrc = iframe.getAttribute("data-src");
@@ -61,11 +66,6 @@ function createmodal(id) {
       iframe.setAttribute("src", dataSrc);
     }
   }
-
-  const modalBackdrop = document.createElement("div");
-  modalBackdrop.className = "modal-backdrop";
-  modalBackdrop.innerHTML = "";
-  document.body.append(modalBackdrop);
 
   let lastTop = null;
 
