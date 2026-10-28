@@ -27,9 +27,8 @@ function removemodal(modal) {
 
   setTimeout(() => {
     if (modal.parentNode) {
-      document.body.removeChild(
-        document.getElementsByClassName("modal-backdrop")[0]
-      );
+      const backdrop = document.getElementsByClassName("modal-backdrop")[0];
+      if (backdrop) document.body.removeChild(backdrop);
       document.body.removeChild(modal);
     }
   }, 400);
@@ -42,15 +41,25 @@ function createmodal(id) {
   document.body.style.overflow = "hidden";
 
   const modalInner = document.createElement("div");
-  modalInner.innerHTML = document.querySelector(
-    `[data-modal-id="${id}"]`
-  ).innerHTML;
   modalInner.className = "modal-inner";
+
+  // ðŸ›‘ Ye magic hai: Jab button dabega aur modal create hoga, tabhi template/iframe render hoga!
+  const template = document.querySelector(`[data-modal-id="${id}"]`);
+  if (template) {
+    modalInner.innerHTML = template.innerHTML;
+    
+    // Agar template ke andar iframe hai aur usko lazy load karna hai, 
+    // toh aap iframe ka src 'data-src' mein rakh sakte hain aur yaha set kar sakte hain:
+    const iframe = modalInner.querySelector("iframe");
+    if (iframe && iframe.hasAttribute("data-src")) {
+      iframe.src = iframe.getAttribute("data-src");
+    }
+  }
+
   modal.append(modalInner);
 
   const modalBackdrop = document.createElement("div");
   modalBackdrop.className = "modal-backdrop";
-  modalBackdrop.innerHTML = "";
   document.body.append(modalBackdrop);
 
   let lastTop = null;
@@ -72,7 +81,7 @@ function createmodal(id) {
 
   setTimeout(() => {
     modal.classList.remove("hidden");
-  });
+  }, 10);
 
   const modalHandle = document.createElement("span");
   modalHandle.classList.add("modal-handle");
@@ -111,13 +120,17 @@ function createmodal(id) {
   });
 
   document.addEventListener("mouseup", () => {
-    isDragging = false;
-    handlemodalPosition();
+    if (isDragging) {
+      isDragging = false;
+      handlemodalPosition();
+    }
   });
 
   document.addEventListener("touchend", () => {
-    isDragging = false;
-    handlemodalPosition();
+    if (isDragging) {
+      isDragging = false;
+      handlemodalPosition();
+    }
   });
 
   function handlemodalPosition() {
@@ -131,5 +144,4 @@ function createmodal(id) {
     }
   }
 }
-
 
