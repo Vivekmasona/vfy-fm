@@ -54,7 +54,7 @@ function createmodal(id) {
   modalInner.className = "modal-inner";
   modal.append(modalInner);
 
-  // --- IFRAME DATA-SRC FIX ---
+  // --- IFRAME DATA-SRC FIX (Modal khulte hi load hoga) ---
   const iframe = modalInner.querySelector("iframe");
   if (iframe) {
     const dataSrc = iframe.getAttribute("data-src");
@@ -85,18 +85,13 @@ function createmodal(id) {
   });
 
   let isDragging = false;
-  let startY = 0;
 
-  // --- YAHAN CHANGE KIYA GAYA HAI: PURE MODAL PAR DRAG ENABLE KAR DIYA ---
   modal.addEventListener("mousedown", (event) => {
-    // Agar user iframe ya kisi clickable button par click kare toh drag shuru na ho, 
-    // taaki iframe ke andar scroll/click me dikkat na aaye
     if (event.target.tagName === "IFRAME" || event.target.tagName === "BUTTON" || event.target.tagName === "A") {
       return;
     }
     modal.style.transition = "";
     isDragging = true;
-    startY = event.clientY;
   });
 
   modal.addEventListener("touchstart", (event) => {
@@ -105,7 +100,6 @@ function createmodal(id) {
     }
     modal.style.transition = "";
     isDragging = true;
-    startY = event.touches[0].clientY;
   });
 
   document.addEventListener("mousemove", (event) => {
