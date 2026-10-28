@@ -21,7 +21,7 @@
       position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; cursor: pointer;
     }
 
-    /* Top Controls Bar */
+    /* Top Controls Center Bar */
     .top-controls {
       position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
       z-index: 10; display: flex; align-items: center; gap: 14px;
@@ -34,17 +34,15 @@
     .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #ef4444; }
     .status-dot.active { background: #10b981; box-shadow: 0 0 10px #10b981; }
 
-    /* Top Right Secret Call Quick Action Button */
+    /* Top Right Secret Call & Settings Action Buttons */
     .top-right-call-btn {
-      position: absolute; top: 20px; right: 20px; z-index: 12;
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(6, 182, 212, 0.9));
-      backdrop-filter: blur(12px); border: 1px solid rgba(16, 185, 129, 0.5);
-      color: #fff; width: 48px; height: 48px; border-radius: 50%; display: flex;
+      width: 48px; height: 48px; border-radius: 50%; display: flex;
       align-items: center; justify-content: center; cursor: pointer;
-      box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); transition: all 0.3s ease;
+      backdrop-filter: blur(12px); color: #fff; transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15);
     }
-    .top-right-call-btn:hover { transform: scale(1.1); box-shadow: 0 0 30px rgba(16, 185, 129, 0.7); }
-    .top-right-call-btn i { font-size: 20px; }
+    .top-right-call-btn:hover { transform: scale(1.1); }
+    .top-right-call-btn i { font-size: 19px; }
 
     /* Modal Styling */
     .modal-overlay {
@@ -80,10 +78,6 @@
       background: linear-gradient(135deg, #10b981, #059669);
     }
 
-    .btn-red {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-    }
-
     /* File Transfer Panel */
     .file-transfer-panel {
       position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%);
@@ -106,15 +100,15 @@
     }
     #floatingDisconnectBtn:hover { transform: scale(1.1); }
 
-    /* Call UI Overlay */
+    /* Call Overlay UI */
     .call-overlay {
-      position: fixed; inset: 0; background: rgba(2, 6, 23, 0.94); backdrop-filter: blur(20px);
+      position: fixed; inset: 0; background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(24px);
       z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-      padding: 50px 20px; animation: fadeIn 0.3s ease;
+      padding: 60px 20px 40px 20px; animation: fadeIn 0.3s ease;
     }
 
     .call-avatar-wrap {
-      position: relative; margin-top: 30px;
+      position: relative; margin-top: 20px;
     }
     .call-avatar {
       width: 130px; height: 130px; border-radius: 50%; object-fit: cover;
@@ -136,18 +130,18 @@
     }
 
     .call-action-bar {
-      display: flex; gap: 24px; align-items: center; justify-content: center; margin-bottom: 20px;
+      display: flex; gap: 28px; align-items: center; justify-content: center; margin-bottom: 20px;
     }
     .round-call-btn {
       width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
       font-size: 24px; color: #fff; border: none; cursor: pointer; transition: all 0.2s ease;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
     }
     .round-call-btn:hover { transform: scale(1.1); }
-    .bg-green-call { background: #10b981; }
-    .bg-red-call { background: #ef4444; }
+    .bg-green-call { background: #10b981; box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); }
+    .bg-red-call { background: #ef4444; box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
     .bg-gray-call { background: #334155; }
-    .bg-gray-call.active-mute { background: #f59e0b; }
+    .bg-gray-call.active-mute { background: #f59e0b; box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); }
   </style>
 </head>
 <body>
@@ -169,12 +163,12 @@
     </div>
   </div>
 
-  <!-- Top Right Actions (Settings ⚙️ & Direct Call 📞) -->
+  <!-- Top Right Action Buttons (Settings ⚙️ & Direct Secret Call 📞) -->
   <div style="position: absolute; top: 20px; right: 20px; z-index: 12; display: flex; gap: 10px;">
     <button class="top-right-call-btn" style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.9), rgba(59, 130, 246, 0.9));" onclick="openSettingsModal()" title="Settings & Secret Code">
       <i class="fa-solid fa-gear"></i>
     </button>
-    <button class="top-right-call-btn" onclick="triggerDirectSecretCall()" title="Call Secret Partner">
+    <button class="top-right-call-btn" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(6, 182, 212, 0.9));" onclick="triggerDirectSecretCall()" title="Call Secret Partner">
       <i class="fa-solid fa-phone"></i>
     </button>
   </div>
@@ -210,23 +204,23 @@
         <i class="fa-solid fa-key"></i>
       </div>
       <h3 style="color:#06b6d4; font-size:18px; font-weight:700;">Secret Call Code</h3>
-      <p style="font-size: 12px; opacity: 0.7; margin-top: 4px;">Apna secret code yahan set karein (e.g. <b>vivek12</b>). Ye code local storage me permanent save rahega!</p>
+      <p style="font-size: 12px; opacity: 0.7; margin-top: 4px;">Apna secret code set karein (e.g. <b>vivek12</b>). Both users must set the same code!</p>
       
       <input type="text" id="secretCodeInput" placeholder="Secret Code (e.g. vivek12)" style="text-transform: lowercase;">
 
-      <button class="btn btn-green" onclick="saveSecretCode()"><i class="fa-solid fa-floppy-disk"></i> Save Code</button>
+      <button class="btn btn-green" onclick="saveSecretCode()"><i class="fa-solid fa-floppy-disk"></i> Save Secret Code</button>
     </div>
   </div>
 
-  <!-- Active / Incoming Call Full Screen Modal -->
+  <!-- Active / Incoming Call Full Screen Overlay -->
   <div class="call-overlay" id="callOverlay" style="display:none;">
-    <div class="text-center mt-4">
-      <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 mb-2">
-        <i class="fa-solid fa-lock"></i> Secret Encrypted Audio
+    <div class="text-center mt-2">
+      <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 mb-3">
+        <i class="fa-solid fa-shield-halved"></i> Secret Encrypted Audio
       </span>
       <h2 id="callPeerName" class="text-2xl font-bold tracking-wide">Peer Name</h2>
       <p id="callStatusText" class="text-xs text-cyan-400 mt-1 animate-pulse">Calling...</p>
-      <p id="callTimer" class="text-sm text-gray-400 font-mono mt-1" style="display:none;">00:00</p>
+      <p id="callTimer" class="text-sm text-gray-400 font-mono mt-2" style="display:none;">00:00</p>
     </div>
 
     <div class="call-avatar-wrap">
@@ -234,9 +228,9 @@
       <img id="callPeerAvatar" class="call-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Default" alt="Caller Avatar">
     </div>
 
-    <!-- Call Controls -->
+    <!-- Call Control Buttons -->
     <div>
-      <!-- Incoming Call Buttons (Accept / Decline) -->
+      <!-- Incoming Call Actions (Accept / Reject) -->
       <div class="call-action-bar" id="incomingCallActions" style="display:none;">
         <button class="round-call-btn bg-red-call" onclick="rejectIncomingCall()" title="Reject Call">
           <i class="fa-solid fa-phone-slash"></i>
@@ -336,275 +330,6 @@
       }
     };
 
-    function openSettingsModal() {
-      document.getElementById('secretCodeInput').value = mySecretCode;
-      document.getElementById('settingsModal').style.display = "flex";
-    }
-
-    function closeSettingsModal() {
-      document.getElementById('settingsModal').style.display = "none";
-    }
-
-    function saveSecretCode() {
-      const code = document.getElementById('secretCodeInput').value.trim().toLowerCase();
-      if (!code) { alert("Secret code likhna zaroori hai!"); return; }
-      mySecretCode = code;
-      localStorage.setItem("p2p_secret_code", mySecretCode);
-      closeSettingsModal();
-      alert("Secret Code '" + mySecretCode + "' Successfully Save Ho Gaya!");
-    }
-
-    function triggerDirectSecretCall() {
-      if (!mySecretCode) {
-        alert("Pehle Settings (⚙️) me jaakar Secret Room Code save karein!");
-        openSettingsModal();
-        return;
-      }
-
-      callRole = 'caller';
-      isCallActive = true;
-      callPartnerId = null;
-
-      // Broadcast room search ping to find matching code user
-      pubnub.publish({
-        channel: globalDiscoveryChannel,
-        message: {
-          type: 'CALL_SECRET_PING',
-          sender: myId,
-          secretCode: mySecretCode
-        }
-      });
-
-      document.getElementById('callPeerName').innerText = "Finding Partner (" + mySecretCode + ")...";
-      document.getElementById('callPeerAvatar').src = "https://api.dicebear.com/7.x/bottts/svg?seed=" + mySecretCode;
-      document.getElementById('callStatusText').innerText = "Calling Code Partner...";
-      document.getElementById('callStatusText').classList.add('animate-pulse');
-      document.getElementById('incomingCallActions').style.display = "none";
-      document.getElementById('activeCallActions').style.display = "flex";
-      document.getElementById('callOverlay').style.display = "flex";
-
-      startRingtoneSound(440); // Ringback Tone
-
-      setTimeout(() => {
-        if (callRole === 'caller' && !callPartnerId && isCallActive) {
-          document.getElementById('callStatusText').innerText = "No online user found with code: " + mySecretCode;
-        }
-      }, 4000);
-    }
-
-    /* -------------------------------------------------------------
-       PUBNUB SIGNALING HANDLER (FILE & AUDIO CALL MESSAGES)
-    ------------------------------------------------------------- */
-    pubnub.addListener({
-      message: async (event) => {
-        const msg = event.message;
-        
-        if (!msg || !msg.sender || msg.sender === myId) return;
-
-        if (msg.type === 'DISCONNECT') {
-          activePeers.delete(msg.sender);
-          if (activeConnectedPeerId === msg.sender) disconnectCurrentPeer(true);
-          if (callPartnerId === msg.sender) endAudioCall(false);
-          return;
-        }
-
-        if (msg.type === 'HEARTBEAT' && msg.name) {
-          let peer = activePeers.get(msg.sender);
-          if (!peer) {
-            const imgObj = new Image();
-            imgObj.src = msg.avatar || "https://api.dicebear.com/7.x/bottts/svg?seed=" + msg.name;
-
-            let validPos = false;
-            let angle = 0, radius = 0;
-            let attempts = 0;
-
-            const cx = window.innerWidth / 2;
-            const cy = window.innerHeight / 2;
-            const maxR = Math.min(cx, cy) * 0.75;
-
-            while (!validPos && attempts < 20) {
-              attempts++;
-              angle = Math.random() * Math.PI * 2;
-              radius = 90 + Math.random() * (maxR - 90);
-              
-              const testX = cx + Math.cos(angle) * radius;
-              const testY = cy + Math.sin(angle) * radius;
-
-              validPos = true;
-              for (let existing of activePeers.values()) {
-                if (existing.x && existing.y) {
-                  const dist = Math.hypot(testX - existing.x, testY - existing.y);
-                  if (dist < 70) {
-                    validPos = false;
-                    break;
-                  }
-                }
-              }
-            }
-
-            peer = {
-              id: msg.sender,
-              name: msg.name,
-              avatar: msg.avatar,
-              avatarImg: imgObj,
-              angle: angle,
-              radius: radius,
-              x: 0,
-              y: 0,
-              lastSeen: Date.now()
-            };
-          } else {
-            peer.lastSeen = Date.now();
-            peer.name = msg.name;
-            peer.avatar = msg.avatar;
-          }
-          activePeers.set(msg.sender, peer);
-        }
-
-        // SECRET CALL SIGNALING
-        if (msg.type === 'CALL_SECRET_PING') {
-          if (mySecretCode && msg.secretCode === mySecretCode && !isCallActive) {
-            pubnub.publish({
-              channel: msg.sender,
-              message: {
-                type: 'CALL_SECRET_PONG',
-                sender: myId,
-                name: myName,
-                avatar: myAvatar,
-                secretCode: mySecretCode
-              }
-            });
-          }
-        }
-
-        if (msg.type === 'CALL_SECRET_PONG') {
-          if (callRole === 'caller' && mySecretCode === msg.secretCode && !callPartnerId) {
-            callPartnerId = msg.sender;
-            callPartnerName = msg.name || "Secret Partner";
-            callPartnerAvatar = msg.avatar || "https://api.dicebear.com/7.x/bottts/svg?seed=" + msg.name;
-            startOutgoingAudioCall();
-          }
-        }
-
-        if (msg.type === 'AUDIO_CALL_OFFER' && msg.target === myId) {
-          if (isCallActive) {
-            pubnub.publish({ channel: msg.sender, message: { type: 'AUDIO_CALL_REJECTED', sender: myId, target: msg.sender, reason: 'busy' } });
-            return;
-          }
-          callPartnerId = msg.sender;
-          callPartnerName = msg.callerName || "Secret Partner";
-          callPartnerAvatar = msg.callerAvatar || "https://api.dicebear.com/7.x/bottts/svg?seed=Caller";
-          pendingOfferSignal = msg.offer;
-          showIncomingCallOverlay();
-        }
-
-        if (msg.type === 'AUDIO_CALL_ANSWER' && msg.target === myId) {
-          if (audioPeerConnection && callRole === 'caller') {
-            await audioPeerConnection.setRemoteDescription(new RTCSessionDescription(msg.answer));
-            stopRingtoneSound();
-            document.getElementById('callStatusText').innerText = "Connected";
-            document.getElementById('callStatusText').classList.remove('animate-pulse');
-            document.getElementById('callTimer').style.display = "block";
-            startCallTimer();
-          }
-        }
-
-        if (msg.type === 'AUDIO_ICE_CANDIDATE' && msg.target === myId) {
-          if (audioPeerConnection && msg.candidate) {
-            try { await audioPeerConnection.addIceCandidate(new RTCIceCandidate(msg.candidate)); } catch(e){}
-          }
-        }
-
-        if (msg.type === 'AUDIO_CALL_REJECTED' && msg.target === myId) {
-          stopRingtoneSound();
-          document.getElementById('callStatusText').innerText = "Call Declined / Busy";
-          setTimeout(() => { resetCallUI(); }, 1800);
-        }
-
-        if (msg.type === 'AUDIO_CALL_ENDED' && msg.target === myId) {
-          endAudioCall(false);
-        }
-
-        // P2P FILE TRANSFER WEBRTC SIGNALING
-        if (msg.target === myId) {
-          if (!peerConnection) setupPeerConnection(msg.sender);
-
-          if (msg.type === 'offer' && !isConnected) {
-            await peerConnection.setRemoteDescription(new RTCSessionDescription(msg.offer));
-            const answer = await peerConnection.createAnswer();
-            await peerConnection.setLocalDescription(answer);
-            activeConnectedPeerId = msg.sender;
-            pubnub.publish({ channel: msg.sender, message: { type: 'answer', answer: answer, sender: myId, target: msg.sender } });
-          } else if (msg.type === 'answer' && !isConnected) {
-            await peerConnection.setRemoteDescription(new RTCSessionDescription(msg.answer));
-          } else if (msg.candidate) {
-            try { await peerConnection.addIceCandidate(new RTCIceCandidate(msg.candidate)); } catch (e) {}
-          }
-        }
-      }
-    });
-
-    async function startOutgoingAudioCall() {
-      document.getElementById('callPeerName').innerText = callPartnerName;
-      document.getElementById('callPeerAvatar').src = callPartnerAvatar;
-      document.getElementById('callStatusText').innerText = "Ringing...";
-
-      try {
-        localAudioStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true }, video: false });
-        audioPeerConnection = new RTCPeerConnection(rtcConfig);
-
-        localAudioStream.getTracks().forEach(track => audioPeerConnection.addTrack(track, localAudioStream));
-
-        audioPeerConnection.onicecandidate = (e) => {
-          if (e.candidate && callPartnerId) {
-            pubnub.publish({
-              channel: callPartnerId,
-              message: { type: 'AUDIO_ICE_CANDIDATE', candidate: e.candidate, sender: myId, target: callPartnerId }
-            });
-          }
-        };
-
-        audioPeerConnection.ontrack = (e) => {
-          document.getElementById('remoteAudio').srcObject = e.streams[0];
-        };
-
-        const offer = await audioPeerConnection.createOffer();
-        await audioPeerConnection.setLocalDescription(offer);
-
-        pubnub.publish({
-          channel: callPartnerId,
-          message: {
-            type: 'AUDIO_CALL_OFFER',
-            offer: offer,
-            sender: myId,
-            target: callPartnerId,
-            callerName: myName,
-            callerAvatar: myAvatar
-          }
-        });
-      } catch (err) {
-        alert("Microphone Access Required for Audio Call!");
-        endAudioCall(true);
-      }
-    }
-
-    function showIncomingCallOverlay() {
-      callRole = 'callee';
-      isCallActive = true;
-
-      document.getElementById('callPeerName').innerText = callPartnerName;
-      document.getElementById('callPeerAvatar').src = callPartnerAvatar;
-      document.getElementById('callStatusText').innerText = "Incoming Call...";
-      document.getElementById('callStatusText').classList.add('animate-pulse');
-
-      document.getElementById('incomingCallActions').style.display = "flex";
-      document.getElementById('activeCallActions').style.display = "none";
-      document.getElementById('callOverlay').style.display = "flex";
-
-      startRingtoneSound(880);
-    }
-    };
-
     function initCanvas() {
       canvas = document.getElementById('radarCanvas');
       ctx = canvas.getContext('2d');
@@ -666,6 +391,62 @@
       document.getElementById('headerAvatar').src = myAvatar;
     }
 
+    function openSettingsModal() {
+      document.getElementById('secretCodeInput').value = mySecretCode;
+      document.getElementById('settingsModal').style.display = "flex";
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').style.display = "none";
+    }
+
+    function saveSecretCode() {
+      const code = document.getElementById('secretCodeInput').value.trim().toLowerCase();
+      if (!code) { alert("Secret code likhna zaroori hai!"); return; }
+      mySecretCode = code;
+      localStorage.setItem("p2p_secret_code", mySecretCode);
+      closeSettingsModal();
+      alert("Secret Code '" + mySecretCode + "' Successfully Saved!");
+    }
+
+    function triggerDirectSecretCall() {
+      if (!mySecretCode) {
+        alert("Pehle Settings (⚙️) me jaakar Secret Room Code save karein!");
+        openSettingsModal();
+        return;
+      }
+
+      callRole = 'caller';
+      isCallActive = true;
+      callPartnerId = null;
+
+      // Broadcast room search ping to find matching code user
+      pubnub.publish({
+        channel: globalDiscoveryChannel,
+        message: {
+          type: 'CALL_SECRET_PING',
+          sender: myId,
+          secretCode: mySecretCode
+        }
+      });
+
+      document.getElementById('callPeerName').innerText = "Finding Code: " + mySecretCode;
+      document.getElementById('callPeerAvatar').src = "https://api.dicebear.com/7.x/bottts/svg?seed=" + mySecretCode;
+      document.getElementById('callStatusText').innerText = "Calling Code Partner...";
+      document.getElementById('callStatusText').classList.add('animate-pulse');
+      document.getElementById('incomingCallActions').style.display = "none";
+      document.getElementById('activeCallActions').style.display = "flex";
+      document.getElementById('callOverlay').style.display = "flex";
+
+      startRingtoneSound(440); // Ringback Tone
+
+      setTimeout(() => {
+        if (callRole === 'caller' && !callPartnerId && isCallActive) {
+          document.getElementById('callStatusText').innerText = "No online partner found for: " + mySecretCode;
+        }
+      }, 4000);
+    }
+
     function startRadarEngine() {
       if (!navigator.geolocation) { alert("GPS Support nahi hai!"); return; }
 
@@ -714,7 +495,7 @@
         
         if (!msg || !msg.sender || msg.sender === myId) return;
 
-        // Disconnect Peer Notice
+        // Disconnect Notice
         if (msg.type === 'DISCONNECT') {
           activePeers.delete(msg.sender);
           if (activeConnectedPeerId === msg.sender) disconnectCurrentPeer(true);
@@ -778,8 +559,7 @@
 
         // SECRET CALL SIGNALING MESSAGES
         if (msg.type === 'CALL_SECRET_PING') {
-          // If code matches and not currently on call, respond to caller
-          if (currentCallSecretCode && msg.secretCode === currentCallSecretCode && !isCallActive) {
+          if (mySecretCode && msg.secretCode === mySecretCode && !isCallActive) {
             pubnub.publish({
               channel: msg.sender,
               message: {
@@ -787,14 +567,14 @@
                 sender: myId,
                 name: myName,
                 avatar: myAvatar,
-                secretCode: currentCallSecretCode
+                secretCode: mySecretCode
               }
             });
           }
         }
 
         if (msg.type === 'CALL_SECRET_PONG') {
-          if (callRole === 'caller' && currentCallSecretCode === msg.secretCode && !callPartnerId) {
+          if (callRole === 'caller' && mySecretCode === msg.secretCode && !callPartnerId) {
             callPartnerId = msg.sender;
             callPartnerName = msg.name || "Secret Partner";
             callPartnerAvatar = msg.avatar || "https://api.dicebear.com/7.x/bottts/svg?seed=" + msg.name;
@@ -991,62 +771,15 @@
     }
 
     /* -------------------------------------------------------------
-       SECRET AUDIO CALLING SYSTEM
+       SECRET AUDIO CALL FUNCTIONS
     ------------------------------------------------------------- */
-    function openSecretCallModal() {
-      document.getElementById('secretCallModal').style.display = "flex";
-    }
-
-    function closeSecretCallModal() {
-      document.getElementById('secretCallModal').style.display = "none";
-    }
-
-    function initiateSecretCall() {
-      const code = document.getElementById('secretCodeInput').value.trim().toLowerCase();
-      if (!code) { alert("Kripya secret room code likhein!"); return; }
-
-      closeSecretCallModal();
-      currentCallSecretCode = code;
-      callRole = 'caller';
-      isCallActive = true;
-      callPartnerId = null;
-
-      // Broadcast room search ping to see if matching partner exists
-      pubnub.publish({
-        channel: globalDiscoveryChannel,
-        message: {
-          type: 'CALL_SECRET_PING',
-          sender: myId,
-          secretCode: currentCallSecretCode
-        }
-      });
-
-      // Show Calling Overlay while waiting for pong
-      document.getElementById('callPeerName').innerText = "Connecting to Code: " + code;
-      document.getElementById('callPeerAvatar').src = "https://api.dicebear.com/7.x/bottts/svg?seed=" + code;
-      document.getElementById('callStatusText').innerText = "Searching Secret Partner...";
-      document.getElementById('callStatusText').classList.add('animate-pulse');
-      document.getElementById('incomingCallActions').style.display = "none";
-      document.getElementById('activeCallActions').style.display = "flex";
-      document.getElementById('callOverlay').style.display = "flex";
-
-      startRingtoneSound(440); // Ringback audio
-
-      // Timeout if partner code not found
-      setTimeout(() => {
-        if (callRole === 'caller' && !callPartnerId && isCallActive) {
-          document.getElementById('callStatusText').innerText = "Waiting for user with code: " + code;
-        }
-      }, 3500);
-    }
-
     async function startOutgoingAudioCall() {
       document.getElementById('callPeerName').innerText = callPartnerName;
       document.getElementById('callPeerAvatar').src = callPartnerAvatar;
       document.getElementById('callStatusText').innerText = "Ringing...";
 
       try {
-        localAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        localAudioStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true }, video: false });
         audioPeerConnection = new RTCPeerConnection(rtcConfig);
 
         localAudioStream.getTracks().forEach(track => audioPeerConnection.addTrack(track, localAudioStream));
@@ -1198,7 +931,6 @@
 
     function resetCallUI() {
       isCallActive = false;
-      currentCallSecretCode = null;
       callRole = null;
       callPartnerId = null;
       pendingOfferSignal = null;
@@ -1434,4 +1166,3 @@
   </script>
 </body>
 </html>
-```
