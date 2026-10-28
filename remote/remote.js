@@ -35,30 +35,26 @@ function removemodal(modal) {
 }
 
 function createmodal(id) {
-  // --- 1. SABSE PEHELE BACKDROP (OVERLAY) BANAYEIN AUR APPEND KAREIN ---
   const modalBackdrop = document.createElement("div");
   modalBackdrop.className = "modal-backdrop";
   document.body.append(modalBackdrop);
 
-  // --- 2. USKE BAAD MODAL BANAYEIN TAAKI WOH OVERLAY KE UPAAR RAHE ---
   const modal = document.createElement("div");
   modal.className = "modal hidden";
   document.body.append(modal);
   document.body.style.overflow = "hidden";
 
-  // --- 3. DRAGGABLE HANDLE ---
   const modalHandle = document.createElement("span");
   modalHandle.classList.add("modal-handle");
   modal.append(modalHandle);
 
-  // --- 4. MODAL INNER CONTENT ---
   const modalInner = document.createElement("div");
   const sourceContent = document.querySelector(`[data-modal-id="${id}"]`);
   modalInner.innerHTML = sourceContent ? sourceContent.innerHTML : "";
   modalInner.className = "modal-inner";
   modal.append(modalInner);
 
-  // --- 5. IFRAME DATA-SRC FIX (Sirf khulte hi load hoga) ---
+  // --- IFRAME DATA-SRC FIX ---
   const iframe = modalInner.querySelector("iframe");
   if (iframe) {
     const dataSrc = iframe.getAttribute("data-src");
@@ -89,17 +85,27 @@ function createmodal(id) {
   });
 
   let isDragging = false;
+  let startY = 0;
 
-  modalHandle.addEventListener("mousedown", (event) => {
-    event.preventDefault();
+  // --- YAHAN CHANGE KIYA GAYA HAI: PURE MODAL PAR DRAG ENABLE KAR DIYA ---
+  modal.addEventListener("mousedown", (event) => {
+    // Agar user iframe ya kisi clickable button par click kare toh drag shuru na ho, 
+    // taaki iframe ke andar scroll/click me dikkat na aaye
+    if (event.target.tagName === "IFRAME" || event.target.tagName === "BUTTON" || event.target.tagName === "A") {
+      return;
+    }
     modal.style.transition = "";
     isDragging = true;
+    startY = event.clientY;
   });
 
-  modalHandle.addEventListener("touchstart", (event) => {
-    event.preventDefault();
+  modal.addEventListener("touchstart", (event) => {
+    if (event.target.tagName === "IFRAME" || event.target.tagName === "BUTTON" || event.target.tagName === "A") {
+      return;
+    }
     modal.style.transition = "";
     isDragging = true;
+    startY = event.touches[0].clientY;
   });
 
   document.addEventListener("mousemove", (event) => {
@@ -145,4 +151,3 @@ function createmodal(id) {
     }
   }
 }
-
