@@ -1,46 +1,69 @@
+```html
 <!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Optimized HD P2P Radar Share</title>
+  <title>HD P2P Radar & Secret Audio Call</title>
   <!-- PubNub SDK -->
   <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js"></script>
   <!-- Font Awesome CDN Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Font Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; user-select: none; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, -apple-system, sans-serif; user-select: none; }
     body, html { width: 100%; height: 100%; overflow: hidden; background: #020617; color: #fff; }
 
     #radarCanvas {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; cursor: pointer;
     }
 
+    /* Top Controls Bar */
     .top-controls {
       position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
-      z-index: 10; display: flex; align-items: center; gap: 12px;
+      z-index: 10; display: flex; align-items: center; gap: 14px;
       background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px);
-      border: 1px solid rgba(6, 182, 212, 0.4); padding: 8px 18px; border-radius: 30px;
+      border: 1px solid rgba(6, 182, 212, 0.4); padding: 8px 18px; border-radius: 40px;
       box-shadow: 0 4px 25px rgba(0,0,0,0.6);
     }
-    .profile-chip { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-    .profile-chip img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid #06b6d4; }
-    .status-dot { width: 9px; height: 9px; border-radius: 50%; background: #ef4444; }
+    .profile-chip { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .profile-chip img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #06b6d4; }
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #ef4444; }
     .status-dot.active { background: #10b981; box-shadow: 0 0 10px #10b981; }
 
+    /* Top Right Secret Call Quick Action Button */
+    .top-right-call-btn {
+      position: absolute; top: 20px; right: 20px; z-index: 12;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(6, 182, 212, 0.9));
+      backdrop-filter: blur(12px); border: 1px solid rgba(16, 185, 129, 0.5);
+      color: #fff; width: 48px; height: 48px; border-radius: 50%; display: flex;
+      align-items: center; justify-content: center; cursor: pointer;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); transition: all 0.3s ease;
+    }
+    .top-right-call-btn:hover { transform: scale(1.1); box-shadow: 0 0 30px rgba(16, 185, 129, 0.7); }
+    .top-right-call-btn i { font-size: 20px; }
+
+    /* Modal Styling */
     .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(14px);
+      position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(16px);
       z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px;
+      animation: fadeIn 0.25s ease-out;
     }
     .modal-box {
-      background: #0f172a; border: 1px solid rgba(6, 182, 212, 0.4); border-radius: 24px; padding: 25px; width: 100%; max-width: 360px; text-align: center;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+      background: #0f172a; border: 1px solid rgba(6, 182, 212, 0.4); border-radius: 24px; padding: 26px; width: 100%; max-width: 380px; text-align: center;
+      box-shadow: 0 15px 50px rgba(0,0,0,0.8); position: relative;
     }
     .modal-box input[type="text"] {
-      width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.5); color: #fff; margin: 15px 0; outline: none; text-align: center;
+      width: 100%; padding: 13px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.5); color: #fff; margin: 14px 0; outline: none; text-align: center; font-size: 15px;
+    }
+    .modal-box input[type="text"]:focus {
+      border-color: #06b6d4; box-shadow: 0 0 12px rgba(6, 182, 212, 0.4);
     }
     .avatar-preview {
-      width: 85px; height: 85px; border-radius: 50%; object-fit: cover; border: 3px solid #06b6d4; background: rgba(255,255,255,0.1); margin-bottom: 10px;
+      width: 85px; height: 85px; border-radius: 50%; object-fit: cover; border: 3px solid #06b6d4; background: rgba(255,255,255,0.1); margin: 0 auto 10px auto;
     }
     .upload-btn {
       background: rgba(255,255,255,0.1); border: 1px dashed rgba(6,182,212,0.6); padding: 8px 14px; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 600; display: inline-block;
@@ -49,53 +72,116 @@
     .btn {
       background: linear-gradient(135deg, #06b6d4, #3b82f6); border: none; color: #fff; padding: 12px 20px;
       font-size: 14px; border-radius: 25px; cursor: pointer; transition: 0.3s; width: 100%; font-weight: 600; margin-top: 10px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
     }
-    .btn:hover { opacity: 0.9; }
+    .btn:hover { opacity: 0.95; transform: translateY(-1px); }
 
+    .btn-green {
+      background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .btn-red {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    /* File Transfer Panel */
     .file-transfer-panel {
-      position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-      z-index: 10; width: 90%; max-width: 400px; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px);
+      position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%);
+      z-index: 10; width: 90%; max-width: 420px; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px);
       border: 1px solid rgba(6, 182, 212, 0.4); border-radius: 24px; padding: 20px; text-align: center; display: none;
       box-shadow: 0 10px 30px rgba(0,0,0,0.7);
     }
     input[type="file"] { display: none; }
     .file-label {
-      background: rgba(255,255,255,0.1); padding: 12px; border-radius: 14px; cursor: pointer; display: block; font-size: 14px; font-weight: 500;
+      background: rgba(255,255,255,0.08); padding: 12px; border-radius: 14px; cursor: pointer; display: block; font-size: 14px; font-weight: 500; border: 1px dashed rgba(6, 182, 212, 0.5);
     }
+    .file-label:hover { background: rgba(6, 182, 212, 0.15); }
     progress { width: 100%; height: 8px; border-radius: 4px; margin-top: 10px; accent-color: #06b6d4; }
 
     #floatingDisconnectBtn {
-      position: absolute; z-index: 20; display: none; width: 28px; height: 28px;
+      position: absolute; z-index: 20; display: none; width: 30px; height: 30px;
       background: #ef4444; color: #fff; border-radius: 50%; border: 2px solid #fff;
       align-items: center; justify-content: center; cursor: pointer;
       box-shadow: 0 4px 10px rgba(239, 68, 68, 0.5); font-size: 13px;
     }
     #floatingDisconnectBtn:hover { transform: scale(1.1); }
+
+    /* Call UI Overlay */
+    .call-overlay {
+      position: fixed; inset: 0; background: rgba(2, 6, 23, 0.94); backdrop-filter: blur(20px);
+      z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+      padding: 50px 20px; animation: fadeIn 0.3s ease;
+    }
+
+    .call-avatar-wrap {
+      position: relative; margin-top: 30px;
+    }
+    .call-avatar {
+      width: 130px; height: 130px; border-radius: 50%; object-fit: cover;
+      border: 4px solid #06b6d4; box-shadow: 0 0 35px rgba(6, 182, 212, 0.6);
+    }
+    .pulse-ring {
+      position: absolute; inset: -15px; border-radius: 50%;
+      border: 2px solid rgba(6, 182, 212, 0.6); animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.9; }
+      100% { transform: scale(1.35); opacity: 0; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .call-action-bar {
+      display: flex; gap: 24px; align-items: center; justify-content: center; margin-bottom: 20px;
+    }
+    .round-call-btn {
+      width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 24px; color: #fff; border: none; cursor: pointer; transition: all 0.2s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    }
+    .round-call-btn:hover { transform: scale(1.1); }
+    .bg-green-call { background: #10b981; }
+    .bg-red-call { background: #ef4444; }
+    .bg-gray-call { background: #334155; }
+    .bg-gray-call.active-mute { background: #f59e0b; }
   </style>
 </head>
 <body>
 
+  <!-- Radar Canvas -->
   <canvas id="radarCanvas"></canvas>
 
+  <!-- Floating Canvas Disconnect Button for active Peer -->
   <div id="floatingDisconnectBtn" onclick="disconnectCurrentPeer(false)">
     <i class="fa-solid fa-xmark"></i>
   </div>
 
+  <!-- Top Controls Center Bar -->
   <div class="top-controls">
-    <div class="status-dot" id="statusDot"></div>
+    <div class="status-dot" id="statusDot" title="GPS Radar Status"></div>
     <div class="profile-chip" onclick="openProfileModal()">
-      <img id="headerAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Default">
+      <img id="headerAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Default" alt="DP">
       <span id="headerName" style="font-size:13px; font-weight:600;">Setup DP</span>
     </div>
   </div>
 
+  <!-- Top Right Secret Call Button -->
+  <button class="top-right-call-btn" onclick="openSecretCallModal()" title="Secret Audio Call">
+    <i class="fa-solid fa-phone-volume"></i>
+  </button>
+
+  <!-- Profile Setup Modal -->
   <div class="modal-overlay" id="profileModal" style="display:none;">
     <div class="modal-box">
-      <h3 style="color:#06b6d4;"><i class="fa-solid fa-id-card"></i> Profile & HD DP</h3>
-      <p style="font-size: 12px; opacity: 0.7; margin-top: 4px;">Gallery se photo chunein aur naam darj karein</p>
+      <h3 style="color:#06b6d4; font-size:18px; font-weight:700;"><i class="fa-solid fa-id-card"></i> Profile & HD DP</h3>
+      <p style="font-size: 12px; opacity: 0.7; margin-top: 4px;">Gallery se photo chunein aur apna naam darj karein</p>
       
       <div style="margin-top: 15px;">
-        <img id="modalAvatarPreview" class="avatar-preview" src="https://api.dicebear.com/7.x/bottts/svg?seed=Default">
+        <img id="modalAvatarPreview" class="avatar-preview" src="https://api.dicebear.com/7.x/bottts/svg?seed=Default" alt="Avatar">
         <br>
         <label class="upload-btn">
           <i class="fa-solid fa-camera"></i> Gallery Photo Select
@@ -109,6 +195,65 @@
     </div>
   </div>
 
+  <!-- Secret Call Room Modal -->
+  <div class="modal-overlay" id="secretCallModal" style="display:none;">
+    <div class="modal-box">
+      <button onclick="closeSecretCallModal()" style="position:absolute; top:15px; right:18px; color:#aaa; font-size:18px; border:none; background:none; cursor:pointer;">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="w-12 h-12 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center mx-auto mb-3 text-xl">
+        <i class="fa-solid fa-key"></i>
+      </div>
+      <h3 style="color:#06b6d4; font-size:18px; font-weight:700;">Secret Audio Call</h3>
+      <p style="font-size: 12px; opacity: 0.7; margin-top: 4px;">Dono user same secret code dalen (e.g. <b>vivek12</b>) to directly call connect ho jayegi!</p>
+      
+      <input type="text" id="secretCodeInput" placeholder="Secret Code (e.g. vivek12)" style="text-transform: lowercase;">
+
+      <button class="btn btn-green" onclick="initiateSecretCall()"><i class="fa-solid fa-phone"></i> Call Connect Karein</button>
+    </div>
+  </div>
+
+  <!-- Active / Incoming Call Full Screen Modal -->
+  <div class="call-overlay" id="callOverlay" style="display:none;">
+    <div class="text-center mt-4">
+      <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 mb-2">
+        <i class="fa-solid fa-lock"></i> Secret Encrypted Audio
+      </span>
+      <h2 id="callPeerName" class="text-2xl font-bold tracking-wide">Peer Name</h2>
+      <p id="callStatusText" class="text-xs text-cyan-400 mt-1 animate-pulse">Calling...</p>
+      <p id="callTimer" class="text-sm text-gray-400 font-mono mt-1" style="display:none;">00:00</p>
+    </div>
+
+    <div class="call-avatar-wrap">
+      <div class="pulse-ring" id="callPulseRing"></div>
+      <img id="callPeerAvatar" class="call-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Default" alt="Caller Avatar">
+    </div>
+
+    <!-- Call Controls -->
+    <div>
+      <!-- Incoming Call Buttons (Accept / Decline) -->
+      <div class="call-action-bar" id="incomingCallActions" style="display:none;">
+        <button class="round-call-btn bg-red-call" onclick="rejectIncomingCall()" title="Reject Call">
+          <i class="fa-solid fa-phone-slash"></i>
+        </button>
+        <button class="round-call-btn bg-green-call" onclick="acceptIncomingCall()" title="Accept Call">
+          <i class="fa-solid fa-phone"></i>
+        </button>
+      </div>
+
+      <!-- In-Call Active Controls (Mute / End Call) -->
+      <div class="call-action-bar" id="activeCallActions" style="display:none;">
+        <button class="round-call-btn bg-gray-call" id="muteMicBtn" onclick="toggleMuteMicrophone()" title="Mute Mic">
+          <i class="fa-solid fa-microphone"></i>
+        </button>
+        <button class="round-call-btn bg-red-call" onclick="endAudioCall(true)" title="End Call">
+          <i class="fa-solid fa-phone-slash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- File Transfer Panel -->
   <div class="file-transfer-panel" id="transferSection">
     <p style="font-size: 13px; color: #10b981; font-weight: bold; margin-bottom: 10px;" id="connectionStatusText">
       <i class="fa-solid fa-link"></i> Connected to Peer!
@@ -122,8 +267,11 @@
     <div id="downloadContainer"></div>
   </div>
 
+  <!-- Audio Element for Remote Voice Stream -->
+  <audio id="remoteAudio" autoplay></audio>
+
   <script>
-    // 🛡️ Safe Unique ID Generation (Iframe safe check)
+    // 🛡️ Safe Unique ID Generation
     const myId = "node_" + Math.random().toString(36).substring(2, 9) + "_" + Date.now();
     let myName = localStorage.getItem("p2p_user_name") || "";
     let myAvatar = localStorage.getItem("p2p_user_avatar_base64") || "https://api.dicebear.com/7.x/bottts/svg?seed=Default";
@@ -152,6 +300,27 @@
     let incomingFileMeta = {};
     let incomingBuffer = [];
     let receivedSize = 0;
+
+    /* -------------------------------------------------------------
+       AUDIO CALL STATE & VARIABLES
+    ------------------------------------------------------------- */
+    let audioPeerConnection = null;
+    let localAudioStream = null;
+    let isCallActive = false;
+    let currentCallSecretCode = null;
+    let callRole = null; // 'caller' or 'callee'
+    let callPartnerId = null;
+    let callPartnerName = "Unknown Peer";
+    let callPartnerAvatar = "https://api.dicebear.com/7.x/bottts/svg?seed=Default";
+    let callTimerInterval = null;
+    let callStartTime = 0;
+    let isMicMuted = false;
+    let pendingOfferSignal = null;
+
+    // Web Audio Synthesizer for Ringtone & Ringback Tone
+    let audioCtx = null;
+    let ringOscillator = null;
+    let ringInterval = null;
 
     window.onload = function() {
       initCanvas();
@@ -260,23 +429,27 @@
         message: { type: 'DISCONNECT', sender: myId }
       });
       disconnectCurrentPeer(true);
+      endAudioCall(false);
     });
 
+    /* -------------------------------------------------------------
+       PUBNUB SIGNALING HANDLER (FILE & AUDIO CALL MESSAGES)
+    ------------------------------------------------------------- */
     pubnub.addListener({
       message: async (event) => {
         const msg = event.message;
         
-        // 🚨 Strict Check: Ignore own messages or any message originating from this exact instance/iframe
         if (!msg || !msg.sender || msg.sender === myId) return;
 
+        // Disconnect Peer Notice
         if (msg.type === 'DISCONNECT') {
           activePeers.delete(msg.sender);
-          if (activeConnectedPeerId === msg.sender) {
-            disconnectCurrentPeer(true);
-          }
+          if (activeConnectedPeerId === msg.sender) disconnectCurrentPeer(true);
+          if (callPartnerId === msg.sender) endAudioCall(false);
           return;
         }
 
+        // Radar Heartbeat Discovery
         if (msg.type === 'HEARTBEAT' && msg.name) {
           let peer = activePeers.get(msg.sender);
           if (!peer) {
@@ -314,6 +487,7 @@
             peer = {
               id: msg.sender,
               name: msg.name,
+              avatar: msg.avatar,
               avatarImg: imgObj,
               angle: angle,
               radius: radius,
@@ -324,10 +498,77 @@
           } else {
             peer.lastSeen = Date.now();
             peer.name = msg.name;
+            peer.avatar = msg.avatar;
           }
           activePeers.set(msg.sender, peer);
         }
 
+        // SECRET CALL SIGNALING MESSAGES
+        if (msg.type === 'CALL_SECRET_PING') {
+          // If code matches and not currently on call, respond to caller
+          if (currentCallSecretCode && msg.secretCode === currentCallSecretCode && !isCallActive) {
+            pubnub.publish({
+              channel: msg.sender,
+              message: {
+                type: 'CALL_SECRET_PONG',
+                sender: myId,
+                name: myName,
+                avatar: myAvatar,
+                secretCode: currentCallSecretCode
+              }
+            });
+          }
+        }
+
+        if (msg.type === 'CALL_SECRET_PONG') {
+          if (callRole === 'caller' && currentCallSecretCode === msg.secretCode && !callPartnerId) {
+            callPartnerId = msg.sender;
+            callPartnerName = msg.name || "Secret Partner";
+            callPartnerAvatar = msg.avatar || "https://api.dicebear.com/7.x/bottts/svg?seed=" + msg.name;
+            startOutgoingAudioCall();
+          }
+        }
+
+        if (msg.type === 'AUDIO_CALL_OFFER' && msg.target === myId) {
+          if (isCallActive) {
+            pubnub.publish({ channel: msg.sender, message: { type: 'AUDIO_CALL_REJECTED', sender: myId, target: msg.sender, reason: 'busy' } });
+            return;
+          }
+          callPartnerId = msg.sender;
+          callPartnerName = msg.callerName || "Secret Partner";
+          callPartnerAvatar = msg.callerAvatar || "https://api.dicebear.com/7.x/bottts/svg?seed=Caller";
+          pendingOfferSignal = msg.offer;
+          showIncomingCallOverlay();
+        }
+
+        if (msg.type === 'AUDIO_CALL_ANSWER' && msg.target === myId) {
+          if (audioPeerConnection && callRole === 'caller') {
+            await audioPeerConnection.setRemoteDescription(new RTCSessionDescription(msg.answer));
+            stopRingtoneSound();
+            document.getElementById('callStatusText').innerText = "Connected";
+            document.getElementById('callStatusText').classList.remove('animate-pulse');
+            document.getElementById('callTimer').style.display = "block";
+            startCallTimer();
+          }
+        }
+
+        if (msg.type === 'AUDIO_ICE_CANDIDATE' && msg.target === myId) {
+          if (audioPeerConnection && msg.candidate) {
+            try { await audioPeerConnection.addIceCandidate(new RTCIceCandidate(msg.candidate)); } catch(e){}
+          }
+        }
+
+        if (msg.type === 'AUDIO_CALL_REJECTED' && msg.target === myId) {
+          stopRingtoneSound();
+          document.getElementById('callStatusText').innerText = "Call Declined / Busy";
+          setTimeout(() => { resetCallUI(); }, 1800);
+        }
+
+        if (msg.type === 'AUDIO_CALL_ENDED' && msg.target === myId) {
+          endAudioCall(false);
+        }
+
+        // P2P FILE TRANSFER WEBRTC SIGNALING
         if (msg.target === myId) {
           if (!peerConnection) setupPeerConnection(msg.sender);
 
@@ -351,13 +592,15 @@
       for (let [id, peer] of activePeers.entries()) {
         if (now - peer.lastSeen > PEER_TIMEOUT_MS) {
           activePeers.delete(id);
-          if (activeConnectedPeerId === id) {
-            disconnectCurrentPeer(true);
-          }
+          if (activeConnectedPeerId === id) disconnectCurrentPeer(true);
+          if (callPartnerId === id) endAudioCall(false);
         }
       }
     }
 
+    /* -------------------------------------------------------------
+       RADAR CANVAS RENDERING ENGINE
+    ------------------------------------------------------------- */
     function renderRadar() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -388,7 +631,7 @@
       ctx.fill();
       ctx.restore();
 
-      // Center Node (My Self) - सिर्फ आपका अपना खुद का सेंटर पॉइंट
+      // Center Node (My Self)
       ctx.beginPath();
       ctx.arc(cx, cy, 18, 0, Math.PI * 2);
       ctx.strokeStyle = "#06b6d4";
@@ -441,7 +684,7 @@
 
         if (!isConnectedPeer) {
           ctx.fillStyle = "#ffffff";
-          ctx.font = "bold 12px 'Segoe UI', sans-serif";
+          ctx.font = "bold 12px 'Inter', sans-serif";
           ctx.textAlign = "center";
           ctx.textBaseline = "alphabetic";
           ctx.fillText(peer.name, px, py + 38);
@@ -466,8 +709,6 @@
         
         if (Math.hypot(dx, dy) <= 28) {
           if (isConnected && activeConnectedPeerId && activeConnectedPeerId !== peer.id) {
-            const confirmSwitch = confirm("Pehle se ek peer connected hai! Kya aap purane connection ko disconnect karke naye bande se judna chahte hain?");
-            if (!confirmSwitch) return;
             disconnectCurrentPeer(true);
           }
           connectToPeer(peer.id);
@@ -476,6 +717,275 @@
       }
     }
 
+    /* -------------------------------------------------------------
+       SECRET AUDIO CALLING SYSTEM
+    ------------------------------------------------------------- */
+    function openSecretCallModal() {
+      document.getElementById('secretCallModal').style.display = "flex";
+    }
+
+    function closeSecretCallModal() {
+      document.getElementById('secretCallModal').style.display = "none";
+    }
+
+    function initiateSecretCall() {
+      const code = document.getElementById('secretCodeInput').value.trim().toLowerCase();
+      if (!code) { alert("Kripya secret room code likhein!"); return; }
+
+      closeSecretCallModal();
+      currentCallSecretCode = code;
+      callRole = 'caller';
+      isCallActive = true;
+      callPartnerId = null;
+
+      // Broadcast room search ping to see if matching partner exists
+      pubnub.publish({
+        channel: globalDiscoveryChannel,
+        message: {
+          type: 'CALL_SECRET_PING',
+          sender: myId,
+          secretCode: currentCallSecretCode
+        }
+      });
+
+      // Show Calling Overlay while waiting for pong
+      document.getElementById('callPeerName').innerText = "Connecting to Code: " + code;
+      document.getElementById('callPeerAvatar').src = "https://api.dicebear.com/7.x/bottts/svg?seed=" + code;
+      document.getElementById('callStatusText').innerText = "Searching Secret Partner...";
+      document.getElementById('callStatusText').classList.add('animate-pulse');
+      document.getElementById('incomingCallActions').style.display = "none";
+      document.getElementById('activeCallActions').style.display = "flex";
+      document.getElementById('callOverlay').style.display = "flex";
+
+      startRingtoneSound(440); // Ringback audio
+
+      // Timeout if partner code not found
+      setTimeout(() => {
+        if (callRole === 'caller' && !callPartnerId && isCallActive) {
+          document.getElementById('callStatusText').innerText = "Waiting for user with code: " + code;
+        }
+      }, 3500);
+    }
+
+    async function startOutgoingAudioCall() {
+      document.getElementById('callPeerName').innerText = callPartnerName;
+      document.getElementById('callPeerAvatar').src = callPartnerAvatar;
+      document.getElementById('callStatusText').innerText = "Ringing...";
+
+      try {
+        localAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        audioPeerConnection = new RTCPeerConnection(rtcConfig);
+
+        localAudioStream.getTracks().forEach(track => audioPeerConnection.addTrack(track, localAudioStream));
+
+        audioPeerConnection.onicecandidate = (e) => {
+          if (e.candidate && callPartnerId) {
+            pubnub.publish({
+              channel: callPartnerId,
+              message: { type: 'AUDIO_ICE_CANDIDATE', candidate: e.candidate, sender: myId, target: callPartnerId }
+            });
+          }
+        };
+
+        audioPeerConnection.ontrack = (e) => {
+          document.getElementById('remoteAudio').srcObject = e.streams[0];
+        };
+
+        const offer = await audioPeerConnection.createOffer();
+        await audioPeerConnection.setLocalDescription(offer);
+
+        pubnub.publish({
+          channel: callPartnerId,
+          message: {
+            type: 'AUDIO_CALL_OFFER',
+            offer: offer,
+            sender: myId,
+            target: callPartnerId,
+            callerName: myName,
+            callerAvatar: myAvatar
+          }
+        });
+      } catch (err) {
+        alert("Microphone Access Required for Audio Call!");
+        endAudioCall(true);
+      }
+    }
+
+    function showIncomingCallOverlay() {
+      callRole = 'callee';
+      isCallActive = true;
+
+      document.getElementById('callPeerName').innerText = callPartnerName;
+      document.getElementById('callPeerAvatar').src = callPartnerAvatar;
+      document.getElementById('callStatusText').innerText = "Incoming Secret Call...";
+      document.getElementById('callStatusText').classList.add('animate-pulse');
+
+      document.getElementById('incomingCallActions').style.display = "flex";
+      document.getElementById('activeCallActions').style.display = "none";
+      document.getElementById('callOverlay').style.display = "flex";
+
+      startRingtoneSound(880); // Incoming ring tone synth
+    }
+
+    async function acceptIncomingCall() {
+      stopRingtoneSound();
+      document.getElementById('incomingCallActions').style.display = "none";
+      document.getElementById('activeCallActions').style.display = "flex";
+      document.getElementById('callStatusText').innerText = "Connecting...";
+
+      try {
+        localAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        audioPeerConnection = new RTCPeerConnection(rtcConfig);
+
+        localAudioStream.getTracks().forEach(track => audioPeerConnection.addTrack(track, localAudioStream));
+
+        audioPeerConnection.onicecandidate = (e) => {
+          if (e.candidate && callPartnerId) {
+            pubnub.publish({
+              channel: callPartnerId,
+              message: { type: 'AUDIO_ICE_CANDIDATE', candidate: e.candidate, sender: myId, target: callPartnerId }
+            });
+          }
+        };
+
+        audioPeerConnection.ontrack = (e) => {
+          document.getElementById('remoteAudio').srcObject = e.streams[0];
+        };
+
+        await audioPeerConnection.setRemoteDescription(new RTCSessionDescription(pendingOfferSignal));
+        const answer = await audioPeerConnection.createAnswer();
+        await audioPeerConnection.setLocalDescription(answer);
+
+        pubnub.publish({
+          channel: callPartnerId,
+          message: { type: 'AUDIO_CALL_ANSWER', answer: answer, sender: myId, target: callPartnerId }
+        });
+
+        document.getElementById('callStatusText').innerText = "Connected";
+        document.getElementById('callStatusText').classList.remove('animate-pulse');
+        document.getElementById('callTimer').style.display = "block";
+        startCallTimer();
+      } catch (err) {
+        alert("Microphone Access Required!");
+        rejectIncomingCall();
+      }
+    }
+
+    function rejectIncomingCall() {
+      stopRingtoneSound();
+      if (callPartnerId) {
+        pubnub.publish({
+          channel: callPartnerId,
+          message: { type: 'AUDIO_CALL_REJECTED', sender: myId, target: callPartnerId, reason: 'rejected' }
+        });
+      }
+      resetCallUI();
+    }
+
+    function toggleMuteMicrophone() {
+      if (localAudioStream) {
+        const audioTrack = localAudioStream.getAudioTracks()[0];
+        if (audioTrack) {
+          audioTrack.enabled = !audioTrack.enabled;
+          isMicMuted = !audioTrack.enabled;
+
+          const btn = document.getElementById('muteMicBtn');
+          if (isMicMuted) {
+            btn.classList.add('active-mute');
+            btn.innerHTML = `<i class="fa-solid fa-microphone-slash"></i>`;
+          } else {
+            btn.classList.remove('active-mute');
+            btn.innerHTML = `<i class="fa-solid fa-microphone"></i>`;
+          }
+        }
+      }
+    }
+
+    function endAudioCall(notifyPartner = true) {
+      stopRingtoneSound();
+      if (notifyPartner && callPartnerId) {
+        pubnub.publish({
+          channel: callPartnerId,
+          message: { type: 'AUDIO_CALL_ENDED', sender: myId, target: callPartnerId }
+        });
+      }
+
+      if (localAudioStream) {
+        localAudioStream.getTracks().forEach(track => track.stop());
+        localAudioStream = null;
+      }
+
+      if (audioPeerConnection) {
+        try { audioPeerConnection.close(); } catch(e){}
+        audioPeerConnection = null;
+      }
+
+      resetCallUI();
+    }
+
+    function resetCallUI() {
+      isCallActive = false;
+      currentCallSecretCode = null;
+      callRole = null;
+      callPartnerId = null;
+      pendingOfferSignal = null;
+      isMicMuted = false;
+
+      clearInterval(callTimerInterval);
+      document.getElementById('callTimer').innerText = "00:00";
+      document.getElementById('callTimer').style.display = "none";
+      document.getElementById('callOverlay').style.display = "none";
+      
+      const muteBtn = document.getElementById('muteMicBtn');
+      muteBtn.classList.remove('active-mute');
+      muteBtn.innerHTML = `<i class="fa-solid fa-microphone"></i>`;
+
+      document.getElementById('remoteAudio').srcObject = null;
+    }
+
+    function startCallTimer() {
+      callStartTime = Date.now();
+      clearInterval(callTimerInterval);
+      callTimerInterval = setInterval(() => {
+        const delta = Math.floor((Date.now() - callStartTime) / 1000);
+        const mins = String(Math.floor(delta / 60)).padStart(2, '0');
+        const secs = String(delta % 60).padStart(2, '0');
+        document.getElementById('callTimer').innerText = `${mins}:${secs}`;
+      }, 1000);
+    }
+
+    /* Synthetic Web Audio Ringtone Generator */
+    function startRingtoneSound(freq = 440) {
+      try {
+        stopRingtoneSound();
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        ringInterval = setInterval(() => {
+          if (!audioCtx) return;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.6);
+        }, 1200);
+      } catch(e) {}
+    }
+
+    function stopRingtoneSound() {
+      if (ringInterval) clearInterval(ringInterval);
+      if (audioCtx) {
+        try { audioCtx.close(); } catch(e){}
+        audioCtx = null;
+      }
+    }
+
+    /* -------------------------------------------------------------
+       P2P WEBRTC DATA CHANNEL & FILE TRANSFER SYSTEM
+    ------------------------------------------------------------- */
     function connectToPeer(targetId) {
       activeConnectedPeerId = targetId;
       setupPeerConnection(targetId);
@@ -643,7 +1153,7 @@
             
             downloadContainer.appendChild(a);
             document.getElementById('transferProgress').style.display = "none";
-            document.getElementById('fileNameDisplay').innerText = `Browser policy blocked auto-save. Please click download below:`;
+            document.getElementById('fileNameDisplay').innerText = `Browser policy blocked auto-save. Click download below:`;
           }
         }
       }
@@ -651,6 +1161,4 @@
   </script>
 </body>
 </html>
-
-
-
+```
