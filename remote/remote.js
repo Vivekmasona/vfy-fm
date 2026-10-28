@@ -42,11 +42,22 @@ function createmodal(id) {
   document.body.style.overflow = "hidden";
 
   const modalInner = document.createElement("div");
-  modalInner.innerHTML = document.querySelector(
-    `[data-modal-id="${id}"]`
-  ).innerHTML;
+  
+  // Aapka original HTML content fetch kiya ja raha hai
+  const sourceContent = document.querySelector(`[data-modal-id="${id}"]`);
+  modalInner.innerHTML = sourceContent ? sourceContent.innerHTML : "";
   modalInner.className = "modal-inner";
   modal.append(modalInner);
+
+  // --- YAHAN CHANGE KIYA GAYA HAI ---
+  // Modal khulte hi iframe ke data-src ko src me convert kiya ja raha hai taaki wo load ho
+  const iframe = modalInner.querySelector("iframe");
+  if (iframe) {
+    const dataSrc = iframe.getAttribute("data-src");
+    if (dataSrc) {
+      iframe.setAttribute("src", dataSrc);
+    }
+  }
 
   const modalBackdrop = document.createElement("div");
   modalBackdrop.className = "modal-backdrop";
