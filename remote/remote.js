@@ -27,41 +27,31 @@ function removemodal(modal) {
 
   setTimeout(() => {
     if (modal.parentNode) {
-      const backdrop = document.getElementsByClassName("modal-backdrop")[0];
-      if (backdrop) backdrop.remove();
+      document.body.removeChild(
+        document.getElementsByClassName("modal-backdrop")[0]
+      );
       document.body.removeChild(modal);
     }
   }, 400);
 }
 
 function createmodal(id) {
-  const modalBackdrop = document.createElement("div");
-  modalBackdrop.className = "modal-backdrop";
-  document.body.append(modalBackdrop);
-
   const modal = document.createElement("div");
   modal.className = "modal hidden";
   document.body.append(modal);
   document.body.style.overflow = "hidden";
 
-  const modalHandle = document.createElement("span");
-  modalHandle.classList.add("modal-handle");
-  modal.append(modalHandle);
-
   const modalInner = document.createElement("div");
-  const sourceContent = document.querySelector(`[data-modal-id="${id}"]`);
-  modalInner.innerHTML = sourceContent ? sourceContent.innerHTML : "";
+  modalInner.innerHTML = document.querySelector(
+    `[data-modal-id="${id}"]`
+  ).innerHTML;
   modalInner.className = "modal-inner";
   modal.append(modalInner);
 
-  // --- IFRAME DATA-SRC FIX (Modal khulte hi load hoga) ---
-  const iframe = modalInner.querySelector("iframe");
-  if (iframe) {
-    const dataSrc = iframe.getAttribute("data-src");
-    if (dataSrc) {
-      iframe.setAttribute("src", dataSrc);
-    }
-  }
+  const modalBackdrop = document.createElement("div");
+  modalBackdrop.className = "modal-backdrop";
+  modalBackdrop.innerHTML = "";
+  document.body.append(modalBackdrop);
 
   let lastTop = null;
 
@@ -84,20 +74,20 @@ function createmodal(id) {
     modal.classList.remove("hidden");
   });
 
+  const modalHandle = document.createElement("span");
+  modalHandle.classList.add("modal-handle");
+  modal.prepend(modalHandle);
+
   let isDragging = false;
 
-  modal.addEventListener("mousedown", (event) => {
-    if (event.target.tagName === "IFRAME" || event.target.tagName === "BUTTON" || event.target.tagName === "A") {
-      return;
-    }
+  modalHandle.addEventListener("mousedown", (event) => {
+    event.preventDefault();
     modal.style.transition = "";
     isDragging = true;
   });
 
-  modal.addEventListener("touchstart", (event) => {
-    if (event.target.tagName === "IFRAME" || event.target.tagName === "BUTTON" || event.target.tagName === "A") {
-      return;
-    }
+  modalHandle.addEventListener("touchstart", (event) => {
+    event.preventDefault();
     modal.style.transition = "";
     isDragging = true;
   });
@@ -121,17 +111,13 @@ function createmodal(id) {
   });
 
   document.addEventListener("mouseup", () => {
-    if (isDragging) {
-      isDragging = false;
-      handlemodalPosition();
-    }
+    isDragging = false;
+    handlemodalPosition();
   });
 
   document.addEventListener("touchend", () => {
-    if (isDragging) {
-      isDragging = false;
-      handlemodalPosition();
-    }
+    isDragging = false;
+    handlemodalPosition();
   });
 
   function handlemodalPosition() {
@@ -145,3 +131,4 @@ function createmodal(id) {
     }
   }
 }
+
