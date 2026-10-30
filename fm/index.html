@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>VFY FM </title>
+
 <style>
 html, body {
   margin: 0px; padding: 0px; overflow: hidden; background: #0c0c0e;
@@ -26,7 +26,7 @@ canvas { position: fixed; inset: 0; z-index: 1; }
   display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px);
 }
 .studio-container {
-  background: #141418; width: 92%; max-width: 500px; max-height: 85vh;
+  background: #141418; width: 92%; max-width: 520px; max-height: 85vh;
   border: 1px solid #333; border-radius: 20px; padding: 24px;
   box-shadow: 0 25px 70px rgba(0,0,0,0.95); display: flex; flex-direction: column; gap: 16px;
   overflow-y: auto;
@@ -39,8 +39,8 @@ input[type="text"] {
 }
 
 button {
-  background: #ff2a74; color: white; border: none; padding: 12px 18px;
-  font-size: 14px; font-weight: bold; border-radius: 10px; cursor: pointer; transition: 0.2s;
+  background: #ff2a74; color: white; border: none; padding: 10px 16px;
+  font-size: 13px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s;
 }
 button:hover { background: #ff4785; }
 
@@ -54,13 +54,21 @@ button:hover { background: #ff4785; }
 }
 
 .item-card {
-  background: #1c1c24; padding: 12px; border-radius: 10px;
-  font-size: 14px; display: flex; justify-content: space-between; align-items: center;
+  background: #1c1c24; padding: 10px 12px; border-radius: 10px;
+  font-size: 13px; display: flex; justify-content: space-between; align-items: center;
   cursor: pointer; border: 1px solid #2a2a35; margin-bottom: 8px; transition: 0.2s;
 }
 .item-card:hover { border-color: #2ed573; background: #17221a; }
 .item-info { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 10px; flex: 1; }
-.delete-btn { background: #ff4757; padding: 6px 12px; font-size: 12px; border-radius: 6px; }
+.btn-group { display: flex; gap: 6px; align-items: center; }
+.preview-btn { background: #3742fa; padding: 5px 10px; font-size: 11px; }
+.save-btn { background: #2ed573; color: #000; padding: 5px 10px; font-size: 11px; font-weight: bold; }
+.delete-btn { background: #ff4757; padding: 5px 10px; font-size: 11px; }
+
+#preview-bar {
+  background: #1f1f26; border: 1px solid #444; padding: 8px 12px; border-radius: 8px;
+  font-size: 12px; display: none; align-items: center; justify-content: space-between;
+}
 </style>
 </head>
 <body>
@@ -68,7 +76,7 @@ button:hover { background: #ff4785; }
 <canvas id="canvas"></canvas>
 
 <div id="studio-header">
-  <div class="brand-title" id="brand-title">VFY FM</div>
+  <div class="brand-title" id="brand-title">V F Y FM </div>
   <div style="display:flex; gap:10px; align-items:center;">
     <div class="badge">Live 24/7</div>
     <div class="live-dot"></div>
@@ -83,24 +91,32 @@ button:hover { background: #ff4785; }
   <div class="studio-container">
     <div class="studio-title">
       <span>🎛️ Studio Master Console</span>
-      <button onclick="closeStudio()" style="background:#333; padding:6px 12px; font-size:12px;">✕</button>
+      <button onclick="closeStudio()" style="background:#333; padding:5px 10px; font-size:12px;">✕</button>
     </div>
     
-    <div style="font-size:13px; color:#aaa;">Search songs via SVN API & Save to Queue:</div>
+    <div style="font-size:13px; color:#aaa;">Search songs via SVN API (Preview before saving):</div>
     <div style="display:flex; gap:10px;">
       <input type="text" id="query-input" placeholder="Search track name...">
       <button id="search-btn">Search</button>
     </div>
-    <div id="search-results" style="max-height:150px; overflow-y:auto;"></div>
+
+    <!-- Preview Player Bar -->
+    <div id="preview-bar">
+      <span id="preview-title" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:280px;">Previewing...</span>
+      <button onclick="stopPreview()" style="background:#333; padding:4px 8px; font-size:11px;">Stop ⏹</button>
+    </div>
+
+    <div id="search-results" style="max-height:160px; overflow-y:auto;"></div>
 
     <div style="border-top:1px solid #2a2a35; padding-top:10px;">
-      <div style="font-size:14px; color:#2ed573; margin-bottom:8px; font-weight:bold;">🎶 Station Playlist Queue</div>
-      <div id="playlist-container" style="max-height:220px; overflow-y:auto; font-size:13px; color:#aaa;">Loading queue...</div>
+      <div style="font-size:13px; color:#2ed573; margin-bottom:8px; font-weight:bold;">🎶 Station Queue (Click any song to play ON AIR immediately)</div>
+      <div id="playlist-container" style="max-height:200px; overflow-y:auto; font-size:13px; color:#aaa;">Loading queue...</div>
     </div>
   </div>
 </div>
 
 <audio id="audio-element" crossorigin="anonymous" controlslist="nodownload noplaybackrate" disablepictureinpicture></audio>
+<audio id="preview-audio"></audio>
 
 <script src="https://codepen.io/Tibixx/pen/BbBxRG.js"></script>
 
@@ -128,6 +144,7 @@ var actx, analyser, sourceNode, frequencyData, frequencyDataLen;
 var playing = false;
 var dotEmitter, lineEmitter;
 var audioEl = document.getElementById("audio-element");
+var previewAudio = document.getElementById("preview-audio");
 
 function initAudioContext() {
   if (!actx && AudioContext) {
@@ -173,6 +190,7 @@ function cancelLongPress() {
 }
 
 function closeStudio() {
+  stopPreview();
   document.getElementById("studio-modal").style.display = "none";
 }
 
@@ -229,13 +247,31 @@ function renderPlaylistUI() {
   globalPlaylist.forEach((song, index) => {
     let highlight = (index === activeIndex) ? "border-color: #2ed573; background:#112211;" : "";
     html += `
-      <div class="item-card" style="${highlight}">
+      <div class="item-card" style="${highlight}" onclick="adminSelectSong(${index})" title="Click to play On Air">
         <div class="item-info">${index === activeIndex ? '▶ [ON AIR] ' : ''}${song.title}</div>
         <button class="delete-btn" onclick="event.stopPropagation(); deleteGlobalSong(${index})">X</button>
       </div>
     `;
   });
   container.innerHTML = html;
+}
+
+// Admin clicks song in queue -> Play On Air immediately
+function adminSelectSong(index) {
+  fetch(`${API_BASE}/play`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ index: index })
+  })
+  .then(res => res.json())
+  .then(data => {
+    globalPlaylist = data.playlist || [];
+    activeIndex = data.currentIndex || 0;
+    playSongAtIndex(activeIndex, data.seekTime || 0);
+    renderPlaylistUI();
+    scheduleNextSync();
+  })
+  .catch(err => alert("Error switching song"));
 }
 
 function deleteGlobalSong(index) {
@@ -269,12 +305,17 @@ document.getElementById("search-btn").addEventListener("click", () => {
       }
 
       let html = "";
-      songs.slice(0, 5).forEach((s) => {
+      // Show all search results (no slice restriction) with poster/image thumbnails
+      songs.forEach((s) => {
         const songObj = encodeURIComponent(JSON.stringify(s));
         html += `
           <div class="item-card">
+            <img src="${s.image || config.centerImage}" style="width:32px; height:32px; border-radius:4px; object-fit:cover; margin-right:8px;">
             <div class="item-info" title="${s.title}">${s.title}</div>
-            <button onclick="addGlobalSong('${songObj}')" style="padding:4px 10px; font-size:11px;">Save</button>
+            <div class="btn-group">
+              <button class="preview-btn" onclick="previewSong('${s.url}', '${s.title.replace(/'/g, "")}')">Preview</button>
+              <button class="save-btn" onclick="addGlobalSong('${songObj}')">Save</button>
+            </div>
           </div>
         `;
       });
@@ -282,6 +323,20 @@ document.getElementById("search-btn").addEventListener("click", () => {
     })
     .catch(err => { resultsContainer.innerHTML = "Search Error."; });
 });
+
+function previewSong(url, title) {
+  previewAudio.src = url;
+  previewAudio.play().then(() => {
+    document.getElementById("preview-title").innerText = "Playing: " + title;
+    document.getElementById("preview-bar").style.display = "flex";
+  }).catch(err => alert("Preview failed to play"));
+}
+
+function stopPreview() {
+  previewAudio.pause();
+  previewAudio.currentTime = 0;
+  document.getElementById("preview-bar").style.display = "none";
+}
 
 window.addGlobalSong = function(encodedObj) {
   const songData = JSON.parse(decodeURIComponent(encodedObj));
@@ -298,6 +353,7 @@ window.addGlobalSong = function(encodedObj) {
       globalPlaylist = data.playlist || [];
       renderPlaylistUI();
       scheduleNextSync();
+      alert("Track saved successfully!");
     }
   })
   .catch(err => { alert("Error saving track."); });
@@ -378,7 +434,7 @@ function playSongAtIndex(index, seekTime = 0) {
 // Visualizers
 function emitDot(){ if (dots.length > 80) return; dots.push({ xp: w/2, yp: h/2, xv: Math.random()*0.4-0.2, yv: Math.random()*0.4-0.2, rad: Math.random()*(10-2)+2, hue: Math.random()*50-25 }); }
 function emitLine(){ if (lines.length > 30) return; lines.push({ xp: w/2, yp: h/2, xv: Math.random()*0.4-0.2, yv: Math.random()*0.4-0.2, hue: Math.random()*50-25 }); }
-function clear(){ ctx.beginPath(); var grd = ctx.createLinearGradient(w/2, 0, w/2, h); grd.addColorStop(0, "hsl("+(config.hueStart + npt * config.colorSpeed)+", 35%, 8%"); grd.addColorStop(1, "hsl("+(config.hueStart + npt * config.colorSpeed)+", 75%, 3%"); ctx.fillStyle = grd; ctx.fillRect(0, 0, w, h); ctx.closePath(); }
+function clear(){ ctx.beginPath(); var grd = ctx.createLinearGradient(w/2, 0, w/2, h); grd.addColorStop(0, "hsl("+(config.hueStart + npt * config.colorSpeed)+", 35%, 8%"); grd.addColorStop(1, "hsl("+(config.hueStart + npt * config.colorSpeed)+", 75%, 3%); ctx.fillStyle = grd; ctx.fillRect(0, 0, w, h); ctx.closePath(); }
 function drawDots(){ var avg = averageFrequency(); for(let i = 0; i < dots.length; i++){ ctx.beginPath(); var grd = ctx.createRadialGradient(dots[i].xp + dots[i].rad, dots[i].yp + dots[i].rad, 0, dots[i].xp + dots[i].rad, dots[i].yp + dots[i].rad, dots[i].rad); grd.addColorStop(0, "hsla("+(config.hueStart + npt * config.colorSpeed + dots[i].hue)+", 50%, 50%, "+(avg / 400)+"%)"); grd.addColorStop(1, "hsla("+(config.hueStart + npt * config.colorSpeed + dots[i].hue)+", 50%, 50%, 0%)"); ctx.fillStyle = grd; ctx.fillRect(dots[i].xp, dots[i].yp, dots[i].rad*2, dots[i].rad*2); ctx.closePath(); if(dots[i].xp > w || dots[i].xp < 0 || dots[i].yp > w || dots[i].yp < 0){ dots[i] = dots[dots.length-1]; dots.pop(); } else { dots[i].xp += dots[i].xv * Math.pow(avg/1000, 1.5); dots[i].yp += dots[i].yv * Math.pow(avg/1000, 1.5); } } }
 function drawLines() { var avg = averageFrequency(); var maxDist = 100; for (let i = 0; i < lines.length; i++) { for (let j = 0; j < lines.length; j++) { var proDist = 100 / maxDist; var opacity = 100 - dist(lines[j].xp, lines[j].yp, lines[i].xp, lines[i].yp) * proDist; if (dist(lines[j].xp, lines[j].yp, lines[i].xp, lines[i].yp) < maxDist) { ctx.beginPath(); ctx.lineWidth = 1; ctx.strokeStyle = "hsla(" + (config.hueStart + npt * config.colorSpeed) + ", 50%, 50%, " + (opacity - 50) + "%)"; ctx.moveTo(lines[i].xp, lines[i].yp); ctx.lineTo(lines[j].xp, lines[j].yp); ctx.stroke(); ctx.closePath(); } } if (lines[i].xp > w || lines[i].xp < 0 || lines[i].yp > w || lines[i].yp < 0) { lines[i] = lines[lines.length - 1]; lines.pop(); } else { lines[i].xp += lines[i].xv * avg/500; lines[i].yp += lines[i].yv * avg/500; } } }
 function getBassPulse() { if (!frequencyData) return 0; var bassSum = 0; for (let i = 0; i < 8; i++) { bassSum += frequencyData[i]; } return bassSum / 8; }
@@ -407,3 +463,4 @@ function averageFrequency() { var avg = 0; for (let i = 0; i < frequencyData.len
 
 </body>
 </html>
+
