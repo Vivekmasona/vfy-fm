@@ -30,7 +30,7 @@
     {
       "name": "nearby share",
       "url": "/sawan",
-      "icons": [{"src": "/radar.png", "type": "image/png", "sizes": "192x192"}]
+      "icons": [{"src": "./img/radar.png", "type": "image/png", "sizes": "192x192"}]
     }
   ],
   "description": "VFy:Support:- YouTube music background play, Share to download, Copy detect, Call with session id, Shake ai voice control, Ad free video, Developer:-vivek💞masona"
