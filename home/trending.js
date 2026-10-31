@@ -111,7 +111,7 @@ async function loadTrendingSongs() {
     const songsContainer = document.getElementById("songs");
     if (!songsContainer) return;
 
-    const userQuery = localStorage.getItem("songQuery") || "Beatz Bomber song";
+    const userQuery = localStorage.getItem("songQuery") || "hits chhath bhojpuri song";
 
     // 1. Turant Skeleton Loader dikhao bina kisi delay ke
     songsContainer.innerHTML = `
