@@ -2064,10 +2064,10 @@ function paginate(direction) {
     // अब self1 पर YouTube API
     apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(currentQuery)}&type=video&maxResults=40&pageToken=${pageToken}&key=${youtubeApiKey}`;
 } else if (selectedAPI === "deno") {
-    apiUrl = `https://denocall.vivekmasona.deno.net/search?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
+    apiUrl = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
 } else {
     // Default API अब Deno
-    apiUrl = `https://denocall.vivekmasona.deno.net/search?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
+    apiUrl = `https://self-lac.vercel.app/v3-api1?q=${encodeURIComponent(currentQuery)}&pageToken=${pageToken}`;
 }
 
   fetchResults(apiUrl);
